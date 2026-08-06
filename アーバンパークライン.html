@@ -1,1 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>運用まとめ - 東武アーバンパークライン</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:sans-serif;background:#fff}
+h1{
+  height:50px;color:#fff;font-weight:500;display:flex;background:#00aeef;
+  width:100%;position:fixed;justify-content:center;align-items:center;
+  border-bottom:8px solid #1ff020;z-index:100
+}
+#title img{height:40px;margin-right:10px}
+.line{
+  position:fixed;left:50%;top:50px;width:min(16px, 2vw);height:100%;
+  background:#00aeef;transform:translateX(-50%);z-index:-1
+}
+.station-list{
+  padding-top:90px;display:flex;flex-direction:column;
+  align-items:center;gap:150px;padding-bottom:60px
+}
 
+.station{
+  position:relative;
+  width:min(400px, 50vw);
+  aspect-ratio:400 / 74;
+  height:auto;
+  border:0;
+  background:transparent;
+  cursor:pointer;
+  filter:drop-shadow(0 5px 5px rgba(0,0,0,.35));
+  -webkit-tap-highlight-color:transparent;
+  container-type:inline-size;
+}
+
+.station::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:#00aeef;
+  z-index:0;
+}
+
+.station::after{
+  content:"";
+  position:absolute;
+  left:2cqw;
+  right:2cqw;
+  top:0.75cqw;
+  bottom:0.75cqw;
+  background:
+    linear-gradient(110deg,
+      #00aeef 0 1.75cqw,
+      #fff 1.75cqw calc(100% - 1.75cqw),
+      #00aeef calc(100% - 1.75cqw) 100%);
+  clip-path:polygon(7% 0,100% 0,93% 100%,0 100%);
+  z-index:1;
+}
+
+.label{
+  position:absolute;
+  left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  width:82%;
+  text-align:center;
+  white-space:nowrap;
+  z-index:2;
+  pointer-events:none;
+}
+.jp{line-height:1;white-space:nowrap}
+.en{font-size:3.75cqw;margin-top:0.5cqw;white-space:nowrap}
+
+.station:focus-visible{
+  outline:3px solid #222;
+  outline-offset:5px;
+}
+.station:active{
+  transform:translateY(1px);
+  filter:drop-shadow(0 3px 3px rgba(0,0,0,.3));
+}
+
+@media(max-width:440px){
+  h1{font-size:20px}
+}
+</style>
+</head>
+<body>
+<h1 id="title"><img src="https://static.tobuspapp.jp/html/operation_tobupo/img/xxxhdpi/pos_icon_nodaline.png" alt="">東武アーバンパークライン</h1>
+<div class="line"></div>
+<div class="station-list">
+<button class="station"><div class="label"><div class="jp">大宮</div><div class="en">Omiya</div></div></button>
+<button class="station"><div class="label"><div class="jp">北大宮</div><div class="en">Kita-omiya</div></div></button>
+<button class="station"><div class="label"><div class="jp">大宮公園</div><div class="en">Omiya-koen</div></div></button>
+<button class="station"><div class="label"><div class="jp">大和田</div><div class="en">Owada</div></div></button>
+<button class="station"><div class="label"><div class="jp">七里</div><div class="en">Nanasato</div></div></button>
+<button class="station"><div class="label"><div class="jp">岩槻</div><div class="en">Iwatsuki</div></div></button>
+<button class="station"><div class="label"><div class="jp">東岩槻</div><div class="en">Higashi-iwatsuki</div></div></button>
+<button class="station"><div class="label"><div class="jp">豊春</div><div class="en">Toyoharu</div></div></button>
+<button class="station"><div class="label"><div class="jp">八木崎</div><div class="en">Yagisaki</div></div></button>
+<button class="station"><div class="label"><div class="jp">春日部</div><div class="en">Kasukabe</div></div></button>
+<button class="station"><div class="label"><div class="jp">藤の牛島</div><div class="en">Fuji-no-ushijima</div></div></button>
+<button class="station"><div class="label"><div class="jp">南桜井</div><div class="en">Minami-sakurai</div></div></button>
+<button class="station"><div class="label"><div class="jp">川間</div><div class="en">Kawama</div></div></button>
+<button class="station"><div class="label"><div class="jp">七光台</div><div class="en">Nanakodai</div></div></button>
+<button class="station"><div class="label"><div class="jp">清水公園</div><div class="en">Shimizu-koen</div></div></button>
+<button class="station"><div class="label"><div class="jp">愛宕</div><div class="en">Atago</div></div></button>
+<button class="station"><div class="label"><div class="jp">野田市</div><div class="en">Noda-shi</div></div></button>
+<button class="station"><div class="label"><div class="jp">梅郷</div><div class="en">Umesato</div></div></button>
+<button class="station"><div class="label"><div class="jp">運河</div><div class="en">Unga</div></div></button>
+<button class="station"><div class="label"><div class="jp">江戸川台</div><div class="en">Edogawadai</div></div></button>
+<button class="station"><div class="label"><div class="jp">初石</div><div class="en">Hatsuishi</div></div></button>
+<button class="station"><div class="label"><div class="jp">流山おおたかの森</div><div class="en">Nagareyama-otakanomori</div></div></button>
+<button class="station"><div class="label"><div class="jp">豊四季</div><div class="en">Toyoshiki</div></div></button>
+<button class="station"><div class="label"><div class="jp">柏</div><div class="en">Kashiwa</div></div></button>
+<button class="station"><div class="label"><div class="jp">新柏</div><div class="en">Shin-kashiwa</div></div></button>
+<button class="station"><div class="label"><div class="jp">増尾</div><div class="en">Masuo</div></div></button>
+<button class="station"><div class="label"><div class="jp">逆井</div><div class="en">Sakasai</div></div></button>
+<button class="station"><div class="label"><div class="jp">高柳</div><div class="en">Takayanagi</div></div></button>
+<button class="station"><div class="label"><div class="jp">六実</div><div class="en">Mutsumi</div></div></button>
+<button class="station"><div class="label"><div class="jp">新鎌ヶ谷</div><div class="en">Shin-kamagaya</div></div></button>
+<button class="station"><div class="label"><div class="jp">鎌ヶ谷</div><div class="en">Kamagaya</div></div></button>
+<button class="station"><div class="label"><div class="jp">馬込沢</div><div class="en">Magomezawa</div></div></button>
+<button class="station"><div class="label"><div class="jp">塚田</div><div class="en">Tsukada</div></div></button>
+<button class="station"><div class="label"><div class="jp">新船橋</div><div class="en">Shin-funabashi</div></div></button>
+<button class="station"><div class="label"><div class="jp">船橋</div><div class="en">Funabashi</div></div></button>
+</div>
+<script>
+document.querySelectorAll(".jp").forEach(e=>{
+  const len=[...e.textContent.trim()].length;
+  let ls="0";
+  if(len<=2){ls=".9em";}
+  else if(len===3){ls=".3em";}
+  else if(len===4){ls=".0em";}
+  else if(len===5){ls=".0em";}
+  else if(len===6){ls=".0em";}
+  else if(len===7){ls=".0em";}
+  else {ls="0";}
+  e.style.fontSize="8.75cqw";
+  e.style.letterSpacing=ls;
+  e.style.paddingLeft=ls;
+});
+</script>
+</body>
+</html>
