@@ -7,7 +7,7 @@ export const Page = () => {
     const [stations, setStations] = useState<StationData[]>([]);
     useEffect(() => {
         const func = async () => {
-            const stationsResponse = await fetch("Unyomatome/routes/tobu/urban/stations.json");
+            const stationsResponse = await fetch("/Unyomatome/routes/tobu/urban/stations.json");
             const stationsJson = await stationsResponse.json();
             const stations = stationsJson.stations as StationData[];
             setStations(stations);
