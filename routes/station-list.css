@@ -1,0 +1,107 @@
+
+.station:focus-visible {
+    outline: 3px solid #222;
+    outline-offset: 5px;
+}
+
+.station:active {
+    transform: translateY(1px);
+    filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .3));
+}
+
+#title img {
+    height: 40px;
+    margin-right: 10px
+}
+
+.line {
+    position: absolute;
+    left: 50%;
+    top: 50px;
+    bottom: 0;
+    width: min(16px, 2vw);
+    background: #00aeef;
+    transform: translateX(-50%);
+    z-index: -1;
+}
+
+.station-list {
+    padding-top: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 150px;
+    padding-bottom: 60px
+}
+
+.station {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: min(400px, 50vw);
+    aspect-ratio: 400 / 74;
+    height: 80px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    filter: drop-shadow(0 5px 5px rgba(0, 0, 0, .35));
+    -webkit-tap-highlight-color: transparent;
+    container-type: inline-size;
+}
+
+.station::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #00aeef;
+    z-index: 0;
+}
+
+.station::after {
+    content: "";
+    position: absolute;
+    left: 2cqw;
+    right: 2cqw;
+    top: 0.75cqw;
+    bottom: 0.75cqw;
+    background: linear-gradient(110deg,
+    #00aeef 0 1.75cqw,
+    #fff 1.75cqw calc(100% - 1.75cqw),
+    #00aeef calc(100% - 1.75cqw) 100%);
+    clip-path: polygon(7% 0, 100% 0, 93% 100%, 0 100%);
+    z-index: 1;
+}
+
+.label,.major_label {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    white-space: nowrap;
+    z-index: 2;
+    padding: 4px;
+    pointer-events: none;
+}
+.label p {
+    text-align: center;
+}
+
+.major_label {
+    font-weight: 500;
+}
+
+.label .jp {
+    font-size: 8.75cqw;
+    line-height: 1;
+    white-space: nowrap;
+    letter-spacing: 0.7em;
+    text-indent: 0.7em;
+}
+
+.label .en {
+    font-size: 3.75cqw;
+    margin-top: 0.5cqw;
+    white-space: nowrap;
+    letter-spacing: 0.2em;
+    text-indent: 0.2em;
+}
