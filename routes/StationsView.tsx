@@ -12,7 +12,8 @@ export const StationsView = (props: StationsViewProps) => {
                 <p className="jp" style={{
                     fontSize: "8.75cqw",
                     paddingLeft: "0",
-                    letterSpacing: station.jpName.length < 4 ? "0.7em" : "0.2em"
+                    letterSpacing: station.jpName.length < 4 ? "0.7em" : "0.2em",
+                    textIndent: station.jpName.length < 4 ? "0.7em" : "0.2em"
                 }}>{station.jpName}</p>
                 <p className="en">{station.enName}</p>
             </div>
