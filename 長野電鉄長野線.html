@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -310,6 +311,9 @@ function trainVisualKind(t){
   if(/B$/.test(String(t.no))) return 'b-express';
   if(/A$/.test(String(t.no))) return 'a-express';
   return 'normal';
+}
+function displayType(type){
+  return String(type ?? '').replace(/行$/, '').trim();
 }
 function trainLabelText(t){
   return `${displayType(t.type)} ${t.dest}`;
