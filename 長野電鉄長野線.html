@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -437,28 +438,29 @@ async function initFirebase(){
 }
 
 async function syncRegistrationToRemote(){
-  applyRegistrationState();
-  remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
-  remoteRoot.stateByDay[currentDay]=cloneState(registrationState);
-  remoteRoot.operationDate=currentOperationDate||operationDateKey();
-  remoteRoot.version=(remoteRoot.version||0)+1;
-  saveLocalState();
-  broadcastState();
-  if(!firebaseReady) return false;
+  if(!firebaseReady){
+    syncStatus('Firebase未接続');
+    return false;
+  }
   try{
-    // 日ごとの登録状態だけをトランザクション更新する。
-    // これにより別端末からの変更を、古いローカル状態で上書きしにくくする。
-    const dayRef=firebaseOperationRef().child('stateByDay').child(currentDay);
-    await dayRef.transaction(serverState=>{
-      const next=serverState&&typeof serverState==='object'?serverState:{};
-      Object.keys(registrationState).forEach(no=>{ next[String(no)]=registrationState[no]; });
-      Object.keys(next).forEach(no=>{
-        if(registrationState[no]===null || registrationState[no]===undefined || registrationState[no]==='') delete next[no];
+    const rootRef=firebaseOperationRef();
+    await rootRef.transaction(serverRoot=>{
+      const root=(serverRoot && typeof serverRoot==='object') ? serverRoot : {};
+      root.stateByDay=root.stateByDay||{平日:{},休日:{}};
+      const dayState=(root.stateByDay[currentDay] && typeof root.stateByDay[currentDay]==='object')
+        ? root.stateByDay[currentDay] : {};
+      // Firebase上の最新状態に、この端末で今回変更した値だけをマージする。
+      // これにより、別端末で先に登録された別列車を古いローカル状態で消さない。
+      Object.entries(registrationState).forEach(([no,formId])=>{
+        if(formId) dayState[String(no)]=formId;
+        else delete dayState[String(no)];
       });
-      return next;
+      root.stateByDay[currentDay]=dayState;
+      root.operationDate=root.operationDate||operationDateKey();
+      root.version=Number(root.version||0)+1;
+      root.updatedAt=firebase.database.ServerValue.TIMESTAMP;
+      return root;
     });
-    await firebaseOperationRef().child('operationDate').set(currentOperationDate||operationDateKey());
-    await firebaseOperationRef().child('updatedAt').set(firebase.database.ServerValue.TIMESTAMP);
     syncStatus('Firebase同期済み');
     return true;
   }catch(e){
@@ -485,10 +487,13 @@ async function recordSelection(train,formId){
     registrationState[String(train.no)]=formId;
     assigned.push(String(train.no));
   }
-  remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
-  remoteRoot.stateByDay[currentDay]=cloneState(registrationState);
   applyRegistrationState();
-  await syncRegistrationToRemote();
+  // 書き込み完了を待ってから描画。サーバー側の onValue が最終状態を返す。
+  const ok=await syncRegistrationToRemote();
+  if(!ok){
+    // Firebase未接続時はローカルには残すが、画面に明示する。
+    saveLocalState();
+  }
   renderLine();
   if(currentTrainNo) updateSheetContent();
   return assigned;
@@ -757,15 +762,9 @@ function positionForTrain(t,minutes){
   if(isChainFirst && minutes>=first-RESET_DWELL_MIN && minutes<first){
     return {pos:stationIndex(firstStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'start'};
   }
-  // Excel上の運用鎖に接続する中間列車は、到着後1分は到着側、
-  // その後は出発側で次列車の発車を待つ。
-  if(prev && prevEnd!==null && minutes>=prevEnd && minutes<first){
-    if(minutes<prevEnd+TURNBACK_SWITCH_MIN){
-      const incomingDir=inferDirectionFromStations(prev.start,prev.dest);
-      return {pos:stationIndex(firstStation),side:incomingDir==='down'?'right':'left',visualTrain:TRAIN_INDEX[trainEntryNo(prev)]||null,mode:'turn-arrival'};
-    }
-    return {pos:stationIndex(firstStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'turn-wait'};
-  }
+  // 中間列車の始発駅側の待機は、前の列車の描画側で一度だけ表現する。
+  // ここで同じ列車をもう一度描画すると、折り返し駅で列車が2本並ぶため、
+  // 中間列車側では表示しない。
   // Running leg.
   if(minutes>=first && minutes<=last){
     for(let i=0;i<stops.length-1;i++){
@@ -779,7 +778,7 @@ function positionForTrain(t,minutes){
     }
   }
   // 中間列車の到着駅では、次列車が続くなら到着+1分で反対側へ移動。
-  if(next && !isChainLast && minutes>last && minutes<=nextStart){
+  if(next && !isChainLast && minutes>last && minutes<nextStart){
     if(minutes<=last+TURNBACK_SWITCH_MIN){
       return {pos:stationIndex(lastStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'turn-arrival'};
     }
