@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -298,6 +297,7 @@ let channel=null;
 let firebaseReady=false;
 let lastHistoryFingerprint='';
 let firebaseDayListenerDay=null;
+let firebaseDayListenerCallback=null;
 
 function todayKey(d=new Date()){
   const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
@@ -363,23 +363,26 @@ function firebaseOperationRef(){ return firebase.database().ref('運用'); }
 function firebaseHistoryRef(){ return firebase.database().ref('履歴'); }
 function subscribeCurrentDayState(){
   if(!firebaseReady) return;
-  if(firebaseDayListenerDay===currentDay) return;
-  if(firebaseDayListenerDay){
-    firebaseOperationRef().child('stateByDay').child(firebaseDayListenerDay).off();
+  const oldDay=firebaseDayListenerDay;
+  if(oldDay===currentDay) return;
+  if(oldDay){
+    firebaseOperationRef().child('stateByDay').child(oldDay).off('value', firebaseDayListenerCallback);
   }
   firebaseDayListenerDay=currentDay;
-  const day= currentDay;
-  firebaseOperationRef().child('stateByDay').child(day).on('value',snap=>{
-    // 現在選択している曜日のサーバー側データを常に正とする。
-    if(currentDay!==day) return;
+  firebaseDayListenerCallback=(snap)=>{
+    if(currentDay!==firebaseDayListenerDay) return;
     registrationState=cloneState(snap.val()||{});
     remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
-    remoteRoot.stateByDay[day]=cloneState(registrationState);
+    remoteRoot.stateByDay[currentDay]=cloneState(registrationState);
     applyRegistrationState();
     saveLocalState();
     renderLine();
     if(currentTrainNo) updateSheetContent();
     syncStatus('Firebase同期済み');
+  };
+  firebaseOperationRef().child('stateByDay').child(currentDay).on('value',firebaseDayListenerCallback,err=>{
+    console.error('Firebase運用読込失敗',err);
+    syncStatus('Firebase読込失敗');
   });
 }
 
@@ -390,44 +393,41 @@ async function initFirebase(){
     firebaseReady=true;
     syncStatus('Firebase接続中');
 
-    // 現在の運用状態をリアルタイム購読
-    firebaseOperationRef().on('value', snap=>{
-      const data=snap.val()||{};
-      remoteRoot.version=Number(data.version||0);
-      remoteRoot.operationDate=data.operationDate||operationDateKey();
-      remoteRoot.stateByDay=data.stateByDay||{平日:{},休日:{}};
-      registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
-      operationHistory=historyEntries();
-      applyRegistrationState();
-      saveLocalState();
-      renderLine();
-      if(currentTrainNo) updateSheetContent();
-      maybeResetForNewOperationDay(true);
-    },err=>{
-      console.error('Firebase運用読込失敗',err);
-      syncStatus('Firebase読込失敗');
-    });
+    // /運用 全体のうち、日別状態だけを購読する。
+    // ルート全体のonValueでローカル状態を上書きする方式は、
+    // 編成登録直後に古い値へ戻る競合を起こすため使用しない。
+    subscribeCurrentDayState();
 
-    // 履歴は読み取り専用。サイト側からは新規追加のみ行う。
+    // 履歴は読み取り専用。既存履歴の変更はFirebaseルールで拒否される。
     firebaseHistoryRef().on('value', snap=>{
       remoteRoot.history=snap.val()||{};
       operationHistory=historyEntries();
       saveLocalState();
       if(currentTrainNo) updateSheetContent();
-      syncStatus('Firebase接続中');
-    },err=>console.error('Firebase履歴読込失敗',err));
-
-    // 現在選択中の曜日は専用リスナーでも監視し、別端末の変更を即時反映する。
-    subscribeCurrentDayState();
-
-    // 初回データが無ければ、空状態を運用へ作成
-    const opSnap=await firebaseOperationRef().once('value');
-    if(!opSnap.exists()) await firebaseOperationRef().set({
-      operationDate: operationDateKey(),
-      stateByDay:{平日:{},休日:{}},
-      version:0,
-      updatedAt:firebase.database.ServerValue.TIMESTAMP
+    },err=>{
+      console.error('Firebase履歴読込失敗',err);
     });
+
+    // /運用 がまだ無ければ初期構造だけ作る。
+    const opSnap=await firebaseOperationRef().once('value');
+    if(!opSnap.exists()){
+      await firebaseOperationRef().set({
+        operationDate: operationDateKey(),
+        stateByDay:{平日:{},休日:{}},
+        version:0,
+        updatedAt:firebase.database.ServerValue.TIMESTAMP
+      });
+    }else{
+      const data=opSnap.val()||{};
+      remoteRoot=data;
+      remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
+      remoteRoot.history=remoteRoot.history||{};
+      currentOperationDate=remoteRoot.operationDate||operationDateKey();
+      registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
+      applyRegistrationState();
+      saveLocalState();
+      renderLine();
+    }
     return true;
   }catch(e){
     console.error('Firebase init failed',e);
@@ -443,24 +443,29 @@ async function syncRegistrationToRemote(){
     return false;
   }
   try{
-    const rootRef=firebaseOperationRef();
-    await rootRef.transaction(serverRoot=>{
-      const root=(serverRoot && typeof serverRoot==='object') ? serverRoot : {};
-      root.stateByDay=root.stateByDay||{平日:{},休日:{}};
-      const dayState=(root.stateByDay[currentDay] && typeof root.stateByDay[currentDay]==='object')
-        ? root.stateByDay[currentDay] : {};
-      // Firebase上の最新状態に、この端末で今回変更した値だけをマージする。
-      // これにより、別端末で先に登録された別列車を古いローカル状態で消さない。
-      Object.entries(registrationState).forEach(([no,formId])=>{
-        if(formId) dayState[String(no)]=formId;
-        else delete dayState[String(no)];
+    // 日別状態だけをトランザクション更新する。
+    // ルート全体を書き換えないので、別端末の登録を巻き戻さない。
+    const dayRef=firebaseOperationRef().child('stateByDay').child(currentDay);
+    const desired=cloneState(registrationState);
+    const result=await dayRef.transaction(current=>{
+      const next=(current && typeof current==='object')?current:{};
+      Object.keys(next).forEach(no=>{
+        if(!(no in desired)) delete next[no];
       });
-      root.stateByDay[currentDay]=dayState;
-      root.operationDate=root.operationDate||operationDateKey();
-      root.version=Number(root.version||0)+1;
-      root.updatedAt=firebase.database.ServerValue.TIMESTAMP;
-      return root;
+      Object.entries(desired).forEach(([no,formId])=>{
+        if(formId) next[String(no)]=formId;
+        else delete next[String(no)];
+      });
+      return next;
     });
+    if(!result.committed) throw new Error('Firebase transaction not committed');
+    const committed=result.snapshot.val()||{};
+    registrationState=cloneState(committed);
+    remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
+    remoteRoot.stateByDay[currentDay]=cloneState(committed);
+    applyRegistrationState();
+    saveLocalState();
+    broadcastState();
     syncStatus('Firebase同期済み');
     return true;
   }catch(e){
@@ -488,11 +493,13 @@ async function recordSelection(train,formId){
     assigned.push(String(train.no));
   }
   applyRegistrationState();
-  // 書き込み完了を待ってから描画。サーバー側の onValue が最終状態を返す。
+  // Firebaseへの反映が成功したあとにだけ画面を確定させる。
   const ok=await syncRegistrationToRemote();
   if(!ok){
-    // Firebase未接続時はローカルには残すが、画面に明示する。
+    // サーバーへ保存できなかった場合は、直ちにデフォルトへ戻さない。
+    // ローカル表示を維持し、次回の再接続時に再同期できるようにする。
     saveLocalState();
+    syncStatus('同期失敗（この端末では保持）');
   }
   renderLine();
   if(currentTrainNo) updateSheetContent();
