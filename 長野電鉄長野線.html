@@ -605,7 +605,7 @@ function chainEntries(day,trainNo){
   const idx=findChain(day,trainNo);
   return idx?OPERATION_CHAINS[day][idx.chainIndex]:null;
 }
-async async function recordSelection(train,formId){
+function recordSelection(train,formId){
   const chain=chainEntries(currentDay,train.no);
   const assigned=[];
   if(chain){
@@ -622,12 +622,13 @@ async async function recordSelection(train,formId){
   // 通信完了後はonValueの確定値で全端末へ同期する。
   saveLocalState();
   refreshVisibleUI();
-  const ok=await syncRegistrationToRemote();
-  if(!ok){
-    saveLocalState();
-    syncStatus('同期失敗（再試行待ち）');
-  }
-  return assigned;
+  return syncRegistrationToRemote().then(ok=>{
+    if(!ok){
+      saveLocalState();
+      syncStatus('同期失敗（再試行待ち）');
+    }
+    return assigned;
+  });
 }
 
 function snapshotForCurrentRegistrations(day, state, dateKey){
