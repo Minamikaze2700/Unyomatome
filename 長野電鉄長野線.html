@@ -163,7 +163,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 .custom-select-trigger{
   background:#fff;border:2px solid #ccc;border-radius:8px;padding:10px;
   display:flex;align-items:center;justify-content:space-between;
-  cursor:pointer;font-weight:700;font-size:1.05rem;color:#1b6e27;
+  cursor:pointer;font-weight:700;font-size:1.25rem;color:#1b6e27;
 }
 .custom-select-options{
   position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ccc;
@@ -172,18 +172,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 }
 .custom-select-options.open{display:block}
 .option-header{
-  background:#f0f0f0;padding:8px 12px;font-weight:700;display:flex;
+  background:#f0f0f0;padding:8px 12px;font-weight:700;font-size:1.25rem;display:flex;
   align-items:center;gap:10px;border-bottom:1px solid #e0e0e0;cursor:pointer;
 }
 .option-header:hover{background:#e8f5e9}
 .option-item{
   padding:8px 12px 8px 32px;display:flex;align-items:center;gap:10px;
-  cursor:pointer;border-bottom:1px solid #f0f0f0;
+  cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:1.25rem;
 }
 .option-item:hover{background:#e8f5e9}
 .option-item.type-option,.option-item.initial-option{background:#e0e0e0}
 .option-item.type-option:hover,.option-item.initial-option:hover{background:#d0d0d0}
-.option-img{width:36px;height:30px;object-fit:contain}
+.option-img{width:auto;height:60px;object-fit:contain}
 
 /* スマホ版：1920pxの元レイアウトから中央960px（左右480pxずつをカット）を
    そのまま100vwへ縮小表示する。960px以上はデスクトップ表示を変更しない。 */
@@ -1147,7 +1147,7 @@ function updateSheetContent(){
       <div class="select-box-container">
         <div class="custom-select-trigger" onclick="toggleDropdown()">
           <div style="display:flex;align-items:center;gap:10px">
-            <img src="${selectedForm.img}" id="selectedOptionImg" style="width:35px;height:30px;object-fit:contain">
+            <img src="${selectedForm.img}" id="selectedOptionImg" style="width:auto;height:70px;object-fit:contain">
             <span id="selectedOptionText">${selectedForm.name}</span>
           </div>▼
         </div>
