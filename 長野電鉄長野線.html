@@ -33,9 +33,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
   font:inherit;font-weight:700;text-align:center;background:#fff;color:#111;
 }
 .time-label{font-weight:700;color:#555}
+.sync-bar{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;padding:5px 10px 0;font-size:12px;color:#666}
+.sync-btn{border:1px solid #bbb;background:#fff;color:#555;border-radius:999px;padding:5px 10px;cursor:pointer;font-weight:700}
+
 
 /* 路線図 */
-:root{--row-height:130px}
+:root{--row-height:325px}
 .line-container{
   position:relative;width:min(1100px,100%);margin:0 auto;
   padding:20px 0 80px;display:flex;flex-direction:column;align-items:center;
@@ -73,7 +76,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 .train-icon.left{left:max(6px,calc(50% - 245px))}
 .train-icon.right{right:max(6px,calc(50% - 245px))}
 .train-icon:hover{transform:translateX(var(--lane-shift,0px)) scale(1.06)}
-.train-icon img{width:48px;height:38px;object-fit:contain;display:block}
+.train-icon img{width:60px;height:auto;object-fit:contain;display:block}
 .train-no{font-size:12px;font-weight:800;color:#1b6e27;line-height:1.05}
 .train-label{
   margin-top:2px;max-width:66px;padding:3px 5px;border-radius:4px;
@@ -99,14 +102,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
   align-items:center;font-weight:700;border-radius:16px 16px 0 0;
 }
 .close-btn{cursor:pointer;font-size:1.2rem}
-.sheet-content{padding:16px}
+.sheet-content{padding:16px;position:relative;overflow:hidden}
+.timetable-list{position:relative;overflow:hidden;z-index:1}
 .train-card{
   background:#fff;border-radius:8px;padding:12px;display:flex;
   align-items:center;gap:12px;margin-bottom:16px;cursor:pointer;
   border:2px solid transparent;
 }
 .train-card:hover{border-color:#bbb}
-.train-card-img{width:66px;height:54px;object-fit:contain}
+.train-card-img{width:75px;height:auto;object-fit:contain}
 .train-info-main{flex:1}
 .type-badge{background:#616161;color:#fff;padding:3px 8px;border-radius:4px;font-size:.85rem;display:inline-block}
 .train-title{font-size:1.1rem;font-weight:700;margin-left:6px}
@@ -157,19 +161,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 .data-note{text-align:center;color:#777;font-size:12px;padding:0 16px 30px}
 
 @media(max-width:800px){
-  :root{--row-height:120px}
+  :root{--row-height:300px}
   .station-badge{width:min(290px,calc(100% - 150px));height:72px}
   .station-name-ja{height:44px;font-size:30px}
   .station-name-en{height:24px;font-size:16px}
   .train-icon{width:64px}
   .train-icon.left{left:10px}
   .train-icon.right{right:10px}
-  .train-icon img{width:48px;height:38px}
+  .train-icon img{width:60px;height:auto}
   .train-label{max-width:64px;font-size:8px}
   .train-no{font-size:10px}
 }
 @media(max-width:560px){
-  :root{--row-height:105px}
+  :root{--row-height:262px}
   .station-badge{width:calc(100% - 100px);height:66px}
   .station-name-ja{height:40px;font-size:26px}
   .station-name-en{height:22px;font-size:14px}
@@ -198,12 +202,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
     <button id="nowBtn" class="time-now-btn active" onclick="setNowTime()">現在時刻</button>
   </div>
 </div>
+<div class="sync-bar">
+  <span id="syncStatus">共有同期：ローカル</span>
+  <span class="sync-btn" style="cursor:default">運用履歴：自動保存</span>
+</div>
 
 <div class="line-container" id="lineContainer">
   <div class="rail-line"></div>
   <div class="moving-train-layer" id="movingTrainLayer"></div>
 </div>
-<div class="data-note">時刻データ：添付「長電　時刻表.xlsx」／列車番号・運転日区分：添付「長野電鉄　運用推移.xlsx」</div>
+<div class="data-note">時刻データ：添付「長電　時刻表.xlsx」／列車番号・運転日区分：添付「長野電鉄　運用推移.xlsx」<br>編成登録・運用履歴はFirebaseで自動共有／保存。GitHub Pagesは静的配信のため、Firebase設定が必要です。</div>
 
 <div class="overlay" id="overlay" onclick="closeSheet()"></div>
 <div class="bottom-sheet" id="bottomSheet">
@@ -214,6 +222,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
   <div class="sheet-content" id="sheetContent"></div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
+/* Firebase設定（Firebase Consoleで作成したWebアプリ） */
+window.NAGANO_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyC_B8cX2sA-gWVNR-90Iqc6ZovtQUTsErI",
+  authDomain: "unyo-matome.firebaseapp.com",
+  databaseURL: "https://unyo-matome-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "unyo-matome",
+  storageBucket: "unyo-matome.firebasestorage.app",
+  messagingSenderId: "677261667681",
+  appId: "1:677261667681:web:874c37ec7083bb6342a920",
+  measurementId: "G-8SJC8MPQSS"
+};
+</script>
 <script>
 const STATIONS = [{"id":"nagano","nameJa":"長野","nameEn":"Nagano"},{"id":"shiyakushomae","nameJa":"市役所前","nameEn":"Shiyakushomae"},{"id":"gondo","nameJa":"権堂","nameEn":"Gondo"},{"id":"zenkojishita","nameJa":"善光寺下","nameEn":"Zenkojishita"},{"id":"hongo","nameJa":"本郷","nameEn":"Hongo"},{"id":"kirihara","nameJa":"桐原","nameEn":"Kirihara"},{"id":"shinano_yoshida","nameJa":"信濃吉田","nameEn":"Shinano-Yoshida"},{"id":"asahi","nameJa":"朝陽","nameEn":"Asahi"},{"id":"fuzoku_chugakkomae","nameJa":"附属中学前","nameEn":"Fuzoku-Chugakkomae"},{"id":"yanagihara","nameJa":"柳原","nameEn":"Yanagihara"},{"id":"murayama","nameJa":"村山","nameEn":"Murayama"},{"id":"hino","nameJa":"日野","nameEn":"Hino"},{"id":"suzaka","nameJa":"須坂","nameEn":"Suzaka"},{"id":"kita_suzaka","nameJa":"北須坂","nameEn":"Kita-Suzaka"},{"id":"obuse","nameJa":"小布施","nameEn":"Obuse"},{"id":"tsusumi","nameJa":"都住","nameEn":"Tsusumi"},{"id":"sakurazawa","nameJa":"桜沢","nameEn":"Sakurazawa"},{"id":"entoku","nameJa":"延徳","nameEn":"Entoku"},{"id":"shinshu_nakano","nameJa":"信州中野","nameEn":"Shinshu-Nakano"},{"id":"nakanomatsukawa","nameJa":"中野松川","nameEn":"Nakanomatsukawa"},{"id":"shinano_takehara","nameJa":"信濃竹原","nameEn":"Shinano-Takehara"},{"id":"yomase","nameJa":"夜間瀬","nameEn":"Yomase"},{"id":"kamijo","nameJa":"上条","nameEn":"Kamijo"},{"id":"yudanaka","nameJa":"湯田中","nameEn":"Yudanaka"}];
 
@@ -244,16 +267,335 @@ const FORMATIONS = [
 ];
 
 const TRAINS = [{"no":"202","type":"普通","direction":"up","days":["休日","平日"],"start":"須坂","dest":"長野","stops":[{"station":"須坂","time":"5:25"},{"station":"日野","time":"5:27"},{"station":"村山","time":"5:29"},{"station":"柳原","time":"5:32"},{"station":"附属中学前","time":"5:34"},{"station":"朝陽","time":"5:36"},{"station":"信濃吉田","time":"5:39"},{"station":"桐原","time":"5:41"},{"station":"本郷","time":"5:42"},{"station":"善光寺下","time":"5:44"},{"station":"権堂","time":"5:46"},{"station":"市役所前","time":"5:47"},{"station":"長野","time":"5:50"}],"defaultCars":"普通3両","formation":null},{"no":"502","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"5:29"},{"station":"延徳","time":"5:32"},{"station":"桜沢","time":"5:35"},{"station":"都住","time":"5:39"},{"station":"小布施","time":"5:41"},{"station":"北須坂","time":"5:44"},{"station":"須坂","time":"5:48"},{"station":"須坂","time":"5:49"},{"station":"日野","time":"5:51"},{"station":"村山","time":"5:53"},{"station":"柳原","time":"5:56"},{"station":"附属中学前","time":"5:58"},{"station":"朝陽","time":"6:00"},{"station":"信濃吉田","time":"6:03"},{"station":"桐原","time":"6:05"},{"station":"本郷","time":"6:06"},{"station":"善光寺下","time":"6:08"},{"station":"権堂","time":"6:10"},{"station":"市役所前","time":"6:11"},{"station":"長野","time":"6:14"}],"defaultCars":"普通3両","formation":null},{"no":"504","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"5:55"},{"station":"延徳","time":"5:58"},{"station":"桜沢","time":"6:01"},{"station":"都住","time":"6:05"},{"station":"小布施","time":"6:07"},{"station":"北須坂","time":"6:11"},{"station":"須坂","time":"6:15"},{"station":"須坂","time":"6:16"},{"station":"日野","time":"6:18"},{"station":"村山","time":"6:20"},{"station":"柳原","time":"6:23"},{"station":"附属中学前","time":"6:25"},{"station":"朝陽","time":"6:27"},{"station":"信濃吉田","time":"6:30"},{"station":"桐原","time":"6:32"},{"station":"本郷","time":"6:33"},{"station":"善光寺下","time":"6:35"},{"station":"権堂","time":"6:37"},{"station":"市役所前","time":"6:38"},{"station":"長野","time":"6:41"}],"defaultCars":"普通3両","formation":null},{"no":"506","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"6:22"},{"station":"延徳","time":"6:25"},{"station":"桜沢","time":"6:28"},{"station":"都住","time":"6:31"},{"station":"小布施","time":"6:34"},{"station":"北須坂","time":"6:37"},{"station":"須坂","time":"6:41"},{"station":"日野","time":"6:44"},{"station":"村山","time":"6:46"},{"station":"柳原","time":"6:49"},{"station":"附属中学前","time":"6:51"},{"station":"朝陽","time":"6:53"},{"station":"信濃吉田","time":"6:56"},{"station":"桐原","time":"6:58"},{"station":"本郷","time":"7:00"},{"station":"善光寺下","time":"7:02"},{"station":"権堂","time":"7:04"},{"station":"市役所前","time":"7:06"},{"station":"長野","time":"7:08"}],"defaultCars":"普通3両","formation":null},{"no":"302","type":"普通","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"信州中野","stops":[{"station":"湯田中","time":"6:21"},{"station":"上条","time":"6:24"},{"station":"夜間瀬","time":"6:26"},{"station":"信濃竹原","time":"6:29"},{"station":"中野松川","time":"6:33"},{"station":"信州中野","time":"6:36"}],"defaultCars":"普通3両","formation":null},{"no":"508","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"6:47"},{"station":"延徳","time":"6:50"},{"station":"桜沢","time":"6:53"},{"station":"都住","time":"6:57"},{"station":"小布施","time":"6:59"},{"station":"北須坂","time":"7:03"},{"station":"須坂","time":"7:07"},{"station":"日野","time":"7:09"},{"station":"村山","time":"7:11"},{"station":"柳原","time":"7:14"},{"station":"附属中学前","time":"7:16"},{"station":"朝陽","time":"7:18"},{"station":"信濃吉田","time":"7:22"},{"station":"桐原","time":"7:23"},{"station":"本郷","time":"7:25"},{"station":"善光寺下","time":"7:27"},{"station":"権堂","time":"7:30"},{"station":"市役所前","time":"7:31"},{"station":"長野","time":"7:34"}],"defaultCars":"普通3両","formation":null},{"no":"304","type":"普通","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"信州中野","stops":[{"station":"湯田中","time":"6:46"},{"station":"上条","time":"6:49"},{"station":"夜間瀬","time":"6:52"},{"station":"信濃竹原","time":"6:54"},{"station":"中野松川","time":"6:58"},{"station":"信州中野","time":"7:02"}],"defaultCars":"普通3両","formation":null},{"no":"510","type":"普通","direction":"up","days":["平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"7:05"},{"station":"延徳","time":"7:08"},{"station":"桜沢","time":"7:11"},{"station":"都住","time":"7:14"},{"station":"小布施","time":"7:17"},{"station":"北須坂","time":"7:20"},{"station":"須坂","time":"7:24"},{"station":"日野","time":"7:27"},{"station":"村山","time":"7:29"},{"station":"柳原","time":"7:32"},{"station":"附属中学前","time":"7:34"},{"station":"朝陽","time":"7:36"},{"station":"信濃吉田","time":"7:39"},{"station":"桐原","time":"7:41"},{"station":"本郷","time":"7:43"},{"station":"善光寺下","time":"7:45"},{"station":"権堂","time":"7:47"},{"station":"市役所前","time":"7:49"},{"station":"長野","time":"7:51"}],"defaultCars":"普通3両","formation":null},{"no":"512","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"7:17"},{"station":"延徳","time":"7:20"},{"station":"桜沢","time":"7:23"},{"station":"都住","time":"7:27"},{"station":"小布施","time":"7:29"},{"station":"北須坂","time":"7:33"},{"station":"須坂","time":"7:37"},{"station":"須坂","time":"7:38"},{"station":"日野","time":"7:40"},{"station":"村山","time":"7:42"},{"station":"柳原","time":"7:45"},{"station":"附属中学前","time":"7:47"},{"station":"朝陽","time":"7:49"},{"station":"信濃吉田","time":"7:53"},{"station":"桐原","time":"7:54"},{"station":"本郷","time":"7:56"},{"station":"善光寺下","time":"7:58"},{"station":"権堂","time":"8:01"},{"station":"市役所前","time":"8:02"},{"station":"長野","time":"8:05"}],"defaultCars":"普通3両","formation":null},{"no":"306","type":"普通","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"信州中野","stops":[{"station":"湯田中","time":"7:15"},{"station":"上条","time":"7:18"},{"station":"夜間瀬","time":"7:21"},{"station":"信濃竹原","time":"7:23"},{"station":"中野松川","time":"7:27"},{"station":"信州中野","time":"7:31"}],"defaultCars":"普通3両","formation":null},{"no":"2B","type":"特急スノーモンキー","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"7:35"},{"station":"小布施","time":"7:44"},{"station":"須坂","time":"7:51"},{"station":"朝陽","time":"7:59"},{"station":"信濃吉田","time":"8:02"},{"station":"本郷","time":"8:05"},{"station":"権堂","time":"8:08"},{"station":"市役所前","time":"8:09"},{"station":"長野","time":"8:12"}],"defaultCars":"特急4両","formation":null},{"no":"514","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"7:43"},{"station":"延徳","time":"7:46"},{"station":"桜沢","time":"7:50"},{"station":"都住","time":"7:53"},{"station":"小布施","time":"7:56"},{"station":"北須坂","time":"7:59"},{"station":"須坂","time":"8:03"},{"station":"日野","time":"8:06"},{"station":"村山","time":"8:08"},{"station":"柳原","time":"8:11"},{"station":"附属中学前","time":"8:13"},{"station":"朝陽","time":"8:15"},{"station":"信濃吉田","time":"8:18"},{"station":"桐原","time":"8:20"},{"station":"本郷","time":"8:22"},{"station":"善光寺下","time":"8:24"},{"station":"権堂","time":"8:26"},{"station":"市役所前","time":"8:28"},{"station":"長野","time":"8:30"}],"defaultCars":"普通3両","formation":null},{"no":"204","type":"普通","direction":"up","days":["平日"],"start":"須坂","dest":"長野","stops":[{"station":"須坂","time":"8:18"},{"station":"日野","time":"8:20"},{"station":"村山","time":"8:22"},{"station":"柳原","time":"8:25"},{"station":"附属中学前","time":"8:27"},{"station":"朝陽","time":"8:29"},{"station":"信濃吉田","time":"8:33"},{"station":"本郷","time":"8:36"},{"station":"善光寺下","time":"8:38"},{"station":"権堂","time":"8:41"},{"station":"市役所前","time":"8:42"},{"station":"長野","time":"8:45"}],"defaultCars":"普通3両","formation":null},{"no":"308","type":"普通","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"信州中野","stops":[{"station":"湯田中","time":"7:43"},{"station":"上条","time":"7:46"},{"station":"夜間瀬","time":"7:49"},{"station":"信濃竹原","time":"7:51"},{"station":"中野松川","time":"7:55"},{"station":"信州中野","time":"7:59"}],"defaultCars":"普通3両","formation":null},{"no":"516","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"8:09"},{"station":"延徳","time":"8:12"},{"station":"桜沢","time":"8:15"},{"station":"都住","time":"8:19"},{"station":"小布施","time":"8:21"},{"station":"北須坂","time":"8:25"},{"station":"須坂","time":"8:29"},{"station":"日野","time":"8:32"},{"station":"村山","time":"8:34"},{"station":"柳原","time":"8:37"},{"station":"附属中学前","time":"8:39"},{"station":"朝陽","time":"8:41"},{"station":"信濃吉田","time":"8:44"},{"station":"桐原","time":"8:45"},{"station":"本郷","time":"8:47"},{"station":"善光寺下","time":"8:49"},{"station":"権堂","time":"8:50"},{"station":"市役所前","time":"8:52"},{"station":"長野","time":"8:55"}],"defaultCars":"普通3両","formation":null},{"no":"310","type":"普通","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"信州中野","stops":[{"station":"湯田中","time":"8:10"},{"station":"上条","time":"8:13"},{"station":"夜間瀬","time":"8:16"},{"station":"信濃竹原","time":"8:18"},{"station":"中野松川","time":"8:22"},{"station":"信州中野","time":"8:26"}],"defaultCars":"普通3両","formation":null},{"no":"518","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"8:36"},{"station":"延徳","time":"8:39"},{"station":"桜沢","time":"8:42"},{"station":"都住","time":"8:45"},{"station":"小布施","time":"8:48"},{"station":"北須坂","time":"8:51"},{"station":"須坂","time":"8:55"},{"station":"須坂","time":"8:57"},{"station":"日野","time":"8:59"},{"station":"村山","time":"9:02"},{"station":"柳原","time":"9:05"},{"station":"附属中学前","time":"9:07"},{"station":"朝陽","time":"9:09"},{"station":"信濃吉田","time":"9:12"},{"station":"桐原","time":"9:13"},{"station":"本郷","time":"9:15"},{"station":"善光寺下","time":"9:17"},{"station":"権堂","time":"9:19"},{"station":"市役所前","time":"9:20"},{"station":"長野","time":"9:23"}],"defaultCars":"普通3両","formation":null},{"no":"102","type":"普通","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"長野","stops":[{"station":"湯田中","time":"8:39"},{"station":"上条","time":"8:42"},{"station":"夜間瀬","time":"8:44"},{"station":"信濃竹原","time":"8:47"},{"station":"中野松川","time":"8:51"},{"station":"信州中野","time":"8:54"},{"station":"信州中野","time":"9:01"},{"station":"延徳","time":"9:04"},{"station":"桜沢","time":"9:08"},{"station":"都住","time":"9:12"},{"station":"小布施","time":"9:14"},{"station":"北須坂","time":"9:18"},{"station":"須坂","time":"9:22"},{"station":"日野","time":"9:25"},{"station":"村山","time":"9:27"},{"station":"柳原","time":"9:30"},{"station":"附属中学前","time":"9:32"},{"station":"朝陽","time":"9:34"},{"station":"信濃吉田","time":"9:37"},{"station":"桐原","time":"9:39"},{"station":"本郷","time":"9:40"},{"station":"善光寺下","time":"9:42"},{"station":"権堂","time":"9:44"},{"station":"市役所前","time":"9:45"},{"station":"長野","time":"9:48"}],"defaultCars":"普通3両","formation":null},{"no":"520","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"9:24"},{"station":"延徳","time":"9:27"},{"station":"桜沢","time":"9:30"},{"station":"都住","time":"9:34"},{"station":"小布施","time":"9:36"},{"station":"北須坂","time":"9:40"},{"station":"須坂","time":"9:44"},{"station":"日野","time":"9:47"},{"station":"村山","time":"9:48"},{"station":"柳原","time":"9:52"},{"station":"附属中学前","time":"9:54"},{"station":"朝陽","time":"9:55"},{"station":"信濃吉田","time":"9:58"},{"station":"桐原","time":"10:00"},{"station":"本郷","time":"10:02"},{"station":"善光寺下","time":"10:04"},{"station":"権堂","time":"10:05"},{"station":"市役所前","time":"10:07"},{"station":"長野","time":"10:09"}],"defaultCars":"普通3両","formation":null},{"no":"312","type":"普通","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"信州中野","stops":[{"station":"湯田中","time":"9:19"},{"station":"上条","time":"9:22"},{"station":"夜間瀬","time":"9:24"},{"station":"信濃竹原","time":"9:31"},{"station":"中野松川","time":"9:35"},{"station":"信州中野","time":"9:38"}],"defaultCars":"普通3両","formation":null},{"no":"522","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"9:49"},{"station":"延徳","time":"9:52"},{"station":"桜沢","time":"9:56"},{"station":"都住","time":"10:00"},{"station":"小布施","time":"10:02"},{"station":"北須坂","time":"10:05"},{"station":"須坂","time":"10:09"},{"station":"須坂","time":"10:10"},{"station":"日野","time":"10:12"},{"station":"村山","time":"10:14"},{"station":"柳原","time":"10:17"},{"station":"附属中学前","time":"10:19"},{"station":"朝陽","time":"10:21"},{"station":"信濃吉田","time":"10:24"},{"station":"桐原","time":"10:26"},{"station":"本郷","time":"10:27"},{"station":"善光寺下","time":"10:29"},{"station":"権堂","time":"10:31"},{"station":"市役所前","time":"10:32"},{"station":"長野","time":"10:35"}],"defaultCars":"普通3両","formation":null},{"no":"4A","type":"特急ゆけむり","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"長野","stops":[{"station":"湯田中","time":"9:54"},{"station":"信州中野","time":"10:06"},{"station":"小布施","time":"10:15"},{"station":"須坂","time":"10:22"},{"station":"須坂","time":"10:25"},{"station":"権堂","time":"10:39"},{"station":"長野","time":"10:42"}],"defaultCars":"特急4両","formation":null},{"no":"206","type":"普通","direction":"up","days":["休日","平日"],"start":"須坂","dest":"長野","stops":[{"station":"須坂","time":"10:42"},{"station":"日野","time":"10:44"},{"station":"村山","time":"10:46"},{"station":"柳原","time":"10:49"},{"station":"附属中学前","time":"10:51"},{"station":"朝陽","time":"10:53"},{"station":"信濃吉田","time":"10:56"},{"station":"桐原","time":"10:58"},{"station":"本郷","time":"10:59"},{"station":"善光寺下","time":"11:01"},{"station":"権堂","time":"11:03"},{"station":"市役所前","time":"11:04"},{"station":"長野","time":"11:07"}],"defaultCars":"普通3両","formation":null},{"no":"314","type":"普通","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"信州中野","stops":[{"station":"湯田中","time":"10:19"},{"station":"上条","time":"10:22"},{"station":"夜間瀬","time":"10:24"},{"station":"信濃竹原","time":"10:31"},{"station":"中野松川","time":"10:35"},{"station":"信州中野","time":"10:38"}],"defaultCars":"普通3両","formation":null},{"no":"524","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"10:47"},{"station":"延徳","time":"10:50"},{"station":"桜沢","time":"10:53"},{"station":"都住","time":"10:56"},{"station":"小布施","time":"10:59"},{"station":"北須坂","time":"11:02"},{"station":"須坂","time":"11:06"},{"station":"須坂","time":"11:07"},{"station":"日野","time":"11:09"},{"station":"村山","time":"11:11"},{"station":"柳原","time":"11:14"},{"station":"附属中学前","time":"11:16"},{"station":"朝陽","time":"11:18"},{"station":"信濃吉田","time":"11:21"},{"station":"桐原","time":"11:23"},{"station":"本郷","time":"11:24"},{"station":"善光寺下","time":"11:26"},{"station":"権堂","time":"11:28"},{"station":"市役所前","time":"11:29"},{"station":"長野","time":"11:32"}],"defaultCars":"普通3両","formation":null},{"no":"6A","type":"特急スノーモンキー","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"長野","stops":[{"station":"湯田中","time":"10:50"},{"station":"信州中野","time":"11:02"},{"station":"小布施","time":"11:12"},{"station":"須坂","time":"11:19"},{"station":"権堂","time":"11:33"},{"station":"長野","time":"11:36"}],"defaultCars":"特急4両","formation":null},{"no":"526","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"11:27"},{"station":"延徳","time":"11:30"},{"station":"桜沢","time":"11:33"},{"station":"都住","time":"11:36"},{"station":"小布施","time":"11:39"},{"station":"北須坂","time":"11:42"},{"station":"須坂","time":"11:46"},{"station":"須坂","time":"11:49"},{"station":"日野","time":"11:51"},{"station":"村山","time":"11:53"},{"station":"柳原","time":"11:56"},{"station":"附属中学前","time":"11:58"},{"station":"朝陽","time":"12:00"},{"station":"信濃吉田","time":"12:03"},{"station":"桐原","time":"12:05"},{"station":"本郷","time":"12:06"},{"station":"善光寺下","time":"12:08"},{"station":"権堂","time":"12:10"},{"station":"市役所前","time":"12:11"},{"station":"長野","time":"12:14"}],"defaultCars":"普通3両","formation":null},{"no":"1102S","type":"特急ゆけむりのんびり","direction":"up","days":["休日"],"start":"湯田中","dest":"長野","stops":[{"station":"湯田中","time":"11:20"},{"station":"信州中野","time":"11:34"},{"station":"小布施","time":"11:56"},{"station":"須坂","time":"12:04"},{"station":"権堂","time":"12:26"},{"station":"長野","time":"12:30"}],"defaultCars":"特急4両","formation":null},{"no":"208","type":"普通","direction":"up","days":["休日","平日"],"start":"須坂","dest":"長野","stops":[{"station":"須坂","time":"12:21"},{"station":"日野","time":"12:24"},{"station":"村山","time":"12:26"},{"station":"柳原","time":"12:29"},{"station":"附属中学前","time":"12:31"},{"station":"朝陽","time":"12:33"},{"station":"信濃吉田","time":"12:36"},{"station":"桐原","time":"12:37"},{"station":"本郷","time":"12:39"},{"station":"善光寺下","time":"12:41"},{"station":"権堂","time":"12:42"},{"station":"市役所前","time":"12:44"},{"station":"長野","time":"12:47"}],"defaultCars":"普通3両","formation":null},{"no":"104","type":"普通","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"長野","stops":[{"station":"湯田中","time":"12:00"},{"station":"上条","time":"12:03"},{"station":"夜間瀬","time":"12:05"},{"station":"信濃竹原","time":"12:12"},{"station":"中野松川","time":"12:16"},{"station":"信州中野","time":"12:19"},{"station":"信州中野","time":"12:24"},{"station":"延徳","time":"12:27"},{"station":"桜沢","time":"12:30"},{"station":"都住","time":"12:33"},{"station":"小布施","time":"12:36"},{"station":"北須坂","time":"12:39"},{"station":"須坂","time":"12:43"},{"station":"須坂","time":"12:44"},{"station":"日野","time":"12:47"},{"station":"村山","time":"12:49"},{"station":"柳原","time":"12:54"},{"station":"附属中学前","time":"12:56"},{"station":"朝陽","time":"12:58"},{"station":"信濃吉田","time":"13:01"},{"station":"桐原","time":"13:02"},{"station":"本郷","time":"13:04"},{"station":"善光寺下","time":"13:06"},{"station":"権堂","time":"13:07"},{"station":"市役所前","time":"13:09"},{"station":"長野","time":"13:12"}],"defaultCars":"普通3両","formation":null},{"no":"8A","type":"特急ゆけむり","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"長野","stops":[{"station":"湯田中","time":"12:31"},{"station":"信州中野","time":"12:43"},{"station":"小布施","time":"12:53"},{"station":"須坂","time":"12:59"},{"station":"須坂","time":"13:00"},{"station":"権堂","time":"13:13"},{"station":"長野","time":"13:17"}],"defaultCars":"特急4両","formation":null},{"no":"210","type":"普通","direction":"up","days":["休日","平日"],"start":"須坂","dest":"長野","stops":[{"station":"須坂","time":"13:33"},{"station":"日野","time":"13:35"},{"station":"村山","time":"13:37"},{"station":"柳原","time":"13:40"},{"station":"附属中学前","time":"13:42"},{"station":"朝陽","time":"13:44"},{"station":"信濃吉田","time":"13:47"},{"station":"桐原","time":"13:49"},{"station":"本郷","time":"13:50"},{"station":"善光寺下","time":"13:52"},{"station":"権堂","time":"13:54"},{"station":"市役所前","time":"13:55"},{"station":"長野","time":"13:58"}],"defaultCars":"普通3両","formation":null},{"no":"316","type":"普通","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"信州中野","stops":[{"station":"湯田中","time":"13:11"},{"station":"上条","time":"13:14"},{"station":"夜間瀬","time":"13:16"},{"station":"信濃竹原","time":"13:23"},{"station":"中野松川","time":"13:27"},{"station":"信州中野","time":"13:30"}],"defaultCars":"普通3両","formation":null},{"no":"528","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"13:43"},{"station":"延徳","time":"13:46"},{"station":"桜沢","time":"13:49"},{"station":"都住","time":"13:52"},{"station":"小布施","time":"13:55"},{"station":"北須坂","time":"13:58"},{"station":"須坂","time":"14:02"},{"station":"須坂","time":"14:05"},{"station":"日野","time":"14:07"},{"station":"村山","time":"14:09"},{"station":"柳原","time":"14:13"},{"station":"附属中学前","time":"14:15"},{"station":"朝陽","time":"14:16"},{"station":"信濃吉田","time":"14:19"},{"station":"桐原","time":"14:21"},{"station":"本郷","time":"14:23"},{"station":"善光寺下","time":"14:25"},{"station":"権堂","time":"14:26"},{"station":"市役所前","time":"14:28"},{"station":"長野","time":"14:30"}],"defaultCars":"普通3両","formation":null},{"no":"10A","type":"特急スノーモンキー","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"長野","stops":[{"station":"湯田中","time":"13:50"},{"station":"信州中野","time":"14:02"},{"station":"小布施","time":"14:12"},{"station":"須坂","time":"14:18"},{"station":"須坂","time":"14:21"},{"station":"権堂","time":"14:34"},{"station":"長野","time":"14:38"}],"defaultCars":"特急4両","formation":null},{"no":"212","type":"普通","direction":"up","days":["休日","平日"],"start":"須坂","dest":"長野","stops":[{"station":"須坂","time":"14:33"},{"station":"日野","time":"14:35"},{"station":"村山","time":"14:39"},{"station":"柳原","time":"14:42"},{"station":"附属中学前","time":"14:44"},{"station":"朝陽","time":"14:46"},{"station":"信濃吉田","time":"14:49"},{"station":"桐原","time":"14:51"},{"station":"本郷","time":"14:52"},{"station":"善光寺下","time":"14:54"},{"station":"権堂","time":"14:56"},{"station":"市役所前","time":"14:57"},{"station":"長野","time":"15:00"}],"defaultCars":"普通3両","formation":null},{"no":"318","type":"普通","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"信州中野","stops":[{"station":"湯田中","time":"14:16"},{"station":"上条","time":"14:19"},{"station":"夜間瀬","time":"14:21"},{"station":"信濃竹原","time":"14:24"},{"station":"中野松川","time":"14:28"},{"station":"信州中野","time":"14:31"}],"defaultCars":"普通3両","formation":null},{"no":"530","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"14:46"},{"station":"延徳","time":"14:49"},{"station":"桜沢","time":"14:54"},{"station":"都住","time":"14:58"},{"station":"小布施","time":"15:00"},{"station":"北須坂","time":"15:03"},{"station":"須坂","time":"15:08"},{"station":"須坂","time":"15:11"},{"station":"日野","time":"15:13"},{"station":"村山","time":"15:15"},{"station":"柳原","time":"15:18"},{"station":"附属中学前","time":"15:20"},{"station":"朝陽","time":"15:22"},{"station":"信濃吉田","time":"15:25"},{"station":"桐原","time":"15:27"},{"station":"本郷","time":"15:28"},{"station":"善光寺下","time":"15:30"},{"station":"権堂","time":"15:32"},{"station":"市役所前","time":"15:33"},{"station":"長野","time":"15:36"}],"defaultCars":"普通3両","formation":null},{"no":"532","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"15:28"},{"station":"延徳","time":"15:31"},{"station":"桜沢","time":"15:34"},{"station":"都住","time":"15:37"},{"station":"小布施","time":"15:40"},{"station":"北須坂","time":"15:43"},{"station":"須坂","time":"15:47"},{"station":"須坂","time":"15:49"},{"station":"日野","time":"15:51"},{"station":"村山","time":"15:53"},{"station":"柳原","time":"15:58"},{"station":"附属中学前","time":"16:00"},{"station":"朝陽","time":"16:01"},{"station":"信濃吉田","time":"16:04"},{"station":"桐原","time":"16:06"},{"station":"本郷","time":"16:08"},{"station":"善光寺下","time":"16:10"},{"station":"権堂","time":"16:11"},{"station":"市役所前","time":"16:13"},{"station":"長野","time":"16:15"}],"defaultCars":"普通3両","formation":null},{"no":"12A","type":"特急ゆけむり","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"長野","stops":[{"station":"湯田中","time":"15:34"},{"station":"信州中野","time":"15:46"},{"station":"小布施","time":"15:55"},{"station":"須坂","time":"16:02"},{"station":"権堂","time":"16:16"},{"station":"長野","time":"16:19"}],"defaultCars":"特急4両","formation":null},{"no":"214","type":"普通","direction":"up","days":["休日","平日"],"start":"須坂","dest":"長野","stops":[{"station":"須坂","time":"16:12"},{"station":"日野","time":"16:14"},{"station":"村山","time":"16:16"},{"station":"柳原","time":"16:19"},{"station":"附属中学前","time":"16:21"},{"station":"朝陽","time":"16:23"},{"station":"信濃吉田","time":"16:26"},{"station":"桐原","time":"16:28"},{"station":"本郷","time":"16:29"},{"station":"善光寺下","time":"16:31"},{"station":"権堂","time":"16:33"},{"station":"市役所前","time":"16:34"},{"station":"長野","time":"16:37"}],"defaultCars":"普通3両","formation":null},{"no":"320","type":"普通","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"信州中野","stops":[{"station":"湯田中","time":"15:59"},{"station":"上条","time":"16:02"},{"station":"夜間瀬","time":"16:04"},{"station":"信濃竹原","time":"16:11"},{"station":"中野松川","time":"16:15"},{"station":"信州中野","time":"16:18"}],"defaultCars":"普通3両","formation":null},{"no":"534","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"16:20"},{"station":"延徳","time":"16:23"},{"station":"桜沢","time":"16:26"},{"station":"都住","time":"16:29"},{"station":"小布施","time":"16:32"},{"station":"北須坂","time":"16:35"},{"station":"須坂","time":"16:39"},{"station":"日野","time":"16:42"},{"station":"村山","time":"16:44"},{"station":"柳原","time":"16:47"},{"station":"附属中学前","time":"16:49"},{"station":"朝陽","time":"16:51"},{"station":"信濃吉田","time":"16:54"},{"station":"桐原","time":"16:55"},{"station":"本郷","time":"16:57"},{"station":"善光寺下","time":"16:59"},{"station":"権堂","time":"17:00"},{"station":"市役所前","time":"17:02"},{"station":"長野","time":"17:05"}],"defaultCars":"普通3両","formation":null},{"no":"536","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"16:45"},{"station":"延徳","time":"16:48"},{"station":"桜沢","time":"16:51"},{"station":"都住","time":"16:55"},{"station":"小布施","time":"16:57"},{"station":"北須坂","time":"17:01"},{"station":"須坂","time":"17:05"},{"station":"日野","time":"17:08"},{"station":"村山","time":"17:10"},{"station":"柳原","time":"17:13"},{"station":"附属中学前","time":"17:15"},{"station":"朝陽","time":"17:17"},{"station":"信濃吉田","time":"17:20"},{"station":"桐原","time":"17:21"},{"station":"本郷","time":"17:23"},{"station":"善光寺下","time":"17:25"},{"station":"権堂","time":"17:26"},{"station":"市役所前","time":"17:28"},{"station":"長野","time":"17:31"}],"defaultCars":"普通3両","formation":null},{"no":"14A","type":"特急スノーモンキー","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"長野","stops":[{"station":"湯田中","time":"16:45"},{"station":"信州中野","time":"16:57"},{"station":"信州中野","time":"16:59"},{"station":"小布施","time":"17:10"},{"station":"須坂","time":"17:17"},{"station":"権堂","time":"17:31"},{"station":"長野","time":"17:34"}],"defaultCars":"特急4両","formation":null},{"no":"538","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"17:22"},{"station":"延徳","time":"17:25"},{"station":"桜沢","time":"17:30"},{"station":"都住","time":"17:33"},{"station":"小布施","time":"17:36"},{"station":"北須坂","time":"17:39"},{"station":"須坂","time":"17:43"},{"station":"日野","time":"17:46"},{"station":"村山","time":"17:48"},{"station":"柳原","time":"17:51"},{"station":"附属中学前","time":"17:53"},{"station":"朝陽","time":"17:55"},{"station":"信濃吉田","time":"17:58"},{"station":"桐原","time":"17:59"},{"station":"本郷","time":"18:01"},{"station":"善光寺下","time":"18:03"},{"station":"権堂","time":"18:04"},{"station":"市役所前","time":"18:06"},{"station":"長野","time":"18:09"}],"defaultCars":"普通3両","formation":null},{"no":"322","type":"普通","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"信州中野","stops":[{"station":"湯田中","time":"17:15"},{"station":"上条","time":"17:18"},{"station":"夜間瀬","time":"17:20"},{"station":"信濃竹原","time":"17:27"},{"station":"中野松川","time":"17:31"},{"station":"信州中野","time":"17:35"}],"defaultCars":"普通3両","formation":null},{"no":"540","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"17:48"},{"station":"延徳","time":"17:51"},{"station":"桜沢","time":"17:55"},{"station":"都住","time":"17:59"},{"station":"小布施","time":"18:01"},{"station":"北須坂","time":"18:05"},{"station":"須坂","time":"18:09"},{"station":"日野","time":"18:12"},{"station":"村山","time":"18:16"},{"station":"柳原","time":"18:20"},{"station":"附属中学前","time":"18:22"},{"station":"朝陽","time":"18:23"},{"station":"信濃吉田","time":"18:26"},{"station":"桐原","time":"18:28"},{"station":"本郷","time":"18:30"},{"station":"善光寺下","time":"18:32"},{"station":"権堂","time":"18:33"},{"station":"市役所前","time":"18:35"},{"station":"長野","time":"18:37"}],"defaultCars":"普通3両","formation":null},{"no":"16B","type":"特急ゆけむり","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"長野","stops":[{"station":"湯田中","time":"17:51"},{"station":"信州中野","time":"18:03"},{"station":"信州中野","time":"18:06"},{"station":"小布施","time":"18:16"},{"station":"須坂","time":"18:23"},{"station":"朝陽","time":"18:31"},{"station":"信濃吉田","time":"18:34"},{"station":"本郷","time":"18:37"},{"station":"権堂","time":"18:40"},{"station":"市役所前","time":"18:41"},{"station":"長野","time":"18:44"}],"defaultCars":"特急4両","formation":null},{"no":"542","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"18:16"},{"station":"延徳","time":"18:19"},{"station":"桜沢","time":"18:22"},{"station":"都住","time":"18:26"},{"station":"小布施","time":"18:28"},{"station":"北須坂","time":"18:32"},{"station":"須坂","time":"18:36"},{"station":"日野","time":"18:38"},{"station":"村山","time":"18:40"},{"station":"柳原","time":"18:43"},{"station":"附属中学前","time":"18:45"},{"station":"朝陽","time":"18:47"},{"station":"信濃吉田","time":"18:50"},{"station":"桐原","time":"18:52"},{"station":"本郷","time":"18:53"},{"station":"善光寺下","time":"18:55"},{"station":"権堂","time":"18:57"},{"station":"市役所前","time":"18:58"},{"station":"長野","time":"19:01"}],"defaultCars":"普通3両","formation":null},{"no":"324","type":"普通","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"信州中野","stops":[{"station":"湯田中","time":"18:15"},{"station":"上条","time":"18:18"},{"station":"夜間瀬","time":"18:20"},{"station":"信濃竹原","time":"18:23"},{"station":"中野松川","time":"18:27"},{"station":"信州中野","time":"18:30"}],"defaultCars":"普通3両","formation":null},{"no":"544","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"18:41"},{"station":"延徳","time":"18:44"},{"station":"桜沢","time":"18:48"},{"station":"都住","time":"18:52"},{"station":"小布施","time":"18:54"},{"station":"北須坂","time":"18:57"},{"station":"須坂","time":"19:01"},{"station":"日野","time":"19:04"},{"station":"村山","time":"19:06"},{"station":"柳原","time":"19:09"},{"station":"附属中学前","time":"19:11"},{"station":"朝陽","time":"19:13"},{"station":"信濃吉田","time":"19:16"},{"station":"桐原","time":"19:17"},{"station":"本郷","time":"19:19"},{"station":"善光寺下","time":"19:21"},{"station":"権堂","time":"19:22"},{"station":"市役所前","time":"19:24"},{"station":"長野","time":"19:27"}],"defaultCars":"普通3両","formation":null},{"no":"18B","type":"特急スノーモンキー","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"須坂","stops":[{"station":"信州中野","time":"18:58"},{"station":"小布施","time":"19:08"},{"station":"須坂","time":"19:14"}],"defaultCars":"特急4両","formation":null},{"no":"546","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"19:12"},{"station":"延徳","time":"19:15"},{"station":"桜沢","time":"19:18"},{"station":"都住","time":"19:21"},{"station":"小布施","time":"19:25"},{"station":"北須坂","time":"19:28"},{"station":"須坂","time":"19:32"},{"station":"日野","time":"19:35"},{"station":"村山","time":"19:37"},{"station":"柳原","time":"19:40"},{"station":"附属中学前","time":"19:42"},{"station":"朝陽","time":"19:44"},{"station":"信濃吉田","time":"19:47"},{"station":"桐原","time":"19:48"},{"station":"本郷","time":"19:50"},{"station":"善光寺下","time":"19:52"},{"station":"権堂","time":"19:53"},{"station":"市役所前","time":"19:55"},{"station":"長野","time":"19:58"}],"defaultCars":"普通3両","formation":null},{"no":"326","type":"普通","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"信州中野","stops":[{"station":"湯田中","time":"19:15"},{"station":"上条","time":"19:18"},{"station":"夜間瀬","time":"19:20"},{"station":"信濃竹原","time":"19:23"},{"station":"中野松川","time":"19:27"},{"station":"信州中野","time":"19:30"}],"defaultCars":"普通3両","formation":null},{"no":"548","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"19:40"},{"station":"延徳","time":"19:43"},{"station":"桜沢","time":"19:46"},{"station":"都住","time":"19:49"},{"station":"小布施","time":"19:52"},{"station":"北須坂","time":"19:55"},{"station":"須坂","time":"19:59"},{"station":"須坂","time":"20:00"},{"station":"日野","time":"20:03"},{"station":"村山","time":"20:05"},{"station":"柳原","time":"20:08"},{"station":"附属中学前","time":"20:10"},{"station":"朝陽","time":"20:12"},{"station":"信濃吉田","time":"20:15"},{"station":"桐原","time":"20:16"},{"station":"本郷","time":"20:18"},{"station":"善光寺下","time":"20:20"},{"station":"権堂","time":"20:21"},{"station":"市役所前","time":"20:23"},{"station":"長野","time":"20:26"}],"defaultCars":"普通3両","formation":null},{"no":"328","type":"普通","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"信州中野","stops":[{"station":"湯田中","time":"20:11"},{"station":"上条","time":"20:14"},{"station":"夜間瀬","time":"20:16"},{"station":"信濃竹原","time":"20:23"},{"station":"中野松川","time":"20:27"},{"station":"信州中野","time":"20:30"}],"defaultCars":"普通3両","formation":null},{"no":"550","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"20:32"},{"station":"延徳","time":"20:35"},{"station":"桜沢","time":"20:38"},{"station":"都住","time":"20:41"},{"station":"小布施","time":"20:44"},{"station":"北須坂","time":"20:47"},{"station":"須坂","time":"20:51"},{"station":"日野","time":"20:54"},{"station":"村山","time":"20:56"},{"station":"柳原","time":"20:59"},{"station":"附属中学前","time":"21:01"},{"station":"朝陽","time":"21:03"},{"station":"信濃吉田","time":"21:06"},{"station":"桐原","time":"21:07"},{"station":"本郷","time":"21:09"},{"station":"善光寺下","time":"21:11"},{"station":"権堂","time":"21:12"},{"station":"市役所前","time":"21:14"},{"station":"長野","time":"21:17"}],"defaultCars":"普通3両","formation":null},{"no":"20B","type":"特急ゆけむり","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"長野","stops":[{"station":"湯田中","time":"20:40"},{"station":"信州中野","time":"20:51"},{"station":"小布施","time":"21:01"},{"station":"須坂","time":"21:08"},{"station":"朝陽","time":"21:16"},{"station":"信濃吉田","time":"21:19"},{"station":"本郷","time":"21:22"},{"station":"権堂","time":"21:24"},{"station":"市役所前","time":"21:26"},{"station":"長野","time":"21:29"}],"defaultCars":"特急4両","formation":null},{"no":"552","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"21:02"},{"station":"延徳","time":"21:05"},{"station":"桜沢","time":"21:08"},{"station":"都住","time":"21:11"},{"station":"小布施","time":"21:14"},{"station":"北須坂","time":"21:18"},{"station":"須坂","time":"21:22"},{"station":"日野","time":"21:24"},{"station":"村山","time":"21:26"},{"station":"柳原","time":"21:29"},{"station":"附属中学前","time":"21:31"},{"station":"朝陽","time":"21:33"},{"station":"信濃吉田","time":"21:36"},{"station":"桐原","time":"21:38"},{"station":"本郷","time":"21:39"},{"station":"善光寺下","time":"21:41"},{"station":"権堂","time":"21:43"},{"station":"市役所前","time":"21:44"},{"station":"長野","time":"21:47"}],"defaultCars":"普通3両","formation":null},{"no":"330","type":"普通","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"信州中野","stops":[{"station":"湯田中","time":"21:17"},{"station":"上条","time":"21:20"},{"station":"夜間瀬","time":"21:22"},{"station":"信濃竹原","time":"21:25"},{"station":"中野松川","time":"21:29"},{"station":"信州中野","time":"21:32"}],"defaultCars":"普通3両","formation":null},{"no":"554","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"長野","stops":[{"station":"信州中野","time":"21:45"},{"station":"延徳","time":"21:48"},{"station":"桜沢","time":"21:51"},{"station":"都住","time":"21:54"},{"station":"小布施","time":"21:58"},{"station":"北須坂","time":"22:02"},{"station":"須坂","time":"22:06"},{"station":"日野","time":"22:08"},{"station":"村山","time":"22:10"},{"station":"柳原","time":"22:13"},{"station":"附属中学前","time":"22:15"},{"station":"朝陽","time":"22:17"},{"station":"信濃吉田","time":"22:20"},{"station":"桐原","time":"22:22"},{"station":"本郷","time":"22:23"},{"station":"善光寺下","time":"22:25"},{"station":"権堂","time":"22:27"},{"station":"市役所前","time":"22:28"},{"station":"長野","time":"22:31"}],"defaultCars":"普通3両","formation":null},{"no":"332","type":"普通","direction":"up","days":["休日","平日"],"start":"湯田中","dest":"信州中野","stops":[{"station":"湯田中","time":"22:10"},{"station":"上条","time":"22:13"},{"station":"夜間瀬","time":"22:15"},{"station":"信濃竹原","time":"22:18"},{"station":"中野松川","time":"22:22"},{"station":"信州中野","time":"22:25"}],"defaultCars":"普通3両","formation":null},{"no":"556","type":"普通","direction":"up","days":["休日","平日"],"start":"信州中野","dest":"須坂","stops":[{"station":"信州中野","time":"22:29"},{"station":"延徳","time":"22:32"},{"station":"桜沢","time":"22:35"},{"station":"都住","time":"22:38"},{"station":"小布施","time":"22:41"},{"station":"北須坂","time":"22:44"},{"station":"須坂","time":"22:48"}],"defaultCars":"普通3両","formation":null},{"no":"101","type":"普通","direction":"down","days":["休日","平日"],"start":"須坂","dest":"湯田中","stops":[{"station":"須坂","time":"5:33"},{"station":"北須坂","time":"5:36"},{"station":"小布施","time":"5:41"},{"station":"都住","time":"5:43"},{"station":"桜沢","time":"5:46"},{"station":"延徳","time":"5:49"},{"station":"信州中野","time":"5:53"},{"station":"中野松川","time":"5:56"},{"station":"信濃竹原","time":"6:00"},{"station":"夜間瀬","time":"6:02"},{"station":"上条","time":"6:05"},{"station":"湯田中","time":"6:08"}],"defaultCars":"普通3両","formation":null},{"no":"503","type":"普通","direction":"down","days":["休日","平日"],"start":"須坂","dest":"信州中野","stops":[{"station":"須坂","time":"5:48"},{"station":"北須坂","time":"5:52"},{"station":"小布施","time":"5:55"},{"station":"都住","time":"5:57"},{"station":"桜沢","time":"6:01"},{"station":"延徳","time":"6:04"},{"station":"信州中野","time":"6:08"}],"defaultCars":"普通3両","formation":null},{"no":"301","type":"普通","direction":"down","days":["休日","平日"],"start":"信州中野","dest":"湯田中","stops":[{"station":"信州中野","time":"6:20"},{"station":"中野松川","time":"6:23"},{"station":"信濃竹原","time":"6:29"},{"station":"夜間瀬","time":"6:31"},{"station":"上条","time":"6:34"},{"station":"湯田中","time":"6:37"}],"defaultCars":"普通3両","formation":null},{"no":"505","type":"普通","direction":"down","days":["休日","平日"],"start":"須坂","dest":"信州中野","stops":[{"station":"須坂","time":"6:15"},{"station":"北須坂","time":"6:18"},{"station":"小布施","time":"6:22"},{"station":"都住","time":"6:24"},{"station":"桜沢","time":"6:27"},{"station":"延徳","time":"6:30"},{"station":"信州中野","time":"6:34"}],"defaultCars":"普通3両","formation":null},{"no":"303","type":"普通","direction":"down","days":["休日","平日"],"start":"信州中野","dest":"湯田中","stops":[{"station":"信州中野","time":"6:46"},{"station":"中野松川","time":"6:49"},{"station":"信濃竹原","time":"6:54"},{"station":"夜間瀬","time":"6:56"},{"station":"上条","time":"6:59"},{"station":"湯田中","time":"7:03"}],"defaultCars":"普通3両","formation":null},{"no":"509","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"6:15"},{"station":"市役所前","time":"6:16"},{"station":"権堂","time":"6:18"},{"station":"善光寺下","time":"6:19"},{"station":"本郷","time":"6:21"},{"station":"桐原","time":"6:23"},{"station":"信濃吉田","time":"6:24"},{"station":"朝陽","time":"6:28"},{"station":"附属中学前","time":"6:30"},{"station":"柳原","time":"6:32"},{"station":"村山","time":"6:35"},{"station":"日野","time":"6:37"},{"station":"須坂","time":"6:40"},{"station":"須坂","time":"6:41"},{"station":"北須坂","time":"6:44"},{"station":"小布施","time":"6:48"},{"station":"都住","time":"6:50"},{"station":"桜沢","time":"6:53"},{"station":"延徳","time":"6:56"},{"station":"信州中野","time":"7:00"}],"defaultCars":"普通3両","formation":null},{"no":"305","type":"普通","direction":"down","days":["休日","平日"],"start":"信州中野","dest":"湯田中","stops":[{"station":"信州中野","time":"7:14"},{"station":"中野松川","time":"7:17"},{"station":"信濃竹原","time":"7:23"},{"station":"夜間瀬","time":"7:25"},{"station":"上条","time":"7:28"},{"station":"湯田中","time":"7:32"}],"defaultCars":"普通3両","formation":null},{"no":"513","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"6:41"},{"station":"市役所前","time":"6:42"},{"station":"権堂","time":"6:44"},{"station":"善光寺下","time":"6:45"},{"station":"本郷","time":"6:47"},{"station":"桐原","time":"6:49"},{"station":"信濃吉田","time":"6:50"},{"station":"朝陽","time":"6:54"},{"station":"附属中学前","time":"6:56"},{"station":"柳原","time":"6:58"},{"station":"村山","time":"7:01"},{"station":"日野","time":"7:03"},{"station":"須坂","time":"7:07"},{"station":"須坂","time":"7:09"},{"station":"北須坂","time":"7:12"},{"station":"小布施","time":"7:16"},{"station":"都住","time":"7:18"},{"station":"桜沢","time":"7:23"},{"station":"延徳","time":"7:26"},{"station":"信州中野","time":"7:30"}],"defaultCars":"普通3両","formation":null},{"no":"307","type":"普通","direction":"down","days":["休日","平日"],"start":"信州中野","dest":"湯田中","stops":[{"station":"信州中野","time":"7:42"},{"station":"中野松川","time":"7:45"},{"station":"信濃竹原","time":"7:51"},{"station":"夜間瀬","time":"7:53"},{"station":"上条","time":"7:56"},{"station":"湯田中","time":"8:00"}],"defaultCars":"普通3両","formation":null},{"no":"515","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"7:05"},{"station":"市役所前","time":"7:06"},{"station":"権堂","time":"7:08"},{"station":"善光寺下","time":"7:09"},{"station":"本郷","time":"7:11"},{"station":"桐原","time":"7:13"},{"station":"信濃吉田","time":"7:14"},{"station":"朝陽","time":"7:18"},{"station":"附属中学前","time":"7:20"},{"station":"柳原","time":"7:22"},{"station":"村山","time":"7:28"},{"station":"日野","time":"7:30"},{"station":"須坂","time":"7:34"},{"station":"須坂","time":"7:36"},{"station":"北須坂","time":"7:40"},{"station":"小布施","time":"7:44"},{"station":"都住","time":"7:46"},{"station":"桜沢","time":"7:50"},{"station":"延徳","time":"7:53"},{"station":"信州中野","time":"7:57"}],"defaultCars":"普通3両","formation":null},{"no":"309","type":"普通","direction":"down","days":["休日","平日"],"start":"信州中野","dest":"湯田中","stops":[{"station":"信州中野","time":"8:10"},{"station":"中野松川","time":"8:13"},{"station":"信濃竹原","time":"8:18"},{"station":"夜間瀬","time":"8:20"},{"station":"上条","time":"8:23"},{"station":"湯田中","time":"8:27"}],"defaultCars":"普通3両","formation":null},{"no":"517","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"7:27"},{"station":"市役所前","time":"7:28"},{"station":"権堂","time":"7:30"},{"station":"善光寺下","time":"7:31"},{"station":"本郷","time":"7:33"},{"station":"桐原","time":"7:35"},{"station":"信濃吉田","time":"7:36"},{"station":"朝陽","time":"7:40"},{"station":"附属中学前","time":"7:42"},{"station":"柳原","time":"7:45"},{"station":"村山","time":"7:54"},{"station":"日野","time":"7:56"},{"station":"須坂","time":"8:00"},{"station":"須坂","time":"8:03"},{"station":"北須坂","time":"8:06"},{"station":"小布施","time":"8:10"},{"station":"都住","time":"8:12"},{"station":"桜沢","time":"8:15"},{"station":"延徳","time":"8:18"},{"station":"信州中野","time":"8:22"}],"defaultCars":"普通3両","formation":null},{"no":"201","type":"普通","direction":"down","days":["平日"],"start":"長野","dest":"須坂","stops":[{"station":"長野","time":"7:46"},{"station":"市役所前","time":"7:47"},{"station":"権堂","time":"7:49"},{"station":"善光寺下","time":"7:50"},{"station":"本郷","time":"7:52"},{"station":"桐原","time":"7:54"},{"station":"信濃吉田","time":"7:55"},{"station":"朝陽","time":"7:59"},{"station":"附属中学前","time":"8:01"},{"station":"柳原","time":"8:03"},{"station":"村山","time":"8:07"},{"station":"日野","time":"8:09"},{"station":"須坂","time":"8:13"}],"defaultCars":"普通3両","formation":null},{"no":"519","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"8:01"},{"station":"市役所前","time":"8:03"},{"station":"権堂","time":"8:04"},{"station":"善光寺下","time":"8:06"},{"station":"本郷","time":"8:08"},{"station":"桐原","time":"8:09"},{"station":"信濃吉田","time":"8:11"},{"station":"朝陽","time":"8:15"},{"station":"附属中学前","time":"8:17"},{"station":"柳原","time":"8:19"},{"station":"村山","time":"8:22"},{"station":"日野","time":"8:24"},{"station":"須坂","time":"8:27"},{"station":"須坂","time":"8:28"},{"station":"北須坂","time":"8:32"},{"station":"小布施","time":"8:35"},{"station":"都住","time":"8:37"},{"station":"桜沢","time":"8:41"},{"station":"延徳","time":"8:44"},{"station":"信州中野","time":"8:48"}],"defaultCars":"普通3両","formation":null},{"no":"311","type":"普通","direction":"down","days":["休日","平日"],"start":"信州中野","dest":"湯田中","stops":[{"station":"信州中野","time":"8:54"},{"station":"中野松川","time":"8:57"},{"station":"信濃竹原","time":"9:01"},{"station":"夜間瀬","time":"9:03"},{"station":"上条","time":"9:06"},{"station":"湯田中","time":"9:09"}],"defaultCars":"普通3両","formation":null},{"no":"521","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"8:30"},{"station":"市役所前","time":"8:31"},{"station":"権堂","time":"8:33"},{"station":"善光寺下","time":"8:34"},{"station":"本郷","time":"8:36"},{"station":"桐原","time":"8:38"},{"station":"信濃吉田","time":"8:39"},{"station":"朝陽","time":"8:43"},{"station":"附属中学前","time":"8:45"},{"station":"柳原","time":"8:47"},{"station":"村山","time":"8:50"},{"station":"日野","time":"8:52"},{"station":"須坂","time":"8:55"},{"station":"北須坂","time":"8:59"},{"station":"小布施","time":"9:02"},{"station":"都住","time":"9:04"},{"station":"桜沢","time":"9:08"},{"station":"延徳","time":"9:11"},{"station":"信州中野","time":"9:15"}],"defaultCars":"普通3両","formation":null},{"no":"203","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"須坂","stops":[{"station":"長野","time":"8:42"},{"station":"市役所前","time":"8:43"},{"station":"権堂","time":"8:45"},{"station":"善光寺下","time":"8:46"},{"station":"本郷","time":"8:48"},{"station":"桐原","time":"8:50"},{"station":"信濃吉田","time":"8:51"},{"station":"朝陽","time":"8:55"},{"station":"附属中学前","time":"8:57"},{"station":"柳原","time":"8:59"},{"station":"村山","time":"9:02"},{"station":"日野","time":"9:04"},{"station":"須坂","time":"9:07"}],"defaultCars":"普通3両","formation":null},{"no":"1A","type":"特急ゆけむり","direction":"down","days":["休日","平日"],"start":"須坂","dest":"湯田中","stops":[{"station":"須坂","time":"9:09"},{"station":"小布施","time":"9:15"},{"station":"信州中野","time":"9:24"},{"station":"信州中野","time":"9:25"},{"station":"湯田中","time":"9:37"}],"defaultCars":"特急4両","formation":null},{"no":"313","type":"普通","direction":"down","days":["休日","平日"],"start":"信州中野","dest":"湯田中","stops":[{"station":"信州中野","time":"9:49"},{"station":"中野松川","time":"9:52"},{"station":"信濃竹原","time":"9:59"},{"station":"夜間瀬","time":"10:02"},{"station":"上条","time":"10:05"},{"station":"湯田中","time":"10:08"}],"defaultCars":"普通3両","formation":null},{"no":"523","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"9:13"},{"station":"市役所前","time":"9:15"},{"station":"権堂","time":"9:16"},{"station":"善光寺下","time":"9:18"},{"station":"本郷","time":"9:20"},{"station":"桐原","time":"9:21"},{"station":"信濃吉田","time":"9:23"},{"station":"朝陽","time":"9:27"},{"station":"附属中学前","time":"9:28"},{"station":"柳原","time":"9:30"},{"station":"村山","time":"9:33"},{"station":"日野","time":"9:35"},{"station":"須坂","time":"9:39"},{"station":"須坂","time":"9:43"},{"station":"北須坂","time":"9:47"},{"station":"小布施","time":"9:50"},{"station":"都住","time":"9:52"},{"station":"桜沢","time":"9:56"},{"station":"延徳","time":"9:59"},{"station":"信州中野","time":"10:03"}],"defaultCars":"普通3両","formation":null},{"no":"205","type":"普通","direction":"down","days":["平日"],"start":"長野","dest":"須坂","stops":[{"station":"長野","time":"9:35"},{"station":"市役所前","time":"9:36"},{"station":"権堂","time":"9:38"},{"station":"善光寺下","time":"9:39"},{"station":"本郷","time":"9:41"},{"station":"桐原","time":"9:43"},{"station":"信濃吉田","time":"9:44"},{"station":"朝陽","time":"9:48"},{"station":"附属中学前","time":"9:50"},{"station":"柳原","time":"9:52"},{"station":"村山","time":"9:55"},{"station":"日野","time":"9:57"},{"station":"須坂","time":"10:00"}],"defaultCars":"普通3両","formation":null},{"no":"3A","type":"特急スノーモンキー","direction":"down","days":["休日","平日"],"start":"長野","dest":"湯田中","stops":[{"station":"長野","time":"9:53"},{"station":"権堂","time":"9:55"},{"station":"須坂","time":"10:09"},{"station":"須坂","time":"10:10"},{"station":"小布施","time":"10:16"},{"station":"信州中野","time":"10:25"},{"station":"湯田中","time":"10:37"}],"defaultCars":"特急4両","formation":null},{"no":"207","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"須坂","stops":[{"station":"長野","time":"10:00"},{"station":"市役所前","time":"10:01"},{"station":"権堂","time":"10:03"},{"station":"善光寺下","time":"10:04"},{"station":"本郷","time":"10:06"},{"station":"桐原","time":"10:08"},{"station":"信濃吉田","time":"10:09"},{"station":"朝陽","time":"10:13"},{"station":"附属中学前","time":"10:15"},{"station":"柳原","time":"10:17"},{"station":"村山","time":"10:20"},{"station":"日野","time":"10:22"},{"station":"須坂","time":"10:26"}],"defaultCars":"普通3両","formation":null},{"no":"525","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"10:26"},{"station":"市役所前","time":"10:27"},{"station":"権堂","time":"10:29"},{"station":"善光寺下","time":"10:30"},{"station":"本郷","time":"10:32"},{"station":"桐原","time":"10:34"},{"station":"信濃吉田","time":"10:35"},{"station":"朝陽","time":"10:39"},{"station":"附属中学前","time":"10:41"},{"station":"柳原","time":"10:43"},{"station":"村山","time":"10:46"},{"station":"日野","time":"10:48"},{"station":"須坂","time":"10:51"},{"station":"須坂","time":"10:52"},{"station":"北須坂","time":"10:55"},{"station":"小布施","time":"10:59"},{"station":"都住","time":"11:01"},{"station":"桜沢","time":"11:07"},{"station":"延徳","time":"11:10"},{"station":"信州中野","time":"11:14"}],"defaultCars":"普通3両","formation":null},{"no":"315","type":"普通","direction":"down","days":["休日","平日"],"start":"信州中野","dest":"湯田中","stops":[{"station":"信州中野","time":"11:21"},{"station":"中野松川","time":"11:24"},{"station":"信濃竹原","time":"11:27"},{"station":"夜間瀬","time":"11:30"},{"station":"上条","time":"11:33"},{"station":"湯田中","time":"11:36"}],"defaultCars":"普通3両","formation":null},{"no":"209","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"須坂","stops":[{"station":"長野","time":"10:51"},{"station":"市役所前","time":"10:52"},{"station":"権堂","time":"10:54"},{"station":"善光寺下","time":"10:55"},{"station":"本郷","time":"10:57"},{"station":"桐原","time":"10:59"},{"station":"信濃吉田","time":"11:00"},{"station":"朝陽","time":"11:04"},{"station":"附属中学前","time":"11:06"},{"station":"柳原","time":"11:08"},{"station":"村山","time":"11:12"},{"station":"日野","time":"11:14"},{"station":"須坂","time":"11:17"}],"defaultCars":"普通3両","formation":null},{"no":"211","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"須坂","stops":[{"station":"長野","time":"11:16"},{"station":"市役所前","time":"11:17"},{"station":"権堂","time":"11:19"},{"station":"善光寺下","time":"11:20"},{"station":"本郷","time":"11:22"},{"station":"桐原","time":"11:24"},{"station":"信濃吉田","time":"11:25"},{"station":"朝陽","time":"11:29"},{"station":"附属中学前","time":"11:31"},{"station":"柳原","time":"11:33"},{"station":"村山","time":"11:36"},{"station":"日野","time":"11:38"},{"station":"須坂","time":"11:41"}],"defaultCars":"普通3両","formation":null},{"no":"5A","type":"特急ゆけむり","direction":"down","days":["休日","平日"],"start":"長野","dest":"湯田中","stops":[{"station":"長野","time":"11:33"},{"station":"権堂","time":"11:35"},{"station":"須坂","time":"11:49"},{"station":"須坂","time":"11:50"},{"station":"小布施","time":"11:56"},{"station":"信州中野","time":"12:05"},{"station":"信州中野","time":"12:06"},{"station":"湯田中","time":"12:18"}],"defaultCars":"特急4両","formation":null},{"no":"103","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"湯田中","stops":[{"station":"長野","time":"11:48"},{"station":"市役所前","time":"11:50"},{"station":"権堂","time":"11:51"},{"station":"善光寺下","time":"11:53"},{"station":"本郷","time":"11:55"},{"station":"桐原","time":"11:56"},{"station":"信濃吉田","time":"11:58"},{"station":"朝陽","time":"12:02"},{"station":"附属中学前","time":"12:03"},{"station":"柳原","time":"12:05"},{"station":"村山","time":"12:08"},{"station":"日野","time":"12:10"},{"station":"須坂","time":"12:14"},{"station":"須坂","time":"12:17"},{"station":"北須坂","time":"12:20"},{"station":"小布施","time":"12:24"},{"station":"都住","time":"12:26"},{"station":"桜沢","time":"12:29"},{"station":"延徳","time":"12:32"},{"station":"信州中野","time":"12:36"},{"station":"信州中野","time":"12:42"},{"station":"中野松川","time":"12:45"},{"station":"信濃竹原","time":"12:49"},{"station":"夜間瀬","time":"12:51"},{"station":"上条","time":"12:54"},{"station":"湯田中","time":"12:57"}],"defaultCars":"普通3両","formation":null},{"no":"527","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"12:19"},{"station":"市役所前","time":"12:21"},{"station":"権堂","time":"12:22"},{"station":"善光寺下","time":"12:24"},{"station":"本郷","time":"12:26"},{"station":"桐原","time":"12:27"},{"station":"信濃吉田","time":"12:29"},{"station":"朝陽","time":"12:33"},{"station":"附属中学前","time":"12:34"},{"station":"柳原","time":"12:36"},{"station":"村山","time":"12:39"},{"station":"日野","time":"12:41"},{"station":"須坂","time":"12:45"},{"station":"北須坂","time":"12:48"},{"station":"小布施","time":"12:52"},{"station":"都住","time":"12:54"},{"station":"桜沢","time":"12:58"},{"station":"延徳","time":"13:01"},{"station":"信州中野","time":"13:05"}],"defaultCars":"普通3両","formation":null},{"no":"7A","type":"特急スノーモンキー","direction":"down","days":["休日","平日"],"start":"長野","dest":"湯田中","stops":[{"station":"長野","time":"12:44"},{"station":"権堂","time":"12:46"},{"station":"須坂","time":"13:00"},{"station":"須坂","time":"13:01"},{"station":"小布施","time":"13:07"},{"station":"信州中野","time":"13:16"},{"station":"信州中野","time":"13:17"},{"station":"湯田中","time":"13:29"}],"defaultCars":"特急4両","formation":null},{"no":"529","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"12:57"},{"station":"市役所前","time":"12:58"},{"station":"権堂","time":"13:00"},{"station":"善光寺下","time":"13:01"},{"station":"本郷","time":"13:03"},{"station":"桐原","time":"13:05"},{"station":"信濃吉田","time":"13:06"},{"station":"朝陽","time":"13:10"},{"station":"附属中学前","time":"13:12"},{"station":"柳原","time":"13:14"},{"station":"村山","time":"13:17"},{"station":"日野","time":"13:19"},{"station":"須坂","time":"13:22"},{"station":"北須坂","time":"13:26"},{"station":"小布施","time":"13:29"},{"station":"都住","time":"13:31"},{"station":"桜沢","time":"13:35"},{"station":"延徳","time":"13:38"},{"station":"信州中野","time":"13:42"}],"defaultCars":"普通3両","formation":null},{"no":"317","type":"普通","direction":"down","days":["休日","平日"],"start":"信州中野","dest":"湯田中","stops":[{"station":"信州中野","time":"13:45"},{"station":"中野松川","time":"13:48"},{"station":"信濃竹原","time":"13:55"},{"station":"夜間瀬","time":"13:58"},{"station":"上条","time":"14:01"},{"station":"湯田中","time":"14:04"}],"defaultCars":"普通3両","formation":null},{"no":"1103S","type":"特急ゆけむりのんびり","direction":"down","days":["休日"],"start":"長野","dest":"湯田中","stops":[{"station":"長野","time":"13:08"},{"station":"権堂","time":"13:10"},{"station":"須坂","time":"13:33"},{"station":"須坂","time":"13:34"},{"station":"小布施","time":"14:00"},{"station":"信州中野","time":"14:13"},{"station":"信州中野","time":"14:15"},{"station":"湯田中","time":"14:32"}],"defaultCars":"特急4両","formation":null},{"no":"213","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"須坂","stops":[{"station":"長野","time":"13:30"},{"station":"市役所前","time":"13:31"},{"station":"権堂","time":"13:33"},{"station":"善光寺下","time":"13:34"},{"station":"本郷","time":"13:36"},{"station":"桐原","time":"13:38"},{"station":"信濃吉田","time":"13:39"},{"station":"朝陽","time":"13:44"},{"station":"附属中学前","time":"13:46"},{"station":"柳原","time":"13:48"},{"station":"村山","time":"13:51"},{"station":"日野","time":"13:53"},{"station":"須坂","time":"13:56"}],"defaultCars":"普通3両","formation":null},{"no":"531","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"13:56"},{"station":"市役所前","time":"13:57"},{"station":"権堂","time":"13:59"},{"station":"善光寺下","time":"14:00"},{"station":"本郷","time":"14:02"},{"station":"桐原","time":"14:04"},{"station":"信濃吉田","time":"14:05"},{"station":"朝陽","time":"14:09"},{"station":"附属中学前","time":"14:11"},{"station":"柳原","time":"14:13"},{"station":"村山","time":"14:16"},{"station":"日野","time":"14:18"},{"station":"須坂","time":"14:21"},{"station":"北須坂","time":"14:25"},{"station":"小布施","time":"14:28"},{"station":"都住","time":"14:30"},{"station":"桜沢","time":"14:34"},{"station":"延徳","time":"14:37"},{"station":"信州中野","time":"14:41"}],"defaultCars":"普通3両","formation":null},{"no":"9A","type":"特急ゆけむり","direction":"down","days":["休日","平日"],"start":"長野","dest":"湯田中","stops":[{"station":"長野","time":"14:27"},{"station":"権堂","time":"14:29"},{"station":"須坂","time":"14:43"},{"station":"須坂","time":"14:44"},{"station":"小布施","time":"14:50"},{"station":"信州中野","time":"14:59"},{"station":"信州中野","time":"15:00"},{"station":"湯田中","time":"15:12"}],"defaultCars":"特急4両","formation":null},{"no":"533","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"14:41"},{"station":"市役所前","time":"14:42"},{"station":"権堂","time":"14:44"},{"station":"善光寺下","time":"14:45"},{"station":"本郷","time":"14:47"},{"station":"桐原","time":"14:49"},{"station":"信濃吉田","time":"14:50"},{"station":"朝陽","time":"14:54"},{"station":"附属中学前","time":"14:56"},{"station":"柳原","time":"14:58"},{"station":"村山","time":"15:01"},{"station":"日野","time":"15:03"},{"station":"須坂","time":"15:06"},{"station":"須坂","time":"15:07"},{"station":"北須坂","time":"15:11"},{"station":"小布施","time":"15:14"},{"station":"都住","time":"15:16"},{"station":"桜沢","time":"15:20"},{"station":"延徳","time":"15:23"},{"station":"信州中野","time":"15:27"}],"defaultCars":"普通3両","formation":null},{"no":"319","type":"普通","direction":"down","days":["休日","平日"],"start":"信州中野","dest":"湯田中","stops":[{"station":"信州中野","time":"15:29"},{"station":"中野松川","time":"15:32"},{"station":"信濃竹原","time":"15:39"},{"station":"夜間瀬","time":"15:42"},{"station":"上条","time":"15:45"},{"station":"湯田中","time":"15:48"}],"defaultCars":"普通3両","formation":null},{"no":"215","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"須坂","stops":[{"station":"長野","time":"15:09"},{"station":"市役所前","time":"15:10"},{"station":"権堂","time":"15:12"},{"station":"善光寺下","time":"15:13"},{"station":"本郷","time":"15:15"},{"station":"桐原","time":"15:17"},{"station":"信濃吉田","time":"15:18"},{"station":"朝陽","time":"15:22"},{"station":"附属中学前","time":"15:24"},{"station":"柳原","time":"15:26"},{"station":"村山","time":"15:29"},{"station":"日野","time":"15:31"},{"station":"須坂","time":"15:34"}],"defaultCars":"普通3両","formation":null},{"no":"11A","type":"特急スノーモンキー","direction":"down","days":["休日","平日"],"start":"長野","dest":"湯田中","stops":[{"station":"長野","time":"15:32"},{"station":"権堂","time":"15:34"},{"station":"須坂","time":"15:48"},{"station":"須坂","time":"15:49"},{"station":"小布施","time":"15:55"},{"station":"信州中野","time":"16:05"},{"station":"湯田中","time":"16:17"}],"defaultCars":"特急4両","formation":null},{"no":"535","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"15:41"},{"station":"市役所前","time":"15:42"},{"station":"権堂","time":"15:44"},{"station":"善光寺下","time":"15:45"},{"station":"本郷","time":"15:47"},{"station":"桐原","time":"15:49"},{"station":"信濃吉田","time":"15:50"},{"station":"朝陽","time":"15:54"},{"station":"附属中学前","time":"15:56"},{"station":"柳原","time":"15:58"},{"station":"村山","time":"16:05"},{"station":"日野","time":"16:07"},{"station":"須坂","time":"16:11"},{"station":"北須坂","time":"16:15"},{"station":"小布施","time":"16:18"},{"station":"都住","time":"16:20"},{"station":"桜沢","time":"16:25"},{"station":"延徳","time":"16:28"},{"station":"信州中野","time":"16:32"}],"defaultCars":"普通3両","formation":null},{"no":"321","type":"普通","direction":"down","days":["休日","平日"],"start":"信州中野","dest":"湯田中","stops":[{"station":"信州中野","time":"16:40"},{"station":"中野松川","time":"16:43"},{"station":"信濃竹原","time":"16:50"},{"station":"夜間瀬","time":"16:53"},{"station":"上条","time":"16:56"},{"station":"湯田中","time":"16:59"}],"defaultCars":"普通3両","formation":null},{"no":"537","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"16:12"},{"station":"市役所前","time":"16:13"},{"station":"権堂","time":"16:15"},{"station":"善光寺下","time":"16:16"},{"station":"本郷","time":"16:18"},{"station":"桐原","time":"16:20"},{"station":"信濃吉田","time":"16:21"},{"station":"朝陽","time":"16:25"},{"station":"附属中学前","time":"16:27"},{"station":"柳原","time":"16:29"},{"station":"村山","time":"16:32"},{"station":"日野","time":"16:34"},{"station":"須坂","time":"16:37"},{"station":"須坂","time":"16:39"},{"station":"北須坂","time":"16:42"},{"station":"小布施","time":"16:46"},{"station":"都住","time":"16:48"},{"station":"桜沢","time":"16:51"},{"station":"延徳","time":"16:54"},{"station":"信州中野","time":"16:58"}],"defaultCars":"普通3両","formation":null},{"no":"13A","type":"特急ゆけむり","direction":"down","days":["休日","平日"],"start":"長野","dest":"湯田中","stops":[{"station":"長野","time":"16:46"},{"station":"権堂","time":"16:48"},{"station":"須坂","time":"17:02"},{"station":"須坂","time":"17:05"},{"station":"小布施","time":"17:11"},{"station":"信州中野","time":"17:20"},{"station":"信州中野","time":"17:21"},{"station":"湯田中","time":"17:33"}],"defaultCars":"特急4両","formation":null},{"no":"539","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"16:48"},{"station":"市役所前","time":"16:49"},{"station":"権堂","time":"16:51"},{"station":"善光寺下","time":"16:52"},{"station":"本郷","time":"16:54"},{"station":"桐原","time":"16:56"},{"station":"信濃吉田","time":"16:57"},{"station":"朝陽","time":"17:01"},{"station":"附属中学前","time":"17:03"},{"station":"柳原","time":"17:05"},{"station":"村山","time":"17:09"},{"station":"日野","time":"17:11"},{"station":"須坂","time":"17:15"},{"station":"須坂","time":"17:17"},{"station":"北須坂","time":"17:20"},{"station":"小布施","time":"17:24"},{"station":"都住","time":"17:26"},{"station":"桜沢","time":"17:29"},{"station":"延徳","time":"17:32"},{"station":"信州中野","time":"17:36"}],"defaultCars":"普通3両","formation":null},{"no":"323","type":"普通","direction":"down","days":["休日","平日"],"start":"信州中野","dest":"湯田中","stops":[{"station":"信州中野","time":"17:46"},{"station":"中野松川","time":"17:49"},{"station":"信濃竹原","time":"17:56"},{"station":"夜間瀬","time":"17:59"},{"station":"上条","time":"18:02"},{"station":"湯田中","time":"18:05"}],"defaultCars":"普通3両","formation":null},{"no":"541","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"17:14"},{"station":"市役所前","time":"17:15"},{"station":"権堂","time":"17:17"},{"station":"善光寺下","time":"17:18"},{"station":"本郷","time":"17:20"},{"station":"桐原","time":"17:22"},{"station":"信濃吉田","time":"17:23"},{"station":"朝陽","time":"17:27"},{"station":"附属中学前","time":"17:29"},{"station":"柳原","time":"17:31"},{"station":"村山","time":"17:34"},{"station":"日野","time":"17:36"},{"station":"須坂","time":"17:39"},{"station":"須坂","time":"17:43"},{"station":"北須坂","time":"17:46"},{"station":"小布施","time":"17:50"},{"station":"都住","time":"17:52"},{"station":"桜沢","time":"17:55"},{"station":"延徳","time":"17:58"},{"station":"信州中野","time":"18:02"}],"defaultCars":"普通3両","formation":null},{"no":"543","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"17:40"},{"station":"市役所前","time":"17:41"},{"station":"権堂","time":"17:43"},{"station":"善光寺下","time":"17:44"},{"station":"本郷","time":"17:46"},{"station":"桐原","time":"17:48"},{"station":"信濃吉田","time":"17:49"},{"station":"朝陽","time":"17:54"},{"station":"附属中学前","time":"17:56"},{"station":"柳原","time":"17:58"},{"station":"村山","time":"18:01"},{"station":"日野","time":"18:03"},{"station":"須坂","time":"18:07"},{"station":"須坂","time":"18:09"},{"station":"北須坂","time":"18:13"},{"station":"小布施","time":"18:16"},{"station":"都住","time":"18:18"},{"station":"桜沢","time":"18:22"},{"station":"延徳","time":"18:25"},{"station":"信州中野","time":"18:29"}],"defaultCars":"普通3両","formation":null},{"no":"15B","type":"特急スノーモンキー","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"18:00"},{"station":"市役所前","time":"18:01"},{"station":"権堂","time":"18:03"},{"station":"本郷","time":"18:06"},{"station":"信濃吉田","time":"18:08"},{"station":"朝陽","time":"18:12"},{"station":"須坂","time":"18:21"},{"station":"須坂","time":"18:22"},{"station":"小布施","time":"18:28"},{"station":"信州中野","time":"18:38"}],"defaultCars":"特急4両","formation":null},{"no":"325","type":"普通","direction":"down","days":["休日","平日"],"start":"信州中野","dest":"湯田中","stops":[{"station":"信州中野","time":"18:41"},{"station":"中野松川","time":"18:44"},{"station":"信濃竹原","time":"18:47"},{"station":"夜間瀬","time":"18:50"},{"station":"上条","time":"18:53"},{"station":"湯田中","time":"18:56"}],"defaultCars":"普通3両","formation":null},{"no":"545","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"18:03"},{"station":"市役所前","time":"18:04"},{"station":"権堂","time":"18:06"},{"station":"善光寺下","time":"18:07"},{"station":"本郷","time":"18:09"},{"station":"桐原","time":"18:11"},{"station":"信濃吉田","time":"18:12"},{"station":"朝陽","time":"18:16"},{"station":"附属中学前","time":"18:18"},{"station":"柳原","time":"18:20"},{"station":"村山","time":"18:26"},{"station":"日野","time":"18:28"},{"station":"須坂","time":"18:32"},{"station":"須坂","time":"18:35"},{"station":"北須坂","time":"18:39"},{"station":"小布施","time":"18:42"},{"station":"都住","time":"18:44"},{"station":"桜沢","time":"18:48"},{"station":"延徳","time":"18:51"},{"station":"信州中野","time":"18:55"}],"defaultCars":"普通3両","formation":null},{"no":"547","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"18:20"},{"station":"市役所前","time":"18:21"},{"station":"権堂","time":"18:23"},{"station":"善光寺下","time":"18:24"},{"station":"本郷","time":"18:26"},{"station":"桐原","time":"18:28"},{"station":"信濃吉田","time":"18:29"},{"station":"朝陽","time":"18:33"},{"station":"附属中学前","time":"18:35"},{"station":"柳原","time":"18:37"},{"station":"村山","time":"18:40"},{"station":"日野","time":"18:42"},{"station":"須坂","time":"18:45"},{"station":"北須坂","time":"18:49"},{"station":"小布施","time":"18:54"},{"station":"都住","time":"18:56"},{"station":"桜沢","time":"19:03"},{"station":"延徳","time":"19:05"},{"station":"信州中野","time":"19:10"}],"defaultCars":"普通3両","formation":null},{"no":"549","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"18:50"},{"station":"市役所前","time":"18:51"},{"station":"権堂","time":"18:53"},{"station":"善光寺下","time":"18:54"},{"station":"本郷","time":"18:56"},{"station":"桐原","time":"18:58"},{"station":"信濃吉田","time":"18:59"},{"station":"朝陽","time":"19:03"},{"station":"附属中学前","time":"19:05"},{"station":"柳原","time":"19:09"},{"station":"村山","time":"19:12"},{"station":"日野","time":"19:14"},{"station":"須坂","time":"19:17"},{"station":"須坂","time":"19:18"},{"station":"北須坂","time":"19:21"},{"station":"小布施","time":"19:25"},{"station":"都住","time":"19:27"},{"station":"桜沢","time":"19:30"},{"station":"延徳","time":"19:33"},{"station":"信州中野","time":"19:37"}],"defaultCars":"普通3両","formation":null},{"no":"327","type":"普通","direction":"down","days":["休日","平日"],"start":"信州中野","dest":"湯田中","stops":[{"station":"信州中野","time":"19:41"},{"station":"中野松川","time":"19:44"},{"station":"信濃竹原","time":"19:47"},{"station":"夜間瀬","time":"19:50"},{"station":"上条","time":"19:53"},{"station":"湯田中","time":"19:56"}],"defaultCars":"普通3両","formation":null},{"no":"217","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"須坂","stops":[{"station":"長野","time":"19:21"},{"station":"市役所前","time":"19:22"},{"station":"権堂","time":"19:24"},{"station":"善光寺下","time":"19:25"},{"station":"本郷","time":"19:27"},{"station":"桐原","time":"19:29"},{"station":"信濃吉田","time":"19:30"},{"station":"朝陽","time":"19:34"},{"station":"附属中学前","time":"19:36"},{"station":"柳原","time":"19:40"},{"station":"村山","time":"19:43"},{"station":"日野","time":"19:45"},{"station":"須坂","time":"19:48"}],"defaultCars":"普通3両","formation":null},{"no":"17B","type":"特急ゆけむり","direction":"down","days":["休日","平日"],"start":"長野","dest":"湯田中","stops":[{"station":"長野","time":"19:40"},{"station":"市役所前","time":"19:41"},{"station":"権堂","time":"19:43"},{"station":"本郷","time":"19:46"},{"station":"信濃吉田","time":"19:48"},{"station":"朝陽","time":"19:52"},{"station":"須坂","time":"20:01"},{"station":"小布施","time":"20:07"},{"station":"信州中野","time":"20:16"},{"station":"信州中野","time":"20:17"},{"station":"湯田中","time":"20:29"}],"defaultCars":"特急4両","formation":null},{"no":"551","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"19:58"},{"station":"市役所前","time":"19:59"},{"station":"権堂","time":"20:01"},{"station":"善光寺下","time":"20:02"},{"station":"本郷","time":"20:04"},{"station":"桐原","time":"20:06"},{"station":"信濃吉田","time":"20:07"},{"station":"朝陽","time":"20:12"},{"station":"附属中学前","time":"20:13"},{"station":"柳原","time":"20:15"},{"station":"村山","time":"20:18"},{"station":"日野","time":"20:20"},{"station":"須坂","time":"20:24"},{"station":"北須坂","time":"20:28"},{"station":"小布施","time":"20:31"},{"station":"都住","time":"20:33"},{"station":"桜沢","time":"20:37"},{"station":"延徳","time":"20:40"},{"station":"信州中野","time":"20:44"}],"defaultCars":"普通3両","formation":null},{"no":"329","type":"普通","direction":"down","days":["休日","平日"],"start":"信州中野","dest":"湯田中","stops":[{"station":"信州中野","time":"20:52"},{"station":"中野松川","time":"20:55"},{"station":"信濃竹原","time":"20:58"},{"station":"夜間瀬","time":"21:01"},{"station":"上条","time":"21:04"},{"station":"湯田中","time":"21:07"}],"defaultCars":"普通3両","formation":null},{"no":"219","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"須坂","stops":[{"station":"長野","time":"20:20"},{"station":"市役所前","time":"20:21"},{"station":"権堂","time":"20:23"},{"station":"善光寺下","time":"20:24"},{"station":"本郷","time":"20:26"},{"station":"桐原","time":"20:27"},{"station":"信濃吉田","time":"20:29"},{"station":"朝陽","time":"20:33"},{"station":"附属中学前","time":"20:35"},{"station":"柳原","time":"20:37"},{"station":"村山","time":"20:40"},{"station":"日野","time":"20:42"},{"station":"須坂","time":"20:45"}],"defaultCars":"普通3両","formation":null},{"no":"553","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"20:40"},{"station":"市役所前","time":"20:41"},{"station":"権堂","time":"20:43"},{"station":"善光寺下","time":"20:44"},{"station":"本郷","time":"20:46"},{"station":"桐原","time":"20:48"},{"station":"信濃吉田","time":"20:49"},{"station":"朝陽","time":"20:53"},{"station":"附属中学前","time":"20:55"},{"station":"柳原","time":"20:59"},{"station":"村山","time":"21:02"},{"station":"日野","time":"21:04"},{"station":"須坂","time":"21:07"},{"station":"北須坂","time":"21:11"},{"station":"小布施","time":"21:14"},{"station":"都住","time":"21:16"},{"station":"桜沢","time":"21:20"},{"station":"延徳","time":"21:23"},{"station":"信州中野","time":"21:27"}],"defaultCars":"普通3両","formation":null},{"no":"331","type":"普通","direction":"down","days":["休日","平日"],"start":"信州中野","dest":"湯田中","stops":[{"station":"信州中野","time":"21:42"},{"station":"中野松川","time":"21:45"},{"station":"信濃竹原","time":"21:48"},{"station":"夜間瀬","time":"21:51"},{"station":"上条","time":"21:54"},{"station":"湯田中","time":"21:57"}],"defaultCars":"普通3両","formation":null},{"no":"555","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"21:26"},{"station":"市役所前","time":"21:27"},{"station":"権堂","time":"21:29"},{"station":"善光寺下","time":"21:30"},{"station":"本郷","time":"21:32"},{"station":"桐原","time":"21:34"},{"station":"信濃吉田","time":"21:35"},{"station":"朝陽","time":"21:39"},{"station":"附属中学前","time":"21:41"},{"station":"柳原","time":"21:43"},{"station":"村山","time":"21:46"},{"station":"日野","time":"21:48"},{"station":"須坂","time":"21:51"},{"station":"北須坂","time":"21:55"},{"station":"小布施","time":"21:58"},{"station":"都住","time":"22:00"},{"station":"桜沢","time":"22:04"},{"station":"延徳","time":"22:07"},{"station":"信州中野","time":"22:11"}],"defaultCars":"普通3両","formation":null},{"no":"557","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"21:56"},{"station":"市役所前","time":"21:57"},{"station":"権堂","time":"21:59"},{"station":"善光寺下","time":"22:00"},{"station":"本郷","time":"22:02"},{"station":"桐原","time":"22:04"},{"station":"信濃吉田","time":"22:05"},{"station":"朝陽","time":"22:09"},{"station":"附属中学前","time":"22:11"},{"station":"柳原","time":"22:13"},{"station":"村山","time":"22:16"},{"station":"日野","time":"22:18"},{"station":"須坂","time":"22:22"},{"station":"北須坂","time":"22:25"},{"station":"小布施","time":"22:29"},{"station":"都住","time":"22:31"},{"station":"桜沢","time":"22:34"},{"station":"延徳","time":"22:37"},{"station":"信州中野","time":"22:41"}],"defaultCars":"普通3両","formation":null},{"no":"19B","type":"特急ゆけむり","direction":"down","days":["休日","平日"],"start":"長野","dest":"信州中野","stops":[{"station":"長野","time":"22:14"},{"station":"市役所前","time":"22:15"},{"station":"権堂","time":"22:17"},{"station":"本郷","time":"22:20"},{"station":"信濃吉田","time":"22:22"},{"station":"朝陽","time":"22:26"},{"station":"須坂","time":"22:35"},{"station":"小布施","time":"22:41"},{"station":"信州中野","time":"22:50"}],"defaultCars":"特急4両","formation":null},{"no":"333","type":"普通","direction":"down","days":["休日","平日"],"start":"信州中野","dest":"湯田中","stops":[{"station":"信州中野","time":"22:53"},{"station":"中野松川","time":"22:56"},{"station":"信濃竹原","time":"22:59"},{"station":"夜間瀬","time":"23:02"},{"station":"上条","time":"23:05"},{"station":"湯田中","time":"23:08"}],"defaultCars":"普通3両","formation":null},{"no":"221","type":"普通","direction":"down","days":["休日","平日"],"start":"長野","dest":"須坂","stops":[{"station":"長野","time":"22:49"},{"station":"市役所前","time":"22:50"},{"station":"権堂","time":"22:52"},{"station":"善光寺下","time":"22:53"},{"station":"本郷","time":"22:55"},{"station":"桐原","time":"22:57"},{"station":"信濃吉田","time":"22:58"},{"station":"朝陽","time":"23:02"},{"station":"附属中学前","time":"23:04"},{"station":"柳原","time":"23:06"},{"station":"村山","time":"23:09"},{"station":"日野","time":"23:11"},{"station":"須坂","time":"23:14"}],"defaultCars":"普通3両","formation":null}];
+const STORAGE_KEY='naganoTrainRegistrations_v4';
+const CHANNEL_NAME='naganoTrainRegistrationSync_v4';
+const RESET_HOUR=3;
+const FIREBASE_ROOT='naganoDentetsuOperation';
+const RESET_DWELL_MIN=2;
+const TURNBACK_SWITCH_MIN=1;
+const FIREBASE_CONFIG=(window.NAGANO_FIREBASE_CONFIG||{});
+const FIREBASE_ENABLED=!!(window.firebase && FIREBASE_CONFIG.apiKey && !String(FIREBASE_CONFIG.apiKey).includes('YOUR_'));
+
+const OPERATION_CHAINS={"平日":[[{"no":"回501X","type":"回送","start":"須坂","startTime":"5:25","dest":"信州中野","endTime":"5:40"},{"no":"504","type":"普通","start":"信州中野","startTime":"5:55","dest":"長野","endTime":"6:41"},{"no":"515","type":"普通","start":"長野","startTime":"7:05","dest":"信州中野","endTime":"7:57"},{"no":"516","type":"普通","start":"信州中野","startTime":"8:09","dest":"長野","endTime":"8:55"},{"no":"525","type":"普通","start":"長野","startTime":"10:26","dest":"信州中野","endTime":"11:14"},{"no":"526","type":"普通","start":"信州中野","startTime":"11:27","dest":"長野","endTime":"12:14"},{"no":"531","type":"普通","start":"長野","startTime":"13:56","dest":"信州中野","endTime":"14:41"},{"no":"532","type":"普通","start":"信州中野","startTime":"15:28","dest":"長野","endTime":"16:15"},{"no":"541","type":"普通","start":"長野","startTime":"17:14","dest":"信州中野","endTime":"18:02"},{"no":"542","type":"普通","start":"信州中野","startTime":"18:16","dest":"長野","endTime":"19:01"},{"no":"217","type":"普通","start":"長野","startTime":"19:21","dest":"須坂","endTime":"19:48"}],[{"no":"505","type":"普通","start":"須坂","startTime":"6:15","dest":"信州中野","endTime":"6:34"},{"no":"508","type":"普通","start":"信州中野","startTime":"6:47","dest":"長野","endTime":"7:34"},{"no":"201","type":"普通","start":"長野","startTime":"7:46","dest":"須坂","endTime":"8:13"},{"no":"204","type":"普通","start":"須坂","startTime":"8:18","dest":"長野","endTime":"8:45"},{"no":"523","type":"普通","start":"長野","startTime":"9:13","dest":"信州中野","endTime":"10:03"},{"no":"524","type":"普通","start":"信州中野","startTime":"10:47","dest":"長野","endTime":"11:32"},{"no":"527","type":"普通","start":"長野","startTime":"12:19","dest":"信州中野","endTime":"13:05"},{"no":"528","type":"普通","start":"信州中野","startTime":"13:43","dest":"長野","endTime":"14:30"},{"no":"215","type":"普通","start":"長野","startTime":"15:09","dest":"須坂","endTime":"15:34"}],[{"no":"回511X","type":"回送","start":"須坂","startTime":"6:53","dest":"信州中野","endTime":"7:14"},{"no":"2B","type":"特急スノーモンキー","start":"信州中野","startTime":"7:35","dest":"長野","endTime":"8:12"},{"no":"3A","type":"特急スノーモンキー","start":"長野","startTime":"9:53","dest":"湯田中","endTime":"10:37"},{"no":"6A","type":"特急スノーモンキー","start":"湯田中","startTime":"10:50","dest":"長野","endTime":"11:36"},{"no":"7A","type":"特急スノーモンキー","start":"長野","startTime":"12:44","dest":"湯田中","endTime":"13:29"},{"no":"10A","type":"特急スノーモンキー","start":"湯田中","startTime":"13:50","dest":"長野","endTime":"14:38"},{"no":"11A","type":"特急スノーモンキー","start":"長野","startTime":"15:32","dest":"湯田中","endTime":"16:17"},{"no":"14A","type":"特急スノーモンキー","start":"湯田中","startTime":"16:45","dest":"長野","endTime":"17:34"},{"no":"15B","type":"特急スノーモンキー","start":"長野","startTime":"18:00","dest":"信州中野","endTime":"18:38"},{"no":"18B","type":"特急スノーモンキー","start":"信州中野","startTime":"18:58","dest":"須坂","endTime":"19:14"}],[{"no":"1A","type":"特急ゆけむり","start":"須坂","startTime":"9:09","dest":"湯田中","endTime":"9:37"},{"no":"4A","type":"特急ゆけむり","start":"湯田中","startTime":"9:54","dest":"長野","endTime":"10:42"},{"no":"5A","type":"特急ゆけむり","start":"長野","startTime":"11:33","dest":"湯田中","endTime":"12:18"},{"no":"8A","type":"特急ゆけむり","start":"湯田中","startTime":"12:31","dest":"長野","endTime":"13:17"},{"no":"9A","type":"特急ゆけむり","start":"長野","startTime":"14:27","dest":"湯田中","endTime":"15:12"},{"no":"12A","type":"特急ゆけむり","start":"湯田中","startTime":"15:34","dest":"長野","endTime":"16:19"},{"no":"13A","type":"特急ゆけむり","start":"長野","startTime":"16:46","dest":"湯田中","endTime":"17:33"},{"no":"16B","type":"特急ゆけむり","start":"湯田中","startTime":"17:51","dest":"長野","endTime":"18:44"},{"no":"17B","type":"特急ゆけむり","start":"長野","startTime":"19:40","dest":"湯田中","endTime":"20:29"},{"no":"20B","type":"特急ゆけむり","start":"湯田中","startTime":"20:40","dest":"長野","endTime":"21:29"},{"no":"19B","type":"特急ゆけむり","start":"長野","startTime":"22:14","dest":"信州中野","endTime":"22:50"},{"no":"回558X","type":"回送","start":"信州中野","startTime":"23:00","dest":"須坂","endTime":"23:15"}],[{"no":"回507X","type":"回送","start":"須坂","startTime":"6:27","dest":"信州中野","endTime":"6:42"},{"no":"510","type":"普通","start":"信州中野","startTime":"7:05","dest":"長野","endTime":"7:51"},{"no":"519","type":"普通","start":"長野","startTime":"8:01","dest":"信州中野","endTime":"8:48"},{"no":"520","type":"普通","start":"信州中野","startTime":"9:24","dest":"長野","endTime":"10:09"},{"no":"211","type":"普通","start":"長野","startTime":"11:16","dest":"須坂","endTime":"11:41"},{"no":"208","type":"普通","start":"須坂","startTime":"12:21","dest":"長野","endTime":"12:47"},{"no":"529","type":"普通","start":"長野","startTime":"12:57","dest":"信州中野","endTime":"13:42"},{"no":"530","type":"普通","start":"信州中野","startTime":"14:46","dest":"長野","endTime":"15:36"},{"no":"537","type":"普通","start":"長野","startTime":"16:12","dest":"信州中野","endTime":"16:58"},{"no":"538","type":"普通","start":"信州中野","startTime":"17:22","dest":"長野","endTime":"18:09"},{"no":"547","type":"普通","start":"長野","startTime":"18:20","dest":"信州中野","endTime":"19:10"},{"no":"548","type":"普通","start":"信州中野","startTime":"19:40","dest":"長野","endTime":"20:26"},{"no":"553","type":"普通","start":"長野","startTime":"20:40","dest":"信州中野","endTime":"21:27"},{"no":"554","type":"普通","start":"信州中野","startTime":"21:45","dest":"長野","endTime":"22:31"},{"no":"221","type":"普通","start":"長野","startTime":"22:49","dest":"須坂","endTime":"23:14"}],[{"no":"503","type":"普通","start":"須坂","startTime":"5:48","dest":"信州中野","endTime":"6:08"},{"no":"506","type":"普通","start":"信州中野","startTime":"6:22","dest":"長野","endTime":"7:08"},{"no":"517","type":"普通","start":"長野","startTime":"7:27","dest":"信州中野","endTime":"8:22"},{"no":"518","type":"普通","start":"信州中野","startTime":"8:36","dest":"長野","endTime":"9:23"},{"no":"205","type":"普通","start":"長野","startTime":"9:35","dest":"須坂","endTime":"10:00"}],[{"no":"202","type":"普通","start":"須坂","startTime":"5:25","dest":"長野","endTime":"5:50"},{"no":"509","type":"普通","start":"長野","startTime":"6:15","dest":"信州中野","endTime":"7:00"},{"no":"512","type":"普通","start":"信州中野","startTime":"7:17","dest":"長野","endTime":"8:05"},{"no":"521","type":"普通","start":"長野","startTime":"8:30","dest":"信州中野","endTime":"9:15"},{"no":"522","type":"普通","start":"信州中野","startTime":"9:49","dest":"長野","endTime":"10:35"},{"no":"209","type":"普通","start":"長野","startTime":"10:51","dest":"須坂","endTime":"11:17"}],[{"no":"502","type":"普通","start":"信州中野","startTime":"5:29","dest":"長野","endTime":"6:14"},{"no":"513","type":"普通","start":"長野","startTime":"6:41","dest":"信州中野","endTime":"7:30"},{"no":"514","type":"普通","start":"信州中野","startTime":"7:43","dest":"長野","endTime":"8:30"},{"no":"203","type":"普通","start":"長野","startTime":"8:42","dest":"須坂","endTime":"9:07"}],[{"no":"101","type":"普通","start":"須坂","startTime":"5:33","dest":"湯田中","endTime":"6:08"},{"no":"302","type":"普通","start":"湯田中","startTime":"6:21","dest":"信州中野","endTime":"6:36"},{"no":"303","type":"普通","start":"信州中野","startTime":"6:46","dest":"湯田中","endTime":"7:03"},{"no":"306","type":"普通","start":"湯田中","startTime":"7:15","dest":"信州中野","endTime":"7:31"},{"no":"307","type":"普通","start":"信州中野","startTime":"7:42","dest":"湯田中","endTime":"8:00"},{"no":"310","type":"普通","start":"湯田中","startTime":"8:10","dest":"信州中野","endTime":"8:26"},{"no":"311","type":"普通","start":"信州中野","startTime":"8:54","dest":"湯田中","endTime":"9:09"},{"no":"312","type":"普通","start":"湯田中","startTime":"9:19","dest":"信州中野","endTime":"9:38"},{"no":"313","type":"普通","start":"信州中野","startTime":"9:49","dest":"湯田中","endTime":"10:08"},{"no":"314","type":"普通","start":"湯田中","startTime":"10:19","dest":"信州中野","endTime":"10:38"},{"no":"315","type":"普通","start":"信州中野","startTime":"11:21","dest":"湯田中","endTime":"11:36"},{"no":"104","type":"普通","start":"湯田中","startTime":"12:00","dest":"長野","endTime":"13:12"},{"no":"213","type":"普通","start":"長野","startTime":"13:30","dest":"須坂","endTime":"13:56"}],[{"no":"301","type":"普通","start":"信州中野","startTime":"6:20","dest":"湯田中","endTime":"6:37"},{"no":"304","type":"普通","start":"湯田中","startTime":"6:46","dest":"信州中野","endTime":"7:02"},{"no":"305","type":"普通","start":"信州中野","startTime":"7:14","dest":"湯田中","endTime":"7:32"},{"no":"308","type":"普通","start":"湯田中","startTime":"7:43","dest":"信州中野","endTime":"7:59"},{"no":"309","type":"普通","start":"信州中野","startTime":"8:10","dest":"湯田中","endTime":"8:27"},{"no":"102","type":"普通","start":"湯田中","startTime":"8:39","dest":"長野","endTime":"9:48"},{"no":"207","type":"普通","start":"長野","startTime":"10:00","dest":"須坂","endTime":"10:26"}],[{"no":"206","type":"普通","start":"須坂","startTime":"10:42","dest":"長野","endTime":"11:07"},{"no":"103","type":"普通","start":"長野","startTime":"11:48","dest":"湯田中","endTime":"12:57"},{"no":"316","type":"普通","start":"湯田中","startTime":"13:11","dest":"信州中野","endTime":"13:30"},{"no":"317","type":"普通","start":"信州中野","startTime":"13:45","dest":"湯田中","endTime":"14:04"},{"no":"318","type":"普通","start":"湯田中","startTime":"14:16","dest":"信州中野","endTime":"14:31"},{"no":"319","type":"普通","start":"信州中野","startTime":"15:29","dest":"湯田中","endTime":"15:48"},{"no":"320","type":"普通","start":"湯田中","startTime":"15:59","dest":"信州中野","endTime":"16:18"},{"no":"321","type":"普通","start":"信州中野","startTime":"16:40","dest":"湯田中","endTime":"16:59"},{"no":"322","type":"普通","start":"湯田中","startTime":"17:15","dest":"信州中野","endTime":"17:35"},{"no":"323","type":"普通","start":"信州中野","startTime":"17:46","dest":"湯田中","endTime":"18:05"},{"no":"324","type":"普通","start":"湯田中","startTime":"18:15","dest":"信州中野","endTime":"18:30"},{"no":"325","type":"普通","start":"信州中野","startTime":"18:41","dest":"湯田中","endTime":"18:56"},{"no":"326","type":"普通","start":"湯田中","startTime":"19:15","dest":"信州中野","endTime":"19:30"},{"no":"327","type":"普通","start":"信州中野","startTime":"19:41","dest":"湯田中","endTime":"19:56"},{"no":"328","type":"普通","start":"湯田中","startTime":"20:11","dest":"信州中野","endTime":"20:30"},{"no":"329","type":"普通","start":"信州中野","startTime":"20:52","dest":"湯田中","endTime":"21:07"},{"no":"330","type":"普通","start":"湯田中","startTime":"21:17","dest":"信州中野","endTime":"21:32"},{"no":"331","type":"普通","start":"信州中野","startTime":"21:42","dest":"湯田中","endTime":"21:57"},{"no":"332","type":"普通","start":"湯田中","startTime":"22:10","dest":"信州中野","endTime":"22:25"},{"no":"333","type":"普通","start":"信州中野","startTime":"22:53","dest":"湯田中","endTime":"23:08"},{"no":"回334X","type":"回送","start":"湯田中","startTime":"23:14","dest":"信州中野","endTime":"23:25"}],[{"no":"210","type":"普通","start":"須坂","startTime":"13:33","dest":"長野","endTime":"13:58"},{"no":"533","type":"普通","start":"長野","startTime":"14:41","dest":"信州中野","endTime":"15:27"},{"no":"534","type":"普通","start":"信州中野","startTime":"16:20","dest":"長野","endTime":"17:05"},{"no":"543","type":"普通","start":"長野","startTime":"17:40","dest":"信州中野","endTime":"18:29"},{"no":"544","type":"普通","start":"信州中野","startTime":"18:41","dest":"長野","endTime":"19:27"},{"no":"551","type":"普通","start":"長野","startTime":"19:58","dest":"信州中野","endTime":"20:44"},{"no":"552","type":"普通","start":"信州中野","startTime":"21:02","dest":"長野","endTime":"21:47"},{"no":"557","type":"普通","start":"長野","startTime":"21:56","dest":"信州中野","endTime":"22:41"}],[{"no":"212","type":"普通","start":"須坂","startTime":"14:33","dest":"長野","endTime":"15:00"},{"no":"535","type":"普通","start":"長野","startTime":"15:41","dest":"信州中野","endTime":"16:32"},{"no":"536","type":"普通","start":"信州中野","startTime":"16:45","dest":"長野","endTime":"17:31"},{"no":"545","type":"普通","start":"長野","startTime":"18:03","dest":"信州中野","endTime":"18:55"},{"no":"546","type":"普通","start":"信州中野","startTime":"19:12","dest":"長野","endTime":"19:58"},{"no":"219","type":"普通","start":"長野","startTime":"20:20","dest":"須坂","endTime":"20:45"}],[{"no":"214","type":"普通","start":"須坂","startTime":"16:12","dest":"長野","endTime":"16:37"},{"no":"539","type":"普通","start":"長野","startTime":"16:48","dest":"信州中野","endTime":"17:36"},{"no":"540","type":"普通","start":"信州中野","startTime":"17:48","dest":"長野","endTime":"18:37"},{"no":"549","type":"普通","start":"長野","startTime":"18:50","dest":"信州中野","endTime":"19:37"},{"no":"550","type":"普通","start":"信州中野","startTime":"20:32","dest":"長野","endTime":"21:17"},{"no":"555","type":"普通","start":"長野","startTime":"21:26","dest":"信州中野","endTime":"22:11"},{"no":"556","type":"普通","start":"信州中野","startTime":"22:29","dest":"須坂","endTime":"22:48"}]],"休日":[[{"no":"503","type":"普通","start":"須坂","startTime":"5:48","dest":"信州中野","endTime":"6:08"},{"no":"506","type":"普通","start":"信州中野","startTime":"6:22","dest":"長野","endTime":"7:08"},{"no":"517","type":"普通","start":"長野","startTime":"7:27","dest":"信州中野","endTime":"8:22"},{"no":"518","type":"普通","start":"信州中野","startTime":"8:36","dest":"長野","endTime":"9:23"},{"no":"525","type":"普通","start":"長野","startTime":"10:26","dest":"信州中野","endTime":"11:14"},{"no":"526","type":"普通","start":"信州中野","startTime":"11:27","dest":"長野","endTime":"12:14"},{"no":"531","type":"普通","start":"長野","startTime":"13:56","dest":"信州中野","endTime":"14:41"},{"no":"532","type":"普通","start":"信州中野","startTime":"15:28","dest":"長野","endTime":"16:15"},{"no":"541","type":"普通","start":"長野","startTime":"17:14","dest":"信州中野","endTime":"18:02"},{"no":"542","type":"普通","start":"信州中野","startTime":"18:16","dest":"長野","endTime":"19:01"},{"no":"217","type":"普通","start":"長野","startTime":"19:21","dest":"須坂","endTime":"19:48"}],[{"no":"505","type":"普通","start":"須坂","startTime":"6:15","dest":"信州中野","endTime":"6:34"},{"no":"508","type":"普通","start":"信州中野","startTime":"6:47","dest":"長野","endTime":"7:34"},{"no":"519","type":"普通","start":"長野","startTime":"8:01","dest":"信州中野","endTime":"8:48"},{"no":"520","type":"普通","start":"信州中野","startTime":"9:24","dest":"長野","endTime":"10:09"},{"no":"211","type":"普通","start":"長野","startTime":"11:16","dest":"須坂","endTime":"11:41"},{"no":"208","type":"普通","start":"須坂","startTime":"12:21","dest":"長野","endTime":"12:47"},{"no":"529","type":"普通","start":"長野","startTime":"12:57","dest":"信州中野","endTime":"13:42"},{"no":"530","type":"普通","start":"信州中野","startTime":"14:46","dest":"長野","endTime":"15:36"},{"no":"537","type":"普通","start":"長野","startTime":"16:12","dest":"信州中野","endTime":"16:58"},{"no":"538","type":"普通","start":"信州中野","startTime":"17:22","dest":"長野","endTime":"18:09"},{"no":"547","type":"普通","start":"長野","startTime":"18:20","dest":"信州中野","endTime":"19:10"},{"no":"548","type":"普通","start":"信州中野","startTime":"19:40","dest":"長野","endTime":"20:26"},{"no":"553","type":"普通","start":"長野","startTime":"20:40","dest":"信州中野","endTime":"21:27"},{"no":"554","type":"普通","start":"信州中野","startTime":"21:45","dest":"長野","endTime":"22:31"},{"no":"221","type":"普通","start":"長野","startTime":"22:49","dest":"須坂","endTime":"23:14"}],[{"no":"回1101X","type":"回送","start":"須坂","startTime":"10:29","dest":"湯田中","endTime":"11:01"},{"no":"1102S","type":"特急ゆけむりのんびり","start":"湯田中","startTime":"11:20","dest":"長野","endTime":"12:30"},{"no":"1103S","type":"特急ゆけむりのんびり","start":"長野","startTime":"13:08","dest":"湯田中","endTime":"14:32"},{"no":"回1104X","type":"回送","start":"湯田中","startTime":"14:53","dest":"須坂","endTime":"15:30"}],[{"no":"504","type":"普通","start":"信州中野","startTime":"5:55","dest":"長野","endTime":"6:41"},{"no":"515","type":"普通","start":"長野","startTime":"7:05","dest":"信州中野","endTime":"7:57"},{"no":"516","type":"普通","start":"信州中野","startTime":"8:09","dest":"長野","endTime":"8:55"},{"no":"523","type":"普通","start":"長野","startTime":"9:13","dest":"信州中野","endTime":"10:03"},{"no":"524","type":"普通","start":"信州中野","startTime":"10:47","dest":"長野","endTime":"11:32"},{"no":"527","type":"普通","start":"長野","startTime":"12:19","dest":"信州中野","endTime":"13:05"},{"no":"528","type":"普通","start":"信州中野","startTime":"13:43","dest":"長野","endTime":"14:30"},{"no":"215","type":"普通","start":"長野","startTime":"15:09","dest":"須坂","endTime":"15:34"}],[{"no":"2B","type":"特急スノーモンキー","start":"信州中野","startTime":"7:35","dest":"長野","endTime":"8:12"},{"no":"3A","type":"特急スノーモンキー","start":"長野","startTime":"9:53","dest":"湯田中","endTime":"10:37"},{"no":"6A","type":"特急スノーモンキー","start":"湯田中","startTime":"10:50","dest":"長野","endTime":"11:36"},{"no":"7A","type":"特急スノーモンキー","start":"長野","startTime":"12:44","dest":"湯田中","endTime":"13:29"},{"no":"10A","type":"特急スノーモンキー","start":"湯田中","startTime":"13:50","dest":"長野","endTime":"14:38"},{"no":"11A","type":"特急スノーモンキー","start":"長野","startTime":"15:32","dest":"湯田中","endTime":"16:17"},{"no":"14A","type":"特急スノーモンキー","start":"湯田中","startTime":"16:45","dest":"長野","endTime":"17:34"},{"no":"15B","type":"特急スノーモンキー","start":"長野","startTime":"18:00","dest":"信州中野","endTime":"18:38"},{"no":"18B","type":"特急スノーモンキー","start":"信州中野","startTime":"18:58","dest":"須坂","endTime":"19:14"}],[{"no":"1A","type":"特急ゆけむり","start":"須坂","startTime":"9:09","dest":"湯田中","endTime":"9:37"},{"no":"4A","type":"特急ゆけむり","start":"湯田中","startTime":"9:54","dest":"長野","endTime":"10:42"},{"no":"5A","type":"特急ゆけむり","start":"長野","startTime":"11:33","dest":"湯田中","endTime":"12:18"},{"no":"8A","type":"特急ゆけむり","start":"湯田中","startTime":"12:31","dest":"長野","endTime":"13:17"},{"no":"9A","type":"特急ゆけむり","start":"長野","startTime":"14:27","dest":"湯田中","endTime":"15:12"},{"no":"12A","type":"特急ゆけむり","start":"湯田中","startTime":"15:34","dest":"長野","endTime":"16:19"},{"no":"13A","type":"特急ゆけむり","start":"長野","startTime":"16:46","dest":"湯田中","endTime":"17:33"},{"no":"16B","type":"特急ゆけむり","start":"湯田中","startTime":"17:51","dest":"長野","endTime":"18:44"},{"no":"17B","type":"特急ゆけむり","start":"長野","startTime":"19:40","dest":"湯田中","endTime":"20:29"},{"no":"20B","type":"特急ゆけむり","start":"湯田中","startTime":"20:40","dest":"長野","endTime":"21:29"},{"no":"19B","type":"特急ゆけむり","start":"長野","startTime":"22:14","dest":"信州中野","endTime":"22:50"}],[{"no":"202","type":"普通","start":"須坂","startTime":"5:25","dest":"長野","endTime":"5:50"},{"no":"509","type":"普通","start":"長野","startTime":"6:15","dest":"信州中野","endTime":"7:00"},{"no":"512","type":"普通","start":"信州中野","startTime":"7:17","dest":"長野","endTime":"8:05"},{"no":"521","type":"普通","start":"長野","startTime":"8:30","dest":"信州中野","endTime":"9:15"},{"no":"522","type":"普通","start":"信州中野","startTime":"9:49","dest":"長野","endTime":"10:35"},{"no":"209","type":"普通","start":"長野","startTime":"10:51","dest":"須坂","endTime":"11:17"}],[{"no":"502","type":"普通","start":"信州中野","startTime":"5:29","dest":"長野","endTime":"6:14"},{"no":"513","type":"普通","start":"長野","startTime":"6:41","dest":"信州中野","endTime":"7:30"},{"no":"514","type":"普通","start":"信州中野","startTime":"7:43","dest":"長野","endTime":"8:30"},{"no":"203","type":"普通","start":"長野","startTime":"8:42","dest":"須坂","endTime":"9:07"}],[{"no":"101","type":"普通","start":"須坂","startTime":"5:33","dest":"湯田中","endTime":"6:08"},{"no":"302","type":"普通","start":"湯田中","startTime":"6:21","dest":"信州中野","endTime":"6:36"},{"no":"303","type":"普通","start":"信州中野","startTime":"6:46","dest":"湯田中","endTime":"7:03"},{"no":"306","type":"普通","start":"湯田中","startTime":"7:15","dest":"信州中野","endTime":"7:31"},{"no":"307","type":"普通","start":"信州中野","startTime":"7:42","dest":"湯田中","endTime":"8:00"},{"no":"310","type":"普通","start":"湯田中","startTime":"8:10","dest":"信州中野","endTime":"8:26"},{"no":"311","type":"普通","start":"信州中野","startTime":"8:54","dest":"湯田中","endTime":"9:09"},{"no":"312","type":"普通","start":"湯田中","startTime":"9:19","dest":"信州中野","endTime":"9:38"},{"no":"313","type":"普通","start":"信州中野","startTime":"9:49","dest":"湯田中","endTime":"10:08"},{"no":"314","type":"普通","start":"湯田中","startTime":"10:19","dest":"信州中野","endTime":"10:38"},{"no":"315","type":"普通","start":"信州中野","startTime":"11:21","dest":"湯田中","endTime":"11:36"},{"no":"104","type":"普通","start":"湯田中","startTime":"12:00","dest":"長野","endTime":"13:12"},{"no":"213","type":"普通","start":"長野","startTime":"13:30","dest":"須坂","endTime":"13:56"}],[{"no":"301","type":"普通","start":"信州中野","startTime":"6:20","dest":"湯田中","endTime":"6:37"},{"no":"304","type":"普通","start":"湯田中","startTime":"6:46","dest":"信州中野","endTime":"7:02"},{"no":"305","type":"普通","start":"信州中野","startTime":"7:14","dest":"湯田中","endTime":"7:32"},{"no":"308","type":"普通","start":"湯田中","startTime":"7:43","dest":"信州中野","endTime":"7:59"},{"no":"309","type":"普通","start":"信州中野","startTime":"8:10","dest":"湯田中","endTime":"8:27"},{"no":"102","type":"普通","start":"湯田中","startTime":"8:39","dest":"長野","endTime":"9:48"},{"no":"207","type":"普通","start":"長野","startTime":"10:00","dest":"須坂","endTime":"10:26"}],[{"no":"206","type":"普通","start":"須坂","startTime":"10:42","dest":"長野","endTime":"11:07"},{"no":"103","type":"普通","start":"長野","startTime":"11:48","dest":"湯田中","endTime":"12:57"},{"no":"316","type":"普通","start":"湯田中","startTime":"13:11","dest":"信州中野","endTime":"13:30"},{"no":"317","type":"普通","start":"信州中野","startTime":"13:45","dest":"湯田中","endTime":"14:04"},{"no":"318","type":"普通","start":"湯田中","startTime":"14:16","dest":"信州中野","endTime":"14:31"},{"no":"319","type":"普通","start":"信州中野","startTime":"15:29","dest":"湯田中","endTime":"15:48"},{"no":"320","type":"普通","start":"湯田中","startTime":"15:59","dest":"信州中野","endTime":"16:18"},{"no":"321","type":"普通","start":"信州中野","startTime":"16:40","dest":"湯田中","endTime":"16:59"},{"no":"322","type":"普通","start":"湯田中","startTime":"17:15","dest":"信州中野","endTime":"17:35"},{"no":"323","type":"普通","start":"信州中野","startTime":"17:46","dest":"湯田中","endTime":"18:05"},{"no":"324","type":"普通","start":"湯田中","startTime":"18:15","dest":"信州中野","endTime":"18:30"},{"no":"325","type":"普通","start":"信州中野","startTime":"18:41","dest":"湯田中","endTime":"18:56"},{"no":"326","type":"普通","start":"湯田中","startTime":"19:15","dest":"信州中野","endTime":"19:30"},{"no":"327","type":"普通","start":"信州中野","startTime":"19:41","dest":"湯田中","endTime":"19:56"},{"no":"328","type":"普通","start":"湯田中","startTime":"20:11","dest":"信州中野","endTime":"20:30"},{"no":"329","type":"普通","start":"信州中野","startTime":"20:52","dest":"湯田中","endTime":"21:07"},{"no":"330","type":"普通","start":"湯田中","startTime":"21:17","dest":"信州中野","endTime":"21:32"},{"no":"331","type":"普通","start":"信州中野","startTime":"21:42","dest":"湯田中","endTime":"21:57"},{"no":"332","type":"普通","start":"湯田中","startTime":"22:10","dest":"信州中野","endTime":"22:25"},{"no":"333","type":"普通","start":"信州中野","startTime":"22:53","dest":"湯田中","endTime":"23:08"}],[{"no":"210","type":"普通","start":"須坂","startTime":"13:33","dest":"長野","endTime":"13:58"},{"no":"533","type":"普通","start":"長野","startTime":"14:41","dest":"信州中野","endTime":"15:27"},{"no":"534","type":"普通","start":"信州中野","startTime":"16:20","dest":"長野","endTime":"17:05"},{"no":"543","type":"普通","start":"長野","startTime":"17:40","dest":"信州中野","endTime":"18:29"},{"no":"544","type":"普通","start":"信州中野","startTime":"18:41","dest":"長野","endTime":"19:27"},{"no":"551","type":"普通","start":"長野","startTime":"19:58","dest":"信州中野","endTime":"20:44"},{"no":"552","type":"普通","start":"信州中野","startTime":"21:02","dest":"長野","endTime":"21:47"},{"no":"557","type":"普通","start":"長野","startTime":"21:56","dest":"信州中野","endTime":"22:41"}],[{"no":"212","type":"普通","start":"須坂","startTime":"14:33","dest":"長野","endTime":"15:00"},{"no":"535","type":"普通","start":"長野","startTime":"15:41","dest":"信州中野","endTime":"16:32"},{"no":"536","type":"普通","start":"信州中野","startTime":"16:45","dest":"長野","endTime":"17:31"},{"no":"545","type":"普通","start":"長野","startTime":"18:03","dest":"信州中野","endTime":"18:55"},{"no":"546","type":"普通","start":"信州中野","startTime":"19:12","dest":"長野","endTime":"19:58"},{"no":"219","type":"普通","start":"長野","startTime":"20:20","dest":"須坂","endTime":"20:45"}],[{"no":"214","type":"普通","start":"須坂","startTime":"16:12","dest":"長野","endTime":"16:37"},{"no":"539","type":"普通","start":"長野","startTime":"16:48","dest":"信州中野","endTime":"17:36"},{"no":"540","type":"普通","start":"信州中野","startTime":"17:48","dest":"長野","endTime":"18:37"},{"no":"549","type":"普通","start":"長野","startTime":"18:50","dest":"信州中野","endTime":"19:37"},{"no":"550","type":"普通","start":"信州中野","startTime":"20:32","dest":"長野","endTime":"21:17"},{"no":"555","type":"普通","start":"長野","startTime":"21:26","dest":"信州中野","endTime":"22:11"},{"no":"556","type":"普通","start":"信州中野","startTime":"22:29","dest":"須坂","endTime":"22:48"}]]};
+const TRAIN_INDEX=Object.fromEntries(TRAINS.map(t=>[String(t.no),t]));
+const CHAIN_INDEX={平日:{},休日:{}};
+for(const day of ['平日','休日']){
+  OPERATION_CHAINS[day].forEach((chain,idx)=>{
+    const chainId=`${day}-${String(idx+1).padStart(2,'0')}`;
+    chain.forEach((entry,entryIndex)=>{ CHAIN_INDEX[day][String(entry.no)]={chainId,chainIndex:idx,entryIndex,entry}; });
+  });
+}
+
 let currentTrainNo=null;
 let isEditMode=false;
 let currentDay=(new Date().getDay()===0||new Date().getDay()===6)?'休日':'平日';
 let followNow=true;
+let registrationState={};
+let operationHistory=[];
+let currentOperationDate=null;
+let remoteRoot={version:0,operationDate:null,stateByDay:{平日:{},休日:{}},history:{}};
+let channel=null;
+let firebaseReady=false;
+let lastHistoryFingerprint='';
 
-function getVisibleTrains(){
-  return TRAINS.filter(t=>t.days.includes(currentDay));
+function todayKey(d=new Date()){
+  const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
 }
+function operationDateKey(d=new Date()){
+  const base=new Date(d);
+  if(base.getHours()<RESET_HOUR) base.setDate(base.getDate()-1);
+  return todayKey(base);
+}
+function resetTimeForDate(dateKey){ return dateKey+'T03:00:00'; }
+function normalizeTrainNo(v){
+  if(v===null||v===undefined) return '';
+  const s=String(v);
+  return /^\d+\.0$/.test(s)?s.slice(0,-2):s;
+}
+function cloneState(obj){ return JSON.parse(JSON.stringify(obj||{})); }
+function historyEntries(){ return Object.values(remoteRoot.history||{}).sort((a,b)=>String(a.id||'').localeCompare(String(b.id||''))); }
+function syncStatus(text){
+  const el=document.getElementById('syncStatus');
+  if(el) el.textContent='共有同期：'+text;
+}
+function saveLocalState(){
+  try{
+    localStorage.setItem(STORAGE_KEY,JSON.stringify({
+      operationDate:currentOperationDate,
+      stateByDay:remoteRoot.stateByDay,
+      history:remoteRoot.history,
+      updatedAt:new Date().toISOString()
+    }));
+  }catch(e){ console.warn('local save failed',e); }
+}
+function loadLocalState(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const obj=JSON.parse(raw);
+    remoteRoot.operationDate=obj.operationDate||null;
+    remoteRoot.stateByDay=obj.stateByDay||{平日:{},休日:{}};
+    remoteRoot.history=obj.history||{};
+    currentOperationDate=remoteRoot.operationDate;
+    operationHistory=historyEntries();
+    registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
+    applyRegistrationState();
+  }catch(e){ console.warn('local load failed',e); }
+}
+function applyRegistrationState(){ TRAINS.forEach(t=>{ t.formation=registrationState[String(t.no)]||null; }); }
+function broadcastState(){
+  if(channel) channel.postMessage({source:'train-app',type:'state',remoteRoot,ts:Date.now()});
+}
+function hydrateFromRoot(data){
+  remoteRoot=data||{version:0,operationDate:null,stateByDay:{平日:{},休日:{}},history:{}};
+  remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
+  remoteRoot.history=remoteRoot.history||{};
+  currentOperationDate=remoteRoot.operationDate||currentOperationDate||operationDateKey();
+  operationHistory=historyEntries();
+  registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
+  applyRegistrationState();
+  saveLocalState();
+  broadcastState();
+}
+function firebaseOperationRef(){ return firebase.database().ref('運用'); }
+function firebaseHistoryRef(){ return firebase.database().ref('履歴'); }
+
+async function initFirebase(){
+  if(!FIREBASE_ENABLED){ syncStatus('ローカル（Firebase設定待ち）'); return false; }
+  try{
+    if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    firebaseReady=true;
+    syncStatus('Firebase接続中');
+
+    // 現在の運用状態をリアルタイム購読
+    firebaseOperationRef().on('value', snap=>{
+      const data=snap.val()||{};
+      remoteRoot.version=Number(data.version||0);
+      remoteRoot.operationDate=data.operationDate||operationDateKey();
+      remoteRoot.stateByDay=data.stateByDay||{平日:{},休日:{}};
+      registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
+      operationHistory=historyEntries();
+      applyRegistrationState();
+      saveLocalState();
+      renderLine();
+      if(currentTrainNo) updateSheetContent();
+      maybeResetForNewOperationDay(true);
+    },err=>{
+      console.error('Firebase運用読込失敗',err);
+      syncStatus('Firebase読込失敗');
+    });
+
+    // 履歴は読み取り専用。サイト側からは新規追加のみ行う。
+    firebaseHistoryRef().on('value', snap=>{
+      remoteRoot.history=snap.val()||{};
+      operationHistory=historyEntries();
+      saveLocalState();
+      if(currentTrainNo) updateSheetContent();
+      syncStatus('Firebase接続中');
+    },err=>console.error('Firebase履歴読込失敗',err));
+
+    // 初回データが無ければ、空状態を運用へ作成
+    const opSnap=await firebaseOperationRef().once('value');
+    if(!opSnap.exists()) await firebaseOperationRef().set({
+      operationDate: operationDateKey(),
+      stateByDay:{平日:{},休日:{}},
+      version:0,
+      updatedAt:firebase.database.ServerValue.TIMESTAMP
+    });
+    return true;
+  }catch(e){
+    console.error('Firebase init failed',e);
+    syncStatus('Firebase接続失敗');
+    firebaseReady=false;
+    return false;
+  }
+}
+
+async function syncRegistrationToRemote(){
+  applyRegistrationState();
+  remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
+  remoteRoot.stateByDay[currentDay]=cloneState(registrationState);
+  remoteRoot.operationDate=currentOperationDate||operationDateKey();
+  remoteRoot.version=(remoteRoot.version||0)+1;
+  saveLocalState();
+  broadcastState();
+  if(!firebaseReady) return;
+  try{
+    await firebaseOperationRef().transaction(current=>{
+      const cur=current||{};
+      cur.stateByDay=cur.stateByDay||{平日:{},休日:{}};
+      cur.stateByDay[currentDay]=cloneState(registrationState);
+      cur.operationDate=cur.operationDate||operationDateKey();
+      cur.version=(cur.version||0)+1;
+      cur.updatedAt=firebase.database.ServerValue.TIMESTAMP;
+      return cur;
+    });
+    syncStatus('Firebase接続中');
+  }catch(e){ console.error(e); syncStatus('Firebase書込失敗'); }
+}
+
+function findChain(day,trainNo){ return CHAIN_INDEX[day]?.[normalizeTrainNo(trainNo)]||null; }
+function chainEntries(day,trainNo){
+  const idx=findChain(day,trainNo);
+  return idx?OPERATION_CHAINS[day][idx.chainIndex]:null;
+}
+function recordSelection(train,formId){
+  const chain=chainEntries(currentDay,train.no);
+  const assigned=[];
+  if(chain){
+    chain.forEach(e=>{
+      const no=normalizeTrainNo(e.no);
+      if(TRAIN_INDEX[no]){ registrationState[no]=formId; assigned.push(no); }
+    });
+  }else{
+    registrationState[String(train.no)]=formId;
+    assigned.push(String(train.no));
+  }
+  remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
+  remoteRoot.stateByDay[currentDay]=cloneState(registrationState);
+  applyRegistrationState();
+  syncRegistrationToRemote();
+  return assigned;
+}
+
+function snapshotForCurrentRegistrations(day, state, dateKey){
+  const ops=[];
+  const chainsForDay=OPERATION_CHAINS[day]||[];
+  for(let i=0;i<chainsForDay.length;i++){
+    const chain=chainsForDay[i];
+    const shown=chain.map(e=>normalizeTrainNo(e.no)).filter(no=>TRAIN_INDEX[no]);
+    if(!shown.length) continue;
+    const byFormation={};
+    shown.forEach(no=>{
+      const f=state?.[no];
+      if(!f) return;
+      (byFormation[f]??=[]).push(no);
+    });
+    for(const [formationId,trainNumbers] of Object.entries(byFormation)){
+      ops.push({
+        operationId:`${day}-${String(i+1).padStart(2,'0')}`,
+        day,
+        firstTrainNo:String(chain[0].no),
+        trainNumbers,
+        formationId
+      });
+    }
+  }
+  return {date:dateKey,id:`${dateKey}_reset`,resetAt:resetTimeForDate(dateKey),operations:ops,loggedAt:new Date().toISOString()};
+}
+
+function snapshotFromStateRoot(oldRoot,dateKey){
+  const days=[];
+  for(const day of ['平日','休日']){
+    const snap=snapshotForCurrentRegistrations(day,oldRoot.stateByDay?.[day]||{},dateKey);
+    if(snap.operations.length) days.push(snap);
+  }
+  return {id:dateKey,date:dateKey,resetAt:resetTimeForDate(dateKey),days,loggedAt:new Date().toISOString()};
+}
+
+async function maybeResetForNewOperationDay(remoteCheck=false){
+  const opDate=operationDateKey();
+  if(!currentOperationDate) currentOperationDate=remoteRoot.operationDate||opDate;
+
+  if(firebaseReady){
+    try{
+      await firebaseOperationRef().transaction(current=>{
+        const cur=current||{stateByDay:{平日:{},休日:{}},operationDate:opDate,version:0};
+        cur.stateByDay=cur.stateByDay||{平日:{},休日:{}};
+        const oldDate=cur.operationDate;
+        if(oldDate && oldDate!==opDate){
+          const snapshot=snapshotFromStateRoot(cur,oldDate);
+          if(snapshot.days.length){
+            // transaction内では履歴書込みを行わず、後段で候補として保持
+            window.__pendingResetSnapshot=snapshot;
+          }
+          cur.stateByDay={平日:{},休日:{}};
+          cur.operationDate=opDate;
+          cur.version=(cur.version||0)+1;
+          cur.updatedAt=firebase.database.ServerValue.TIMESTAMP;
+        }
+        return cur;
+      });
+      if(window.__pendingResetSnapshot){
+        const snapshot=window.__pendingResetSnapshot;
+        window.__pendingResetSnapshot=null;
+        try{
+          // 日付固定キーで保存するため、複数端末が同時に3:00を検出しても同一履歴へ収束
+          await firebaseHistoryRef().child(snapshot.id).set(snapshot);
+          operationHistory=historyEntries();
+          saveLocalState();
+        }catch(e){
+          // 既に他端末が登録済みの場合はルールにより書込失敗するが、これは正常な競合
+          console.warn('履歴追加競合または失敗',e);
+        }
+      }
+      currentOperationDate=opDate;
+      remoteRoot.operationDate=opDate;
+      remoteRoot.stateByDay={平日:{},休日:{}};
+      registrationState={};
+      applyRegistrationState();
+      saveLocalState();
+      renderLine();
+    }catch(e){ console.error('remote reset failed',e); }
+  }else{
+    if(currentOperationDate!==opDate){
+      const snapshot=snapshotFromStateRoot(remoteRoot,currentOperationDate);
+      remoteRoot.stateByDay={平日:{},休日:{}};
+      currentOperationDate=opDate;
+      remoteRoot.operationDate=opDate;
+      remoteRoot.history=remoteRoot.history||{};
+      if(snapshot.days.length) remoteRoot.history[snapshot.id]=snapshot;
+      registrationState={};
+      operationHistory=historyEntries();
+      applyRegistrationState();
+      saveLocalState();
+      renderLine();
+    }else{
+      currentOperationDate=opDate;
+      remoteRoot.operationDate=opDate;
+      saveLocalState();
+    }
+  }
+}
+
+function historyToJsonl(){
+  return historyEntries().map(x=>JSON.stringify(x)).join('\n')+(operationHistory.length?'\n':'');
+}
+
+function initSharedState(){
+  loadLocalState();
+  if('BroadcastChannel' in window){
+    channel=new BroadcastChannel(CHANNEL_NAME);
+    channel.onmessage=e=>{
+      if(!e.data||e.data.source!=='train-app') return;
+      if(e.data.remoteRoot){ hydrateFromRoot(e.data.remoteRoot); renderLine(); if(currentTrainNo) updateSheetContent(); }
+    };
+  }
+  window.addEventListener('storage',e=>{
+    if(e.key===STORAGE_KEY){ loadLocalState(); renderLine(); if(currentTrainNo) updateSheetContent(); }
+  });
+}
+function getVisibleTrains(){ return TRAINS.filter(t=>t.days.includes(currentDay)); }
+function getShortType(type){
+  const map={
+    '普通':'普',
+    '特急ゆけむり':'ゆ',
+    '特急スノーモンキー':'ス',
+    '特急ゆけむりのんびり':'の',
+    '回送':'回'
+  };
+  return map[type]||String(type||'').replace(/^特急/,'').slice(0,2);
+}
+function getShortDest(dest){
+  const map={'信州中野':'中野','湯田中':'湯田','長野':'長野','須坂':'須坂'};
+  return map[dest]||String(dest||'').slice(0,2);
+}
+
 function setDay(day){
   currentDay=day;
+  registrationState=cloneState(remoteRoot.stateByDay?.[currentDay]||{});
+  applyRegistrationState();
   document.querySelectorAll('.day-btn').forEach(b=>b.classList.toggle('active',b.dataset.day===day));
   renderLine();
 }
@@ -271,17 +613,6 @@ function imageForTrain(t){
 }
 function stationIndex(name){
   return STATIONS.findIndex(s=>s.nameJa===name);
-}
-function timeToMinutes(value){
-  const [h,m]=value.split(':').map(Number);
-  return h*60+m;
-}
-function currentMinutes(){
-  const input=document.getElementById('timeInput');
-  const v=input&&input.value;
-  if(v) return timeToMinutes(v);
-  const d=new Date();
-  return d.getHours()*60+d.getMinutes();
 }
 function formatTimeNow(){
   const d=new Date();
@@ -307,16 +638,11 @@ function initTimeControl(){
   input.value=formatTimeNow();
   input.addEventListener('input',setManualTime);
 }
+function displayType(type){ return getShortType(type); }
 function trainVisualKind(t){
   if(/B$/.test(String(t.no))) return 'b-express';
   if(/A$/.test(String(t.no))) return 'a-express';
   return 'normal';
-}
-function displayType(type){
-  return String(type ?? '').replace(/行$/, '').trim();
-}
-function trainLabelText(t){
-  return `${displayType(t.type)} ${t.dest}`;
 }
 function renderLine(){
   const container=document.getElementById('lineContainer');
@@ -336,23 +662,85 @@ function renderLine(){
   });
   renderTrainPositions();
 }
-function positionAtTime(t, minutes){
-  const stops=t.stops;
-  if(!stops||stops.length===0) return null;
-  const first=timeToMinutes(stops[0].time);
-  const last=timeToMinutes(stops[stops.length-1].time);
-  if(minutes<first||minutes>last) return null;
-  for(let i=0;i<stops.length-1;i++){
-    const a=stops[i],b=stops[i+1];
-    const ta=timeToMinutes(a.time),tb=timeToMinutes(b.time);
-    if(minutes>=ta && minutes<=tb){
-      const ia=stationIndex(a.station), ib=stationIndex(b.station);
-      const ratio=tb===ta?0:(minutes-ta)/(tb-ta);
-      return ia+(ib-ia)*ratio;
+function timeToMinutes(value){ const [h,m]=String(value).split(':').map(Number); return h*60+m; }
+function inferDirectionFromStations(a,b){
+  const ia=stationIndex(a),ib=stationIndex(b);
+  return ia<ib?'up':'down';
+}
+function linkedEntries(t){
+  const info=findChain(currentDay,t.no);
+  if(!info) return {prev:null,next:null,chain:null,index:-1};
+  const chain=OPERATION_CHAINS[currentDay][info.chainIndex];
+  return {prev:chain[info.entryIndex-1]||null,next:chain[info.entryIndex+1]||null,chain,index:info.entryIndex};
+}
+function trainEntryNo(entry){ return entry?normalizeTrainNo(entry.no):''; }
+function connectionPrev(t){
+  const info=findChain(currentDay,t.no);
+  if(!info) return null;
+  const chain=OPERATION_CHAINS[currentDay][info.chainIndex];
+  const prev=chain[info.entryIndex-1];
+  if(!prev || String(prev.dest)!==String(t.start)) return null;
+  if(timeToMinutes(prev.endTime)>timeToMinutes(t.stops[0].time)) return null;
+  return prev;
+}
+function connectionNext(t){
+  const info=findChain(currentDay,t.no);
+  if(!info) return null;
+  const chain=OPERATION_CHAINS[currentDay][info.chainIndex];
+  const next=chain[info.entryIndex+1];
+  if(!next || String(t.dest)!==String(next.start)) return null;
+  if(timeToMinutes(t.stops[t.stops.length-1].time)>timeToMinutes(next.startTime)) return null;
+  return next;
+}
+function positionForTrain(t,minutes){
+  const stops=t.stops||[];
+  if(!stops.length) return null;
+  const firstStation=stops[0].station, lastStation=stops[stops.length-1].station;
+  const first=timeToMinutes(stops[0].time), last=timeToMinutes(stops[stops.length-1].time);
+  const prev=connectionPrev(t), next=connectionNext(t);
+  const prevEnd=prev?timeToMinutes(prev.endTime):null;
+  const nextStart=next?timeToMinutes(next.startTime):null;
+
+  // First leg of a physical operation: wait about two minutes before departure.
+  if(!prev && minutes>=first-RESET_DWELL_MIN && minutes<first){
+    return {pos:stationIndex(firstStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'start'};
+  }
+  // Turnback: arrival side for one minute, then switch to the departing side.
+  if(prev && prevEnd!==null && minutes>=prevEnd && minutes<first){
+    if(minutes<prevEnd+TURNBACK_SWITCH_MIN){
+      const incomingDir=inferDirectionFromStations(prev.start,prev.dest);
+      return {pos:stationIndex(firstStation),side:incomingDir==='down'?'right':'left',visualTrain:TRAIN_INDEX[trainEntryNo(prev)]||null,mode:'turn-arrival'};
+    }
+    return {pos:stationIndex(firstStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'turn-wait'};
+  }
+  // Running leg.
+  if(minutes>=first && minutes<=last){
+    for(let i=0;i<stops.length-1;i++){
+      const a=stops[i],b=stops[i+1];
+      const ta=timeToMinutes(a.time),tb=timeToMinutes(b.time);
+      if(minutes>=ta && minutes<=tb){
+        const ia=stationIndex(a.station),ib=stationIndex(b.station);
+        const ratio=tb===ta?0:(minutes-ta)/(tb-ta);
+        return {pos:ia+(ib-ia)*ratio,side:t.direction==='down'?'right':'left',visualTrain:t,mode:'run'};
+      }
     }
   }
-  return stationIndex(stops[stops.length-1].station);
+  // Turnback after arrival: one minute on arrival side, then outgoing side until departure.
+  if(next && minutes>last && minutes<=nextStart){
+    if(minutes<=last+TURNBACK_SWITCH_MIN){
+      return {pos:stationIndex(lastStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'turn-arrival'};
+    }
+    const nextTrain=TRAIN_INDEX[trainEntryNo(next)]||null;
+    const nextSide=nextTrain?(nextTrain.direction==='down'?'right':'left'): (inferDirectionFromStations(next.start,next.dest)==='down'?'right':'left');
+    return {pos:stationIndex(lastStation),side:nextSide,visualTrain:nextTrain||t,mode:'turn-wait'};
+  }
+  // Last leg of a physical operation: dwell two minutes after arrival.
+  if(!next && minutes>=last && minutes<=last+RESET_DWELL_MIN){
+    return {pos:stationIndex(lastStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'end'};
+  }
+  return null;
 }
+function trainLabelText(t){ return `${getShortType(t.type)} ${getShortDest(t.dest)}`; }
 function renderTrainPositions(){
   const layer=document.getElementById('movingTrainLayer');
   if(!layer) return;
@@ -361,10 +749,9 @@ function renderTrainPositions(){
   const visible=getVisibleTrains();
   const occupied={left:[],right:[]};
   visible.forEach(t=>{
-    const pos=positionAtTime(t,minutes);
-    if(pos===null) return;
-    const side=t.direction==='down'?'right':'left';
-    occupied[side].push({t,pos});
+    const info=positionForTrain(t,minutes);
+    if(!info || !info.visualTrain) return;
+    occupied[info.side].push({t:info.visualTrain,pos:info.pos,baseTrain:t,mode:info.mode});
   });
   ['left','right'].forEach(side=>{
     occupied[side].sort((a,b)=>a.pos-b.pos||String(a.t.no).localeCompare(String(b.t.no),undefined,{numeric:true}));
@@ -376,17 +763,20 @@ function renderTrainPositions(){
       const el=document.createElement('div');
       el.className=`train-icon ${side}`;
       const laneShift=lane*78*(side==='left'?-1:1);
-      const rowHeight=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--row-height'))||175;
+      const rowHeight=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--row-height'))||325;
       const linePaddingTop=20;
-      el.style.top=`${linePaddingTop + item.pos*rowHeight + rowHeight/2 - 38}px`;
+      const top=linePaddingTop + item.pos*rowHeight + rowHeight/2 - 38;
+      el.style.top=`${top}px`;
       el.style.setProperty('--lane-shift',`${laneShift}px`);
       el.style.transform=`translateX(${laneShift}px)`;
+      const t=item.t;
+      const cls=trainVisualKind(t);
       el.innerHTML=`
-        <span class="train-no">${item.t.no}</span>
-        <img src="${imageForTrain(item.t)}" alt="${item.t.no}">
-        <span class="train-label ${trainVisualKind(item.t)}">${trainLabelText(item.t)}</span>
+        <span class="train-no">${t.no}</span>
+        <img src="${imageForTrain(t)}" alt="${t.no}">
+        <span class="train-label ${cls}">${trainLabelText(t)}</span>
       `;
-      el.onclick=()=>openSheet(item.t.no);
+      el.onclick=()=>openSheet(t.no);
       layer.appendChild(el);
     });
   });
@@ -415,8 +805,8 @@ function updateSheetContent(){
         <img src="${imgSrc}" class="train-card-img">
         <div class="train-info-main">
           <div>
-            <span class="type-badge">${displayType(train.type)}</span>
-            <span class="train-title">${train.dest}</span>
+            <span class="type-badge">${getShortType(train.type)}</span>
+            <span class="train-title">${getShortDest(train.dest)}</span>
             <span class="train-number">${train.no}</span>
           </div>
           ${formObj
@@ -442,8 +832,8 @@ function updateSheetContent(){
         <img src="images/Nagano_noimage.png" class="train-card-img">
         <div class="train-info-main">
           <div>
-            <span class="type-badge">${displayType(train.type)}</span>
-            <span class="train-title">${train.dest}</span>
+            <span class="type-badge">${getShortType(train.type)}</span>
+            <span class="train-title">${getShortDest(train.dest)}</span>
             <span class="train-number">${train.no}</span>
           </div>
           <div class="input-trigger-btn" style="background:#b71c1c;">編成を入力中</div>
@@ -485,8 +875,7 @@ function toggleDropdown(){
 }
 function selectFormation(formId){
   const train=TRAINS.find(t=>t.no===currentTrainNo);
-  if(train) train.formation=formId;
-  renderLine();
+  if(train) recordSelection(train,formId);
   isEditMode=false;
   updateSheetContent();
 }
@@ -495,7 +884,20 @@ function sendReport(){
   const subject=encodeURIComponent(`長野電鉄 投稿ミス報告 ${currentTrainNo}列車`);
   window.location.href=`mailto:${email}?subject=${subject}`;
 }
-window.addEventListener('load',()=>{ document.querySelectorAll('.day-btn').forEach(b=>b.classList.toggle('active',b.dataset.day===currentDay)); initTimeControl(); setNowTime(); renderLine(); setInterval(()=>{ if(followNow){ setNowTime(); } },1000); });
+window.addEventListener('load',async ()=>{
+  initSharedState();
+  currentOperationDate=operationDateKey();
+  await initFirebase();
+  await maybeResetForNewOperationDay();
+  document.querySelectorAll('.day-btn').forEach(b=>b.classList.toggle('active',b.dataset.day===currentDay));
+  initTimeControl();
+  setNowTime();
+  renderLine();
+  setInterval(async ()=>{
+    await maybeResetForNewOperationDay();
+    if(followNow) setNowTime(); else renderTrainPositions();
+  },5000);
+});
 </script>
 </body>
 </html>
