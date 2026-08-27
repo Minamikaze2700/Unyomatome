@@ -369,6 +369,32 @@ function hydrateFromRoot(data){
 }
 function firebaseOperationRef(){ return firebase.database().ref('運用'); }
 function firebaseHistoryRef(){ return firebase.database().ref('履歴'); }
+
+// 列車データは詳細画面の開閉状態に関係なく常時同期・更新する。
+// Firebaseから取得した編成状態を各列車へ即時反映し、メイン画面と詳細画面の
+// 両方が同じインメモリキャッシュを参照する。
+const LIVE_TRAIN_CACHE = new Map();
+function refreshAllTrainDataCache(){
+  LIVE_TRAIN_CACHE.clear();
+  for(const t of TRAINS){
+    const key=String(t.no);
+    const cached={...t, stops:(t.stops||[]).map(s=>({...s}))};
+    cached.formation=registrationState[key]||null;
+    LIVE_TRAIN_CACHE.set(key,cached);
+    TRAIN_DATA_CACHE.set(key,cached);
+  }
+}
+function liveTrain(trainNo){
+  const key=String(trainNo);
+  return LIVE_TRAIN_CACHE.get(key)||TRAIN_DATA_CACHE.get(key)||TRAIN_INDEX[key]||null;
+}
+function refreshVisibleUI(){
+  refreshAllTrainDataCache();
+  renderLine();
+  // 詳細画面が開いていれば、最新のキャッシュから即時再描画。
+  if(currentTrainNo) updateSheetContent();
+}
+
 function subscribeAllOperationState(){
   if(!firebaseReady) return;
   if(firebaseDayListenerCallback){
@@ -386,8 +412,7 @@ function subscribeAllOperationState(){
     registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
     applyRegistrationState();
     saveLocalState();
-    renderLine();
-    if(currentTrainNo) updateSheetContent();
+    refreshVisibleUI();
     syncStatus('Firebase同期済み');
   };
   firebaseOperationRef().child('stateByDay').on('value',firebaseDayListenerCallback,err=>{
@@ -426,7 +451,7 @@ async function preloadFirebaseState(){
     operationHistory=historyEntries();
     applyRegistrationState();
     saveLocalState();
-    renderLine();
+    refreshVisibleUI();
   }catch(e){
     console.warn('Firebase事前取得失敗',e);
   }
@@ -479,7 +504,7 @@ async function initFirebase(){
       registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
       applyRegistrationState();
       saveLocalState();
-      renderLine();
+      refreshVisibleUI();
     }
     warmAllTrainData();
     return true;
@@ -518,6 +543,7 @@ async function syncRegistrationToRemote(){
     remoteRoot.stateByDay[currentDay]=cloneState(committed);
     applyRegistrationState();
     saveLocalState();
+    refreshAllTrainDataCache();
     broadcastState();
     syncStatus('Firebase同期済み');
     return true;
@@ -549,8 +575,7 @@ async function recordSelection(train,formId){
   // 画面は即時反映。Firebase書込完了を待たずに表示を確定し、
   // 通信完了後はonValueの確定値で全端末へ同期する。
   saveLocalState();
-  renderLine();
-  if(currentTrainNo) updateSheetContent();
+  refreshVisibleUI();
   const ok=await syncRegistrationToRemote();
   if(!ok){
     saveLocalState();
@@ -676,7 +701,7 @@ function initSharedState(){
     if(e.key===STORAGE_KEY){ loadLocalState(); renderLine(); if(currentTrainNo) updateSheetContent(); }
   });
 }
-function getVisibleTrains(){ return TRAINS.filter(t=>t.days.includes(currentDay)); }
+function getVisibleTrains(){ return TRAINS.filter(t=>t.days.includes(currentDay)).map(t=>liveTrain(t.no)||t); }
 function getShortType(type){
   const map={
     '普通':'普',
@@ -910,7 +935,7 @@ function closeSheet(){
   document.getElementById('bottomSheet').classList.remove('active');
 }
 function updateSheetContent(){
-  const train=TRAIN_DATA_CACHE.get(String(currentTrainNo))||TRAINS.find(t=>String(t.no)===String(currentTrainNo));
+  const train=liveTrain(currentTrainNo);
   if(!train) return;
   const formObj=formationById(train.formation);
   const selectedForm=selectionDisplayObject(train.formation);
@@ -994,7 +1019,7 @@ function toggleDropdown(){
   if(el) el.classList.toggle('open');
 }
 async function selectFormation(formId){
-  const train=TRAIN_DATA_CACHE.get(String(currentTrainNo))||TRAINS.find(t=>String(t.no)===String(currentTrainNo));
+  const train=liveTrain(currentTrainNo);
   if(!train) return;
   // まず画面を閉じて即時反映。保存はバックグラウンドで継続。
   isEditMode=false;
@@ -1008,6 +1033,7 @@ function sendReport(){
 }
 window.addEventListener('load',async ()=>{
   warmAllTrainData();
+  refreshAllTrainDataCache();
   initSharedState();
   currentOperationDate=operationDateKey();
   await initFirebase();
