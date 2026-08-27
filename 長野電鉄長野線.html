@@ -66,7 +66,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
   margin:0;display:flex;align-items:center;justify-content:center;
 }
 .station-badge{
-  position:relative;width:min(290px,calc(100% - 190px));height:auto;aspect-ratio:290 / 72;
+  position:relative;width:min(290px,calc(100% - 280px));height:auto;aspect-ratio:290 / 72;
   border:4px solid var(--primary);border-radius:40px;
   overflow:hidden;background:#fff;text-align:center;z-index:4;
   box-shadow:0 1px 2px rgba(0,0,0,.05);
@@ -149,8 +149,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
   }
   .rail-line{width:calc(12px * var(--ui-scale))}
 
+  /* 左右に常時2列車分の横スペースを確保 */
   .station-badge{
-    width:calc(290px * var(--ui-scale));
+    width:min(calc(290px * var(--ui-scale)),calc(100% - 280px * var(--ui-scale)));
     border-width:calc(4px * var(--ui-scale));
     border-radius:calc(40px * var(--ui-scale));
     box-shadow:0 calc(1px * var(--ui-scale)) calc(2px * var(--ui-scale)) rgba(0,0,0,.05);
@@ -1036,13 +1037,26 @@ function renderTrainPositions(){
       const el=document.createElement('div');
       el.className=`train-icon ${side}`;
       const uiScale=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ui-scale'))||1;
-      const laneShift=lane*78*uiScale*(side==='left'?-1:1);
+      /* 駅名枠の外側に、同じ側の列車を必ず2列分並べられるよう配置 */
+      const badge=document.querySelector('.station-badge');
+      const badgeWidth=badge ? badge.getBoundingClientRect().width : 290*uiScale;
+      const containerWidth=document.getElementById('lineContainer')?.getBoundingClientRect().width || window.innerWidth;
+      const trainWidth=66*uiScale;
+      const laneGap=8*uiScale;
+      const centerX=containerWidth/2;
+      const badgeHalf=badgeWidth/2;
+      const laneOffset=lane*(trainWidth+laneGap);
+      const trainLeft=side==='left'
+        ? centerX-badgeHalf-laneGap-trainWidth-laneOffset
+        : centerX+badgeHalf+laneGap+laneOffset;
       const rowHeight=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--row-height'))||325;
       const linePaddingTop=20*uiScale;
       const top=linePaddingTop + item.pos*rowHeight + rowHeight/2 - 38*uiScale;
       el.style.top=`${top}px`;
-      el.style.setProperty('--lane-shift',`${laneShift}px`);
-      el.style.transform=`translateX(${laneShift}px)`;
+      el.style.left=`${trainLeft}px`;
+      el.style.right='auto';
+      el.style.setProperty('--lane-shift','0px');
+      el.style.transform='none';
       const t=item.t;
       const cls=trainVisualKind(t);
       el.innerHTML=`
