@@ -104,6 +104,83 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 .train-label.a-express{background:#e91419}
 .train-label.deadhead{background:#fff;color:#111;border:1px solid #bbb}
 
+
+
+/* 550px未満では、550px時点のレイアウト比率を保ったまま全体を幅に比例して縮小 */
+@media (max-width:550px){
+  :root{
+    --ui-scale:calc(100vw / 550px);
+    --row-height:calc(325px * var(--ui-scale));
+  }
+
+  #title{
+    height:calc(50px * var(--ui-scale));
+    border-bottom-width:calc(8px * var(--ui-scale));
+    font-size:calc(32px * var(--ui-scale));
+  }
+
+  .control-bar{
+    top:calc(50px * var(--ui-scale));
+    gap:calc(8px * var(--ui-scale));
+    padding:calc(10px * var(--ui-scale));
+  }
+  .day-filter,.time-control{gap:calc(8px * var(--ui-scale))}
+  .day-btn,.time-now-btn{
+    border-width:calc(2px * var(--ui-scale));
+    padding:calc(7px * var(--ui-scale)) calc(14px * var(--ui-scale));
+    font-size:calc(16px * var(--ui-scale));
+  }
+  .time-input{
+    width:calc(110px * var(--ui-scale));
+    border-width:calc(2px * var(--ui-scale));
+    padding:calc(7px * var(--ui-scale)) calc(12px * var(--ui-scale));
+    font-size:calc(16px * var(--ui-scale));
+  }
+  .time-label{font-size:calc(16px * var(--ui-scale))}
+  .sync-btn{
+    padding:calc(5px * var(--ui-scale)) calc(10px * var(--ui-scale));
+    font-size:calc(16px * var(--ui-scale));
+  }
+
+  .line-container{
+    width:100%;
+    padding-top:calc(20px * var(--ui-scale));
+    padding-bottom:calc(80px * var(--ui-scale));
+  }
+  .rail-line{width:calc(12px * var(--ui-scale))}
+
+  .station-badge{
+    width:calc(290px * var(--ui-scale));
+    border-width:calc(4px * var(--ui-scale));
+    border-radius:calc(40px * var(--ui-scale));
+    box-shadow:0 calc(1px * var(--ui-scale)) calc(2px * var(--ui-scale)) rgba(0,0,0,.05);
+  }
+  .station-name-ja{
+    font-size:calc(30px * var(--ui-scale));
+    letter-spacing:calc(.12em * var(--ui-scale));
+    padding-left:calc(.12em * var(--ui-scale));
+  }
+  .station-name-en{
+    font-size:calc(16px * var(--ui-scale));
+    letter-spacing:calc(.01em * var(--ui-scale));
+  }
+
+  .train-icon{
+    width:calc(66px * var(--ui-scale));
+  }
+  .train-icon.left{left:max(calc(6px * var(--ui-scale)),calc(50% - 245px * var(--ui-scale)))}
+  .train-icon.right{right:max(calc(6px * var(--ui-scale)),calc(50% - 245px * var(--ui-scale)))}
+  .train-icon img{width:calc(60px * var(--ui-scale))}
+  .train-no{font-size:calc(12px * var(--ui-scale))}
+  .train-label{
+    margin-top:calc(2px * var(--ui-scale));
+    max-width:calc(100px * var(--ui-scale));
+    padding:calc(3px * var(--ui-scale)) calc(5px * var(--ui-scale));
+    border-radius:calc(4px * var(--ui-scale));
+    font-size:calc(12px * var(--ui-scale));
+  }
+}
+
 /* モーダル */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:none}
 .bottom-sheet{
@@ -958,10 +1035,11 @@ function renderTrainPositions(){
       used.push({pos:item.pos,lane});
       const el=document.createElement('div');
       el.className=`train-icon ${side}`;
-      const laneShift=lane*78*(side==='left'?-1:1);
+      const uiScale=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ui-scale'))||1;
+      const laneShift=lane*78*uiScale*(side==='left'?-1:1);
       const rowHeight=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--row-height'))||325;
-      const linePaddingTop=20;
-      const top=linePaddingTop + item.pos*rowHeight + rowHeight/2 - 38;
+      const linePaddingTop=20*uiScale;
+      const top=linePaddingTop + item.pos*rowHeight + rowHeight/2 - 38*uiScale;
       el.style.top=`${top}px`;
       el.style.setProperty('--lane-shift',`${laneShift}px`);
       el.style.transform=`translateX(${laneShift}px)`;
