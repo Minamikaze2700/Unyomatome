@@ -102,6 +102,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 .train-label.normal{background:#808080}
 .train-label.b-express{background:#2e7d32}
 .train-label.a-express{background:#e91419}
+.train-label.deadhead{background:#fff;color:#111;border:1px solid #bbb}
 
 /* モーダル */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:none}
@@ -131,8 +132,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 .train-card:hover{border-color:#bbb}
 .train-card-img{width:75px;height:auto;object-fit:contain}
 .train-info-main{flex:1}
-.type-badge{background:#616161;color:#fff;padding:3px 8px;border-radius:4px;font-size:.85rem;display:inline-block}
-.train-title{font-size:1.1rem;font-weight:700;margin-left:6px}
+.type-badge{background:#616161;color:#fff;padding:3px 8px;border-radius:4px;font-size:.78rem;display:inline-block}
+.train-title{font-size:0.95rem;font-weight:700;margin-left:6px}
 .train-number{color:#1b6e27;font-weight:800;float:right}
 .formation-id{font-size:1.2rem;font-weight:800;color:#1b6e27;margin-top:4px}
 .capacity-info{color:#666;font-size:.85rem;margin-top:4px}
@@ -186,7 +187,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
   .train-icon.left{left:10px}
   .train-icon.right{right:10px}
   .train-icon img{width:60px;height:auto}
-  .train-label{max-width:64px;font-size:8px}
+  .train-label{max-width:90px;font-size:10px}
   .train-no{font-size:10px}
 }
 @media(max-width:560px){
@@ -198,7 +199,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
   .train-icon.left{left:2px}
   .train-icon.right{right:2px}
   .train-icon img{width:40px;height:32px}
-  .train-label{max-width:54px;font-size:7px}
+  .train-label{max-width:78px;font-size:9px}
   .control-bar{gap:5px;padding:8px 5px}
   .time-label{font-size:12px}
   .time-input{width:92px}
@@ -740,18 +741,21 @@ function initSharedState(){
 function getVisibleTrains(){ return TRAINS.filter(t=>t.days.includes(currentDay)).map(t=>liveTrain(t.no)||t); }
 function getShortType(type){
   const map={
-    '普通':'普',
-    '特急ゆけむり':'ゆ',
-    '特急スノーモンキー':'ス',
-    '特急ゆけむりのんびり':'の',
-    '回送':'回'
+    '普通':'普通',
+    '特急ゆけむり':'A特',
+    '特急スノーモンキー':'B特',
+    '特急ゆけむりのんびり':'ゆの',
+    '回送':'回送'
   };
-  return map[type]||String(type||'').replace(/^特急/,'').slice(0,2);
+  return map[type]||String(type||'');
 }
 function getShortDest(dest){
   const map={'信州中野':'中野','湯田中':'湯田','長野':'長野','須坂':'須坂'};
-  return map[dest]||String(dest||'').slice(0,2);
+  return map[dest]||String(dest||'');
 }
+function getDetailType(type){ return String(type||''); }
+function getDetailDest(dest){ return String(dest||''); }
+function getMainLabelClass(type){ return type==='回送' ? 'deadhead' : ''; }
 
 function setDay(day){
   currentDay=day;
@@ -918,7 +922,7 @@ function positionForTrain(t,minutes){
   }
   return null;
 }
-function trainLabelText(t){ return `${getShortType(t.type)} ${getShortDest(t.dest)}`; }
+function trainLabelText(t){ return `<span>${getShortType(t.type)} ${getShortDest(t.dest)}</span>`; }
 function renderTrainPositions(){
   const layer=document.getElementById('movingTrainLayer');
   if(!layer) return;
@@ -952,7 +956,7 @@ function renderTrainPositions(){
       el.innerHTML=`
         <span class="train-no">${t.no}</span>
         <img src="${imageForTrain(t)}" alt="${t.no}">
-        <span class="train-label ${cls}">${trainLabelText(t)}</span>
+        <span class="train-label ${cls} ${getMainLabelClass(t.type)}">${trainLabelText(t)}</span>
       `;
       el.onclick=()=>openSheet(t.no);
       layer.appendChild(el);
@@ -988,8 +992,8 @@ function updateSheetContent(){
         <img src="${imgSrc}" class="train-card-img">
         <div class="train-info-main">
           <div>
-            <span class="type-badge">${getShortType(train.type)}</span>
-            <span class="train-title">${getShortDest(train.dest)}</span>
+            <span class="type-badge">${getDetailType(train.type)}</span>
+            <span class="train-title">${getDetailDest(train.dest)}</span>
             <span class="train-number">${train.no}</span>
           </div>
           ${formObj
@@ -1009,8 +1013,8 @@ function updateSheetContent(){
         <img src="images/Nagano_noimage.png" class="train-card-img">
         <div class="train-info-main">
           <div>
-            <span class="type-badge">${getShortType(train.type)}</span>
-            <span class="train-title">${getShortDest(train.dest)}</span>
+            <span class="type-badge">${getDetailType(train.type)}</span>
+            <span class="train-title">${getDetailDest(train.dest)}</span>
             <span class="train-number">${train.no}</span>
           </div>
           <div class="input-trigger-btn" style="background:#b71c1c;">編成を入力中</div>
