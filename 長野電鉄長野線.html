@@ -427,12 +427,19 @@ function liveTrain(trainNo){
   return LIVE_TRAIN_CACHE.get(key)||TRAIN_DATA_CACHE.get(key)||TRAIN_INDEX[key]||null;
 }
 function refreshVisibleUI(){
-  // 編成入力中は、Firebase等からの列車データ更新による再描画を停止。
-  // 入力完了後のselectFormation()でまとめて最新状態を反映する。
-  if(isEditMode) return;
+  // 編成入力中、または詳細画面を開いている最中は路線図全体を作り直さない。
+  // renderLine() でモーダル以外のDOMを再生成すると、入力欄の操作中に
+  // 状態だけが先に更新されて画面操作が不安定になることがある。
   refreshAllTrainDataCache();
+  const sheet=document.getElementById('bottomSheet');
+  const sheetActive=!!sheet && sheet.classList.contains('active');
+  if(isEditMode || sheetActive){
+    if(currentTrainNo) updateSheetContent();
+    const layer=document.getElementById('movingTrainLayer');
+    if(layer) renderTrainPositions();
+    return;
+  }
   renderLine();
-  if(currentTrainNo) updateSheetContent();
 }
 
 function subscribeAllOperationState(){
@@ -618,10 +625,12 @@ async function recordSelection(train,formId){
     assigned.push(String(train.no));
   }
   applyRegistrationState();
-  // 画面は即時反映。Firebase書込完了を待たずに表示を確定し、
-  // 通信完了後はonValueの確定値で全端末へ同期する。
+  // ローカル状態を即時反映するが、詳細画面を開いたまま路線図DOMを再生成しない。
   saveLocalState();
-  refreshVisibleUI();
+  refreshAllTrainDataCache();
+  if(currentTrainNo) updateSheetContent();
+  const layer=document.getElementById('movingTrainLayer');
+  if(layer) renderTrainPositions();
   const ok=await syncRegistrationToRemote();
   if(!ok){
     saveLocalState();
@@ -1086,12 +1095,19 @@ function renderTrainPositions(){
 }
 
 function openSheet(trainNo){
-  currentTrainNo=trainNo;
+  const train=liveTrain(trainNo);
+  if(!train){
+    console.warn('列車情報が見つかりません:',trainNo);
+    return;
+  }
+  currentTrainNo=String(train.no);
   isEditMode=false;
   const sheet=document.getElementById('bottomSheet');
+  const overlay=document.getElementById('overlay');
+  if(!sheet || !overlay) return;
   sheet.classList.remove('editing');
   updateSheetContent();
-  document.getElementById('overlay').style.display='block';
+  overlay.style.display='block';
   sheet.classList.add('active');
 }
 function closeSheet(){
@@ -1169,22 +1185,38 @@ function updateSheetContent(){
   }
 }
 function switchToEditMode(){
+  const train=liveTrain(currentTrainNo);
+  if(!train) return;
   isEditMode=true;
-  document.getElementById('bottomSheet').classList.add('editing');
+  const sheet=document.getElementById('bottomSheet');
+  if(!sheet) return;
+  sheet.classList.add('editing','active');
+  document.getElementById('overlay').style.display='block';
   updateSheetContent();
 }
 function toggleDropdown(){
   const el=document.getElementById('dropdownOptions');
-  if(el) el.classList.toggle('open');
+  if(!el || !isEditMode) return;
+  el.classList.toggle('open');
 }
 async function selectFormation(formId){
   const train=liveTrain(currentTrainNo);
   if(!train) return;
-  // まず画面を閉じて即時反映。保存はバックグラウンドで継続。
+
+  // 選択処理中に路線図やモーダルDOMを再生成しない。
+  // これにより「一度編成入力した後に開けない／反応しない」状態を防ぐ。
+  const resultPromise=recordSelection(train,formId);
   isEditMode=false;
-  document.getElementById('bottomSheet').classList.remove('editing');
-  recordSelection(train,formId).catch(e=>console.error('編成登録同期失敗',e));
+  const sheet=document.getElementById('bottomSheet');
+  if(sheet) sheet.classList.remove('editing');
+  const dropdown=document.getElementById('dropdownOptions');
+  if(dropdown) dropdown.classList.remove('open');
   updateSheetContent();
+  try{
+    await resultPromise;
+  }catch(e){
+    console.error('編成登録同期失敗',e);
+  }
 }
 window.addEventListener('load',async ()=>{
   warmAllTrainData();
