@@ -911,7 +911,11 @@ function positionForTrain(t,minutes){
     if(minutes<=last+TURNBACK_SWITCH_MIN){
       return {pos:stationIndex(lastStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'turn-arrival'};
     }
-    const nextTrain=TRAIN_INDEX[trainEntryNo(next)]||null;
+    // 折り返し後は「次の列車」の最新の編成状態を使う。
+    // TRAIN_INDEX は初期データ（formation:null）のため、ここを直接参照すると
+    // noimage が表示されることがある。必ず liveTrain() から取得する。
+    const nextNo=trainEntryNo(next);
+    const nextTrain=liveTrain(nextNo)||TRAIN_INDEX[nextNo]||null;
     const nextSide=nextTrain?(nextTrain.direction==='down'?'right':'left'): (inferDirectionFromStations(next.start,next.dest)==='down'?'right':'left');
     return {pos:stationIndex(lastStation),side:nextSide,visualTrain:nextTrain||t,mode:'turn-wait'};
   }
