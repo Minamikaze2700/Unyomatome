@@ -618,6 +618,17 @@ function formatTimeNow(){
   const d=new Date();
   return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
 }
+function currentMinutes(){
+  if(followNow){
+    const d=new Date();
+    return d.getHours()*60+d.getMinutes();
+  }
+  const input=document.getElementById('timeInput');
+  const value=input?.value || formatTimeNow();
+  const [h,m]=String(value).split(':').map(Number);
+  if(Number.isFinite(h) && Number.isFinite(m)) return h*60+m;
+  return new Date().getHours()*60+new Date().getMinutes();
+}
 function setNowTime(){
   followNow=true;
   const input=document.getElementById('timeInput');
