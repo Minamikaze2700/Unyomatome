@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>長野電鉄長野線-運用まとめ</title>
+<title>運用まとめ - 長野電鉄長野線</title>
 <style>
 :root{
   --primary:#e91419;
@@ -19,6 +19,19 @@
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text)}
 
 /* 日別・時刻フィルター */
+.title{
+    height: 50px;
+    color: #fff;
+    font-weight: 500;
+    display: flex;
+    background: #e91419;
+    width: 100%;
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 8px solid #000;
+    z-index: 100;
+}
 .control-bar{
   position:sticky;top:0;z-index:20;
   display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;
@@ -194,7 +207,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 </style>
 </head>
 <body>
-
+<h1 id="title">長野電鉄長野線</h1>
 <div class="control-bar">
   <div class="day-filter">
     <button class="day-btn" data-day="平日" onclick="setDay('平日')">平日</button>
