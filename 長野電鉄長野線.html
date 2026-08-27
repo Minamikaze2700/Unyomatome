@@ -100,8 +100,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
   box-shadow:0 -4px 12px rgba(0,0,0,.18);transition:bottom .3s ease-out;
 }
 .bottom-sheet.active{bottom:0}
-.bottom-sheet.editing{max-height:100vh;min-height:100vh}
-.bottom-sheet.editing .sheet-content{min-height:calc(100vh - 58px)}
+.bottom-sheet.editing{max-height:90vh;min-height:90vh}
+.bottom-sheet.editing .sheet-content{min-height:calc(90vh - 58px)}
 .bottom-sheet.editing .custom-select-options{max-height:min(80vh,720px)}
 .sheet-header{
   position:sticky;top:0;z-index:2;background:#9e9e9e;color:#fff;
@@ -153,8 +153,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 .custom-select-options.open{display:block}
 .option-header{
   background:#f0f0f0;padding:8px 12px;font-weight:700;display:flex;
-  align-items:center;gap:10px;border-bottom:1px solid #e0e0e0;
+  align-items:center;gap:10px;border-bottom:1px solid #e0e0e0;cursor:pointer;
 }
+.option-header:hover{background:#e8f5e9}
 .option-item{
   padding:8px 12px 8px 32px;display:flex;align-items:center;gap:10px;
   cursor:pointer;border-bottom:1px solid #f0f0f0;
@@ -1021,9 +1022,8 @@ function updateSheetContent(){
         </div>
         <div class="custom-select-options" id="dropdownOptions">
           <div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}')"><img src="${INITIAL_FORMATION_SELECTION.img}" class="option-img"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>
-          ${TYPE_SELECTIONS.map(item=>`<div class="option-item type-option" onclick="selectFormation('${item.id}')"><img src="${item.img}" class="option-img"><span>${item.name}</span></div>`).join('')}
           ${FORMATIONS.map(group=>`
-            <div class="option-header">
+            <div class="option-header" onclick="selectFormation('__TYPE__:${group.type}')">
               <img src="${group.typeImg}" class="option-img"><span>${group.type}</span>
             </div>
             ${group.items.map(item=>`
