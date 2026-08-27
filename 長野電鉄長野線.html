@@ -2,6 +2,9 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>長野電鉄 列車運用記録システム</title>
 <style>
@@ -57,12 +60,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
   box-shadow:0 1px 2px rgba(0,0,0,.05);
 }
 .station-name-ja{
+  font-family:"Kosugi Maru",sans-serif;
   height:44px;background:var(--primary);color:#fff;
   display:flex;align-items:center;justify-content:center;
   font-size:30px;line-height:1;font-weight:500;
   letter-spacing:.12em;padding-left:.12em;
 }
 .station-name-en{
+  font-family:"Kosugi Maru",sans-serif;
   height:24px;display:flex;align-items:center;justify-content:center;
   font-size:16px;font-weight:400;letter-spacing:.01em;
 }
@@ -129,8 +134,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 .timetable-item:first-child::before{top:50%}
 .timetable-item:last-child::before{bottom:50%}
 .time-dot{width:18px;height:18px;background:var(--primary);border-radius:50%;z-index:2;margin-right:16px}
-.time-text{width:50px;font-weight:700}
-.station-text{font-weight:700;font-size:1.05rem}
+.time-text{width:50px;font-weight:700;display:flex;flex-direction:column;line-height:1.15;gap:2px}
+.station-text{font-family:"Kosugi Maru",sans-serif;font-weight:700;font-size:1.05rem}
 .select-box-container{position:relative;width:100%;margin:12px 0}
 .custom-select-trigger{
   background:#fff;border:2px solid #ccc;border-radius:8px;padding:10px;
@@ -155,10 +160,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 .option-item.type-option,.option-item.initial-option{background:#e0e0e0}
 .option-item.type-option:hover,.option-item.initial-option:hover{background:#d0d0d0}
 .option-img{width:36px;height:30px;object-fit:contain}
-.report-btn{
-  width:100%;background:var(--primary);color:#fff;border:none;padding:14px;
-  border-radius:8px;font-size:1.05rem;font-weight:700;cursor:pointer;margin-top:20px;
-}
 .data-note{text-align:center;color:#777;font-size:12px;padding:0 16px 30px}
 
 @media(max-width:800px){
@@ -304,7 +305,25 @@ let lastHistoryFingerprint='';
 let firebaseDayListenerDay=null;
 let firebaseDayListenerCallback=null;
 const TRAIN_DATA_CACHE = new Map(TRAINS.map(t=>[String(t.no),t]));
-const TIMETABLE_HTML_CACHE = new Map(TRAINS.map(t=>[String(t.no),(t.stops||[]).map(st=>`<div class=\"timetable-item\"><div class=\"time-dot\"></div><div class=\"time-text\">${st.time}</div><div class=\"station-text\">${st.station}</div></div>`).join('')]));
+function buildTimetableRows(stops){
+  const rows=[];
+  for(let i=0;i<(stops||[]).length;){
+    const station=stops[i].station;
+    const times=[stops[i].time];
+    let j=i+1;
+    while(j<stops.length && stops[j].station===station){
+      times.push(stops[j].time);
+      j++;
+    }
+    rows.push({station,times});
+    i=j;
+  }
+  return rows;
+}
+function timetableRowsHTML(stops){
+  return buildTimetableRows(stops).map(row=>`<div class="timetable-item"><div class="time-dot"></div><div class="time-text">${row.times.map(t=>`<span>${t}</span>`).join('')}</div><div class="station-text">${row.station}</div></div>`).join('');
+}
+const TIMETABLE_HTML_CACHE = new Map(TRAINS.map(t=>[String(t.no),timetableRowsHTML(t.stops)]));
 
 
 function todayKey(d=new Date()){
@@ -959,13 +978,7 @@ function updateSheetContent(){
         </div>
       </div>
       <div class="timetable-list">
-        ${train.stops.map(s=>`
-          <div class="timetable-item">
-            <div class="time-dot"></div>
-            <div class="time-text">${s.time}</div>
-            <div class="station-text">${s.station}</div>
-          </div>
-        `).join('')}
+        ${TIMETABLE_HTML_CACHE.get(String(train.no)) || timetableRowsHTML(train.stops)}
       </div>
     `;
   }else{
