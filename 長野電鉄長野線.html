@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -297,6 +296,7 @@ let remoteRoot={version:0,operationDate:null,stateByDay:{平日:{},休日:{}},hi
 let channel=null;
 let firebaseReady=false;
 let lastHistoryFingerprint='';
+let firebaseDayListenerDay=null;
 
 function todayKey(d=new Date()){
   const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
@@ -360,6 +360,27 @@ function hydrateFromRoot(data){
 }
 function firebaseOperationRef(){ return firebase.database().ref('運用'); }
 function firebaseHistoryRef(){ return firebase.database().ref('履歴'); }
+function subscribeCurrentDayState(){
+  if(!firebaseReady) return;
+  if(firebaseDayListenerDay===currentDay) return;
+  if(firebaseDayListenerDay){
+    firebaseOperationRef().child('stateByDay').child(firebaseDayListenerDay).off();
+  }
+  firebaseDayListenerDay=currentDay;
+  const day= currentDay;
+  firebaseOperationRef().child('stateByDay').child(day).on('value',snap=>{
+    // 現在選択している曜日のサーバー側データを常に正とする。
+    if(currentDay!==day) return;
+    registrationState=cloneState(snap.val()||{});
+    remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
+    remoteRoot.stateByDay[day]=cloneState(registrationState);
+    applyRegistrationState();
+    saveLocalState();
+    renderLine();
+    if(currentTrainNo) updateSheetContent();
+    syncStatus('Firebase同期済み');
+  });
+}
 
 async function initFirebase(){
   if(!FIREBASE_ENABLED){ syncStatus('ローカル（Firebase設定待ち）'); return false; }
@@ -395,6 +416,9 @@ async function initFirebase(){
       syncStatus('Firebase接続中');
     },err=>console.error('Firebase履歴読込失敗',err));
 
+    // 現在選択中の曜日は専用リスナーでも監視し、別端末の変更を即時反映する。
+    subscribeCurrentDayState();
+
     // 初回データが無ければ、空状態を運用へ作成
     const opSnap=await firebaseOperationRef().once('value');
     if(!opSnap.exists()) await firebaseOperationRef().set({
@@ -420,19 +444,28 @@ async function syncRegistrationToRemote(){
   remoteRoot.version=(remoteRoot.version||0)+1;
   saveLocalState();
   broadcastState();
-  if(!firebaseReady) return;
+  if(!firebaseReady) return false;
   try{
-    await firebaseOperationRef().transaction(current=>{
-      const cur=current||{};
-      cur.stateByDay=cur.stateByDay||{平日:{},休日:{}};
-      cur.stateByDay[currentDay]=cloneState(registrationState);
-      cur.operationDate=cur.operationDate||operationDateKey();
-      cur.version=(cur.version||0)+1;
-      cur.updatedAt=firebase.database.ServerValue.TIMESTAMP;
-      return cur;
+    // 日ごとの登録状態だけをトランザクション更新する。
+    // これにより別端末からの変更を、古いローカル状態で上書きしにくくする。
+    const dayRef=firebaseOperationRef().child('stateByDay').child(currentDay);
+    await dayRef.transaction(serverState=>{
+      const next=serverState&&typeof serverState==='object'?serverState:{};
+      Object.keys(registrationState).forEach(no=>{ next[String(no)]=registrationState[no]; });
+      Object.keys(next).forEach(no=>{
+        if(registrationState[no]===null || registrationState[no]===undefined || registrationState[no]==='') delete next[no];
+      });
+      return next;
     });
-    syncStatus('Firebase接続中');
-  }catch(e){ console.error(e); syncStatus('Firebase書込失敗'); }
+    await firebaseOperationRef().child('operationDate').set(currentOperationDate||operationDateKey());
+    await firebaseOperationRef().child('updatedAt').set(firebase.database.ServerValue.TIMESTAMP);
+    syncStatus('Firebase同期済み');
+    return true;
+  }catch(e){
+    console.error('Firebase書込失敗',e);
+    syncStatus('Firebase書込失敗');
+    return false;
+  }
 }
 
 function findChain(day,trainNo){ return CHAIN_INDEX[day]?.[normalizeTrainNo(trainNo)]||null; }
@@ -440,7 +473,7 @@ function chainEntries(day,trainNo){
   const idx=findChain(day,trainNo);
   return idx?OPERATION_CHAINS[day][idx.chainIndex]:null;
 }
-function recordSelection(train,formId){
+async function recordSelection(train,formId){
   const chain=chainEntries(currentDay,train.no);
   const assigned=[];
   if(chain){
@@ -455,7 +488,9 @@ function recordSelection(train,formId){
   remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
   remoteRoot.stateByDay[currentDay]=cloneState(registrationState);
   applyRegistrationState();
-  syncRegistrationToRemote();
+  await syncRegistrationToRemote();
+  renderLine();
+  if(currentTrainNo) updateSheetContent();
   return assigned;
 }
 
@@ -597,6 +632,7 @@ function setDay(day){
   registrationState=cloneState(remoteRoot.stateByDay?.[currentDay]||{});
   applyRegistrationState();
   document.querySelectorAll('.day-btn').forEach(b=>b.classList.toggle('active',b.dataset.day===day));
+  subscribeCurrentDayState();
   renderLine();
 }
 function formationById(id){
@@ -708,15 +744,21 @@ function positionForTrain(t,minutes){
   if(!stops.length) return null;
   const firstStation=stops[0].station, lastStation=stops[stops.length-1].station;
   const first=timeToMinutes(stops[0].time), last=timeToMinutes(stops[stops.length-1].time);
+  const chainInfo=findChain(currentDay,t.no);
+  const chain=chainInfo ? OPERATION_CHAINS[currentDay][chainInfo.chainIndex] : null;
+  const isChainFirst=!!chain && chainInfo.entryIndex===0;
+  const isChainLast=!!chain && chainInfo.entryIndex===chain.length-1;
   const prev=connectionPrev(t), next=connectionNext(t);
   const prevEnd=prev?timeToMinutes(prev.endTime):null;
   const nextStart=next?timeToMinutes(next.startTime):null;
 
-  // First leg of a physical operation: wait about two minutes before departure.
-  if(!prev && minutes>=first-RESET_DWELL_MIN && minutes<first){
+  // 1日の一連の運用の最初の列車だけ、始発駅で発車2分前から待機。
+  // 中間の列車にはこの2分追加を適用しない。
+  if(isChainFirst && minutes>=first-RESET_DWELL_MIN && minutes<first){
     return {pos:stationIndex(firstStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'start'};
   }
-  // Turnback: arrival side for one minute, then switch to the departing side.
+  // Excel上の運用鎖に接続する中間列車は、到着後1分は到着側、
+  // その後は出発側で次列車の発車を待つ。
   if(prev && prevEnd!==null && minutes>=prevEnd && minutes<first){
     if(minutes<prevEnd+TURNBACK_SWITCH_MIN){
       const incomingDir=inferDirectionFromStations(prev.start,prev.dest);
@@ -736,8 +778,8 @@ function positionForTrain(t,minutes){
       }
     }
   }
-  // Turnback after arrival: one minute on arrival side, then outgoing side until departure.
-  if(next && minutes>last && minutes<=nextStart){
+  // 中間列車の到着駅では、次列車が続くなら到着+1分で反対側へ移動。
+  if(next && !isChainLast && minutes>last && minutes<=nextStart){
     if(minutes<=last+TURNBACK_SWITCH_MIN){
       return {pos:stationIndex(lastStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'turn-arrival'};
     }
@@ -745,8 +787,9 @@ function positionForTrain(t,minutes){
     const nextSide=nextTrain?(nextTrain.direction==='down'?'right':'left'): (inferDirectionFromStations(next.start,next.dest)==='down'?'right':'left');
     return {pos:stationIndex(lastStation),side:nextSide,visualTrain:nextTrain||t,mode:'turn-wait'};
   }
-  // Last leg of a physical operation: dwell two minutes after arrival.
-  if(!next && minutes>=last && minutes<=last+RESET_DWELL_MIN){
+  // 一日の一連の運用の最後の列車だけ、終着後2分を終着駅で表示。
+  // A→B→C なら AとCだけに適用し、Bには適用しない。
+  if(isChainLast && minutes>=last && minutes<=last+RESET_DWELL_MIN){
     return {pos:stationIndex(lastStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'end'};
   }
   return null;
@@ -884,9 +927,9 @@ function toggleDropdown(){
   const el=document.getElementById('dropdownOptions');
   if(el) el.classList.toggle('open');
 }
-function selectFormation(formId){
+async function selectFormation(formId){
   const train=TRAINS.find(t=>t.no===currentTrainNo);
-  if(train) recordSelection(train,formId);
+  if(train) await recordSelection(train,formId);
   isEditMode=false;
   updateSheetContent();
 }
