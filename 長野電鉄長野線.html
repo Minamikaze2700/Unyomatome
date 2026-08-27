@@ -427,21 +427,12 @@ function liveTrain(trainNo){
   return LIVE_TRAIN_CACHE.get(key)||TRAIN_DATA_CACHE.get(key)||TRAIN_INDEX[key]||null;
 }
 function refreshVisibleUI(){
-  refreshAllTrainDataCache();
-
-  // 詳細画面を開いている間は路線図を再生成しない。
-  // renderLine() は駅・列車DOMを全置換するため、編成入力中や
-  // モーダル操作中に実行されると、クリック対象や入力画面の状態が
-  // 途中で失われることがある。
-  const sheet=document.getElementById('bottomSheet');
-  const sheetActive=!!sheet?.classList.contains('active');
-  if(sheetActive){
-    if(currentTrainNo && !isEditMode) updateSheetContent();
-    return;
-  }
-
+  // 編成入力中は、Firebase等からの列車データ更新による再描画を停止。
+  // 入力完了後のselectFormation()でまとめて最新状態を反映する。
   if(isEditMode) return;
+  refreshAllTrainDataCache();
   renderLine();
+  if(currentTrainNo) updateSheetContent();
 }
 
 function subscribeAllOperationState(){
@@ -614,9 +605,7 @@ function chainEntries(day,trainNo){
   const idx=findChain(day,trainNo);
   return idx?OPERATION_CHAINS[day][idx.chainIndex]:null;
 }
-async function recordSelection(train,formId){
-  if(!train) throw new Error('編成登録対象の列車が見つかりません');
-
+async async function recordSelection(train,formId){
   const chain=chainEntries(currentDay,train.no);
   const assigned=[];
   if(chain){
@@ -628,22 +617,15 @@ async function recordSelection(train,formId){
     registrationState[String(train.no)]=formId;
     assigned.push(String(train.no));
   }
-
   applyRegistrationState();
+  // 画面は即時反映。Firebase書込完了を待たずに表示を確定し、
+  // 通信完了後はonValueの確定値で全端末へ同期する。
   saveLocalState();
-  refreshAllTrainDataCache();
-
-  // モーダル操作中は路線図DOMを再生成しない。
-  // 先に保存状態をローカルへ反映し、Firebase同期完了後に必要なら再描画する。
+  refreshVisibleUI();
   const ok=await syncRegistrationToRemote();
   if(!ok){
     saveLocalState();
     syncStatus('同期失敗（再試行待ち）');
-  }
-
-  const sheet=document.getElementById('bottomSheet');
-  if(!sheet?.classList.contains('active') && !isEditMode){
-    renderLine();
   }
   return assigned;
 }
@@ -1104,18 +1086,12 @@ function renderTrainPositions(){
 }
 
 function openSheet(trainNo){
-  const normalized=normalizeTrainNo(trainNo);
-  const train=liveTrain(normalized)||TRAIN_INDEX[normalized];
-  if(!train) return;
-
-  currentTrainNo=normalized;
+  currentTrainNo=trainNo;
   isEditMode=false;
   const sheet=document.getElementById('bottomSheet');
-  if(!sheet) return;
   sheet.classList.remove('editing');
   updateSheetContent();
-  const overlay=document.getElementById('overlay');
-  if(overlay) overlay.style.display='block';
+  document.getElementById('overlay').style.display='block';
   sheet.classList.add('active');
 }
 function closeSheet(){
@@ -1125,9 +1101,8 @@ function closeSheet(){
   isEditMode=false;
 }
 function updateSheetContent(){
-  const normalized=normalizeTrainNo(currentTrainNo);
-  const train=liveTrain(normalized)||TRAIN_INDEX[normalized];
-  if(!train) return false;
+  const train=liveTrain(currentTrainNo);
+  if(!train) return;
   const formObj=formationById(train.formation);
   const selectedForm=selectionDisplayObject(train.formation);
   const content=document.getElementById('sheetContent');
@@ -1194,12 +1169,8 @@ function updateSheetContent(){
   }
 }
 function switchToEditMode(){
-  const train=liveTrain(currentTrainNo)||TRAIN_INDEX[normalizeTrainNo(currentTrainNo)];
-  if(!train) return;
   isEditMode=true;
-  const sheet=document.getElementById('bottomSheet');
-  if(!sheet) return;
-  sheet.classList.add('editing');
+  document.getElementById('bottomSheet').classList.add('editing');
   updateSheetContent();
 }
 function toggleDropdown(){
@@ -1207,29 +1178,13 @@ function toggleDropdown(){
   if(el) el.classList.toggle('open');
 }
 async function selectFormation(formId){
-  // クリック時点の列車番号を固定してから非同期処理へ渡す。
-  // Firebase同期や路線図再描画で currentTrainNo が変わっても、
-  // いま選択した列車への登録対象がずれないようにする。
-  const trainNo=normalizeTrainNo(currentTrainNo);
-  const train=liveTrain(trainNo)||TRAIN_INDEX[trainNo];
+  const train=liveTrain(currentTrainNo);
   if(!train) return;
-
-  try{
-    await recordSelection(train,formId);
-  }catch(e){
-    console.error('編成登録同期失敗',e);
-    syncStatus('編成登録に失敗しました');
-  }finally{
-    // 登録完了後に詳細画面を閉じる。
-    isEditMode=false;
-    const sheet=document.getElementById('bottomSheet');
-    if(sheet) sheet.classList.remove('editing');
-    if(sheet?.classList.contains('active')){
-      updateSheetContent();
-    }else{
-      renderLine();
-    }
-  }
+  // まず画面を閉じて即時反映。保存はバックグラウンドで継続。
+  isEditMode=false;
+  document.getElementById('bottomSheet').classList.remove('editing');
+  recordSelection(train,formId).catch(e=>console.error('編成登録同期失敗',e));
+  updateSheetContent();
 }
 window.addEventListener('load',async ()=>{
   warmAllTrainData();
