@@ -1169,7 +1169,7 @@ function updateSheetContent(){
           ${formObj
             ? `<div class="formation-id">${formObj.id}</div>`
             : `<div class="input-trigger-btn">ここから編成を入力</div>`}
-          <div class="capacity-info">所定:${prescribedFormationName(train)}　運転日:${train.days.join('・')}</div>
+          <div class="capacity-info">所定:${prescribedFormationName(train)}　運転日:${['平日','休日'].filter(d=>Array.isArray(train.days)&&train.days.includes(d)).join('・')}</div>
         </div>
       </div>
       <div class="timetable-list">
