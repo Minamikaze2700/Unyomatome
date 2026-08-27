@@ -66,21 +66,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
   margin:0;display:flex;align-items:center;justify-content:center;
 }
 .station-badge{
-  position:relative;width:min(290px,calc(100% - 190px));height:72px;
+  position:relative;width:min(290px,calc(100% - 190px));height:auto;aspect-ratio:290 / 72;
   border:4px solid var(--primary);border-radius:40px;
   overflow:hidden;background:#fff;text-align:center;z-index:4;
   box-shadow:0 1px 2px rgba(0,0,0,.05);
 }
 .station-name-ja{
   font-family:"Kosugi Maru",sans-serif;
-  height:44px;background:var(--primary);color:#fff;
+  height:61.1111%;background:var(--primary);color:#fff;
   display:flex;align-items:center;justify-content:center;
   font-size:30px;line-height:1;font-weight:500;
   letter-spacing:.12em;padding-left:.12em;
 }
 .station-name-en{
   font-family:"Kosugi Maru",sans-serif;
-  height:24px;display:flex;align-items:center;justify-content:center;
+  height:33.3333%;display:flex;align-items:center;justify-content:center;
   font-size:16px;font-weight:400;letter-spacing:.01em;
 }
 .moving-train-layer{position:absolute;inset:0;z-index:6;pointer-events:none}
@@ -179,67 +179,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 .option-img{width:36px;height:30px;object-fit:contain}
 
 @media(max-width:800px){
-  /* PC版の中央50%を切り出したような見え方を維持しつつ、スマホ幅へ自然に収める */
   :root{--row-height:300px}
-  html,body{width:100%;max-width:100%;overflow-x:hidden}
-  #title{height:50px;font-size:clamp(16px,4.8vw,22px);white-space:nowrap}
-  .control-bar{gap:6px;padding:8px 6px;justify-content:center}
-  .day-filter,.time-control{gap:6px}
-  .day-btn,.time-now-btn{padding:7px 11px;font-size:13px}
-  .time-input{width:100px;padding:7px 9px}
-
-  .line-container{width:100%;max-width:none;padding:20px 0 60px}
-  .station-badge{width:min(290px,68vw);min-width:210px;height:72px}
-  .station-name-ja{height:44px;font-size:clamp(22px,7vw,30px);letter-spacing:.1em;padding-left:.1em}
-  .station-name-en{height:24px;font-size:clamp(12px,3.7vw,16px)}
-
-  /* デスクトップ版の左右配置を保ったまま、中央部を基準に縮小 */
+  .station-badge{width:min(50vw,290px);height:auto;aspect-ratio:290 / 72}
+  .station-name-ja{height:61.1111%;font-size:30px}
+  .station-name-en{height:33.3333%;font-size:16px}
   .train-icon{width:64px}
-  .train-icon.left{left:max(4px,calc(50% - min(245px,42vw)))}
-  .train-icon.right{right:max(4px,calc(50% - min(245px,42vw)))}
-  .train-icon img{width:54px;height:auto}
-  .train-label{max-width:82px;font-size:10px}
+  .train-icon.left{left:10px}
+  .train-icon.right{right:10px}
+  .train-icon img{width:60px;height:auto}
+  .train-label{max-width:90px;font-size:10px}
   .train-no{font-size:10px}
-
-  .bottom-sheet{width:100%;max-width:620px;border-radius:14px 14px 0 0}
 }
 @media(max-width:560px){
-  /* 約390px幅では、PC版の左右端を切り取ったように中央のバランスを優先 */
-  :root{--row-height:280px}
-  #title{font-size:18px}
-  .control-bar{gap:5px;padding:7px 4px}
-  .day-filter,.time-control{gap:4px}
-  .day-btn,.time-now-btn{padding:6px 9px;font-size:12px}
-  .time-label{font-size:11px}
-  .time-input{width:88px;font-size:12px}
-
-  .station-badge{width:74vw;min-width:220px;max-width:290px;height:68px}
-  .station-name-ja{height:41px;font-size:clamp(21px,7vw,27px)}
-  .station-name-en{height:23px;font-size:13px}
-
-  .train-icon{width:56px}
-  .train-icon.left{left:4px}
-  .train-icon.right{right:4px}
-  .train-icon img{width:44px;height:auto}
-  .train-label{max-width:74px;font-size:9px}
-  .train-no{font-size:9px}
-
-  .bottom-sheet{max-height:82vh}
-  .bottom-sheet.editing{height:82vh;max-height:82vh;min-height:82vh}
-  .bottom-sheet.editing .sheet-content{min-height:calc(82vh - 58px)}
-}
-@media(max-width:380px){
-  :root{--row-height:268px}
-  .station-badge{width:76vw;min-width:205px;height:64px}
-  .station-name-ja{height:38px;font-size:21px}
-  .station-name-en{height:22px;font-size:12px}
-  .train-icon{width:50px}
+  :root{--row-height:262px}
+  .station-badge{width:min(50vw,290px);height:auto;aspect-ratio:290 / 72}
+  .station-name-ja{height:61.1111%;font-size:26px}
+  .station-name-en{height:33.3333%;font-size:14px}
+  .train-icon{width:54px}
   .train-icon.left{left:2px}
   .train-icon.right{right:2px}
-  .train-icon img{width:40px}
-  .train-label{max-width:68px;font-size:8px}
+  .train-icon img{width:40px;height:32px}
+  .train-label{max-width:78px;font-size:9px}
+  .control-bar{gap:5px;padding:8px 5px}
+  .time-label{font-size:12px}
+  .time-input{width:92px}
+  .day-btn,.time-now-btn{padding:6px 10px;font-size:12px}
 }
-
 </style>
 </head>
 <body>
@@ -443,6 +408,7 @@ function refreshAllTrainDataCache(){
   for(const t of TRAINS){
     const key=String(t.no);
     const cached={...t, stops:(t.stops||[]).map(s=>({...s}))};
+    cached.defaultCars=prescribedFormationName(cached);
     cached.formation=registrationState[key]||null;
     LIVE_TRAIN_CACHE.set(key,cached);
     TRAIN_DATA_CACHE.set(key,cached);
@@ -812,6 +778,23 @@ function selectionDisplayObject(id){
   if(!id || id===INITIAL_FORMATION_SELECTION.id) return INITIAL_FORMATION_SELECTION;
   return formationById(id)||INITIAL_FORMATION_SELECTION;
 }
+function prescribedFormationName(t){
+  const type=String(t?.type||'');
+  if(type.includes('スノーモンキー')) return '2100系';
+  if(type.includes('ゆけむり')) return '1000系';
+  if(type==='普通') return has100or300OperationNo(t) ? '3000系' : '普通3両';
+  if(type==='回送' && has100or300OperationNo(t)) return '3000系';
+  return String(t?.defaultCars||'');
+}
+function has100or300OperationNo(t){
+  const noPattern=/^(?:1\d{2}|3\d{2})(?:[A-Za-z])?$/;
+  const key=String(t?.no||'');
+  if(noPattern.test(key)) return true;
+  const info=findChain(currentDay,key);
+  if(!info) return false;
+  const chain=OPERATION_CHAINS[currentDay]?.[info.chainIndex]||[];
+  return chain.some(entry=>noPattern.test(String(entry?.no||'')));
+}
 function imageForTrain(t){
   const f=selectionDisplayObject(t.formation);
   return f?.img||'images/Nagano_noimage.png';
@@ -1038,7 +1021,7 @@ function updateSheetContent(){
           ${formObj
             ? `<div class="formation-id">${formObj.id}</div>`
             : `<div class="input-trigger-btn">ここから編成を入力</div>`}
-          <div class="capacity-info">所定:${train.defaultCars}　運転日:${train.days.join('・')}</div>
+          <div class="capacity-info">所定:${prescribedFormationName(train)}　運転日:${train.days.join('・')}</div>
         </div>
       </div>
       <div class="timetable-list">
@@ -1057,7 +1040,7 @@ function updateSheetContent(){
             <span class="train-number">${train.no}</span>
           </div>
           <div class="input-trigger-btn" style="background:#b71c1c;">編成を入力中</div>
-          <div class="capacity-info">所定:${train.defaultCars}</div>
+          <div class="capacity-info">所定:${prescribedFormationName(train)}</div>
         </div>
       </div>
       <div style="text-align:center;font-weight:700;margin:16px 0;font-size:1.2rem;">編 成 入 力 欄</div>
@@ -1071,7 +1054,7 @@ function updateSheetContent(){
         <div class="custom-select-options" id="dropdownOptions">
           <div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}')"><img src="${INITIAL_FORMATION_SELECTION.img}" class="option-img"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>
           ${FORMATIONS.map(group=>`
-            <div class="option-header" onclick="selectFormation('${group.type}')">
+            <div class="option-header" onclick="selectFormation('__TYPE__:${group.type}')">
               <img src="${group.typeImg}" class="option-img"><span>${group.type}</span>
             </div>
             ${group.items.map(item=>`
