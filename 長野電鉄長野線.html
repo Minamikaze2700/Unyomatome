@@ -95,12 +95,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:none}
 .bottom-sheet{
   position:fixed;left:0;right:0;bottom:-100%;z-index:101;
-  max-width:620px;margin:0 auto;max-height:48vh;min-height:0;overflow-y:auto;
+  max-width:620px;margin:0 auto;max-height:75vh;min-height:0;overflow-y:auto;
   background:var(--sheet);border-radius:16px 16px 0 0;
   box-shadow:0 -4px 12px rgba(0,0,0,.18);transition:bottom .3s ease-out;
 }
 .bottom-sheet.active{bottom:0}
-.bottom-sheet.editing{max-height:48vh;min-height:48vh}
+.bottom-sheet.editing{max-height:75vh;min-height:48vh}
 .bottom-sheet.editing .sheet-content{min-height:calc(48vh - 58px)}
 .bottom-sheet.editing .custom-select-options{max-height:min(40vh,720px)}
 .sheet-header{
