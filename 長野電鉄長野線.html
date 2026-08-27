@@ -179,10 +179,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 .option-item.type-option,.option-item.initial-option{background:#e0e0e0}
 .option-item.type-option:hover,.option-item.initial-option:hover{background:#d0d0d0}
 .option-img{width:36px;height:30px;object-fit:contain}
+
 </style>
 </head>
 <body>
-<div id="main-ui-scale">
 <h1 id="title">長野電鉄長野線</h1>
 <div class="control-bar">
   <div class="day-filter">
@@ -716,15 +716,17 @@ function initSharedState(){
   });
 }
 function getVisibleTrains(){ return TRAINS.filter(t=>t.days.includes(currentDay)).map(t=>liveTrain(t.no)||t); }
-function getShortType(type){
-  const map={
-    '普通':'普通',
-    '特急ゆけむり':'A特',
-    '特急スノーモンキー':'B特',
-    '特急ゆけむりのんびり':'ゆの',
-    '回送':'回送'
-  };
-  return map[type]||String(type||'');
+function getShortType(type, trainNo=''){
+  const value=String(type||'');
+  if(value.includes('ゆけむり') && value.includes('のんびり')) return 'ゆの';
+  if(value.includes('特急')){
+    const no=String(trainNo||'');
+    if(/A$/i.test(no)) return 'A特';
+    if(/B$/i.test(no)) return 'B特';
+    if(value.includes('ゆけむり')) return 'A特';
+    if(value.includes('スノーモンキー')) return 'B特';
+  }
+  return value==='普通' ? '普通' : value==='回送' ? '回送' : value;
 }
 function getShortDest(dest){
   const map={'信州中野':'中野','湯田中':'湯田','長野':'長野','須坂':'須坂'};
@@ -807,17 +809,6 @@ function setManualTime(){
   if(btn) btn.classList.remove('active');
   renderTrainPositions();
 }
-function updateResponsiveScale(){
-  const root=document.documentElement;
-  const width=window.innerWidth||document.documentElement.clientWidth||1920;
-  const scale=Math.min(1, Math.max(0.1, width/1920));
-  root.style.setProperty('--mobile-scale', String(scale));
-  const main=document.getElementById('main-ui-scale');
-  if(main){
-    main.style.width='1920px';
-    main.style.zoom=String(scale);
-  }
-}
 
 
 function initTimeControl(){
@@ -827,22 +818,22 @@ function initTimeControl(){
   input.addEventListener('input',setManualTime);
 }
 function displayType(type){ return getShortType(type); }
-function trainVisualKind(t){
+function expressClassForTrain(t){
   const type=String(t?.type||'');
-  // 特急の色は列番末尾ではなく列車種別を優先して判定する。
-  // 例: ゆけむり 16B / 17B はA特、スノーモンキー 15B / 18B はB特。
-  if(type.includes('ゆけむり') && !type.includes('のんびり')) return 'a-express';
-  if(type.includes('スノーモンキー')) return 'b-express';
-  // 種別が特急名で判定できない場合のみ列番末尾を予備判定。
-  if(/B$/.test(String(t.no))) return 'b-express';
-  if(/A$/.test(String(t.no))) return 'a-express';
-  return 'normal';
-}
-function getExpressClass(type){
-  const value=String(type||'');
-  if(value.includes('ゆけむり') && !value.includes('のんびり')) return 'a-express';
-  if(value.includes('スノーモンキー')) return 'b-express';
+  const no=String(t?.no||'');
+  if(type.includes('特急')){
+    if(/A$/i.test(no)) return 'a-express';
+    if(/B$/i.test(no)) return 'b-express';
+    if(type.includes('ゆけむり') && !type.includes('のんびり')) return 'a-express';
+    if(type.includes('スノーモンキー')) return 'b-express';
+  }
   return '';
+}
+function trainVisualKind(t){
+  return expressClassForTrain(t) || (String(t?.type||'')==='回送' ? 'deadhead' : 'normal');
+}
+function getExpressClass(train){
+  return expressClassForTrain(train);
 }
 function renderLine(){
   const container=document.getElementById('lineContainer');
@@ -945,7 +936,7 @@ function positionForTrain(t,minutes){
   }
   return null;
 }
-function trainLabelText(t){ return `<span>${getShortType(t.type)} ${getShortDest(t.dest)}</span>`; }
+function trainLabelText(t){ return `<span>${getShortType(t.type,t.no)} ${getShortDest(t.dest)}</span>`; }
 function renderTrainPositions(){
   const layer=document.getElementById('movingTrainLayer');
   if(!layer) return;
@@ -1015,7 +1006,7 @@ function updateSheetContent(){
         <img src="${imgSrc}" class="train-card-img">
         <div class="train-info-main">
           <div>
-            <span class="type-badge ${getExpressClass(train.type)}">${getDetailType(train.type)}</span>
+            <span class="type-badge ${getExpressClass(train)}">${getDetailType(train.type)}</span>
             <span class="train-title">${getDetailDest(train.dest)}</span>
             <span class="train-number">${train.no}</span>
           </div>
@@ -1036,7 +1027,7 @@ function updateSheetContent(){
         <img src="images/Nagano_noimage.png" class="train-card-img">
         <div class="train-info-main">
           <div>
-            <span class="type-badge ${getExpressClass(train.type)}">${getDetailType(train.type)}</span>
+            <span class="type-badge ${getExpressClass(train)}">${getDetailType(train.type)}</span>
             <span class="train-title">${getDetailDest(train.dest)}</span>
             <span class="train-number">${train.no}</span>
           </div>
@@ -1087,7 +1078,6 @@ async function selectFormation(formId){
   recordSelection(train,formId).catch(e=>console.error('編成登録同期失敗',e));
   updateSheetContent();
 }
-window.addEventListener('resize', updateResponsiveScale);
 window.addEventListener('load',async ()=>{
   warmAllTrainData();
   refreshAllTrainDataCache();
@@ -1096,7 +1086,6 @@ window.addEventListener('load',async ()=>{
   await initFirebase();
   await maybeResetForNewOperationDay();
   document.querySelectorAll('.day-btn').forEach(b=>b.classList.toggle('active',b.dataset.day===currentDay));
-  updateResponsiveScale();
   initTimeControl();
   setNowTime();
   renderLine();
