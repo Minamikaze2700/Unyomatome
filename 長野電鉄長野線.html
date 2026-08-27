@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -16,7 +17,9 @@
   --text:#111;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;max-width:100%;min-width:0;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+#title,.control-bar,.line-container{box-sizing:border-box;width:100%;max-width:100%;min-width:0}
 
 /* 日別・時刻フィルター */
 #title{
@@ -54,7 +57,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 /* 路線図 */
 :root{--row-height:325px}
 .line-container{
-  position:relative;width:min(1100px,100%);margin:0 auto;
+  position:relative;width:100%;max-width:none;margin:0 auto;
   padding:20px 0 80px;display:flex;flex-direction:column;align-items:center;
 }
 .rail-line{
@@ -66,7 +69,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
   margin:0;display:flex;align-items:center;justify-content:center;
 }
 .station-badge{
-  position:relative;width:min(290px,calc(100% - 280px));height:auto;aspect-ratio:290 / 72;
+  position:relative;width:290px;min-width:290px;height:auto;aspect-ratio:290 / 72;
   border:4px solid var(--primary);border-radius:40px;
   overflow:hidden;background:#fff;text-align:center;z-index:4;
   box-shadow:0 1px 2px rgba(0,0,0,.05);
@@ -86,7 +89,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 .moving-train-layer{position:absolute;inset:0;z-index:6;pointer-events:none}
 .train-icon{
   position:absolute;top:0;width:66px;display:flex;flex-direction:column;align-items:center;
-  cursor:pointer;transition:top .15s,transform .15s;
+  cursor:pointer;transition:transform .15s;
   pointer-events:auto;
 }
 .train-icon.left{left:max(6px,calc(50% - 245px))}
@@ -105,82 +108,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 .train-label.deadhead{background:#fff;color:#111;border:1px solid #bbb}
 
 
-
-/* 550px未満では、550px時点のレイアウト比率を保ったまま全体を幅に比例して縮小 */
-@media (max-width:550px){
-  :root{
-    --ui-scale:calc(100vw / 550px);
-    --row-height:calc(325px * var(--ui-scale));
-  }
-
-  #title{
-    height:calc(50px * var(--ui-scale));
-    border-bottom-width:calc(8px * var(--ui-scale));
-    font-size:calc(32px * var(--ui-scale));
-  }
-
-  .control-bar{
-    top:calc(50px * var(--ui-scale));
-    gap:calc(8px * var(--ui-scale));
-    padding:calc(10px * var(--ui-scale));
-  }
-  .day-filter,.time-control{gap:calc(8px * var(--ui-scale))}
-  .day-btn,.time-now-btn{
-    border-width:calc(2px * var(--ui-scale));
-    padding:calc(7px * var(--ui-scale)) calc(14px * var(--ui-scale));
-    font-size:calc(16px * var(--ui-scale));
-  }
-  .time-input{
-    width:calc(110px * var(--ui-scale));
-    border-width:calc(2px * var(--ui-scale));
-    padding:calc(7px * var(--ui-scale)) calc(12px * var(--ui-scale));
-    font-size:calc(16px * var(--ui-scale));
-  }
-  .time-label{font-size:calc(16px * var(--ui-scale))}
-  .sync-btn{
-    padding:calc(5px * var(--ui-scale)) calc(10px * var(--ui-scale));
-    font-size:calc(16px * var(--ui-scale));
-  }
-
-  .line-container{
-    width:100%;
-    padding-top:calc(20px * var(--ui-scale));
-    padding-bottom:calc(80px * var(--ui-scale));
-  }
-  .rail-line{width:calc(12px * var(--ui-scale))}
-
-  /* 左右に常時2列車分の横スペースを確保 */
-  .station-badge{
-    width:min(calc(290px * var(--ui-scale)),calc(100% - 280px * var(--ui-scale)));
-    border-width:calc(4px * var(--ui-scale));
-    border-radius:calc(40px * var(--ui-scale));
-    box-shadow:0 calc(1px * var(--ui-scale)) calc(2px * var(--ui-scale)) rgba(0,0,0,.05);
-  }
-  .station-name-ja{
-    font-size:calc(30px * var(--ui-scale));
-    letter-spacing:calc(.12em * var(--ui-scale));
-    padding-left:calc(.12em * var(--ui-scale));
-  }
-  .station-name-en{
-    font-size:calc(16px * var(--ui-scale));
-    letter-spacing:calc(.01em * var(--ui-scale));
-  }
-
-  .train-icon{
-    width:calc(66px * var(--ui-scale));
-  }
-  .train-icon.left{left:max(calc(6px * var(--ui-scale)),calc(50% - 245px * var(--ui-scale)))}
-  .train-icon.right{right:max(calc(6px * var(--ui-scale)),calc(50% - 245px * var(--ui-scale)))}
-  .train-icon img{width:calc(60px * var(--ui-scale))}
-  .train-no{font-size:calc(12px * var(--ui-scale))}
-  .train-label{
-    margin-top:calc(2px * var(--ui-scale));
-    max-width:calc(100px * var(--ui-scale));
-    padding:calc(3px * var(--ui-scale)) calc(5px * var(--ui-scale));
-    border-radius:calc(4px * var(--ui-scale));
-    font-size:calc(12px * var(--ui-scale));
-  }
-}
 
 /* モーダル */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:none}
@@ -258,9 +185,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 .option-item.type-option:hover,.option-item.initial-option:hover{background:#d0d0d0}
 .option-img{width:36px;height:30px;object-fit:contain}
 
+/* スマホ版：1920pxの元レイアウトから中央960px（左右480pxずつをカット）を
+   そのまま100vwへ縮小表示する。960px以上はデスクトップ表示を変更しない。 */
+@media (max-width:959.98px){
+  html,body{
+    width:100%;
+    min-width:0;
+    max-width:100%;
+    overflow-x:hidden;
+  }
+  #viewportCanvas{
+    width:1920px;
+    min-width:1920px;
+    max-width:none;
+    margin-left:-480px;
+    zoom:calc(100vw / 960px);
+  }
+  #viewportCanvas #title,
+  #viewportCanvas .control-bar,
+  #viewportCanvas .line-container{
+    width:1920px;
+    max-width:none;
+    min-width:0;
+  }
+}
+
 </style>
 </head>
 <body>
+
+<div id="viewportCanvas">
 <h1 id="title">長野電鉄長野線</h1>
 <div class="control-bar">
   <div class="day-filter">
@@ -278,7 +232,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
   <div class="rail-line"></div>
   <div class="moving-train-layer" id="movingTrainLayer"></div>
 </div>
-</div>
+</div><!-- /#viewportCanvas -->
 <div class="overlay" id="overlay" onclick="closeSheet()"></div>
 <div class="bottom-sheet" id="bottomSheet">
   <div class="sheet-header">
@@ -1027,6 +981,30 @@ function renderTrainPositions(){
     if(!info || !info.visualTrain) return;
     occupied[info.side].push({t:info.visualTrain,pos:info.pos,baseTrain:t,mode:info.mode});
   });
+
+  const rows=Array.from(document.querySelectorAll('.station-row'));
+  const layerRect=layer.getBoundingClientRect();
+  const uiScale=1;
+  const trainWidth=66*uiScale;
+  const imageWidth=60*uiScale;
+  const laneGap=20*uiScale;
+
+  const rowRectAt=(pos)=>{
+    if(!rows.length) return null;
+    const p=Math.max(0,Math.min(rows.length-1,pos));
+    const i0=Math.floor(p), i1=Math.min(rows.length-1,Math.ceil(p));
+    const r0=rows[i0].getBoundingClientRect();
+    const r1=rows[i1].getBoundingClientRect();
+    const f=p-i0;
+    return {
+      left:r0.left+(r1.left-r0.left)*f,
+      right:r0.right+(r1.right-r0.right)*f,
+      top:r0.top+(r1.top-r0.top)*f,
+      bottom:r0.bottom+(r1.bottom-r0.bottom)*f,
+      centerY:r0.top+r0.height/2+(r1.top+r1.height/2-(r0.top+r0.height/2))*f
+    };
+  };
+
   ['left','right'].forEach(side=>{
     occupied[side].sort((a,b)=>a.pos-b.pos||String(a.t.no).localeCompare(String(b.t.no),undefined,{numeric:true}));
     const used=[];
@@ -1034,29 +1012,32 @@ function renderTrainPositions(){
       let lane=0;
       while(used.some(u=>Math.abs(u.pos-item.pos)<0.24 && u.lane===lane)) lane++;
       used.push({pos:item.pos,lane});
+
       const el=document.createElement('div');
       el.className=`train-icon ${side}`;
-      const uiScale=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ui-scale'))||1;
-      /* 駅名枠の外側に、同じ側の列車を必ず2列分並べられるよう配置 */
-      const badge=document.querySelector('.station-badge');
-      const badgeWidth=badge ? badge.getBoundingClientRect().width : 290*uiScale;
-      const containerWidth=document.getElementById('lineContainer')?.getBoundingClientRect().width || window.innerWidth;
-      const trainWidth=66*uiScale;
-      const laneGap=8*uiScale;
-      const centerX=containerWidth/2;
-      const badgeHalf=badgeWidth/2;
+      el.style.visibility='hidden';
+      el.style.transition='none';
+
+      const rr=rowRectAt(item.pos) || {
+        left:layerRect.left,right:layerRect.right,centerY:layerRect.top+layerRect.height/2
+      };
+
+      /*
+       * 横位置は従来版と同じ「中央の縦線からの距離」を基準にする。
+       * 元の基準は .train-icon.left = 50% - 245px、
+       * .train-icon.right = 50% - 245px（right指定）だったため、
+       * train-icon の左端は左=中心-245px、右=中心+245px-66px。
+       * スマホ版は1920pxキャンバスを中央960pxだけ表示しているので、
+       * その仮想座標上の中心960pxをそのまま使用する。
+       * 複数本は20px間隔で中心から外側へ並べる。
+       */
+      const layoutWidth=window.innerWidth < 960 ? 1920 : layerRect.width;
+      const centerX=layoutWidth/2;
       const laneOffset=lane*(trainWidth+laneGap);
       const trainLeft=side==='left'
-        ? centerX-badgeHalf-laneGap-trainWidth-laneOffset
-        : centerX+badgeHalf+laneGap+laneOffset;
-      const rowHeight=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--row-height'))||325;
-      const linePaddingTop=20*uiScale;
-      const top=linePaddingTop + item.pos*rowHeight + rowHeight/2 - 38*uiScale;
-      el.style.top=`${top}px`;
-      el.style.left=`${trainLeft}px`;
-      el.style.right='auto';
-      el.style.setProperty('--lane-shift','0px');
-      el.style.transform='none';
+        ? centerX-245-laneOffset
+        : centerX+245-trainWidth+laneOffset;
+
       const t=item.t;
       const cls=trainVisualKind(t);
       el.innerHTML=`
@@ -1066,9 +1047,44 @@ function renderTrainPositions(){
       `;
       el.onclick=()=>openSheet(t.no);
       layer.appendChild(el);
+
+      const img=el.querySelector('img');
+      const noEl=el.querySelector('.train-no');
+
+      const applyFinalPosition=()=>{
+        if(!img) return;
+        /*
+         * スマホ版は #viewportCanvas を zoom で縮小しているため、
+         * getBoundingClientRect() は「画面上の縮小後px」を返す。
+         * その値をそのまま style.top に戻すと zoom が二重に掛かって
+         * 縦位置が上へ詰まっていくため、ここで元のCSS座標へ戻す。
+         */
+        const mobileZoom=window.innerWidth < 960 ? window.innerWidth/960 : 1;
+        const imgRect=img.getBoundingClientRect();
+        const noRect=noEl?.getBoundingClientRect();
+        const actualImageWidth=(imgRect.width/mobileZoom) || imageWidth;
+        const imgHeight=(imgRect.height/mobileZoom) || actualImageWidth*((img.naturalHeight||30)/(img.naturalWidth||60));
+        const noHeight=(noRect?.height/mobileZoom) || 12*uiScale*1.05;
+        const desiredCenterY=(rr.centerY-layerRect.top)/mobileZoom;
+        const finalTop=desiredCenterY-noHeight-imgHeight/2;
+
+        el.style.top=`${finalTop}px`;
+        el.style.left=`${trainLeft}px`;
+        el.style.right='auto';
+        el.style.setProperty('--lane-shift','0px');
+        el.style.transform='none';
+        el.style.visibility='visible';
+      };
+
+      if(img.complete && img.naturalWidth){
+        applyFinalPosition();
+      }else{
+        img.addEventListener('load',applyFinalPosition,{once:true});
+      }
     });
   });
 }
+
 function openSheet(trainNo){
   currentTrainNo=trainNo;
   isEditMode=false;
