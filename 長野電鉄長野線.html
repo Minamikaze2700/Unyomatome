@@ -365,6 +365,15 @@ function syncStatus(text){
   const el=document.getElementById('syncStatus');
   if(el) el.textContent='共有同期：'+text;
 }
+function stateFingerprint(root=remoteRoot){
+  try{
+    return JSON.stringify({
+      operationDate:root?.operationDate||null,
+      stateByDay:root?.stateByDay||{平日:{},休日:{}},
+      history:root?.history||{}
+    });
+  }catch(e){ return ''; }
+}
 function saveLocalState(){
   try{
     localStorage.setItem(STORAGE_KEY,JSON.stringify({
@@ -391,18 +400,26 @@ function loadLocalState(){
 }
 function applyRegistrationState(){ TRAINS.forEach(t=>{ t.formation=registrationState[String(t.no)]||null; }); }
 function broadcastState(){
-  if(channel) channel.postMessage({source:'train-app',type:'state',remoteRoot,ts:Date.now()});
+  if(!channel) return;
+  // 送信はローカルで変更を確定した側だけが行う。
+  // 受信側からの再送は絶対に行わない。
+  channel.postMessage({source:'train-app',type:'state',root:cloneState(remoteRoot),ts:Date.now()});
 }
 function hydrateFromRoot(data){
-  remoteRoot=data||{version:0,operationDate:null,stateByDay:{平日:{},休日:{}},history:{}};
-  remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
-  remoteRoot.history=remoteRoot.history||{};
+  const next=data||{version:0,operationDate:null,stateByDay:{平日:{},休日:{}},history:{}};
+  const normalized={
+    ...next,
+    stateByDay:{平日:cloneState(next.stateByDay?.平日||{}),休日:cloneState(next.stateByDay?.休日||{})},
+    history:cloneState(next.history||{})
+  };
+  if(stateFingerprint(normalized)===stateFingerprint(remoteRoot)) return false;
+  remoteRoot=normalized;
   currentOperationDate=remoteRoot.operationDate||currentOperationDate||operationDateKey();
   operationHistory=historyEntries();
   registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
   applyRegistrationState();
-  saveLocalState();
-  broadcastState();
+  // 受信した状態を再保存・再送しない。これが同期ループ防止の重要点。
+  return true;
 }
 function firebaseOperationRef(){ return firebase.database().ref('運用'); }
 function firebaseHistoryRef(){ return firebase.database().ref('履歴'); }
@@ -444,13 +461,15 @@ function subscribeAllOperationState(){
   firebaseDayListenerCallback=(snap)=>{
     const all=snap.val();
     if(!all || typeof all!=='object') return;
-    const prev=remoteRoot.stateByDay||{平日:{},休日:{}};
-    remoteRoot.stateByDay={
-      平日:Object.prototype.hasOwnProperty.call(all,'平日')?cloneState(all.平日||{}):cloneState(prev.平日||{}),
-      休日:Object.prototype.hasOwnProperty.call(all,'休日')?cloneState(all.休日||{}):cloneState(prev.休日||{})
+    const nextRoot={
+      ...remoteRoot,
+      stateByDay:{
+        平日:Object.prototype.hasOwnProperty.call(all,'平日')?cloneState(all.平日||{}):cloneState(remoteRoot.stateByDay?.平日||{}),
+        休日:Object.prototype.hasOwnProperty.call(all,'休日')?cloneState(all.休日||{}):cloneState(remoteRoot.stateByDay?.休日||{})
+      }
     };
-    // 編成入力中は列車データ・登録状態を画面へ反映しない。
-    // 入力完了後にローカル操作結果とFirebaseの確定値を反映する。
+    if(stateFingerprint(nextRoot)===stateFingerprint(remoteRoot)) return;
+    remoteRoot.stateByDay=nextRoot.stateByDay;
     if(isEditMode){
       syncStatus('編成入力中：更新を一時停止');
       return;
@@ -524,7 +543,9 @@ async function initFirebase(){
     subscribeAllOperationState();
 
     firebaseHistoryRef().on('value',snap=>{
-      remoteRoot.history=snap.val()||{};
+      const nextHistory=snap.val()||{};
+      if(stateFingerprint({...remoteRoot,history:nextHistory})===stateFingerprint(remoteRoot)) return;
+      remoteRoot.history=nextHistory;
       operationHistory=historyEntries();
       saveLocalState();
       if(currentTrainNo && !isEditMode) updateSheetContent();
@@ -618,10 +639,8 @@ async function recordSelection(train,formId){
     assigned.push(String(train.no));
   }
   applyRegistrationState();
-  // 画面は即時反映。Firebase書込完了を待たずに表示を確定し、
-  // 通信完了後はonValueの確定値で全端末へ同期する。
   saveLocalState();
-  refreshVisibleUI();
+  // ローカル状態はここで確定。Firebase書込完了後にも同じ状態を再送しない。
   const ok=await syncRegistrationToRemote();
   if(!ok){
     saveLocalState();
@@ -739,12 +758,31 @@ function initSharedState(){
   if('BroadcastChannel' in window){
     channel=new BroadcastChannel(CHANNEL_NAME);
     channel.onmessage=e=>{
-      if(!e.data||e.data.source!=='train-app') return;
-      if(e.data.remoteRoot){ hydrateFromRoot(e.data.remoteRoot); renderLine(); if(currentTrainNo) updateSheetContent(); }
+      if(!e.data||e.data.source!=='train-app'||!e.data.root) return;
+      const changed=hydrateFromRoot(e.data.root);
+      if(!changed) return;
+      saveLocalState();
+      refreshAllTrainDataCache();
+      if(isEditMode){
+        syncStatus('編成入力中：更新を一時停止');
+        return;
+      }
+      renderLine();
+      if(currentTrainNo) updateSheetContent();
     };
   }
   window.addEventListener('storage',e=>{
-    if(e.key===STORAGE_KEY){ loadLocalState(); renderLine(); if(currentTrainNo) updateSheetContent(); }
+    if(e.key!==STORAGE_KEY || !e.newValue) return;
+    try{
+      const obj=JSON.parse(e.newValue);
+      const nextRoot={...remoteRoot,operationDate:obj.operationDate||remoteRoot.operationDate,stateByDay:obj.stateByDay||remoteRoot.stateByDay,history:obj.history||remoteRoot.history};
+      const changed=hydrateFromRoot(nextRoot);
+      if(!changed) return;
+      refreshAllTrainDataCache();
+      if(isEditMode) return;
+      renderLine();
+      if(currentTrainNo) updateSheetContent();
+    }catch(err){ console.warn('storage sync failed',err); }
   });
 }
 function getVisibleTrains(){ return TRAINS.filter(t=>t.days.includes(currentDay)).map(t=>liveTrain(t.no)||t); }
@@ -1190,28 +1228,31 @@ function toggleDropdown(){
   const el=document.getElementById('dropdownOptions');
   if(el) el.classList.toggle('open');
 }
+let selectionSyncInProgress=false;
 async function selectFormation(formId){
   const train=liveTrain(currentTrainNo);
-  if(!train) return;
+  if(!train || selectionSyncInProgress) return;
   const normalizedId=String(formId ?? INITIAL_FORMATION_SELECTION.id);
   const dropdown=document.getElementById('dropdownOptions');
   if(dropdown) dropdown.classList.remove('open');
 
-  // 選択直後に確定状態として画面へ反映し、Firebase同期完了待ちでUIが固まらないようにする。
-  registrationState[String(train.no)]=normalizedId;
-  applyRegistrationState();
-  refreshAllTrainDataCache();
+  // 状態変更はrecordSelection()の1か所だけで行う。二重更新を防止。
+  selectionSyncInProgress=true;
   isEditMode=false;
   const sheet=document.getElementById('bottomSheet');
   if(sheet) sheet.classList.remove('editing');
-  updateSheetContent();
-  renderTrainPositions();
-
-  // Firebaseへの同期はバックグラウンドで実行。
-  recordSelection(liveTrain(train.no)||train,normalizedId).catch(e=>{
+  try{
+    await recordSelection(train,normalizedId);
+    refreshAllTrainDataCache();
+    updateSheetContent();
+    renderTrainPositions();
+  }catch(e){
     console.error('編成登録同期失敗',e);
     syncStatus('同期失敗（再試行待ち）');
-  });
+    updateSheetContent();
+  }finally{
+    selectionSyncInProgress=false;
+  }
 }
 window.addEventListener('load',async ()=>{
   warmAllTrainData();
