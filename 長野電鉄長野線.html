@@ -527,7 +527,7 @@ async function initFirebase(){
       remoteRoot.history=snap.val()||{};
       operationHistory=historyEntries();
       saveLocalState();
-      if(currentTrainNo && !isEditMode && document.getElementById('bottomSheet')?.classList.contains('active')) updateSheetContent();
+      if(currentTrainNo && !isEditMode) updateSheetContent();
     },err=>{
       console.error('Firebase履歴読込失敗',err);
     });
@@ -1045,7 +1045,11 @@ function renderTrainPositions(){
         <img src="${imageForTrain(t)}" alt="${t.no}">
         <span class="train-label ${cls} ${getMainLabelClass(t.type)}">${trainLabelText(t)}</span>
       `;
-      el.onclick=(event)=>openSheet(t.no,event);
+      el.addEventListener('click',ev=>{
+        ev.preventDefault();
+        ev.stopPropagation();
+        openSheet(t.no);
+      });
       layer.appendChild(el);
 
       const img=el.querySelector('img');
@@ -1085,32 +1089,26 @@ function renderTrainPositions(){
   });
 }
 
-function openSheet(trainNo,event){
-  if(event) event.stopPropagation();
-  const key=String(trainNo);
+function openSheet(trainNo){
+  const key=String(trainNo ?? '');
   const train=liveTrain(key);
   if(!train) return;
-
   currentTrainNo=key;
   isEditMode=false;
-
   const sheet=document.getElementById('bottomSheet');
   const overlay=document.getElementById('overlay');
   if(!sheet || !overlay) return;
-
   sheet.classList.remove('editing');
+  updateSheetContent();
   overlay.style.display='block';
   sheet.classList.add('active');
-  updateSheetContent();
 }
 function closeSheet(){
   const sheet=document.getElementById('bottomSheet');
   const overlay=document.getElementById('overlay');
   if(overlay) overlay.style.display='none';
   if(sheet) sheet.classList.remove('active','editing');
-
   isEditMode=false;
-  currentTrainNo=null;
 }
 function updateSheetContent(){
   const train=liveTrain(currentTrainNo);
@@ -1122,7 +1120,7 @@ function updateSheetContent(){
 
   if(!isEditMode){
     content.innerHTML=`
-      <div class="train-card" onclick="switchToEditMode(event)">
+      <div class="train-card" onclick="switchToEditMode()">
         <img src="${imgSrc}" class="train-card-img">
         <div class="train-info-main">
           <div>
@@ -1157,20 +1155,20 @@ function updateSheetContent(){
       </div>
       <div style="text-align:center;font-weight:700;margin:16px 0;font-size:1.2rem;">編 成 入 力 欄</div>
       <div class="select-box-container">
-        <div class="custom-select-trigger" onclick="toggleDropdown(event)">
+        <div class="custom-select-trigger" onclick="toggleDropdown()">
           <div style="display:flex;align-items:center;gap:10px">
             <img src="${selectedForm.img}" id="selectedOptionImg" style="width:auto;height:70px;object-fit:contain">
             <span id="selectedOptionText">${selectedForm.name}</span>
           </div>▼
         </div>
         <div class="custom-select-options" id="dropdownOptions">
-          <div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}',event)"><img src="${INITIAL_FORMATION_SELECTION.img}" class="option-img"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>
+          <div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}')"><img src="${INITIAL_FORMATION_SELECTION.img}" class="option-img"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>
           ${FORMATIONS.map(group=>`
-            <div class="option-header" onclick="selectFormation('${group.type}',event)">
+            <div class="option-header" onclick="selectFormation('${group.type}')">
               <img src="${group.typeImg}" class="option-img"><span>${group.type}</span>
             </div>
             ${group.items.map(item=>`
-              <div class="option-item" onclick="selectFormation('${item.id}',event)">
+              <div class="option-item" onclick="selectFormation('${item.id}')">
                 <img src="${item.img}" class="option-img"><span>${item.name}</span>
               </div>
             `).join('')}
@@ -1180,57 +1178,40 @@ function updateSheetContent(){
     `;
   }
 }
-function switchToEditMode(event){
-  if(event) event.stopPropagation();
-  if(!currentTrainNo) return;
+function switchToEditMode(){
   const train=liveTrain(currentTrainNo);
   if(!train) return;
-
-  const sheet=document.getElementById('bottomSheet');
-  if(!sheet) return;
-
   isEditMode=true;
-  sheet.classList.add('active','editing');
+  const sheet=document.getElementById('bottomSheet');
+  if(sheet) sheet.classList.add('editing');
   updateSheetContent();
-
-  // 旧い候補リストが残っている場合でも、編集開始時は必ず閉じた状態から開始。
-  const options=document.getElementById('dropdownOptions');
-  if(options) options.classList.remove('open');
 }
-function toggleDropdown(event){
-  if(event) event.stopPropagation();
-  if(!isEditMode || !currentTrainNo) return;
-
+function toggleDropdown(){
   const el=document.getElementById('dropdownOptions');
   if(el) el.classList.toggle('open');
 }
-async function selectFormation(formId,event){
-  if(event) event.stopPropagation();
-
-  const trainNo=currentTrainNo;
-  const train=liveTrain(trainNo);
+async function selectFormation(formId){
+  const train=liveTrain(currentTrainNo);
   if(!train) return;
+  const normalizedId=String(formId ?? INITIAL_FORMATION_SELECTION.id);
+  const dropdown=document.getElementById('dropdownOptions');
+  if(dropdown) dropdown.classList.remove('open');
 
-  const normalizedFormId=String(formId||INITIAL_FORMATION_SELECTION.id);
-  const options=document.getElementById('dropdownOptions');
-  if(options) options.classList.remove('open');
+  // 選択直後に確定状態として画面へ反映し、Firebase同期完了待ちでUIが固まらないようにする。
+  registrationState[String(train.no)]=normalizedId;
+  applyRegistrationState();
+  refreshAllTrainDataCache();
+  isEditMode=false;
+  const sheet=document.getElementById('bottomSheet');
+  if(sheet) sheet.classList.remove('editing');
+  updateSheetContent();
+  renderTrainPositions();
 
-  // 入力値を先にローカル状態へ反映する。
-  // Firebase の非同期更新中に別処理が走っても、現在の詳細画面を維持する。
-  try{
-    await recordSelection(train,normalizedFormId);
-  }catch(e){
+  // Firebaseへの同期はバックグラウンドで実行。
+  recordSelection(liveTrain(train.no)||train,normalizedId).catch(e=>{
     console.error('編成登録同期失敗',e);
-  }
-
-  // recordSelection() 内の再描画で currentTrainNo が消えない限り、
-  // 入力完了後は通常の詳細表示へ戻す。
-  if(String(currentTrainNo||'')===String(trainNo||'')){
-    isEditMode=false;
-    const sheet=document.getElementById('bottomSheet');
-    if(sheet) sheet.classList.remove('editing');
-    updateSheetContent();
-  }
+    syncStatus('同期失敗（再試行待ち）');
+  });
 }
 window.addEventListener('load',async ()=>{
   warmAllTrainData();
