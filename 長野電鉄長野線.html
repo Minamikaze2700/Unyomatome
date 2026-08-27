@@ -1071,7 +1071,7 @@ function updateSheetContent(){
         <div class="custom-select-options" id="dropdownOptions">
           <div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}')"><img src="${INITIAL_FORMATION_SELECTION.img}" class="option-img"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>
           ${FORMATIONS.map(group=>`
-            <div class="option-header" onclick="selectFormation('__TYPE__:${group.type}')">
+            <div class="option-header" onclick="selectFormation('${group.type}')">
               <img src="${group.typeImg}" class="option-img"><span>${group.type}</span>
             </div>
             ${group.items.map(item=>`
