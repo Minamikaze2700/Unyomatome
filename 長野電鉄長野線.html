@@ -1006,7 +1006,6 @@ function updateSheetContent(){
           `).join('')}
         </div>
       </div>
-      <button class="report-btn" onclick="sendReport()">投稿ミスを報告</button>
     `;
   }
 }
@@ -1025,11 +1024,6 @@ async function selectFormation(formId){
   isEditMode=false;
   recordSelection(train,formId).catch(e=>console.error('編成登録同期失敗',e));
   updateSheetContent();
-}
-function sendReport(){
-  const email='minamikaze2700@gmail.com';
-  const subject=encodeURIComponent(`長野電鉄 投稿ミス報告 ${currentTrainNo}列車`);
-  window.location.href=`mailto:${email}?subject=${subject}`;
 }
 window.addEventListener('load',async ()=>{
   warmAllTrainData();
