@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -257,7 +256,9 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 .timetable-item .delay-arrow{margin-left:5px;margin-right:4px;white-space:nowrap;}
 .timetable-item .delayed-time{color:#e67900;font-weight:800;white-space:nowrap;}
 .timetable-item .delay-time-inline{display:inline-flex;align-items:center;white-space:nowrap;}
-.timetable-item .time-text{white-space:nowrap;flex:0 0 185px;width:185px;min-width:185px;}
+.timetable-item .time-text{width:50px;min-width:50px;white-space:nowrap;font-weight:700;display:flex;flex-direction:column;line-height:1.15;gap:2px;}
+/* 遅延ありのときだけ、追加された時刻表示の幅だけ広げる。遅延なしは従来位置を維持。 */
+.timetable-item .time-text.has-delay{width:185px;min-width:185px;flex:0 0 185px;margin-right:0;}
 .operation-info-panel{cursor:default;}
 .input-trigger-btn{
   background:var(--primary);color:#fff;padding:4px 8px;border-radius:4px;
@@ -479,14 +480,17 @@ function buildTimetableRows(stops){
 }
 function timetableRowsHTML(stops,train=null){
   return buildTimetableRows(stops).map(row=>{
+    let hasDelay=false;
     const times=row.times.map(t=>{
       const delayed=train?delayedTimeText(train,t):t;
       if(train && delayed!==t){
+        hasDelay=true;
         return `<span class="delay-time-inline"><span class="scheduled-time">${t}</span><span class="delay-arrow">→</span><span class="delayed-time">${delayed}</span></span>`;
       }
       return `<span>${t}</span>`;
     }).join('');
-    return `<div class="timetable-item"><div class="time-dot"></div><div class="time-text">${times}</div><div class="station-text">${row.station}</div></div>`;
+    const timeClass=hasDelay?'time-text has-delay':'time-text';
+    return `<div class="timetable-item"><div class="time-dot"></div><div class="${timeClass}">${times}</div><div class="station-text">${row.station}</div></div>`;
   }).join('');
 }
 const TIMETABLE_HTML_CACHE = new Map(TRAINS.map(t=>[String(t.no),timetableRowsHTML(t.stops)]));
