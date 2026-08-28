@@ -1134,8 +1134,7 @@ function currentMinutes(){
 }
 function setNowTime(){
   followNow=true;
-  // 「現在時刻」を押したら、時刻だけでなく日付も今日へ戻す。
-  // 日付から平日・休日ダイヤを再判定し、登録状態もその日に合わせて読み直す。
+  // 「現在時刻」ボタンを押したときだけ、日付も今日へ戻す。
   const now=new Date();
   const today=todayKey(now);
   const dateInput=document.getElementById('dateInput');
@@ -1144,6 +1143,16 @@ function setNowTime(){
   if(dateChanged){
     setSelectedDate(today);
   }
+  const input=document.getElementById('timeInput');
+  if(input) input.value=formatTimeNow();
+  const btn=document.getElementById('nowBtn');
+  if(btn) btn.classList.add('active');
+  renderTrainPositions();
+}
+
+function updateCurrentTimeOnly(){
+  // 現在時刻モードの自動更新では、選択中の日付を変更しない。
+  followNow=true;
   const input=document.getElementById('timeInput');
   if(input) input.value=formatTimeNow();
   const btn=document.getElementById('nowBtn');
@@ -1735,8 +1744,9 @@ window.addEventListener('load',async ()=>{
   setInterval(async ()=>{
     if(isEditMode) return;
     if(followNow){
-      // 現在時刻モードでは1秒ごとに時刻・列車位置を更新。
-      setNowTime();
+      // 現在時刻モードでは1秒ごとに時刻・列車位置だけを更新。
+      // 選択した日付は自動では今日へ戻さない。
+      updateCurrentTimeOnly();
     }else{
       renderTrainPositions();
     }
