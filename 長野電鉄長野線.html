@@ -35,19 +35,6 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
     border-bottom: 8px solid #000;
     z-index: 100;
 }
-#title span{display:block;}
-.operation-info-btn{margin-left:14px;border:2px solid #fff;background:#fff;padding:5px 12px;border-radius:999px;font:inherit;font-weight:700;font-size:14px;cursor:pointer;}
-.operation-info-btn.status-normal{color:#16833a;}
-.operation-info-btn.status-delay{color:#b58b00;}
-.operation-info-btn.status-partial{color:#d97700;}
-.operation-info-btn.status-suspended{color:#d71920;}
-.operation-info-panel{position:fixed;top:50px;right:10px;z-index:120;width:320px;padding:12px;background:#fff;border:1px solid #ccc;border-radius:0 0 10px 10px;box-shadow:0 4px 12px rgba(0,0,0,.15);display:none;color:#111;}
-.operation-info-panel.open{display:block;}
-.operation-info-row,.operation-delay-editor{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.operation-info-row label,.operation-delay-editor label{font-weight:700;min-width:84px;}
-.operation-info-row select,.operation-delay-editor select{flex:1;border:2px solid #ccc;border-radius:8px;padding:8px;background:#fff;font:inherit;font-weight:700;}
-.operation-disabled-note{display:none;padding:8px;background:#f6f6f6;border-radius:6px;color:#777;font-size:.85rem;}
-.operation-disabled-note.show{display:block;}
 .control-bar{
   position:sticky;top:50px;z-index:20;
   display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;
@@ -248,18 +235,7 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 .formation-id{font-size:1.2rem;font-weight:800;color:#1b6e27;margin-top:4px}
 .capacity-info{color:#666;font-size:.85rem;margin-top:4px}
 
-.formation-updated-at{position:absolute;right:12px;bottom:8px;font-size:.78rem;color:#777;text-align:right;}
-.delay-input-row{display:flex;align-items:center;gap:8px;margin-top:12px;}
-.delay-input-row label{font-weight:700;}
-.delay-input{width:90px;border:2px solid #ccc;border-radius:8px;padding:8px;font:inherit;font-weight:700;text-align:right;}
-.timetable-item .scheduled-time{text-decoration:line-through;text-decoration-thickness:1px;white-space:nowrap;}
-.timetable-item .delay-arrow{margin-left:5px;margin-right:4px;white-space:nowrap;}
-.timetable-item .delayed-time{color:#e67900;font-weight:800;white-space:nowrap;}
-.timetable-item .delay-time-inline{display:inline-flex;align-items:center;white-space:nowrap;}
-.timetable-item .time-text{width:50px;min-width:50px;white-space:nowrap;font-weight:700;display:flex;flex-direction:column;line-height:1.15;gap:2px;}
-/* 遅延ありのときだけ、追加された時刻表示の幅だけ広げる。遅延なしは従来位置を維持。 */
-.timetable-item .time-text.has-delay{width:185px;min-width:185px;flex:0 0 185px;margin-right:0;}
-.operation-info-panel{cursor:default;}
+.formation-updated-at{position:absolute;right:12px;bottom:8px;font-size:.78rem;color:#777;text-align:right;} 
 .input-trigger-btn{
   background:var(--primary);color:#fff;padding:4px 8px;border-radius:4px;
   font-size:.75rem;margin-top:4px;display:inline-block;
@@ -331,24 +307,7 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 <body>
 
 <div id="viewportCanvas">
-<h1 id="title"><span>長野電鉄長野線</span><button id="operationInfoBtn" class="operation-info-btn status-normal" type="button" onclick="toggleOperationPanel()">運行情報（通常運転）</button></h1>
-<div id="operationInfoPanel" class="operation-info-panel" aria-hidden="true">
-  <div class="operation-info-row">
-    <label for="operationStatusSelect">運行状況</label>
-    <select id="operationStatusSelect" onchange="onOperationStatusChange(this.value)">
-      <option value="normal">通常運転</option>
-      <option value="delay">遅延あり</option>
-      <option value="partial">運転見合わせ区間あり</option>
-      <option value="suspended">全線運転見合わせ</option>
-    </select>
-  </div>
-  <div id="operationDelayEditor" class="operation-delay-editor">
-    <label for="operationDelaySelect">遅延時間</label>
-    <select id="operationDelaySelect" onchange="setGlobalDelay(Number(this.value))"></select>
-    <span>分</span>
-  </div>
-  <div id="operationDisabledNote" class="operation-disabled-note">この運行状況では設定できません。</div>
-</div>
+<h1 id="title">長野電鉄長野線</h1>
 <div class="control-bar">
   <div class="day-filter">
     <button class="day-btn" data-day="平日" onclick="setDay('平日')">平日</button>
@@ -455,7 +414,7 @@ let followNow=true;
 let registrationState={};
 let operationHistory=[];
 let currentOperationDate=null;
-let remoteRoot={version:0,operationDate:null,stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}},delayByDay:{平日:{},休日:{}},operationInfo:{status:'normal',delayMinutes:0},history:{}};
+let remoteRoot={version:0,operationDate:null,stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}},history:{}};
 let pendingFormationState={};
 let channel=null;
 let firebaseReady=false;
@@ -478,20 +437,8 @@ function buildTimetableRows(stops){
   }
   return rows;
 }
-function timetableRowsHTML(stops,train=null){
-  return buildTimetableRows(stops).map(row=>{
-    let hasDelay=false;
-    const times=row.times.map(t=>{
-      const delayed=train?delayedTimeText(train,t):t;
-      if(train && delayed!==t){
-        hasDelay=true;
-        return `<span class="delay-time-inline"><span class="scheduled-time">${t}</span><span class="delay-arrow">→</span><span class="delayed-time">${delayed}</span></span>`;
-      }
-      return `<span>${t}</span>`;
-    }).join('');
-    const timeClass=hasDelay?'time-text has-delay':'time-text';
-    return `<div class="timetable-item"><div class="time-dot"></div><div class="${timeClass}">${times}</div><div class="station-text">${row.station}</div></div>`;
-  }).join('');
+function timetableRowsHTML(stops){
+  return buildTimetableRows(stops).map(row=>`<div class="timetable-item"><div class="time-dot"></div><div class="time-text">${row.times.map(t=>`<span>${t}</span>`).join('')}</div><div class="station-text">${row.station}</div></div>`).join('');
 }
 const TIMETABLE_HTML_CACHE = new Map(TRAINS.map(t=>[String(t.no),timetableRowsHTML(t.stops)]));
 
@@ -523,8 +470,6 @@ function stateFingerprint(root=remoteRoot){
       operationDate:root?.operationDate||null,
       stateByDay:root?.stateByDay||{平日:{},休日:{}},
       formationUpdatedAtByDay:root?.formationUpdatedAtByDay||{平日:{},休日:{}},
-      delayByDay:root?.delayByDay||{平日:{},休日:{}},
-      operationInfo:root?.operationInfo||{status:'normal',delayMinutes:0},
       history:root?.history||{}
     });
   }catch(e){ return ''; }
@@ -535,8 +480,6 @@ function saveLocalState(){
       operationDate:currentOperationDate,
       stateByDay:remoteRoot.stateByDay,
       formationUpdatedAtByDay:remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}},
-      delayByDay:remoteRoot.delayByDay||{平日:{},休日:{}},
-      operationInfo:remoteRoot.operationInfo||{status:'normal',delayMinutes:0},
       history:remoteRoot.history,
       updatedAt:new Date().toISOString()
     }));
@@ -550,8 +493,6 @@ function loadLocalState(){
     remoteRoot.operationDate=obj.operationDate||null;
     remoteRoot.stateByDay=obj.stateByDay||{平日:{},休日:{}};
     remoteRoot.formationUpdatedAtByDay=obj.formationUpdatedAtByDay||{平日:{},休日:{}};
-    remoteRoot.delayByDay=obj.delayByDay||{平日:{},休日:{}};
-    remoteRoot.operationInfo=obj.operationInfo||{status:'normal',delayMinutes:0};
     remoteRoot.history=obj.history||{};
     currentOperationDate=remoteRoot.operationDate;
     operationHistory=historyEntries();
@@ -569,85 +510,6 @@ function applyRegistrationState(){
     }
   });
 }
-function getTrainSpecificDelayMinutes(trainNo){
-  const v=remoteRoot.delayByDay?.[currentDay]?.[String(trainNo)];
-  const n=Number(v);
-  return Number.isFinite(n)&&n>0?n:0;
-}
-function getGlobalDelayMinutes(){
-  return (remoteRoot.operationInfo?.status==='delay') ? Math.max(0,Number(remoteRoot.operationInfo?.delayMinutes)||0) : 0;
-}
-function totalTrainDelayMinutes(trainNo){
-  return getGlobalDelayMinutes()+getTrainSpecificDelayMinutes(trainNo);
-}
-function timePlusMinutes(value,delta){
-  const base=timeToMinutes(value);
-  if(!Number.isFinite(base)) return String(value||'');
-  const total=base+Math.max(0,Number(delta)||0);
-  const h=Math.floor(total/60)%24,m=total%60;
-  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-}
-function delayedTimeText(train,time){ return timePlusMinutes(time,totalTrainDelayMinutes(train?.no)); }
-function setOperationInfoState(status,delayMinutes){
-  remoteRoot.operationInfo={status:status||'normal',delayMinutes:(status==='delay'?Math.max(0,Number(delayMinutes)||0):0)};
-}
-function updateOperationInfoUI(){
-  const info=remoteRoot.operationInfo||{status:'normal',delayMinutes:0};
-  const btn=document.getElementById('operationInfoBtn');
-  const panel=document.getElementById('operationInfoPanel');
-  const select=document.getElementById('operationStatusSelect');
-  const delayEditor=document.getElementById('operationDelayEditor');
-  const delaySelect=document.getElementById('operationDelaySelect');
-  const note=document.getElementById('operationDisabledNote');
-  const labels={normal:'通常運転',delay:'遅延あり',partial:'運転見合わせ区間あり',suspended:'全線運転見合わせ'};
-  if(btn){ btn.textContent=`運行情報（${labels[info.status]||labels.normal}）`; btn.className=`operation-info-btn status-${info.status||'normal'}`; }
-  if(select) select.value=info.status||'normal';
-  if(delaySelect){ if(!delaySelect.options.length){ for(let m=0;m<=300;m+=5){ const o=document.createElement('option'); o.value=String(m); o.textContent=String(m); delaySelect.appendChild(o);} } delaySelect.value=String(Math.max(0,Number(info.delayMinutes)||0)); }
-  const enabled=info.status==='normal'||info.status==='delay';
-  if(delayEditor) delayEditor.style.display=info.status==='delay'?'flex':'none';
-  if(note) note.classList.toggle('show',!enabled);
-  if(panel) panel.setAttribute('aria-hidden',panel.classList.contains('open')?'false':'true');
-}
-function toggleOperationPanel(){
-  const panel=document.getElementById('operationInfoPanel');
-  if(!panel) return;
-  panel.classList.toggle('open');
-  updateOperationInfoUI();
-}
-document.addEventListener('click',e=>{
-  const panel=document.getElementById('operationInfoPanel');
-  const btn=document.getElementById('operationInfoBtn');
-  if(!panel || !panel.classList.contains('open')) return;
-  if(e.target===btn || btn?.contains(e.target) || panel.contains(e.target)) return;
-  panel.classList.remove('open');
-  updateOperationInfoUI();
-});
-async function saveOperationInfo(){
-  saveLocalState(); broadcastState();
-  if(!firebaseReady) return;
-  try{ await firebaseOperationRef().update({operationInfo:cloneState(remoteRoot.operationInfo||{status:'normal',delayMinutes:0})}); }catch(e){ console.error('運行情報保存失敗',e); }
-}
-async function onOperationStatusChange(status){
-  if(!['normal','delay','partial','suspended'].includes(status)) status='normal';
-  if(status==='partial' || status==='suspended'){
-    // 現時点では選択肢だけ用意し、運転見合わせ系の設定操作は行わない。
-    updateOperationInfoUI();
-    return;
-  }
-  setOperationInfoState(status,Number(document.getElementById('operationDelaySelect')?.value)||0);
-  updateOperationInfoUI();
-  await saveOperationInfo();
-  renderLine();
-}
-async function setGlobalDelay(minutes){
-  if((remoteRoot.operationInfo?.status||'normal')!=='delay') return;
-  const m=Math.max(0,Math.round(Number(minutes)/5)*5);
-  setOperationInfoState('delay',m);
-  updateOperationInfoUI();
-  await saveOperationInfo();
-  renderLine();
-}
-
 function broadcastState(){
   if(!channel) return;
   // 送信はローカルで変更を確定した側だけが行う。
@@ -655,16 +517,11 @@ function broadcastState(){
   channel.postMessage({source:'train-app',type:'state',root:cloneState(remoteRoot),ts:Date.now()});
 }
 function hydrateFromRoot(data){
-  const next=data||{version:0,operationDate:null,stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}},delayByDay:{平日:{},休日:{}},operationInfo:{status:'normal',delayMinutes:0},history:{}};
+  const next=data||{version:0,operationDate:null,stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}},history:{}};
   const normalized={
     ...next,
     stateByDay:{平日:cloneState(next.stateByDay?.平日||{}),休日:cloneState(next.stateByDay?.休日||{})},
     formationUpdatedAtByDay:{平日:cloneState(next.formationUpdatedAtByDay?.平日||{}),休日:cloneState(next.formationUpdatedAtByDay?.休日||{})},
-    delayByDay:{平日:cloneState(next.delayByDay?.平日||{}),休日:cloneState(next.delayByDay?.休日||{})},
-    operationInfo:{
-      status:String(next.operationInfo?.status ?? remoteRoot.operationInfo?.status ?? 'normal'),
-      delayMinutes:Number(next.operationInfo?.delayMinutes ?? remoteRoot.operationInfo?.delayMinutes ?? 0)||0
-    },
     history:cloneState(next.history||{})
   };
   if(stateFingerprint(normalized)===stateFingerprint(remoteRoot)) return false;
@@ -762,11 +619,9 @@ function prefetchTrainImages(){
 async function preloadFirebaseState(){
   if(!firebaseReady) return;
   try{
-    const [stateSnap,timestampSnap,delaySnap,operationInfoSnap,historySnap]=await Promise.all([
+    const [stateSnap,timestampSnap,historySnap]=await Promise.all([
       firebaseOperationRef().child('stateByDay').once('value'),
       firebaseOperationRef().child('formationUpdatedAtByDay').once('value'),
-      firebaseOperationRef().child('delayByDay').once('value'),
-      firebaseOperationRef().child('operationInfo').once('value'),
       firebaseHistoryRef().once('value')
     ]);
     const all=stateSnap.val()||{};
@@ -778,9 +633,6 @@ async function preloadFirebaseState(){
       平日:cloneState(timestampSnap.val()?.平日||{}),
       休日:cloneState(timestampSnap.val()?.休日||{})
     };
-    remoteRoot.delayByDay={平日:cloneState(delaySnap.val()?.平日||{}),休日:cloneState(delaySnap.val()?.休日||{})};
-    if(operationInfoSnap.exists()) remoteRoot.operationInfo=operationInfoSnap.val()||remoteRoot.operationInfo;
-     remoteRoot.operationInfo=remoteRoot.operationInfo||{status:'normal',delayMinutes:0};
     registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
     remoteRoot.history=historySnap.val()||{};
     operationHistory=historyEntries();
@@ -823,34 +675,6 @@ async function initFirebase(){
       console.error('Firebase編成入力時刻読込失敗',err);
     });
 
-    firebaseOperationRef().child('operationInfo').on('value',snap=>{
-      const current=remoteRoot.operationInfo||{status:'normal',delayMinutes:0};
-      const raw=snap.val();
-      // 一時的なnull/未作成を「通常運転」と解釈して現在の情報を消さない。
-      if(!raw || typeof raw!=='object') return;
-      const status=String(raw.status||current.status||'normal');
-      const delayRaw=Number(raw.delayMinutes);
-      const normalized={
-        status:['normal','delay','partial','suspended'].includes(status)?status:current.status,
-        delayMinutes:Number.isFinite(delayRaw)?Math.max(0,delayRaw):Math.max(0,Number(current.delayMinutes)||0)
-      };
-      if(JSON.stringify(normalized)===JSON.stringify(current)) return;
-      remoteRoot.operationInfo=normalized;
-      saveLocalState();
-      updateOperationInfoUI();
-      if(!isEditMode) refreshVisibleUI();
-    },err=>console.error('運行情報読込失敗',err));
-
-    firebaseOperationRef().child('delayByDay').on('value',snap=>{
-      const all=snap.val()||{};
-      const next={平日:cloneState(all.平日||{}),休日:cloneState(all.休日||{})};
-      if(JSON.stringify(next)===JSON.stringify(remoteRoot.delayByDay||{平日:{},休日:{}})) return;
-      remoteRoot.delayByDay=next;
-      refreshAllTrainDataCache();
-      updateOperationInfoUI();
-      refreshVisibleUI();
-    },err=>console.error('列車遅延読込失敗',err));
-
     firebaseHistoryRef().on('value',snap=>{
       const nextHistory=snap.val()||{};
       if(stateFingerprint({...remoteRoot,history:nextHistory})===stateFingerprint(remoteRoot)) return;
@@ -878,8 +702,6 @@ async function initFirebase(){
       remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
       remoteRoot.formationUpdatedAtByDay=remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}};
       remoteRoot.history=remoteRoot.history||{};
-      remoteRoot.delayByDay=remoteRoot.delayByDay||{平日:{},休日:{}};
-      remoteRoot.operationInfo=remoteRoot.operationInfo||{status:'normal',delayMinutes:0};
       currentOperationDate=remoteRoot.operationDate||operationDateKey();
       registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
       applyRegistrationState();
@@ -926,6 +748,11 @@ async function syncRegistrationToRemote(){
       ...cloneState(remoteRoot.formationUpdatedAtByDay[currentDay]||{}),
       ...cloneState(pendingFormationTimestamps[currentDay]||{})
     };
+    Object.keys(pendingFormationState).forEach(no=>{
+      if(!registrationState[no] || registrationState[no]===INITIAL_FORMATION_SELECTION.id){
+        delete remoteRoot.formationUpdatedAtByDay[currentDay][no];
+      }
+    });
     if(firebaseReady && Object.keys(pendingFormationTimestamps[currentDay]||{}).length){
       await firebaseOperationRef().child('formationUpdatedAtByDay').child(currentDay).update(cloneState(pendingFormationTimestamps[currentDay]));
     }
@@ -954,45 +781,39 @@ function chainEntries(day,trainNo){
 async function recordSelection(train,formId){
   const chain=chainEntries(currentDay,train.no);
   const assigned=[];
-  const apply=(no)=>{ registrationState[no]=formId; pendingFormationState[no]=formId; assigned.push(no); };
   if(chain){
-    chain.forEach(e=>{ const no=normalizeTrainNo(e.no); if(TRAIN_INDEX[no]) apply(no); });
-  }else{ apply(String(train.no)); }
-
+    chain.forEach(e=>{
+      const no=normalizeTrainNo(e.no);
+      if(TRAIN_INDEX[no]){ registrationState[no]=formId; assigned.push(no); }
+    });
+  }else{
+    registrationState[String(train.no)]=formId;
+    assigned.push(String(train.no));
+  }
   const registeredAt=new Date().toISOString();
   pendingFormationTimestamps[currentDay]=pendingFormationTimestamps[currentDay]||{};
   remoteRoot.formationUpdatedAtByDay=remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}};
   remoteRoot.formationUpdatedAtByDay[currentDay]=remoteRoot.formationUpdatedAtByDay[currentDay]||{};
   assigned.forEach(no=>{
-    pendingFormationTimestamps[currentDay][no]=registeredAt;
-    remoteRoot.formationUpdatedAtByDay[currentDay][no]=registeredAt;
+    pendingFormationState[no]=formId;
+    if(formId && formId!==INITIAL_FORMATION_SELECTION.id){
+      pendingFormationTimestamps[currentDay][no]=registeredAt;
+      remoteRoot.formationUpdatedAtByDay[currentDay][no]=registeredAt;
+    }else{
+      delete pendingFormationTimestamps[currentDay][no];
+      delete remoteRoot.formationUpdatedAtByDay[currentDay][no];
+    }
   });
   applyRegistrationState();
   refreshAllTrainDataCache();
   saveLocalState();
-  updateSheetContent();
-  renderTrainPositions();
-  // ネットワーク待ちで編成入力を固めない。Firebase同期はバックグラウンド。
-  syncRegistrationToRemote().catch(e=>console.error('編成登録同期失敗',e));
+  const ok=await syncRegistrationToRemote();
+  if(!ok){
+    saveLocalState();
+    syncStatus('同期失敗（再試行待ち）');
+  }
   return assigned;
 }
-
-async function setTrainDelay(trainNo,minutes){
-  const no=String(trainNo);
-  const m=Math.max(0,Math.round((Number(minutes)||0)/5)*5);
-  remoteRoot.delayByDay=remoteRoot.delayByDay||{平日:{},休日:{}};
-  remoteRoot.delayByDay[currentDay]=remoteRoot.delayByDay[currentDay]||{};
-  if(m>0) remoteRoot.delayByDay[currentDay][no]=m; else delete remoteRoot.delayByDay[currentDay][no];
-  saveLocalState();
-  broadcastState();
-  refreshAllTrainDataCache();
-  renderLine();
-  if(currentTrainNo) updateSheetContent();
-  if(firebaseReady){
-    try{ await firebaseOperationRef().child('delayByDay').child(currentDay).set(cloneState(remoteRoot.delayByDay[currentDay]||{})); }catch(e){ console.error('列車遅延保存失敗',e); }
-  }
-}
-function getTrainDelayInputValue(trainNo){ return getTrainSpecificDelayMinutes(trainNo); }
 
 function snapshotForCurrentRegistrations(day, state, dateKey){
   const ops=[];
@@ -1067,16 +888,10 @@ async function maybeResetForNewOperationDay(remoteCheck=false){
       }
       currentOperationDate=opDate;
       remoteRoot.operationDate=opDate;
-      // 新しい運転日への切替時も運行情報・遅延設定は勝手に通常運転へ戻さない。
-      // Firebaseの既存値を維持し、stateByDayだけを新日に切り替える。
       remoteRoot.stateByDay={平日:{},休日:{}};
-      remoteRoot.formationUpdatedAtByDay=remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}};
-      remoteRoot.delayByDay=remoteRoot.delayByDay||{平日:{},休日:{}};
-      remoteRoot.operationInfo=remoteRoot.operationInfo||{status:'normal',delayMinutes:0};
       registrationState={};
       applyRegistrationState();
       saveLocalState();
-      updateOperationInfoUI();
       renderLine();
     }catch(e){ console.error('remote reset failed',e); }
   }else{
@@ -1126,12 +941,7 @@ function initSharedState(){
     if(e.key!==STORAGE_KEY || !e.newValue) return;
     try{
       const obj=JSON.parse(e.newValue);
-      const nextRoot={...remoteRoot,operationDate:obj.operationDate||remoteRoot.operationDate,
-        stateByDay:obj.stateByDay||remoteRoot.stateByDay,
-        formationUpdatedAtByDay:obj.formationUpdatedAtByDay||remoteRoot.formationUpdatedAtByDay,
-        delayByDay:obj.delayByDay||remoteRoot.delayByDay,
-        operationInfo:obj.operationInfo||remoteRoot.operationInfo,
-        history:obj.history||remoteRoot.history};
+      const nextRoot={...remoteRoot,operationDate:obj.operationDate||remoteRoot.operationDate,stateByDay:obj.stateByDay||remoteRoot.stateByDay,history:obj.history||remoteRoot.history};
       const changed=hydrateFromRoot(nextRoot);
       if(!changed) return;
       refreshAllTrainDataCache();
@@ -1305,18 +1115,13 @@ function linkedEntries(t){
   return {prev:chain[info.entryIndex-1]||null,next:chain[info.entryIndex+1]||null,chain,index:info.entryIndex};
 }
 function trainEntryNo(entry){ return entry?normalizeTrainNo(entry.no):''; }
-function chainEntryTime(entry,field){
-  const tr=liveTrain(entry?.no)||TRAIN_INDEX[normalizeTrainNo(entry?.no)]||null;
-  const raw=entry?.[field]||'';
-  return tr?delayedTimeText(tr,raw):raw;
-}
 function connectionPrev(t){
   const info=findChain(currentDay,t.no);
   if(!info) return null;
   const chain=OPERATION_CHAINS[currentDay][info.chainIndex];
   const prev=chain[info.entryIndex-1];
   if(!prev || String(prev.dest)!==String(t.start)) return null;
-  if(timeToMinutes(chainEntryTime(prev,'endTime'))>timeToMinutes(delayedTimeText(t,t.stops[0].time))) return null;
+  if(timeToMinutes(prev.endTime)>timeToMinutes(t.stops[0].time)) return null;
   return prev;
 }
 function connectionNext(t){
@@ -1325,28 +1130,34 @@ function connectionNext(t){
   const chain=OPERATION_CHAINS[currentDay][info.chainIndex];
   const next=chain[info.entryIndex+1];
   if(!next || String(t.dest)!==String(next.start)) return null;
-  if(timeToMinutes(delayedTimeText(t,t.stops[t.stops.length-1].time))>timeToMinutes(chainEntryTime(next,'startTime'))) return null;
+  if(timeToMinutes(t.stops[t.stops.length-1].time)>timeToMinutes(next.startTime)) return null;
   return next;
 }
 function positionForTrain(t,minutes){
   const stops=t.stops||[];
   if(!stops.length) return null;
-  const delay=totalTrainDelayMinutes(t.no);
-  const effectiveStops=stops.map(s=>({...s,time:delayedTimeText(t,s.time)}));
-  const firstStation=effectiveStops[0].station, lastStation=effectiveStops[effectiveStops.length-1].station;
-  const first=timeToMinutes(effectiveStops[0].time), last=timeToMinutes(effectiveStops[effectiveStops.length-1].time);
+  const firstStation=stops[0].station, lastStation=stops[stops.length-1].station;
+  const first=timeToMinutes(stops[0].time), last=timeToMinutes(stops[stops.length-1].time);
   const chainInfo=findChain(currentDay,t.no);
   const chain=chainInfo ? OPERATION_CHAINS[currentDay][chainInfo.chainIndex] : null;
   const isChainFirst=!!chain && chainInfo.entryIndex===0;
   const isChainLast=!!chain && chainInfo.entryIndex===chain.length-1;
   const prev=connectionPrev(t), next=connectionNext(t);
-  const nextStart=next?timeToMinutes(chainEntryTime(next,'startTime')):null;
+  const prevEnd=prev?timeToMinutes(prev.endTime):null;
+  const nextStart=next?timeToMinutes(next.startTime):null;
+
+  // 1日の一連の運用の最初の列車だけ、始発駅で発車2分前から待機。
+  // 中間の列車にはこの2分追加を適用しない。
   if(isChainFirst && minutes>=first-RESET_DWELL_MIN && minutes<first){
     return {pos:stationIndex(firstStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'start'};
   }
+  // 中間列車の始発駅側の待機は、前の列車の描画側で一度だけ表現する。
+  // ここで同じ列車をもう一度描画すると、折り返し駅で列車が2本並ぶため、
+  // 中間列車側では表示しない。
+  // Running leg.
   if(minutes>=first && minutes<=last){
-    for(let i=0;i<effectiveStops.length-1;i++){
-      const a=effectiveStops[i],b=effectiveStops[i+1];
+    for(let i=0;i<stops.length-1;i++){
+      const a=stops[i],b=stops[i+1];
       const ta=timeToMinutes(a.time),tb=timeToMinutes(b.time);
       if(minutes>=ta && minutes<=tb){
         const ia=stationIndex(a.station),ib=stationIndex(b.station);
@@ -1355,15 +1166,21 @@ function positionForTrain(t,minutes){
       }
     }
   }
+  // 中間列車の到着駅では、次列車が続くなら到着+1分で反対側へ移動。
   if(next && !isChainLast && minutes>last && minutes<nextStart){
     if(minutes<=last+TURNBACK_SWITCH_MIN){
       return {pos:stationIndex(lastStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'turn-arrival'};
     }
+    // 折り返し後は「次の列車」の最新の編成状態を使う。
+    // TRAIN_INDEX は初期データ（formation:null）のため、ここを直接参照すると
+    // noimage が表示されることがある。必ず liveTrain() から取得する。
     const nextNo=trainEntryNo(next);
     const nextTrain=liveTrain(nextNo)||TRAIN_INDEX[nextNo]||null;
-    const nextSide=nextTrain?(nextTrain.direction==='down'?'right':'left'):(inferDirectionFromStations(next.start,next.dest)==='down'?'right':'left');
+    const nextSide=nextTrain?(nextTrain.direction==='down'?'right':'left'): (inferDirectionFromStations(next.start,next.dest)==='down'?'right':'left');
     return {pos:stationIndex(lastStation),side:nextSide,visualTrain:nextTrain||t,mode:'turn-wait'};
   }
+  // 一日の一連の運用の最後の列車だけ、終着後2分を終着駅で表示。
+  // A→B→C なら AとCだけに適用し、Bには適用しない。
   if(isChainLast && minutes>=last && minutes<=last+RESET_DWELL_MIN){
     return {pos:stationIndex(lastStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'end'};
   }
@@ -1610,8 +1427,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
     const stops=(train.stops||[]).filter(stop=>String(stop?.station||'')===stationName);
     if(!stops.length) return;
     const stop=stops[stops.length-1]; // 同一駅が2回ある場合は発車側の時刻
-    const rawTime=String(stop?.time||'');
-    const time=delayedTimeText(train,rawTime);
+    const time=String(stop?.time||'');
     const m=time.match(/^(\d{1,2}):(\d{2})$/);
     if(!m) return;
     const hour=Number(m[1]), minute=Number(m[2]);
@@ -1661,7 +1477,13 @@ function stationTimetableHTML(station, selectedDirection='up'){
 }
 
 function formatFormationUpdatedAt(trainNo){
-  const ts=remoteRoot.formationUpdatedAtByDay?.[currentDay]?.[String(trainNo)];
+  const key=String(trainNo);
+  // 編成未入力の列車には入力時刻を絶対に表示しない。
+  const formation = Object.prototype.hasOwnProperty.call(pendingFormationState,key)
+    ? pendingFormationState[key]
+    : registrationState[key];
+  if(!formation || formation===INITIAL_FORMATION_SELECTION.id) return '';
+  const ts=remoteRoot.formationUpdatedAtByDay?.[currentDay]?.[key];
   if(!ts) return '';
   const d=new Date(ts);
   if(Number.isNaN(d.getTime())) return '';
@@ -1703,10 +1525,10 @@ function updateSheetContent(){
             : `<div class="input-trigger-btn">ここから編成を入力</div>`}
           <div class="capacity-info">所定:${prescribedFormationName(train)}　運転日:${train.days.slice().sort((a,b)=>a==='平日'?-1:b==='平日'?1:0).join('・')}</div>
         </div>
-        ${formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAt(train.no)}</div>`:''}
+        ${formObj && formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAt(train.no)}</div>`:''}
       </div>
       <div class="timetable-list">
-        ${timetableRowsHTML(train.stops,train)}
+        ${TIMETABLE_HTML_CACHE.get(String(train.no)) || timetableRowsHTML(train.stops)}
       </div>
     `;
   }else{
@@ -1725,7 +1547,6 @@ function updateSheetContent(){
         </div>
       </div>
       <div style="text-align:center;font-weight:700;margin:16px 0;font-size:1.2rem;">編 成 入 力 欄</div>
-      <div class="delay-input-row"><label for="trainDelayInput">遅延時刻</label><input id="trainDelayInput" class="delay-input" type="number" min="0" step="5" value="${getTrainDelayInputValue(train.no)}" onchange="setTrainDelay('${escapeJs(train.no)}',this.value)"><span>分</span><span style="color:#777;font-size:.82rem;">全線共通遅延：${getGlobalDelayMinutes()}分</span></div>
       <div class="select-box-container">
         <div class="custom-select-trigger" onclick="toggleDropdown()">
           <div style="display:flex;align-items:center;gap:10px">
@@ -1770,28 +1591,25 @@ async function selectFormation(formId){
   const normalizedId=String(formId ?? INITIAL_FORMATION_SELECTION.id);
   const dropdown=document.getElementById('dropdownOptions');
   if(dropdown) dropdown.classList.remove('open');
+
+  // 状態変更はrecordSelection()の1か所だけで行う。二重更新を防止。
   selectionSyncInProgress=true;
+  isEditMode=false;
+  const sheet=document.getElementById('bottomSheet');
+  if(sheet) sheet.classList.remove('editing');
   try{
-    // 編成登録はUIへ即時反映し、Firebase通信は待たない。
     await recordSelection(train,normalizedId);
-    isEditMode=false;
-    const sheet=document.getElementById('bottomSheet');
-    if(sheet) sheet.classList.remove('editing');
     refreshAllTrainDataCache();
     updateSheetContent();
     renderTrainPositions();
   }catch(e){
     console.error('編成登録同期失敗',e);
     syncStatus('同期失敗（再試行待ち）');
-    isEditMode=false;
-    const sheet=document.getElementById('bottomSheet');
-    if(sheet) sheet.classList.remove('editing');
     updateSheetContent();
   }finally{
     selectionSyncInProgress=false;
   }
 }
-
 window.addEventListener('load',async ()=>{
   warmAllTrainData();
   refreshAllTrainDataCache();
@@ -1801,7 +1619,6 @@ window.addEventListener('load',async ()=>{
   await maybeResetForNewOperationDay();
   document.querySelectorAll('.day-btn').forEach(b=>b.classList.toggle('active',b.dataset.day===currentDay));
   initTimeControl();
-  updateOperationInfoUI();
   setNowTime();
   renderLine();
   setInterval(async ()=>{
