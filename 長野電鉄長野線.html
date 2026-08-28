@@ -1023,7 +1023,8 @@ function formatTimeNow(){
 function currentMinutes(){
   if(followNow){
     const d=new Date();
-    return d.getHours()*60+d.getMinutes();
+    // 現在時刻は秒まで使い、列車位置を1秒単位で連続的に更新する。
+    return d.getHours()*60+d.getMinutes()+d.getSeconds()/60+d.getMilliseconds()/60000;
   }
   const input=document.getElementById('timeInput');
   const value=input?.value || formatTimeNow();
@@ -1622,10 +1623,19 @@ window.addEventListener('load',async ()=>{
   setNowTime();
   renderLine();
   setInterval(async ()=>{
-    await maybeResetForNewOperationDay();
     if(isEditMode) return;
-    if(followNow) setNowTime(); else renderTrainPositions();
-  },5000);
+    if(followNow){
+      // 現在時刻モードでは1秒ごとに時刻・列車位置を更新。
+      setNowTime();
+    }else{
+      renderTrainPositions();
+    }
+  },1000);
+  // 日付切替などの日次処理は毎分1回だけ実行する。
+  setInterval(async ()=>{
+    if(isEditMode) return;
+    await maybeResetForNewOperationDay();
+  },60000);
 });
 </script>
 </body>
