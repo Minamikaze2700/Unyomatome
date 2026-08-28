@@ -139,6 +139,41 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 .station-info-card:hover{border-color:transparent;}
 .station-placeholder{margin-top:12px;min-height:140px;}
 .station-badge{cursor:pointer;}
+.station-timetable-btn{
+  display:block;width:100%;border:0;border-radius:6px;background:var(--primary);color:#fff;
+  font-family:"Kosugi",sans-serif;font-size:1.05rem;font-weight:700;
+  padding:10px 16px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.12);
+}
+.station-timetable-btn:hover{background:var(--primary-dark);}
+.station-timetable-wrap{margin-top:12px;background:#fff;overflow:hidden;}
+.station-timetable-row{display:grid;grid-template-columns:108px 1fr;min-height:108px;}
+.station-timetable-hour{
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-family:"Kosugi Maru",sans-serif;font-size:56px;font-weight:500;
+  line-height:1;background:var(--primary);
+}
+.station-timetable-row:nth-child(even) .station-timetable-hour{background:#ea7e83;}
+.station-timetable-minutes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;}
+.station-timetable-time{
+  display:flex;align-items:center;justify-content:center;min-height:108px;
+  border:0;background:#fff;color:#000;cursor:pointer;
+  font-family:"Kosugi Maru",sans-serif;font-size:48px;font-weight:500;line-height:1;
+}
+.station-timetable-row:nth-child(odd) .station-timetable-time:nth-child(odd){background:#fff;}
+.station-timetable-row:nth-child(odd) .station-timetable-time:nth-child(even){background:#c8c8c8;}
+.station-timetable-row:nth-child(even) .station-timetable-time:nth-child(odd){background:#c8c8c8;}
+.station-timetable-row:nth-child(even) .station-timetable-time:nth-child(even){background:#fff;}
+.station-timetable-time:hover{filter:brightness(.95);}
+.station-timetable-time.empty{cursor:default;}
+.station-timetable-time.empty:hover{filter:none;}
+.station-timetable-meta{
+  padding:8px 10px;text-align:center;color:#666;font-family:"Kosugi",sans-serif;font-size:.78rem;
+}
+@media (max-width:959.98px){
+  .station-timetable-row{grid-template-columns:108px 1fr;}
+  .station-timetable-hour{font-size:56px;}
+  .station-timetable-time{font-size:48px;}
+}
 .station-badge:focus{outline:3px solid rgba(0,0,0,.35);outline-offset:4px;}
 
 /* 駅情報：最初の項目 */
@@ -174,7 +209,7 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 .station-neighbor.left{text-align:left;align-items:flex-start;}
 .station-neighbor.right{text-align:right;align-items:flex-end;}
 .station-neighbor-name-ja{
-  font-family:"Kosugi Maru",sans-serif;font-size:27px;line-height:1.05;font-weight:400;color:#000;
+  font-family:"Kosugi Maru",sans-serif;font-size:27px;line-height:1.05;font-weight:700;color:#000;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
 }
 .station-neighbor-name-en{
@@ -362,6 +397,7 @@ for(const day of ['平日','休日']){
 let currentTrainNo=null;
 let currentStationId=null;
 let isEditMode=false;
+let stationTimetableOpen=false;
 let currentDay=(new Date().getDay()===0||new Date().getDay()===6)?'休日':'平日';
 let followNow=true;
 let registrationState={};
@@ -1256,6 +1292,7 @@ function openSheet(trainNo){
   if(!train) return;
   currentStationId=null;
   currentTrainNo=key;
+  stationTimetableOpen=false;
   isEditMode=false;
   const sheet=document.getElementById('bottomSheet');
   const overlay=document.getElementById('overlay');
@@ -1281,6 +1318,7 @@ function openStationSheet(stationId){
   if(!station) return;
   currentTrainNo=null;
   currentStationId=String(station.id);
+  stationTimetableOpen=false;
   isEditMode=false;
   const sheet=document.getElementById('bottomSheet');
   const overlay=document.getElementById('overlay');
@@ -1331,9 +1369,54 @@ function updateStationSheetContent(){
       </div>
     </div>
     <div class="timetable-list station-placeholder">
-      <div style="text-align:center;padding:28px 12px;font-family:'Kosugi',sans-serif;font-weight:700;color:#666;">駅情報の入力・表示スペース（仮）</div>
+      <button class="station-timetable-btn" type="button" onclick="toggleStationTimetable()">時刻表</button>
+      ${stationTimetableOpen ? stationTimetableHTML(station) : `
+        <div style="text-align:center;padding:28px 12px;font-family:'Kosugi',sans-serif;font-weight:700;color:#666;">駅情報の入力・表示スペース（仮）</div>
+      `}
     </div>
   `;
+}
+function toggleStationTimetable(){
+  if(!currentStationId) return;
+  stationTimetableOpen=!stationTimetableOpen;
+  updateStationSheetContent();
+}
+function stationTimetableHTML(station){
+  const stationName=String(station?.nameJa||'');
+  const entries=[];
+  getVisibleTrains().forEach(train=>{
+    (train.stops||[]).forEach(stop=>{
+      if(String(stop?.station||'')!==stationName) return;
+      const time=String(stop?.time||'');
+      const m=time.match(/^(\d{1,2}):(\d{2})$/);
+      if(!m) return;
+      const hour=Number(m[1]);
+      const minute=Number(m[2]);
+      if(!Number.isFinite(hour)||!Number.isFinite(minute)) return;
+      entries.push({train,hour,minute,time});
+    });
+  });
+  entries.sort((a,b)=>a.hour-b.hour||a.minute-b.minute||String(a.train.no).localeCompare(String(b.train.no),undefined,{numeric:true}));
+
+  if(!entries.length){
+    return `<div class="station-timetable-meta">この駅の時刻表はありません。</div>`;
+  }
+
+  const byHour=new Map();
+  entries.forEach(e=>{
+    if(!byHour.has(e.hour)) byHour.set(e.hour,[]);
+    byHour.get(e.hour).push(e);
+  });
+
+  const escapeAttr=value=>String(value).replace(/&/g,'&amp;').replace(/\"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const escapeJs=value=>String(value).replace(/'/g,"\\'");
+
+  const rows=Array.from(byHour.entries()).map(([hour,items])=>{
+    const cells=items.map(item=>`<button class="station-timetable-time" type="button" title="列車 ${escapeAttr(item.train.no)} / ${escapeAttr(item.time)}" onclick="openSheet('${escapeJs(item.train.no)}')">${item.minute}</button>`);
+    return `<div class="station-timetable-row"><div class="station-timetable-hour">${hour}</div><div class="station-timetable-minutes">${cells.join('')}</div></div>`;
+  }).join('');
+
+  return `<div class="station-timetable-wrap">${rows}</div><div class="station-timetable-meta">時刻をクリックすると列車情報を表示します。</div>`;
 }
 function formatFormationUpdatedAt(trainNo){
   const ts=remoteRoot.formationUpdatedAtByDay?.[currentDay]?.[String(trainNo)];
