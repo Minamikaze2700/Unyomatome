@@ -41,11 +41,17 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
   padding:10px;background:#fff;border-bottom:1px solid #ddd;
 }
 .day-filter,.time-control{display:flex;align-items:center;gap:8px}
-.day-btn,.time-now-btn{
+.date-input{
+  border:2px solid var(--primary);background:#fff;color:var(--primary);
+  padding:7px 12px;border-radius:999px;font:inherit;font-weight:700;
+  cursor:pointer;min-width:160px;
+}
+.schedule-day-label{font-weight:800;color:#555;white-space:nowrap}
+.time-now-btn{
   border:2px solid var(--primary);background:#fff;color:var(--primary);
   padding:7px 14px;border-radius:999px;font-weight:700;cursor:pointer;
 }
-.day-btn.active,.time-now-btn.active{background:var(--primary);color:#fff}
+.time-now-btn.active{background:var(--primary);color:#fff}
 .time-input{
   width:110px;border:2px solid #ccc;border-radius:999px;padding:7px 12px;
   font:inherit;font-weight:700;text-align:center;background:#fff;color:#111;
@@ -310,8 +316,8 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 <h1 id="title">長野電鉄長野線</h1>
 <div class="control-bar">
   <div class="day-filter">
-    <button class="day-btn" data-day="平日" onclick="setDay('平日')">平日</button>
-    <button class="day-btn" data-day="休日" onclick="setDay('休日')">休日</button>
+    <input id="dateInput" class="date-input" type="date">
+    <span id="scheduleDayLabel" class="schedule-day-label">平日ダイヤ</span>
   </div>
   <div class="time-control">
     <span class="time-label">表示時刻</span>
@@ -409,7 +415,8 @@ let currentStationId=null;
 let previousSheetContext=null;
 let isEditMode=false;
 let stationTimetableDirection='up';
-let currentDay=(new Date().getDay()===0||new Date().getDay()===6)?'休日':'平日';
+let selectedDateKey=todayKey(new Date());
+let currentDay=getScheduleDayForDate(new Date());
 let followNow=true;
 let registrationState={};
 let operationHistory=[];
@@ -972,13 +979,106 @@ function getDetailType(type){ return String(type||''); }
 function getDetailDest(dest){ return String(dest||''); }
 function getMainLabelClass(type){ return type==='回送' ? 'deadhead' : ''; }
 
-function setDay(day){
-  currentDay=day;
+function nthMondayDateKey(year,month,nth){
+  const d=new Date(year,month-1,1);
+  const offset=(8-d.getDay())%7;
+  d.setDate(1+offset+(nth-1)*7);
+  return todayKey(d);
+}
+function equinoxDateKey(year,isVernal){
+  // 日本の春分・秋分日は将来の暦にも対応できるよう近似計算。
+  // 1980～2099年程度で実用上十分な精度。
+  const y=year-1980;
+  const base=isVernal?20.8431:23.2488;
+  const drift=0.242194;
+  const day=Math.floor(base+drift*y-Math.floor(y/4));
+  return `${year}-${isVernal?'03':'09'}-${String(day).padStart(2,'0')}`;
+}
+function getJapaneseNationalHolidays(year){
+  const h=new Set();
+  const add=(m,d)=>h.add(`${year}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`);
+  add(1,1);
+  h.add(nthMondayDateKey(year,1,2));
+  add(2,11);
+  if(year>=2020) add(2,23);
+  h.add(equinoxDateKey(year,true));
+  add(4,29); add(5,3); add(5,4); add(5,5);
+  h.add(nthMondayDateKey(year,7,3));
+  add(8,11);
+  h.add(nthMondayDateKey(year,9,3));
+  h.add(equinoxDateKey(year,false));
+  h.add(nthMondayDateKey(year,10,2));
+  add(11,3); add(11,23);
+
+  // 一時的な祝日移動など
+  if(year===2019){ add(5,1); add(10,22); }
+  if(year===2020){
+    h.delete(`${year}-07-20`); add(7,23);
+    h.delete(`${year}-10-12`); add(7,24);
+  }
+  if(year===2021){
+    h.delete(`${year}-07-19`); add(7,22); add(7,23);
+    h.delete(`${year}-08-11`); add(8,8);
+    h.delete(`${year}-10-11`);
+  }
+  return h;
+}
+function getJapaneseHolidaySet(year){
+  const national=getJapaneseNationalHolidays(year);
+  const holidays=new Set(national);
+  // 日曜祝日の振替休日
+  for(const key of [...national]){
+    const d=new Date(`${key}T00:00:00`);
+    if(d.getDay()!==0) continue;
+    const cursor=new Date(d);
+    do{
+      cursor.setDate(cursor.getDate()+1);
+      const k=todayKey(cursor);
+      if(!national.has(k) && !holidays.has(k)){ holidays.add(k); break; }
+    }while(cursor.getFullYear()<=year+1);
+  }
+  // 祝日に挟まれた休日
+  const start=new Date(year,0,1), end=new Date(year,11,31);
+  for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)){
+    const key=todayKey(d);
+    if(holidays.has(key)) continue;
+    const prev=new Date(d); prev.setDate(prev.getDate()-1);
+    const next=new Date(d); next.setDate(next.getDate()+1);
+    if(national.has(todayKey(prev)) && national.has(todayKey(next))) holidays.add(key);
+  }
+  return holidays;
+}
+function isJapaneseHoliday(dateObj){
+  return getJapaneseHolidaySet(dateObj.getFullYear()).has(todayKey(dateObj));
+}
+function getScheduleDayForDate(dateObj){
+  const d=new Date(dateObj);
+  const weekend=d.getDay()===0||d.getDay()===6;
+  return (weekend||isJapaneseHoliday(d))?'休日':'平日';
+}
+function setSelectedDate(dateKey){
+  const value=String(dateKey||'');
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(value)) return;
+  const d=new Date(`${value}T00:00:00`);
+  if(Number.isNaN(d.getTime())) return;
+  selectedDateKey=value;
+  currentDay=getScheduleDayForDate(d);
   registrationState=cloneState(remoteRoot.stateByDay?.[currentDay]||{});
   applyRegistrationState();
-  document.querySelectorAll('.day-btn').forEach(b=>b.classList.toggle('active',b.dataset.day===day));
-  // 全曜日のstateByDayを常時監視しているため、ここではローカルキャッシュから即時描画。
+  const label=document.getElementById('scheduleDayLabel');
+  if(label) label.textContent=`${currentDay}ダイヤ`;
+  saveLocalState();
+  refreshAllTrainDataCache();
   renderLine();
+  if(currentTrainNo) updateSheetContent();
+}
+function initDateControl(){
+  const input=document.getElementById('dateInput');
+  if(!input) return;
+  input.value=selectedDateKey;
+  const label=document.getElementById('scheduleDayLabel');
+  if(label) label.textContent=`${currentDay}ダイヤ`;
+  input.addEventListener('change',e=>setSelectedDate(e.target.value));
 }
 function formationById(id){
   if(!id || id===INITIAL_FORMATION_SELECTION.id) return null;
@@ -1615,10 +1715,10 @@ window.addEventListener('load',async ()=>{
   warmAllTrainData();
   refreshAllTrainDataCache();
   initSharedState();
+  initDateControl();
   currentOperationDate=operationDateKey();
   await initFirebase();
   await maybeResetForNewOperationDay();
-  document.querySelectorAll('.day-btn').forEach(b=>b.classList.toggle('active',b.dataset.day===currentDay));
   initTimeControl();
   setNowTime();
   renderLine();
