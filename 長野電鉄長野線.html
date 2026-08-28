@@ -1134,6 +1134,16 @@ function currentMinutes(){
 }
 function setNowTime(){
   followNow=true;
+  // 「現在時刻」を押したら、時刻だけでなく日付も今日へ戻す。
+  // 日付から平日・休日ダイヤを再判定し、登録状態もその日に合わせて読み直す。
+  const now=new Date();
+  const today=todayKey(now);
+  const dateInput=document.getElementById('dateInput');
+  const dateChanged=selectedDateKey!==today;
+  if(dateInput) dateInput.value=today;
+  if(dateChanged){
+    setSelectedDate(today);
+  }
   const input=document.getElementById('timeInput');
   if(input) input.value=formatTimeNow();
   const btn=document.getElementById('nowBtn');
