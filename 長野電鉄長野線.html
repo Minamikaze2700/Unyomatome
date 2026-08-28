@@ -126,6 +126,18 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
   padding:11px 16px;display:flex;justify-content:space-between;
   align-items:center;font-weight:700;border-radius:16px 16px 0 0;
 }
+.sheet-header-left{display:flex;align-items:center;gap:10px;min-width:0;}
+.sheet-back-btn{
+  display:none;width:28px;height:28px;border:0;background:transparent;color:#fff;
+  padding:0;cursor:pointer;position:relative;flex:0 0 28px;
+}
+.sheet-back-btn::before{
+  content:'';position:absolute;left:7px;top:6px;width:13px;height:13px;
+  border-left:4px solid currentColor;border-bottom:4px solid currentColor;
+  transform:rotate(45deg);
+  box-sizing:border-box;
+}
+.sheet-back-btn.visible{display:inline-block;}
 .close-btn{cursor:pointer;font-size:1.2rem}
 .sheet-content{padding:16px;position:relative;overflow:hidden}
 .timetable-list{position:relative;overflow:hidden;z-index:1}
@@ -139,40 +151,35 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 .station-info-card:hover{border-color:transparent;}
 .station-placeholder{margin-top:12px;min-height:140px;}
 .station-badge{cursor:pointer;}
-.station-timetable-btn{
-  display:block;width:100%;border:0;border-radius:6px;background:var(--primary);color:#fff;
-  font-family:"Kosugi",sans-serif;font-size:1.05rem;font-weight:700;
-  padding:10px 16px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.12);
+.station-timetable-title{
+  font-family:"Kosugi",sans-serif;font-size:1.35rem;font-weight:700;text-align:left;padding:8px 0 10px;
 }
-.station-timetable-btn:hover{background:var(--primary-dark);}
-.station-timetable-wrap{margin-top:12px;background:#fff;overflow:hidden;}
-.station-timetable-row{display:grid;grid-template-columns:108px 1fr;min-height:108px;}
-.station-timetable-hour{
-  display:flex;align-items:center;justify-content:center;
-  color:#fff;font-family:"Kosugi Maru",sans-serif;font-size:56px;font-weight:500;
-  line-height:1;background:var(--primary);
+.station-timetable-direction-tabs{display:flex;gap:8px;margin:0 0 12px;justify-content:flex-start;}
+.station-timetable-direction-tab{
+  flex:0 0 50%;border:2px solid var(--primary);border-radius:6px;background:#fff;color:var(--primary);
+  font-family:"Kosugi",sans-serif;font-size:1rem;font-weight:700;padding:10px 8px;cursor:pointer;
 }
-.station-timetable-row:nth-child(even) .station-timetable-hour{background:#ea7e83;}
-.station-timetable-minutes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;}
-.station-timetable-time{
-  display:flex;align-items:center;justify-content:center;min-height:108px;
-  border:0;background:#fff;color:#000;cursor:pointer;
-  font-family:"Kosugi Maru",sans-serif;font-size:48px;font-weight:500;line-height:1;
-}
-.station-timetable-row:nth-child(odd) .station-timetable-time:nth-child(odd){background:#fff;}
-.station-timetable-row:nth-child(odd) .station-timetable-time:nth-child(even){background:#c8c8c8;}
-.station-timetable-row:nth-child(even) .station-timetable-time:nth-child(odd){background:#c8c8c8;}
-.station-timetable-row:nth-child(even) .station-timetable-time:nth-child(even){background:#fff;}
+.station-timetable-direction-tab.active{background:var(--primary);color:#fff;}
+.station-timetable-direction-tab:hover{background:#fff1f1;}
+.station-timetable-direction-tab.active:hover{background:var(--primary-dark);}
+.station-timetable-wrap{margin-top:4px;background:#fff;overflow:hidden;}
+.station-timetable-direction{margin-top:0;}
+.station-timetable-grid{display:flex;flex-direction:column;gap:0;align-items:flex-start;}
+.station-timetable-hour-row{display:flex;align-items:stretch;justify-content:flex-start;}
+.station-timetable-cell{width:80px;height:80px;min-width:80px;display:flex;align-items:center;justify-content:center;border:0;padding:0;line-height:1;}
+.station-timetable-hour{color:#fff;background:var(--primary);font-family:"Kosugi Maru",sans-serif;font-size:40px;font-weight:500;}
+.station-timetable-hour.hour-alt{background:#ea7e83;}
+.station-timetable-time{background:#fff;color:#000;cursor:pointer;font-family:"Kosugi Maru",sans-serif;font-size:34px;font-weight:500;}
+.station-timetable-time.minute-alt{background:#c8c8c8;}
 .station-timetable-time:hover{filter:brightness(.95);}
-.station-timetable-time.empty{cursor:default;}
-.station-timetable-time.empty:hover{filter:none;}
+.station-timetable-empty{background:#fff;}
 .station-timetable-meta{
-  padding:8px 10px;text-align:center;color:#666;font-family:"Kosugi",sans-serif;font-size:.78rem;
+  padding:8px 10px;text-align:left;color:#666;font-family:"Kosugi",sans-serif;font-size:.78rem;
 }
 @media (max-width:959.98px){
-  .station-timetable-row{grid-template-columns:108px 1fr;}
-  .station-timetable-hour{font-size:56px;}
-  .station-timetable-time{font-size:48px;}
+  .station-timetable-cell{width:80px;height:80px;min-width:80px;}
+  .station-timetable-hour{font-size:40px;}
+  .station-timetable-time{font-size:34px;}
 }
 .station-badge:focus{outline:3px solid rgba(0,0,0,.35);outline-offset:4px;}
 
@@ -321,7 +328,10 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 <div class="overlay" id="overlay" onclick="closeSheet()"></div>
 <div class="bottom-sheet" id="bottomSheet">
   <div class="sheet-header">
-    <span>列車情報</span>
+    <div class="sheet-header-left">
+      <button id="sheetBackBtn" class="sheet-back-btn" type="button" aria-label="駅情報に戻る" onclick="sheetBack()"></button>
+      <span>列車情報</span>
+    </div>
     <span class="close-btn" onclick="closeSheet()">✖</span>
   </div>
   <div class="sheet-content" id="sheetContent"></div>
@@ -396,8 +406,9 @@ for(const day of ['平日','休日']){
 
 let currentTrainNo=null;
 let currentStationId=null;
+let previousSheetContext=null;
 let isEditMode=false;
-let stationTimetableOpen=false;
+let stationTimetableDirection='up';
 let currentDay=(new Date().getDay()===0||new Date().getDay()===6)?'休日':'平日';
 let followNow=true;
 let registrationState={};
@@ -1286,20 +1297,27 @@ function renderTrainPositions(){
   });
 }
 
-function openSheet(trainNo){
+function openSheet(trainNo,fromStationTimetable=false){
   const key=String(trainNo ?? '');
   const train=liveTrain(key);
   if(!train) return;
+  if(fromStationTimetable && currentStationId){
+    previousSheetContext={type:'station-timetable',stationId:String(currentStationId),direction:stationTimetableDirection};
+  }else{
+    previousSheetContext=null;
+  }
   currentStationId=null;
   currentTrainNo=key;
-  stationTimetableOpen=false;
+  stationTimetableDirection='up';
   isEditMode=false;
   const sheet=document.getElementById('bottomSheet');
   const overlay=document.getElementById('overlay');
   if(!sheet || !overlay) return;
   sheet.classList.remove('editing');
-  const header=sheet.querySelector('.sheet-header span:first-child');
+  const header=sheet.querySelector('.sheet-header-left > span');
   if(header) header.textContent='列車情報';
+  const backBtn=document.getElementById('sheetBackBtn');
+  if(backBtn) backBtn.classList.toggle('visible', !!(fromStationTimetable && previousSheetContext));
   updateSheetContent();
   overlay.style.display='block';
   sheet.classList.add('active');
@@ -1309,8 +1327,11 @@ function closeSheet(){
   const overlay=document.getElementById('overlay');
   if(overlay) overlay.style.display='none';
   if(sheet) sheet.classList.remove('active','editing');
+  const backBtn=document.getElementById('sheetBackBtn');
+  if(backBtn) backBtn.classList.remove('visible');
   currentTrainNo=null;
   currentStationId=null;
+  previousSheetContext=null;
   isEditMode=false;
 }
 function openStationSheet(stationId){
@@ -1318,14 +1339,17 @@ function openStationSheet(stationId){
   if(!station) return;
   currentTrainNo=null;
   currentStationId=String(station.id);
-  stationTimetableOpen=false;
+  previousSheetContext=null;
+  stationTimetableDirection='up';
   isEditMode=false;
   const sheet=document.getElementById('bottomSheet');
   const overlay=document.getElementById('overlay');
   if(!sheet || !overlay) return;
   sheet.classList.remove('editing');
-  const header=sheet.querySelector('.sheet-header span:first-child');
+  const header=sheet.querySelector('.sheet-header-left > span');
   if(header) header.textContent='駅情報';
+  const backBtn=document.getElementById('sheetBackBtn');
+  if(backBtn) backBtn.classList.remove('visible');
   updateStationSheetContent();
   overlay.style.display='block';
   sheet.classList.add('active');
@@ -1369,61 +1393,97 @@ function updateStationSheetContent(){
       </div>
     </div>
     <div class="timetable-list station-placeholder">
-      <button class="station-timetable-btn" type="button" onclick="toggleStationTimetable()">時刻表</button>
-      ${stationTimetableOpen ? stationTimetableHTML(station) : `
-        <div style="text-align:center;padding:28px 12px;font-family:'Kosugi',sans-serif;font-weight:700;color:#666;">駅情報の入力・表示スペース（仮）</div>
-      `}
+      <div class="station-timetable-title">時刻表</div>
+      <div class="station-timetable-direction-tabs">
+        <button class="station-timetable-direction-tab ${stationTimetableDirection==='up'?'active':''}" type="button" onclick="setStationTimetableDirection('up')">長野方面</button>
+        <button class="station-timetable-direction-tab ${stationTimetableDirection==='down'?'active':''}" type="button" onclick="setStationTimetableDirection('down')">湯田中方面</button>
+      </div>
+      ${stationTimetableHTML(station, stationTimetableDirection)}
     </div>
   `;
 }
-function toggleStationTimetable(){
+function setStationTimetableDirection(direction){
   if(!currentStationId) return;
-  stationTimetableOpen=!stationTimetableOpen;
+  stationTimetableDirection=(direction==='down')?'down':'up';
   updateStationSheetContent();
 }
-function stationTimetableHTML(station){
+function stationTimetableHTML(station, selectedDirection='up'){
   const stationName=String(station?.nameJa||'');
-  const entries=[];
+  const directionData={up:{label:'長野方面',entries:[]},down:{label:'湯田中方面',entries:[]}};
+  const byTrain=new Map();
+
   getVisibleTrains().forEach(train=>{
-    (train.stops||[]).forEach(stop=>{
-      if(String(stop?.station||'')!==stationName) return;
-      const time=String(stop?.time||'');
-      const m=time.match(/^(\d{1,2}):(\d{2})$/);
-      if(!m) return;
-      const hour=Number(m[1]);
-      const minute=Number(m[2]);
-      if(!Number.isFinite(hour)||!Number.isFinite(minute)) return;
-      entries.push({train,hour,minute,time});
+    if(String(train?.dest||'')===stationName) return; // 当駅止まりは除外
+    const stops=(train.stops||[]).filter(stop=>String(stop?.station||'')===stationName);
+    if(!stops.length) return;
+    const stop=stops[stops.length-1]; // 同一駅が2回ある場合は発車側の時刻
+    const time=String(stop?.time||'');
+    const m=time.match(/^(\d{1,2}):(\d{2})$/);
+    if(!m) return;
+    const hour=Number(m[1]), minute=Number(m[2]);
+    if(!Number.isFinite(hour)||!Number.isFinite(minute)) return;
+    const bucket=String(train?.direction||'up')==='down'?'down':'up';
+    byTrain.set(`${bucket}:${String(train.no)}`,{train,hour,minute,time,bucket});
+  });
+
+  Array.from(byTrain.values())
+    .sort((a,b)=>a.hour-b.hour||a.minute-b.minute||String(a.train.no).localeCompare(String(b.train.no),undefined,{numeric:true}))
+    .forEach(entry=>directionData[entry.bucket].entries.push(entry));
+
+  const escapeAttr=value=>String(value).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const escapeJs=value=>String(value).replace(/\\/g,"\\'");
+
+  const renderDirection=(key)=>{
+    const data=directionData[key];
+    if(!data.entries.length) return '';
+
+    const hourGroups=[];
+    let currentHour=null;
+    for(const item of data.entries){
+      if(currentHour===null || currentHour.hour!==item.hour){
+        currentHour={hour:item.hour,entries:[]};
+        hourGroups.push(currentHour);
+      }
+      currentHour.entries.push(item);
+    }
+
+    const rows=hourGroups.map((group,rowIndex)=>{
+      const hourClass=(rowIndex%2===0)?'':' hour-alt';
+      const cells=[`<div class="station-timetable-cell station-timetable-hour${hourClass}">${group.hour}</div>`];
+      group.entries.forEach((item,colIndex)=>{
+        const checker=(rowIndex+colIndex)%2===0;
+        const minuteClass=checker?'':' minute-alt';
+        cells.push(`<button class="station-timetable-cell station-timetable-time${minuteClass}" type="button" title="列車 ${escapeAttr(item.train.no)} / ${escapeAttr(item.time)}" onclick="openSheet('${escapeJs(item.train.no)}',true)">${String(item.minute).padStart(2,'0')}</button>`);
+      });
+      return `<div class="station-timetable-hour-row">${cells.join('')}</div>`;
     });
-  });
-  entries.sort((a,b)=>a.hour-b.hour||a.minute-b.minute||String(a.train.no).localeCompare(String(b.train.no),undefined,{numeric:true}));
 
-  if(!entries.length){
-    return `<div class="station-timetable-meta">この駅の時刻表はありません。</div>`;
-  }
+    return `<section class="station-timetable-direction">${rows.join('')}</section>`;
+  };
 
-  const byHour=new Map();
-  entries.forEach(e=>{
-    if(!byHour.has(e.hour)) byHour.set(e.hour,[]);
-    byHour.get(e.hour).push(e);
-  });
-
-  const escapeAttr=value=>String(value).replace(/&/g,'&amp;').replace(/\"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const escapeJs=value=>String(value).replace(/'/g,"\\'");
-
-  const rows=Array.from(byHour.entries()).map(([hour,items])=>{
-    const cells=items.map(item=>`<button class="station-timetable-time" type="button" title="列車 ${escapeAttr(item.train.no)} / ${escapeAttr(item.time)}" onclick="openSheet('${escapeJs(item.train.no)}')">${item.minute}</button>`);
-    return `<div class="station-timetable-row"><div class="station-timetable-hour">${hour}</div><div class="station-timetable-minutes">${cells.join('')}</div></div>`;
-  }).join('');
-
-  return `<div class="station-timetable-wrap">${rows}</div><div class="station-timetable-meta">時刻をクリックすると列車情報を表示します。</div>`;
+  const html=renderDirection(selectedDirection);
+  if(!html) return `<div class="station-timetable-meta">この方面の時刻表はありません。</div>`;
+  return `<div class="station-timetable-wrap">${html}</div><div class="station-timetable-meta">発時刻のみ表示・時刻をクリックすると列車情報を表示します。</div>`;
 }
+
 function formatFormationUpdatedAt(trainNo){
   const ts=remoteRoot.formationUpdatedAtByDay?.[currentDay]?.[String(trainNo)];
   if(!ts) return '';
   const d=new Date(ts);
   if(Number.isNaN(d.getTime())) return '';
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+}
+function sheetBack(){
+  if(previousSheetContext?.type==='station-timetable'){
+    const stationId=previousSheetContext.stationId;
+    const direction=previousSheetContext.direction==='down'?'down':'up';
+    previousSheetContext=null;
+    openStationSheet(stationId);
+    stationTimetableDirection=direction;
+    updateStationSheetContent();
+    return;
+  }
+  closeSheet();
 }
 function updateSheetContent(){
   if(currentStationId){ updateStationSheetContent(); return; }
