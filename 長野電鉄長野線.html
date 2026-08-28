@@ -148,6 +148,7 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 .sheet-content{padding:16px;position:relative;overflow:hidden}
 .timetable-list{position:relative;overflow:hidden;z-index:1}
 .train-card{
+  position:relative;
   background:#fff;border-radius:8px;padding:12px 12px 30px;display:flex;
   align-items:center;gap:12px;margin-bottom:16px;cursor:pointer;
   border:2px solid transparent;
@@ -1603,7 +1604,7 @@ function formatFormationUpdatedAt(trainNo){
     ? pendingFormationState[key]
     : registrationState[key];
   if(!formation || formation===INITIAL_FORMATION_SELECTION.id) return '';
-  const ts=remoteRoot.formationUpdatedAtByDay?.[currentDay]?.[key];
+  const ts=remoteRoot.formationUpdatedAtByDay?.[currentDay]?.[key] || pendingFormationTimestamps?.[currentDay]?.[key];
   if(!ts) return '';
   const d=new Date(ts);
   if(Number.isNaN(d.getTime())) return '';
