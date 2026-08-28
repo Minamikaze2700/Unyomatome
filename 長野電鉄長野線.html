@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -154,6 +155,8 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
   border:2px solid transparent;
 }
 .train-card:hover{border-color:#bbb}
+.train-card.historical-readonly{cursor:default}
+.train-card.historical-readonly:hover{border-color:transparent}
 .station-info-card{cursor:default;}
 .station-info-card:hover{border-color:transparent;}
 .station-placeholder{margin-top:12px;min-height:140px;}
@@ -641,8 +644,8 @@ async function preloadFirebaseState(){
       平日:cloneState(timestampSnap.val()?.平日||{}),
       休日:cloneState(timestampSnap.val()?.休日||{})
     };
-    registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
     remoteRoot.history=historySnap.val()||{};
+    registrationState=isHistoricalSelectedDate(selectedDateKey) ? historicalStateForDate(selectedDateKey) : cloneState(remoteRoot.stateByDay[currentDay]||{});
     operationHistory=historyEntries();
     applyRegistrationState();
     saveLocalState();
@@ -711,7 +714,7 @@ async function initFirebase(){
       remoteRoot.formationUpdatedAtByDay=remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}};
       remoteRoot.history=remoteRoot.history||{};
       currentOperationDate=remoteRoot.operationDate||operationDateKey();
-      registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
+      registrationState=isHistoricalSelectedDate(selectedDateKey) ? historicalStateForDate(selectedDateKey) : cloneState(remoteRoot.stateByDay[currentDay]||{});
       applyRegistrationState();
       saveLocalState();
       refreshVisibleUI();
@@ -787,6 +790,7 @@ function chainEntries(day,trainNo){
   return idx?OPERATION_CHAINS[day][idx.chainIndex]:null;
 }
 async function recordSelection(train,formId){
+  if(isNonCurrentSelectedDate(selectedDateKey)) return [];
   const chain=chainEntries(currentDay,train.no);
   const assigned=[];
   if(chain){
@@ -1057,6 +1061,30 @@ function getScheduleDayForDate(dateObj){
   const weekend=d.getDay()===0||d.getDay()===6;
   return (weekend||isJapaneseHoliday(d))?'休日':'平日';
 }
+function isHistoricalSelectedDate(dateKey){
+  const today=todayKey(new Date());
+  return String(dateKey||'') < today;
+}
+function isNonCurrentSelectedDate(dateKey){
+  const today=todayKey(new Date());
+  return String(dateKey||'') !== today;
+}
+function historicalStateForDate(dateKey){
+  const root=remoteRoot.history||{};
+  const snap=root[String(dateKey)] || Object.values(root).find(x=>String(x?.date||'')===String(dateKey)) || null;
+  if(!snap) return {};
+  const days=Array.isArray(snap.days)?snap.days:[snap];
+  const daySnap=days.find(d=>String(d?.day||'')===String(currentDay)) || null;
+  if(!daySnap || !Array.isArray(daySnap.operations)) return {};
+  const state={};
+  daySnap.operations.forEach(op=>{
+    const form=op?.formationId;
+    (Array.isArray(op?.trainNumbers)?op.trainNumbers:[]).forEach(no=>{
+      if(form) state[String(no)]=String(form);
+    });
+  });
+  return state;
+}
 function setSelectedDate(dateKey){
   const value=String(dateKey||'');
   if(!/^\d{4}-\d{2}-\d{2}$/.test(value)) return;
@@ -1064,15 +1092,18 @@ function setSelectedDate(dateKey){
   if(Number.isNaN(d.getTime())) return;
   selectedDateKey=value;
   currentDay=getScheduleDayForDate(d);
-  registrationState=cloneState(remoteRoot.stateByDay?.[currentDay]||{});
+  registrationState=isHistoricalSelectedDate(value)
+    ? historicalStateForDate(value)
+    : cloneState(remoteRoot.stateByDay?.[currentDay]||{});
   applyRegistrationState();
   const label=document.getElementById('scheduleDayLabel');
-  if(label) label.textContent=`${currentDay}ダイヤ`;
+  if(label) label.textContent=isHistoricalSelectedDate(value) ? `${currentDay}ダイヤ・過去データ` : `${currentDay}ダイヤ`;
   saveLocalState();
   refreshAllTrainDataCache();
   renderLine();
   if(currentTrainNo) updateSheetContent();
 }
+
 function initDateControl(){
   const input=document.getElementById('dateInput');
   if(!input) return;
@@ -1633,7 +1664,7 @@ function updateSheetContent(){
 
   if(!isEditMode){
     content.innerHTML=`
-      <div class="train-card" onclick="switchToEditMode()">
+      <div class="train-card${isNonCurrentSelectedDate(selectedDateKey)?' historical-readonly':''}" ${isNonCurrentSelectedDate(selectedDateKey)?'':'onclick="switchToEditMode()"'}>
         <img src="${imgSrc}" class="train-card-img">
         <div class="train-info-main">
           <div>
@@ -1693,6 +1724,7 @@ function updateSheetContent(){
   }
 }
 function switchToEditMode(){
+  if(isNonCurrentSelectedDate(selectedDateKey)) return;
   const train=liveTrain(currentTrainNo);
   if(!train) return;
   isEditMode=true;
@@ -1707,6 +1739,7 @@ function toggleDropdown(){
 let selectionSyncInProgress=false;
 let pendingFormationTimestamps={平日:{},休日:{}};
 async function selectFormation(formId){
+  if(isHistoricalSelectedDate(selectedDateKey)) return;
   const train=liveTrain(currentTrainNo);
   if(!train || selectionSyncInProgress) return;
   const normalizedId=String(formId ?? INITIAL_FORMATION_SELECTION.id);
