@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Kosugi&family=Kosugi+Maru&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>運用まとめ - 長野電鉄長野線</title>
 <style>
@@ -18,7 +18,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;max-width:100%;min-width:0;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
 #title,.control-bar,.line-container{box-sizing:border-box;width:100%;max-width:100%;min-width:0}
 
 /* 日別・時刻フィルター */
@@ -41,17 +41,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
   padding:10px;background:#fff;border-bottom:1px solid #ddd;
 }
 .day-filter,.time-control{display:flex;align-items:center;gap:8px}
-.date-input{
-  border:2px solid var(--primary);background:#fff;color:var(--primary);
-  padding:7px 12px;border-radius:999px;font:inherit;font-weight:700;
-  cursor:pointer;min-width:160px;
-}
-.schedule-day-label{font-weight:800;color:#555;white-space:nowrap}
-.time-now-btn{
+.day-btn,.time-now-btn{
   border:2px solid var(--primary);background:#fff;color:var(--primary);
   padding:7px 14px;border-radius:999px;font-weight:700;cursor:pointer;
 }
-.time-now-btn.active{background:var(--primary);color:#fff}
+.day-btn.active,.time-now-btn.active{background:var(--primary);color:#fff}
 .time-input{
   width:110px;border:2px solid #ccc;border-radius:999px;padding:7px 12px;
   font:inherit;font-weight:700;text-align:center;background:#fff;color:#111;
@@ -141,6 +135,54 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
   border:2px solid transparent;
 }
 .train-card:hover{border-color:#bbb}
+.station-info-card{cursor:default;}
+.station-info-card:hover{border-color:transparent;}
+.station-placeholder{margin-top:12px;min-height:140px;}
+.station-badge{cursor:pointer;}
+.station-badge:focus{outline:3px solid rgba(0,0,0,.35);outline-offset:4px;}
+
+/* 駅情報：最初の項目 */
+.station-overview-card{
+  position:relative;background:#fff;border-radius:10px;overflow:hidden;
+  margin-bottom:16px;border:2px solid transparent;box-shadow:0 1px 2px rgba(0,0,0,.05);
+}
+.station-overview-main{
+  text-align:center;padding:8px 10px 9px;background:#fff;
+}
+.station-overview-name-ja{
+  font-family:"Kosugi Maru",sans-serif;
+  font-size:52px;line-height:.95;font-weight:500;letter-spacing:.08em;padding-left:.08em;color:#000;
+}
+.station-overview-name-en{
+  font-family:"Kosugi Maru",sans-serif;
+  font-size:29px;line-height:1.02;font-weight:500;letter-spacing:.015em;color:#000;
+  margin-top:2px;
+}
+.station-direction-bar-wrap{width:100%;}
+.station-direction-bar{
+  width:100%;height:18px;background:var(--primary);
+  clip-path:polygon(3% 0,97% 0,100% 100%,0 100%);
+}
+.station-direction-bar.no-prev{clip-path:polygon(0 0,97% 0,100% 100%,0 100%);}
+.station-direction-bar.no-next{clip-path:polygon(3% 0,100% 0,100% 100%,0 100%);}
+.station-direction-bar.no-prev.no-next{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);}
+.station-neighbor-row{display:flex;width:100%;min-height:54px;background:#fff;}
+.station-neighbor{
+  width:50%;display:flex;flex-direction:column;justify-content:flex-start;
+  padding:2px 8px 8px;min-width:0;
+}
+.station-neighbor.left{text-align:left;align-items:flex-start;}
+.station-neighbor.right{text-align:right;align-items:flex-end;}
+.station-neighbor-name-ja{
+  font-family:"Kosugi Maru",sans-serif;font-size:27px;line-height:1.05;font-weight:400;color:#000;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
+}
+.station-neighbor-name-en{
+  font-family:"Kosugi Maru",sans-serif;font-size:14px;line-height:1.1;font-weight:500;color:#000;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;margin-top:1px;
+}
+.station-neighbor.empty{visibility:hidden;}
+
 .train-card-img{width:75px;height:auto;object-fit:contain}
 .train-info-main{flex:1}
 .type-badge{background:#616161;color:#fff;padding:3px 8px;border-radius:4px;font-size:.78rem;display:inline-block}
@@ -151,7 +193,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 .formation-id{font-size:1.2rem;font-weight:800;color:#1b6e27;margin-top:4px}
 .capacity-info{color:#666;font-size:.85rem;margin-top:4px}
 
-.train-card{position:relative}.formation-updated-at{position:absolute;right:12px;bottom:8px;font-size:.78rem;color:#777;text-align:right;} 
+.formation-updated-at{position:absolute;right:12px;bottom:8px;font-size:.78rem;color:#777;text-align:right;} 
 .input-trigger-btn{
   background:var(--primary);color:#fff;padding:4px 8px;border-radius:4px;
   font-size:.75rem;margin-top:4px;display:inline-block;
@@ -226,9 +268,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 <h1 id="title">長野電鉄長野線</h1>
 <div class="control-bar">
   <div class="day-filter">
-    <span class="time-label">日付</span>
-    <input id="dateInput" class="date-input" type="date">
-    <span id="scheduleDayLabel" class="schedule-day-label">平日ダイヤ</span>
+    <button class="day-btn" data-day="平日" onclick="setDay('平日')">平日</button>
+    <button class="day-btn" data-day="休日" onclick="setDay('休日')">休日</button>
   </div>
   <div class="time-control">
     <span class="time-label">表示時刻</span>
@@ -319,9 +360,9 @@ for(const day of ['平日','休日']){
 }
 
 let currentTrainNo=null;
+let currentStationId=null;
 let isEditMode=false;
-let selectedDateKey=todayKey(new Date());
-let currentDay=getScheduleDayForDateKey(selectedDateKey);
+let currentDay=(new Date().getDay()===0||new Date().getDay()===6)?'休日':'平日';
 let followNow=true;
 let registrationState={};
 let operationHistory=[];
@@ -364,88 +405,6 @@ function operationDateKey(d=new Date()){
   if(base.getHours()<RESET_HOUR) base.setDate(base.getDate()-1);
   return todayKey(base);
 }
-
-function nthMondayDateKey(year,month,nth){
-  const d=new Date(year,month-1,1);
-  const offset=(8-d.getDay())%7;
-  d.setDate(1+offset+(nth-1)*7);
-  return todayKey(d);
-}
-function equinoxDateKey(year,isVernal){
-  // 国立天文台が毎年公表する春分・秋分日に対応する近似式（1980～2099年程度で実用上十分）。
-  const y=year-1980;
-  const base=isVernal ? 20.8431 : 23.2488;
-  const drift=isVernal ? 0.242194 : 0.242194;
-  const leap=Math.floor(y/4);
-  const day=Math.floor(base + drift*y - leap);
-  return `${year}-${isVernal?'03':'09'}-${String(day).padStart(2,'0')}`;
-}
-function getJapaneseNationalHolidays(year){
-  const h=new Set();
-  const add=(m,d)=>h.add(`${year}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`);
-  add(1,1);
-  h.add(nthMondayDateKey(year,1,2));
-  add(2,11);
-  if(year>=2020) add(2,23);
-  h.add(equinoxDateKey(year,true));
-  add(4,29); add(5,3); add(5,4); add(5,5);
-  h.add(nthMondayDateKey(year,7,3));
-  add(8,11);
-  h.add(nthMondayDateKey(year,9,3));
-  h.add(equinoxDateKey(year,false));
-  h.add(nthMondayDateKey(year,10,2));
-  add(11,3); add(11,23);
-
-  // 祝日の移動・特例（東京2020/2021大会に伴う移動など）
-  if(year===2019){ add(5,1); add(10,22); h.delete(`${year}-02-23`); }
-  if(year===2020){ h.delete(`${year}-07-20`); add(7,23); h.delete(`${year}-10-12`); add(7,24); }
-  if(year===2021){ h.delete(`${year}-07-19`); add(7,22); add(7,23); h.delete(`${year}-08-11`); add(8,8); h.delete(`${year}-10-11`); }
-  if(year===2019){ h.delete(`${year}-10-14`); /* 体育の日は通常通り 10/14 */ h.add(`${year}-10-14`); }
-  return h;
-}
-function getJapaneseHolidaySet(year){
-  const national=getJapaneseNationalHolidays(year);
-  const holidays=new Set(national);
-  // 振替休日：日曜日に当たる祝日の後で最も近い祝日でない日
-  for(const key of [...national]){
-    const d=new Date(`${key}T00:00:00`);
-    if(d.getDay()!==0) continue;
-    const cursor=new Date(d);
-    do{
-      cursor.setDate(cursor.getDate()+1);
-      const k=todayKey(cursor);
-      if(!national.has(k) && !holidays.has(k)){ holidays.add(k); break; }
-    }while(cursor.getFullYear()<=year+1);
-  }
-  // 国民の祝日に挟まれた平日（祝日法第3条第3項）
-  const dates=[...national].sort();
-  const nationalInYear=new Set(dates);
-  const start=new Date(year,0,1), end=new Date(year,11,31);
-  for(let d=new Date(start); d<=end; d.setDate(d.getDate()+1)){
-    const key=todayKey(d);
-    if(holidays.has(key)) continue;
-    const prev=new Date(d); prev.setDate(prev.getDate()-1);
-    const next=new Date(d); next.setDate(next.getDate()+1);
-    if(nationalInYear.has(todayKey(prev)) && nationalInYear.has(todayKey(next))) holidays.add(key);
-  }
-  return holidays;
-}
-function isJapaneseHoliday(dateObj){
-  const key=todayKey(dateObj);
-  return getJapaneseHolidaySet(dateObj.getFullYear()).has(key);
-}
-function getScheduleDayForDate(dateObj){
-  const d=new Date(dateObj);
-  const weekend=d.getDay()===0 || d.getDay()===6;
-  return weekend || isJapaneseHoliday(d) ? '休日' : '平日';
-}
-function getScheduleDayForDateKey(dateKey){
-  const m=String(dateKey||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if(!m) return getScheduleDayForDate(new Date());
-  const d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));
-  if(Number.isNaN(d.getTime())) return getScheduleDayForDate(new Date());
-  return getScheduleDayForDate(d);
-}
 function resetTimeForDate(dateKey){ return dateKey+'T03:00:00'; }
 function normalizeTrainNo(v){
   if(v===null||v===undefined) return '';
@@ -472,7 +431,6 @@ function saveLocalState(){
   try{
     localStorage.setItem(STORAGE_KEY,JSON.stringify({
       operationDate:currentOperationDate,
-      selectedDate:selectedDateKey,
       stateByDay:remoteRoot.stateByDay,
       formationUpdatedAtByDay:remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}},
       history:remoteRoot.history,
@@ -490,10 +448,6 @@ function loadLocalState(){
     remoteRoot.formationUpdatedAtByDay=obj.formationUpdatedAtByDay||{平日:{},休日:{}};
     remoteRoot.history=obj.history||{};
     currentOperationDate=remoteRoot.operationDate;
-    if(/^\d{4}-\d{2}-\d{2}$/.test(String(obj.selectedDate||''))){
-      selectedDateKey=String(obj.selectedDate);
-      currentDay=getScheduleDayForDateKey(selectedDateKey);
-    }
     operationHistory=historyEntries();
     registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
     applyRegistrationState();
@@ -545,7 +499,11 @@ function refreshAllTrainDataCache(){
     const key=String(t.no);
     const cached={...t, stops:(t.stops||[]).map(s=>({...s}))};
     cached.defaultCars=prescribedFormationName(cached);
-    cached.formation=registrationState[key]||null;
+    // Firebase確定値が一瞬空になっても、入力処理中の編成を優先して表示を維持する。
+    const effectiveFormation=Object.prototype.hasOwnProperty.call(pendingFormationState,key)
+      ? pendingFormationState[key]
+      : registrationState[key];
+    cached.formation=effectiveFormation||null;
     LIVE_TRAIN_CACHE.set(key,cached);
     TRAIN_DATA_CACHE.set(key,cached);
   }
@@ -957,28 +915,13 @@ function getDetailType(type){ return String(type||''); }
 function getDetailDest(dest){ return String(dest||''); }
 function getMainLabelClass(type){ return type==='回送' ? 'deadhead' : ''; }
 
-function setSelectedDate(dateKey){
-  const value=String(dateKey||'');
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(value)) return;
-  const d=new Date(`${value}T00:00:00`);
-  if(Number.isNaN(d.getTime())) return;
-  selectedDateKey=value;
-  currentDay=getScheduleDayForDate(d);
+function setDay(day){
+  currentDay=day;
   registrationState=cloneState(remoteRoot.stateByDay?.[currentDay]||{});
   applyRegistrationState();
-  const label=document.getElementById('scheduleDayLabel');
-  if(label) label.textContent=`${currentDay}ダイヤ`;
-  saveLocalState();
+  document.querySelectorAll('.day-btn').forEach(b=>b.classList.toggle('active',b.dataset.day===day));
+  // 全曜日のstateByDayを常時監視しているため、ここではローカルキャッシュから即時描画。
   renderLine();
-  if(currentTrainNo) updateSheetContent();
-}
-function initDateControl(){
-  const input=document.getElementById('dateInput');
-  if(!input) return;
-  input.value=selectedDateKey;
-  const label=document.getElementById('scheduleDayLabel');
-  if(label) label.textContent=`${currentDay}ダイヤ`;
-  input.addEventListener('change',e=>setSelectedDate(e.target.value));
 }
 function formationById(id){
   if(!id || id===INITIAL_FORMATION_SELECTION.id) return null;
@@ -1084,6 +1027,20 @@ function renderLine(){
       <div class="station-name-ja">${st.nameJa}</div>
       <div class="station-name-en">${st.nameEn}</div>
     `;
+    badge.setAttribute('role','button');
+    badge.tabIndex=0;
+    badge.addEventListener('click',ev=>{
+      ev.preventDefault();
+      ev.stopPropagation();
+      openStationSheet(st.id);
+    });
+    badge.addEventListener('keydown',ev=>{
+      if(ev.key==='Enter' || ev.key===' '){
+        ev.preventDefault();
+        ev.stopPropagation();
+        openStationSheet(st.id);
+      }
+    });
     row.appendChild(badge);
     container.appendChild(row);
   });
@@ -1297,12 +1254,15 @@ function openSheet(trainNo){
   const key=String(trainNo ?? '');
   const train=liveTrain(key);
   if(!train) return;
+  currentStationId=null;
   currentTrainNo=key;
   isEditMode=false;
   const sheet=document.getElementById('bottomSheet');
   const overlay=document.getElementById('overlay');
   if(!sheet || !overlay) return;
   sheet.classList.remove('editing');
+  const header=sheet.querySelector('.sheet-header span:first-child');
+  if(header) header.textContent='列車情報';
   updateSheetContent();
   overlay.style.display='block';
   sheet.classList.add('active');
@@ -1312,16 +1272,78 @@ function closeSheet(){
   const overlay=document.getElementById('overlay');
   if(overlay) overlay.style.display='none';
   if(sheet) sheet.classList.remove('active','editing');
+  currentTrainNo=null;
+  currentStationId=null;
   isEditMode=false;
+}
+function openStationSheet(stationId){
+  const station=STATIONS.find(st=>String(st.id)===String(stationId));
+  if(!station) return;
+  currentTrainNo=null;
+  currentStationId=String(station.id);
+  isEditMode=false;
+  const sheet=document.getElementById('bottomSheet');
+  const overlay=document.getElementById('overlay');
+  if(!sheet || !overlay) return;
+  sheet.classList.remove('editing');
+  const header=sheet.querySelector('.sheet-header span:first-child');
+  if(header) header.textContent='駅情報';
+  updateStationSheetContent();
+  overlay.style.display='block';
+  sheet.classList.add('active');
+}
+function updateStationSheetContent(){
+  const stationIndexValue=STATIONS.findIndex(st=>String(st.id)===String(currentStationId));
+  const station=stationIndexValue>=0 ? STATIONS[stationIndexValue] : null;
+  const content=document.getElementById('sheetContent');
+  if(!station || !content) return;
+
+  const prevStation=stationIndexValue>0 ? STATIONS[stationIndexValue-1] : null;
+  const nextStation=stationIndexValue<STATIONS.length-1 ? STATIONS[stationIndexValue+1] : null;
+  const barClasses=[
+    !prevStation?'no-prev':'',
+    !nextStation?'no-next':''
+  ].filter(Boolean).join(' ');
+
+  const prevJa=prevStation?.nameJa||'';
+  const prevEn=prevStation?.nameEn||'';
+  const nextJa=nextStation?.nameJa||'';
+  const nextEn=nextStation?.nameEn||'';
+
+  content.innerHTML=`
+    <div class="station-overview-card station-info-card">
+      <div class="station-overview-main">
+        <div class="station-overview-name-ja">${station.nameJa}</div>
+        <div class="station-overview-name-en">${station.nameEn}</div>
+      </div>
+      <div class="station-direction-bar-wrap">
+        <div class="station-direction-bar ${barClasses}"></div>
+      </div>
+      <div class="station-neighbor-row">
+        <div class="station-neighbor left${prevStation?'':' empty'}">
+          <div class="station-neighbor-name-ja">${prevJa}</div>
+          <div class="station-neighbor-name-en">${prevEn}</div>
+        </div>
+        <div class="station-neighbor right${nextStation?'':' empty'}">
+          <div class="station-neighbor-name-ja">${nextJa}</div>
+          <div class="station-neighbor-name-en">${nextEn}</div>
+        </div>
+      </div>
+    </div>
+    <div class="timetable-list station-placeholder">
+      <div style="text-align:center;padding:28px 12px;font-family:'Kosugi',sans-serif;font-weight:700;color:#666;">駅情報の入力・表示スペース（仮）</div>
+    </div>
+  `;
 }
 function formatFormationUpdatedAt(trainNo){
   const ts=remoteRoot.formationUpdatedAtByDay?.[currentDay]?.[String(trainNo)];
   if(!ts) return '';
   const d=new Date(ts);
   if(Number.isNaN(d.getTime())) return '';
-  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
 }
 function updateSheetContent(){
+  if(currentStationId){ updateStationSheetContent(); return; }
   const train=liveTrain(currentTrainNo);
   if(!train) return;
   const formObj=formationById(train.formation);
@@ -1436,7 +1458,7 @@ window.addEventListener('load',async ()=>{
   currentOperationDate=operationDateKey();
   await initFirebase();
   await maybeResetForNewOperationDay();
-  initDateControl();
+  document.querySelectorAll('.day-btn').forEach(b=>b.classList.toggle('active',b.dataset.day===currentDay));
   initTimeControl();
   setNowTime();
   renderLine();
