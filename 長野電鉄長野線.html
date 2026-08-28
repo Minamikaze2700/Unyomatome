@@ -41,11 +41,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
   padding:10px;background:#fff;border-bottom:1px solid #ddd;
 }
 .day-filter,.time-control{display:flex;align-items:center;gap:8px}
-.day-btn,.time-now-btn{
+.date-input{
+  border:2px solid var(--primary);background:#fff;color:var(--primary);
+  padding:7px 12px;border-radius:999px;font:inherit;font-weight:700;
+  cursor:pointer;min-width:160px;
+}
+.schedule-day-label{font-weight:800;color:#555;white-space:nowrap}
+.time-now-btn{
   border:2px solid var(--primary);background:#fff;color:var(--primary);
   padding:7px 14px;border-radius:999px;font-weight:700;cursor:pointer;
 }
-.day-btn.active,.time-now-btn.active{background:var(--primary);color:#fff}
+.time-now-btn.active{background:var(--primary);color:#fff}
 .time-input{
   width:110px;border:2px solid #ccc;border-radius:999px;padding:7px 12px;
   font:inherit;font-weight:700;text-align:center;background:#fff;color:#111;
@@ -130,7 +136,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 .sheet-content{padding:16px;position:relative;overflow:hidden}
 .timetable-list{position:relative;overflow:hidden;z-index:1}
 .train-card{
-  background:#fff;border-radius:8px;padding:12px;display:flex;
+  background:#fff;border-radius:8px;padding:12px 12px 30px;display:flex;
   align-items:center;gap:12px;margin-bottom:16px;cursor:pointer;
   border:2px solid transparent;
 }
@@ -144,6 +150,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 .train-number{color:#1b6e27;font-weight:800;float:right}
 .formation-id{font-size:1.2rem;font-weight:800;color:#1b6e27;margin-top:4px}
 .capacity-info{color:#666;font-size:.85rem;margin-top:4px}
+
+.train-card{position:relative}.formation-updated-at{position:absolute;right:12px;bottom:8px;font-size:.78rem;color:#777;text-align:right;} 
 .input-trigger-btn{
   background:var(--primary);color:#fff;padding:4px 8px;border-radius:4px;
   font-size:.75rem;margin-top:4px;display:inline-block;
@@ -218,8 +226,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans
 <h1 id="title">長野電鉄長野線</h1>
 <div class="control-bar">
   <div class="day-filter">
-    <button class="day-btn" data-day="平日" onclick="setDay('平日')">平日</button>
-    <button class="day-btn" data-day="休日" onclick="setDay('休日')">休日</button>
+    <span class="time-label">日付</span>
+    <input id="dateInput" class="date-input" type="date">
+    <span id="scheduleDayLabel" class="schedule-day-label">平日ダイヤ</span>
   </div>
   <div class="time-control">
     <span class="time-label">表示時刻</span>
@@ -311,12 +320,14 @@ for(const day of ['平日','休日']){
 
 let currentTrainNo=null;
 let isEditMode=false;
-let currentDay=(new Date().getDay()===0||new Date().getDay()===6)?'休日':'平日';
+let selectedDateKey=todayKey(new Date());
+let currentDay=getScheduleDayForDateKey(selectedDateKey);
 let followNow=true;
 let registrationState={};
 let operationHistory=[];
 let currentOperationDate=null;
-let remoteRoot={version:0,operationDate:null,stateByDay:{平日:{},休日:{}},history:{}};
+let remoteRoot={version:0,operationDate:null,stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}},history:{}};
+let pendingFormationState={};
 let channel=null;
 let firebaseReady=false;
 let lastHistoryFingerprint='';
@@ -353,6 +364,88 @@ function operationDateKey(d=new Date()){
   if(base.getHours()<RESET_HOUR) base.setDate(base.getDate()-1);
   return todayKey(base);
 }
+
+function nthMondayDateKey(year,month,nth){
+  const d=new Date(year,month-1,1);
+  const offset=(8-d.getDay())%7;
+  d.setDate(1+offset+(nth-1)*7);
+  return todayKey(d);
+}
+function equinoxDateKey(year,isVernal){
+  // 国立天文台が毎年公表する春分・秋分日に対応する近似式（1980～2099年程度で実用上十分）。
+  const y=year-1980;
+  const base=isVernal ? 20.8431 : 23.2488;
+  const drift=isVernal ? 0.242194 : 0.242194;
+  const leap=Math.floor(y/4);
+  const day=Math.floor(base + drift*y - leap);
+  return `${year}-${isVernal?'03':'09'}-${String(day).padStart(2,'0')}`;
+}
+function getJapaneseNationalHolidays(year){
+  const h=new Set();
+  const add=(m,d)=>h.add(`${year}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`);
+  add(1,1);
+  h.add(nthMondayDateKey(year,1,2));
+  add(2,11);
+  if(year>=2020) add(2,23);
+  h.add(equinoxDateKey(year,true));
+  add(4,29); add(5,3); add(5,4); add(5,5);
+  h.add(nthMondayDateKey(year,7,3));
+  add(8,11);
+  h.add(nthMondayDateKey(year,9,3));
+  h.add(equinoxDateKey(year,false));
+  h.add(nthMondayDateKey(year,10,2));
+  add(11,3); add(11,23);
+
+  // 祝日の移動・特例（東京2020/2021大会に伴う移動など）
+  if(year===2019){ add(5,1); add(10,22); h.delete(`${year}-02-23`); }
+  if(year===2020){ h.delete(`${year}-07-20`); add(7,23); h.delete(`${year}-10-12`); add(7,24); }
+  if(year===2021){ h.delete(`${year}-07-19`); add(7,22); add(7,23); h.delete(`${year}-08-11`); add(8,8); h.delete(`${year}-10-11`); }
+  if(year===2019){ h.delete(`${year}-10-14`); /* 体育の日は通常通り 10/14 */ h.add(`${year}-10-14`); }
+  return h;
+}
+function getJapaneseHolidaySet(year){
+  const national=getJapaneseNationalHolidays(year);
+  const holidays=new Set(national);
+  // 振替休日：日曜日に当たる祝日の後で最も近い祝日でない日
+  for(const key of [...national]){
+    const d=new Date(`${key}T00:00:00`);
+    if(d.getDay()!==0) continue;
+    const cursor=new Date(d);
+    do{
+      cursor.setDate(cursor.getDate()+1);
+      const k=todayKey(cursor);
+      if(!national.has(k) && !holidays.has(k)){ holidays.add(k); break; }
+    }while(cursor.getFullYear()<=year+1);
+  }
+  // 国民の祝日に挟まれた平日（祝日法第3条第3項）
+  const dates=[...national].sort();
+  const nationalInYear=new Set(dates);
+  const start=new Date(year,0,1), end=new Date(year,11,31);
+  for(let d=new Date(start); d<=end; d.setDate(d.getDate()+1)){
+    const key=todayKey(d);
+    if(holidays.has(key)) continue;
+    const prev=new Date(d); prev.setDate(prev.getDate()-1);
+    const next=new Date(d); next.setDate(next.getDate()+1);
+    if(nationalInYear.has(todayKey(prev)) && nationalInYear.has(todayKey(next))) holidays.add(key);
+  }
+  return holidays;
+}
+function isJapaneseHoliday(dateObj){
+  const key=todayKey(dateObj);
+  return getJapaneseHolidaySet(dateObj.getFullYear()).has(key);
+}
+function getScheduleDayForDate(dateObj){
+  const d=new Date(dateObj);
+  const weekend=d.getDay()===0 || d.getDay()===6;
+  return weekend || isJapaneseHoliday(d) ? '休日' : '平日';
+}
+function getScheduleDayForDateKey(dateKey){
+  const m=String(dateKey||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(!m) return getScheduleDayForDate(new Date());
+  const d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));
+  if(Number.isNaN(d.getTime())) return getScheduleDayForDate(new Date());
+  return getScheduleDayForDate(d);
+}
 function resetTimeForDate(dateKey){ return dateKey+'T03:00:00'; }
 function normalizeTrainNo(v){
   if(v===null||v===undefined) return '';
@@ -370,6 +463,7 @@ function stateFingerprint(root=remoteRoot){
     return JSON.stringify({
       operationDate:root?.operationDate||null,
       stateByDay:root?.stateByDay||{平日:{},休日:{}},
+      formationUpdatedAtByDay:root?.formationUpdatedAtByDay||{平日:{},休日:{}},
       history:root?.history||{}
     });
   }catch(e){ return ''; }
@@ -378,7 +472,9 @@ function saveLocalState(){
   try{
     localStorage.setItem(STORAGE_KEY,JSON.stringify({
       operationDate:currentOperationDate,
+      selectedDate:selectedDateKey,
       stateByDay:remoteRoot.stateByDay,
+      formationUpdatedAtByDay:remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}},
       history:remoteRoot.history,
       updatedAt:new Date().toISOString()
     }));
@@ -391,14 +487,28 @@ function loadLocalState(){
     const obj=JSON.parse(raw);
     remoteRoot.operationDate=obj.operationDate||null;
     remoteRoot.stateByDay=obj.stateByDay||{平日:{},休日:{}};
+    remoteRoot.formationUpdatedAtByDay=obj.formationUpdatedAtByDay||{平日:{},休日:{}};
     remoteRoot.history=obj.history||{};
     currentOperationDate=remoteRoot.operationDate;
+    if(/^\d{4}-\d{2}-\d{2}$/.test(String(obj.selectedDate||''))){
+      selectedDateKey=String(obj.selectedDate);
+      currentDay=getScheduleDayForDateKey(selectedDateKey);
+    }
     operationHistory=historyEntries();
     registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
     applyRegistrationState();
   }catch(e){ console.warn('local load failed',e); }
 }
-function applyRegistrationState(){ TRAINS.forEach(t=>{ t.formation=registrationState[String(t.no)]||null; }); }
+function applyRegistrationState(){
+  TRAINS.forEach(t=>{
+    const key=String(t.no);
+    if(Object.prototype.hasOwnProperty.call(pendingFormationState,key)){
+      t.formation=pendingFormationState[key]||null;
+    }else{
+      t.formation=registrationState[key]||null;
+    }
+  });
+}
 function broadcastState(){
   if(!channel) return;
   // 送信はローカルで変更を確定した側だけが行う。
@@ -406,10 +516,11 @@ function broadcastState(){
   channel.postMessage({source:'train-app',type:'state',root:cloneState(remoteRoot),ts:Date.now()});
 }
 function hydrateFromRoot(data){
-  const next=data||{version:0,operationDate:null,stateByDay:{平日:{},休日:{}},history:{}};
+  const next=data||{version:0,operationDate:null,stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}},history:{}};
   const normalized={
     ...next,
     stateByDay:{平日:cloneState(next.stateByDay?.平日||{}),休日:cloneState(next.stateByDay?.休日||{})},
+    formationUpdatedAtByDay:{平日:cloneState(next.formationUpdatedAtByDay?.平日||{}),休日:cloneState(next.formationUpdatedAtByDay?.休日||{})},
     history:cloneState(next.history||{})
   };
   if(stateFingerprint(normalized)===stateFingerprint(remoteRoot)) return false;
@@ -475,6 +586,7 @@ function subscribeAllOperationState(){
       return;
     }
     registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
+    Object.entries(pendingFormationState).forEach(([no,formId])=>{ registrationState[no]=formId; });
     applyRegistrationState();
     saveLocalState();
     refreshVisibleUI();
@@ -502,14 +614,19 @@ function prefetchTrainImages(){
 async function preloadFirebaseState(){
   if(!firebaseReady) return;
   try{
-    const [stateSnap,historySnap]=await Promise.all([
+    const [stateSnap,timestampSnap,historySnap]=await Promise.all([
       firebaseOperationRef().child('stateByDay').once('value'),
+      firebaseOperationRef().child('formationUpdatedAtByDay').once('value'),
       firebaseHistoryRef().once('value')
     ]);
     const all=stateSnap.val()||{};
     remoteRoot.stateByDay={
       平日:cloneState(all.平日||{}),
       休日:cloneState(all.休日||{})
+    };
+    remoteRoot.formationUpdatedAtByDay={
+      平日:cloneState(timestampSnap.val()?.平日||{}),
+      休日:cloneState(timestampSnap.val()?.休日||{})
     };
     registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
     remoteRoot.history=historySnap.val()||{};
@@ -542,6 +659,17 @@ async function initFirebase(){
     // 別端末の変更も曜日切替の都度再購読せず即時反映できる。
     subscribeAllOperationState();
 
+    firebaseOperationRef().child('formationUpdatedAtByDay').on('value',snap=>{
+      const raw=snap.val()||{};
+      const next={平日:cloneState(raw.平日||{}),休日:cloneState(raw.休日||{})};
+      if(JSON.stringify(next)===JSON.stringify(remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}})) return;
+      remoteRoot.formationUpdatedAtByDay=next;
+      saveLocalState();
+      if(currentTrainNo && !isEditMode) updateSheetContent();
+    },err=>{
+      console.error('Firebase編成入力時刻読込失敗',err);
+    });
+
     firebaseHistoryRef().on('value',snap=>{
       const nextHistory=snap.val()||{};
       if(stateFingerprint({...remoteRoot,history:nextHistory})===stateFingerprint(remoteRoot)) return;
@@ -559,6 +687,7 @@ async function initFirebase(){
       await firebaseOperationRef().set({
         operationDate:operationDateKey(),
         stateByDay:{平日:{},休日:{}},
+        formationUpdatedAtByDay:{平日:{},休日:{}},
         version:0,
         updatedAt:firebase.database.ServerValue.TIMESTAMP
       });
@@ -566,6 +695,7 @@ async function initFirebase(){
       const data=opSnap.val()||{};
       remoteRoot=data;
       remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
+      remoteRoot.formationUpdatedAtByDay=remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}};
       remoteRoot.history=remoteRoot.history||{};
       currentOperationDate=remoteRoot.operationDate||operationDateKey();
       registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
@@ -607,7 +737,19 @@ async function syncRegistrationToRemote(){
     const committed=result.snapshot.val()||{};
     registrationState=cloneState(committed);
     remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
+    remoteRoot.formationUpdatedAtByDay=remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}};
     remoteRoot.stateByDay[currentDay]=cloneState(committed);
+    remoteRoot.formationUpdatedAtByDay[currentDay]={
+      ...cloneState(remoteRoot.formationUpdatedAtByDay[currentDay]||{}),
+      ...cloneState(pendingFormationTimestamps[currentDay]||{})
+    };
+    if(firebaseReady && Object.keys(pendingFormationTimestamps[currentDay]||{}).length){
+      await firebaseOperationRef().child('formationUpdatedAtByDay').child(currentDay).update(cloneState(pendingFormationTimestamps[currentDay]));
+    }
+    Object.keys(pendingFormationState).forEach(no=>{
+      if(String(registrationState[no]||'')===String(pendingFormationState[no]||'')) delete pendingFormationState[no];
+    });
+    pendingFormationTimestamps[currentDay]={};
     applyRegistrationState();
     saveLocalState();
     refreshAllTrainDataCache();
@@ -638,9 +780,18 @@ async function recordSelection(train,formId){
     registrationState[String(train.no)]=formId;
     assigned.push(String(train.no));
   }
+  const registeredAt=new Date().toISOString();
+  pendingFormationTimestamps[currentDay]=pendingFormationTimestamps[currentDay]||{};
+  remoteRoot.formationUpdatedAtByDay=remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}};
+  remoteRoot.formationUpdatedAtByDay[currentDay]=remoteRoot.formationUpdatedAtByDay[currentDay]||{};
+  assigned.forEach(no=>{
+    pendingFormationState[no]=formId;
+    pendingFormationTimestamps[currentDay][no]=registeredAt;
+    remoteRoot.formationUpdatedAtByDay[currentDay][no]=registeredAt;
+  });
   applyRegistrationState();
+  refreshAllTrainDataCache();
   saveLocalState();
-  // ローカル状態はここで確定。Firebase書込完了後にも同じ状態を再送しない。
   const ok=await syncRegistrationToRemote();
   if(!ok){
     saveLocalState();
@@ -806,13 +957,28 @@ function getDetailType(type){ return String(type||''); }
 function getDetailDest(dest){ return String(dest||''); }
 function getMainLabelClass(type){ return type==='回送' ? 'deadhead' : ''; }
 
-function setDay(day){
-  currentDay=day;
+function setSelectedDate(dateKey){
+  const value=String(dateKey||'');
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(value)) return;
+  const d=new Date(`${value}T00:00:00`);
+  if(Number.isNaN(d.getTime())) return;
+  selectedDateKey=value;
+  currentDay=getScheduleDayForDate(d);
   registrationState=cloneState(remoteRoot.stateByDay?.[currentDay]||{});
   applyRegistrationState();
-  document.querySelectorAll('.day-btn').forEach(b=>b.classList.toggle('active',b.dataset.day===day));
-  // 全曜日のstateByDayを常時監視しているため、ここではローカルキャッシュから即時描画。
+  const label=document.getElementById('scheduleDayLabel');
+  if(label) label.textContent=`${currentDay}ダイヤ`;
+  saveLocalState();
   renderLine();
+  if(currentTrainNo) updateSheetContent();
+}
+function initDateControl(){
+  const input=document.getElementById('dateInput');
+  if(!input) return;
+  input.value=selectedDateKey;
+  const label=document.getElementById('scheduleDayLabel');
+  if(label) label.textContent=`${currentDay}ダイヤ`;
+  input.addEventListener('change',e=>setSelectedDate(e.target.value));
 }
 function formationById(id){
   if(!id || id===INITIAL_FORMATION_SELECTION.id) return null;
@@ -1148,6 +1314,13 @@ function closeSheet(){
   if(sheet) sheet.classList.remove('active','editing');
   isEditMode=false;
 }
+function formatFormationUpdatedAt(trainNo){
+  const ts=remoteRoot.formationUpdatedAtByDay?.[currentDay]?.[String(trainNo)];
+  if(!ts) return '';
+  const d=new Date(ts);
+  if(Number.isNaN(d.getTime())) return '';
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
 function updateSheetContent(){
   const train=liveTrain(currentTrainNo);
   if(!train) return;
@@ -1169,8 +1342,9 @@ function updateSheetContent(){
           ${formObj
             ? `<div class="formation-id">${formObj.id}</div>`
             : `<div class="input-trigger-btn">ここから編成を入力</div>`}
-          <div class="capacity-info">所定:${prescribedFormationName(train)}　運転日:${['平日','休日'].filter(d=>Array.isArray(train.days)&&train.days.includes(d)).join('・')}</div>
+          <div class="capacity-info">所定:${prescribedFormationName(train)}　運転日:${train.days.slice().sort((a,b)=>a==='平日'?-1:b==='平日'?1:0).join('・')}</div>
         </div>
+        ${formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAt(train.no)}</div>`:''}
       </div>
       <div class="timetable-list">
         ${TIMETABLE_HTML_CACHE.get(String(train.no)) || timetableRowsHTML(train.stops)}
@@ -1180,7 +1354,7 @@ function updateSheetContent(){
     const selectedForm=selectionDisplayObject(train.formation);
     content.innerHTML=`
       <div class="train-card">
-        <img src="images/Nagano_noimage.png" class="train-card-img">
+        <img src="${selectedForm.img}" class="train-card-img">
         <div class="train-info-main">
           <div>
             <span class="type-badge ${getExpressClass(train)}">${getDetailType(train.type)}</span>
@@ -1229,6 +1403,7 @@ function toggleDropdown(){
   if(el) el.classList.toggle('open');
 }
 let selectionSyncInProgress=false;
+let pendingFormationTimestamps={平日:{},休日:{}};
 async function selectFormation(formId){
   const train=liveTrain(currentTrainNo);
   if(!train || selectionSyncInProgress) return;
@@ -1261,7 +1436,7 @@ window.addEventListener('load',async ()=>{
   currentOperationDate=operationDateKey();
   await initFirebase();
   await maybeResetForNewOperationDay();
-  document.querySelectorAll('.day-btn').forEach(b=>b.classList.toggle('active',b.dataset.day===currentDay));
+  initDateControl();
   initTimeControl();
   setNowTime();
   renderLine();
