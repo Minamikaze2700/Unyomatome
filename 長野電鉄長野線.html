@@ -29,25 +29,33 @@
 html,body{width:100%;max-width:100%;min-width:0;margin:0;padding:0}
 body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
 #title,.control-bar,.line-container{box-sizing:border-box;width:100%;max-width:100%;min-width:0}
+#viewportCanvas{position:relative;padding-top:110px;}
 
-/* 日別・時刻フィルター */
+/* 日別・時刻フィルター：常に画面上端の同じ位置に固定 */
 #title{
-    height: 50px;
-    color: #fff;
-    font-weight: 500;
-    display: flex;
-    background: #e91419;
-    width: 100%;
-    position: fixed;
-    justify-content: center;
-    align-items: center;
-    border-bottom: 8px solid #000;
-    z-index: 100;
+    height:50px;
+    color:#fff;
+    font-weight:500;
+    display:flex;
+    background:#e91419;
+    width:100vw;
+    position:fixed;
+    left:0;
+    top:0;
+    justify-content:center;
+    align-items:center;
+    border-bottom:8px solid #000;
+    z-index:1000;
 }
 .control-bar{
-  position:sticky;top:50px;z-index:20;
+  position:fixed;
+  left:0;
+  top:50px;
+  width:100vw;
+  z-index:999;
   display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;
   padding:10px;background:#fff;border-bottom:1px solid #ddd;
+  margin:0;
 }
 .day-filter,.time-control{display:flex;align-items:center;gap:8px}
 .date-input{
@@ -72,9 +80,10 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 /* 路線図 */
 :root{--row-height:325px}
 .line-container{
-  position:relative;width:100%;max-width:none;margin:0 auto;
+  position:relative;width:100%;max-width:none;margin:0;
   padding:0;display:flex;flex-direction:column;align-items:center;
 }
+.moving-train-layer{position:absolute;left:0;right:0;top:0;bottom:0;z-index:6;pointer-events:none;}
 .rail-line{
   position:absolute;top:160px;bottom:160px;left:50%;transform:translateX(-50%);
   width:12px;background:var(--primary);z-index:1;
@@ -101,12 +110,10 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
   height:33.3333%;display:flex;align-items:center;justify-content:center;
   font-size:16px;font-weight:400;letter-spacing:.01em;
 }
-.moving-train-layer{position:absolute;inset:0;z-index:50;pointer-events:none}
 .train-icon{
   position:absolute;top:0;width:66px;display:flex;flex-direction:column;align-items:center;
   cursor:pointer;transition:transform .15s;
   pointer-events:auto;
-  z-index:51;
 }
 .train-icon.left{left:max(6px,calc(50% - 245px))}
 .train-icon.right{right:max(6px,calc(50% - 245px))}
@@ -186,11 +193,19 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 .station-timetable-grid{display:flex;flex-direction:column;gap:0;align-items:flex-start;}
 .station-timetable-hour-row{display:flex;align-items:stretch;justify-content:flex-start;}
 .station-timetable-cell{width:80px;height:80px;min-width:80px;display:flex;align-items:center;justify-content:center;border:0;padding:0;line-height:1;}
-.station-timetable-hour{color:#fff;background:var(--primary);font-family:"Kosugi Maru",sans-serif;font-size:40px;font-weight:500;}
+.station-timetable-hour{color:#fff;background:var(--primary);font-family:inherit;font-size:40px;font-weight:500;}
 .station-timetable-hour.hour-alt{background:#ea7e83;}
-.station-timetable-time{background:#fff;color:#000;cursor:pointer;font-family:"Kosugi Maru",sans-serif;font-size:34px;font-weight:500;}
+.station-timetable-time{
+  background:#fff;color:#000;cursor:pointer;
+  font-family:inherit;font-weight:500;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:0;overflow:hidden;
+}
 .station-timetable-time.minute-alt{background:#c8c8c8;}
 .station-timetable-time:hover{filter:brightness(.95);}
+.station-timetable-train-type{font-family:inherit;font-size:14px;line-height:1.05;font-weight:500;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;}
+.station-timetable-minute{font-family:inherit;font-size:38px;line-height:.95;font-weight:500;white-space:nowrap;}
+.station-timetable-train-dest{font-family:inherit;font-size:14px;line-height:1.05;font-weight:500;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;}
 .station-timetable-empty{background:#fff;}
 .station-timetable-meta{
   padding:8px 10px;text-align:left;color:#666;font-family:"Kosugi",sans-serif;font-size:.78rem;
@@ -198,7 +213,9 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 @media (max-width:959.98px){
   .station-timetable-cell{width:80px;height:80px;min-width:80px;}
   .station-timetable-hour{font-size:40px;}
-  .station-timetable-time{font-size:34px;}
+  .station-timetable-train-type{font-size:14px;}
+  .station-timetable-minute{font-size:38px;}
+  .station-timetable-train-dest{font-size:14px;}
 }
 .station-badge:focus{outline:3px solid rgba(0,0,0,.35);outline-offset:4px;}
 
@@ -312,106 +329,12 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
     margin-left:-480px;
     zoom:calc(100vw / 960px);
   }
-  #viewportCanvas #title,
-  #viewportCanvas .control-bar,
   #viewportCanvas .line-container{
     width:1920px;
     max-width:none;
     min-width:0;
   }
-}
-
-
-/* 固定下部メニュー・編成表 */
-body{padding-bottom:58px;}
-.bottom-nav{
-  position:fixed;left:0;right:0;bottom:0;width:100%;height:58px;z-index:120;
-  display:flex;justify-content:center;align-items:stretch;
-  background:#9e9e9e;border-top:1px solid #777;
-}
-.bottom-nav button{
-  min-width:150px;height:100%;padding:0 24px;border:0;border-left:1px solid rgba(255,255,255,.75);
-  background:transparent;color:#fff;font:700 20px/1 "Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;
-  cursor:pointer;
-}
-.bottom-nav button:last-child{border-right:1px solid rgba(255,255,255,.75);}
-.bottom-nav button.active,.bottom-nav button:hover{background:#888;}
-
-/* 編成表：列車詳細と同じヘッダーを使用。内容は編成表全体で横スクロール */
-.formation-panel{
-  position:fixed;left:0;right:0;top:59px;bottom:58px;z-index:110;
-  display:none;background:#fff;overflow:auto;padding:0 0 30px;
-}
-.formation-panel.active{display:block;}
-.formation-panel > .sheet-header{position:sticky;top:0;z-index:5;}
-.formation-panel-inner{
-  width:100%;max-width:1800px;margin:0 auto;padding:18px 30px 0;
-  overflow-x:auto;overflow-y:visible;
-}
-.formation-type-tabs{
-  display:flex;width:100%;height:58px;min-width:max-content;border:2px solid #222;border-radius:8px;overflow:hidden;
-  background:#eee;margin:0 0 14px;
-}
-.formation-type-tab{
-  width:155px;flex:0 0 155px;border:0;border-right:1px solid #222;background:#eee;color:#111;
-  font:700 24px/1 "Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;
-  cursor:pointer;padding:0 12px;
-}
-.formation-type-tab:last-child{border-right:0;}
-.formation-type-tab:hover{background:#e6e6e6;}
-.formation-type-tab.active{background:#b8b8b8;}
-.formation-panel-direction{
-  width:max-content;min-width:100%;margin:0 0 10px;text-align:center;font-size:22px;font-weight:700;
-}
-.formation-list{width:max-content;min-width:100%;}
-.formation-row{
-  display:flex;align-items:center;min-height:126px;background:#fff;overflow:visible;
-}
-.formation-row-label{
-  width:62px;min-width:62px;padding:6px 4px;text-align:center;
-  font:700 24px/1 "Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;
-}
-.formation-icon-wrap{
-  width:82px;min-width:82px;display:flex;align-items:center;justify-content:center;padding:5px 6px 5px 0;
-}
-.formation-icon-wrap img{width:64px;height:auto;max-height:86px;object-fit:contain;}
-.formation-cars{
-  display:flex;align-items:flex-start;justify-content:flex-start;padding:40px 0 6px;gap:3px;
-}
-.formation-car{
-  position:relative;width:180px;min-width:180px;height:70px;border:3px solid #111;
-  display:flex;align-items:center;justify-content:center;background:#fff;
-}
-.formation-car:first-child{border-radius:27px 0 0 0;}
-.formation-car:last-child{border-radius:0 27px 0 0;}
-.formation-car-number{font:700 34px/1 "Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;}
-.formation-pantograph{
-  position:absolute;top:-40px;left:0;right:0;height:40px;display:flex;align-items:flex-end;justify-content:center;
-  pointer-events:none;
-}
-.pantograph-svg{width:70px;height:44px;overflow:visible;}
-.formation-pantograph.front{transform:translateX(-52px);}
-.formation-pantograph.back{transform:translateX(52px);}
-.formation-note{width:100%;margin:8px 0 0;padding:4px 0;color:#666;font-size:13px;text-align:left;}
-
-@media(max-width:959.98px){
-  .bottom-nav button{min-width:0;width:50%;padding:0 8px;font-size:17px;}
-  .formation-panel{top:59px;padding:0 0 24px;}
-  .formation-panel-inner{padding:12px 10px 0;}
-  .formation-type-tabs{height:48px;margin-bottom:10px;}
-  .formation-type-tab{width:25vw;min-width:88px;max-width:140px;flex-basis:25vw;font-size:17px;padding:0 6px;}
-  .formation-panel-direction{font-size:18px;margin-bottom:8px;}
-  .formation-row{min-height:104px;}
-  .formation-row-label{width:50px;min-width:50px;font-size:20px;}
-  .formation-icon-wrap{width:66px;min-width:66px;}
-  .formation-icon-wrap img{width:52px;max-height:70px;}
-  .formation-cars{padding-top:33px;gap:3px;}
-  .formation-car{width:145px;min-width:145px;height:62px;}
-  .formation-car-number{font-size:28px;}
-  .formation-pantograph{top:-34px;height:34px;}
-  .pantograph-svg{width:58px;height:38px;}
-  .formation-pantograph.front{transform:translateX(-42px);}
-  .formation-pantograph.back{transform:translateX(42px);}
+  #title, .control-bar{width:100vw;max-width:none;}
 }
 
 </style>
@@ -432,31 +355,11 @@ body{padding-bottom:58px;}
   </div>
 </div>
 
+<div class="moving-train-layer" id="movingTrainLayer"></div>
 <div class="line-container" id="lineContainer">
   <div class="rail-line"></div>
-  <div class="moving-train-layer" id="movingTrainLayer"></div>
 </div>
 </div><!-- /#viewportCanvas -->
-
-<div class="formation-panel" id="formationPanel" aria-hidden="true">
-  <div class="sheet-header">
-    <div class="sheet-header-left">
-      <span>編成表</span>
-    </div>
-    <span class="close-btn" id="formationPanelClose" role="button" tabindex="0" aria-label="編成表を閉じる" onclick="closeFormationTable()">✖</span>
-  </div>
-  <div class="formation-panel-inner">
-    <div class="formation-type-tabs" id="formationTypeTabs"></div>
-    <div class="formation-panel-direction" id="formationPanelDirection">← 長野　　　　　　　　　湯田中 →</div>
-    <div class="formation-list" id="formationPanelContent"></div>
-  </div>
-</div>
-
-<nav class="bottom-nav" id="bottomNav" aria-label="メインメニュー">
-  <button id="operationListBtn" type="button" onclick="showOperationList()">運用一覧</button>
-  <button id="formationTableBtn" type="button" onclick="showFormationTable()">編成表</button>
-</nav>
-
 <div class="overlay" id="overlay" onclick="closeSheet()"></div>
 <div class="bottom-sheet" id="bottomSheet">
   <div class="sheet-header">
@@ -513,54 +416,6 @@ const FORMATIONS = [
   ]}
 ];
 
-
-
-/*
- * 編成表用データ。
- * cars: 編成順（左→右）の車番。
- * pantographs: {type, car, side} で、パンタグラフの種類・何両目・前後を明示。
- * type:
- *   diamond        = ひし形
- *   crossBase      = 下枠交差型
- *   singleArm      = シングルアーム
- *   singleArmMirror= シングルアーム（左右反転）
- */
-const PANTOGRAPH_TYPES = Object.freeze({
-  diamond:'diamond',
-  crossBase:'crossBase',
-  singleArm:'singleArm',
-  singleArmMirror:'singleArmMirror'
-});
-
-const FORMATION_TABLE_DATA = [
-  {series:'8500系', direction:'←長野　　　　　　　　　湯田中→', formations:[
-    {id:'T1',cars:['8511','8551','8501'],pantographs:[{type:'diamond',car:3,side:'front'}]},
-    {id:'T2',cars:['8512','8552','8502'],pantographs:[{type:'diamond',car:3,side:'front'}]},
-    {id:'T3',cars:['8513','8553','8503'],pantographs:[{type:'diamond',car:3,side:'front'}]},
-    {id:'T4',cars:['8514','8554','8504'],pantographs:[{type:'diamond',car:3,side:'front'}]},
-    {id:'T5',cars:['8515','8555','8505'],pantographs:[
-      {type:'diamond',car:3,side:'front'},{type:'diamond',car:1,side:'back'}]},
-    {id:'T6',cars:['8516','8556','8506'],pantographs:[
-      {type:'diamond',car:3,side:'front'},{type:'diamond',car:1,side:'back'}]}
-  ]},
-  {series:'3000系', direction:'←湯田中　　　　　　　　　長野→', formations:[
-    {id:'M1',cars:['3051','3001','3011'],pantographs:[{type:'diamond',car:2,side:'front'}]},
-    {id:'M2',cars:['3052','3002','3012'],pantographs:[{type:'diamond',car:2,side:'front'}]},
-    {id:'M3',cars:['3053','3003','3013'],pantographs:[{type:'diamond',car:2,side:'front'}]},
-    {id:'M4',cars:['3054','3004','3014'],pantographs:[{type:'diamond',car:2,side:'front'}]},
-    {id:'M5',cars:['3055','3005','3015'],pantographs:[{type:'diamond',car:2,side:'front'}]}
-  ]},
-  {series:'1000系', direction:'←湯田中　　　　　　　　　長野→', formations:[
-    {id:'S1',cars:['1001','1011','1021','1031'],pantographs:[
-      {type:'crossBase',car:2,side:'front'},{type:'crossBase',car:3,side:'back'}]},
-    {id:'S2',cars:['1002','1012','1022','1032'],pantographs:[
-      {type:'crossBase',car:2,side:'front'},{type:'crossBase',car:3,side:'back'}]}
-  ]},
-  {series:'2100系', direction:'←湯田中　　　　　　　　　長野→', formations:[
-    {id:'E1',cars:['2151','2101','2111'],pantographs:[{type:'diamond',car:2,side:'front'}]},
-    {id:'E2',cars:['2152','2102','2112'],pantographs:[{type:'diamond',car:2,side:'front'}]}
-  ]}
-];
 
 const INITIAL_FORMATION_SELECTION = {id:'__INITIAL__', name:'編成未選択', img:'images/Nagano_noimage.png', kind:'placeholder'};
 const TYPE_SELECTIONS = FORMATIONS.map(group => ({id:group.type, name:group.type, img:group.typeImg, kind:'type', type:group.type}));
@@ -1393,9 +1248,25 @@ function trainVisualKind(t){
 function getExpressClass(train){
   return expressClassForTrain(train);
 }
+function syncMovingTrainLayerGeometry(){
+  const layer=document.getElementById('movingTrainLayer');
+  const viewport=document.getElementById('viewportCanvas');
+  const title=document.getElementById('title');
+  const control=document.querySelector('.control-bar');
+  if(!layer || !viewport || !title || !control) return;
+  const top=title.offsetHeight+control.offsetHeight;
+  // 固定ヘッダー2段分だけ路線図の開始位置を下げる。ヘッダー自体は常に同じ画面位置。
+  viewport.style.paddingTop=`${top}px`;
+  layer.style.top=`${top}px`;
+  layer.style.bottom='0px';
+}
+
 function renderLine(){
+  syncMovingTrainLayerGeometry();
   const container=document.getElementById('lineContainer');
-  container.innerHTML='<div class="rail-line"></div><div class="moving-train-layer" id="movingTrainLayer"></div>';
+  if(!container) return;
+  container.innerHTML='<div class="rail-line"></div>';
+  syncMovingTrainLayerGeometry();
 
   STATIONS.forEach(st=>{
     const row=document.createElement('div');
@@ -1512,6 +1383,7 @@ function trainLabelText(t){ return `<span>${getShortType(t.type,t.no)} ${getShor
 function renderTrainPositions(){
   const layer=document.getElementById('movingTrainLayer');
   if(!layer) return;
+  syncMovingTrainLayerGeometry();
   const minutes=currentMinutes();
   layer.innerHTML='';
   const visible=getVisibleTrains();
@@ -1628,105 +1500,6 @@ function renderTrainPositions(){
     });
   });
 }
-
-
-function pantographSVG(type){
-  if(type==='diamond'){
-    // ひし形：参考画像どおり、上部の菱形だけを描く。
-    return `<svg class="pantograph-svg" viewBox="0 0 100 64" aria-hidden="true">
-      <path d="M50 6 L86 31 L50 56 L14 31 Z" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>`;
-  }
-  if(type==='crossBase'){
-    // 下枠交差型：参考画像に合わせ、上部のひし形から下側へ2本の支持脚を広げる。
-    return `<svg class="pantograph-svg" viewBox="0 0 100 70" aria-hidden="true">
-      <path d="M50 5 L86 30 L50 55 L14 30 Z" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M50 55 L16 66 M50 55 L84 66" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>`;
-  }
-  // シングルアーム：参考画像どおり「>」、左右反転版は「<」。
-  const mirror=type==='singleArmMirror';
-  return `<svg class="pantograph-svg" viewBox="0 0 100 64" aria-hidden="true">
-    <path d="${mirror?'M86 8 L16 32 L86 56':'M14 8 L84 32 L14 56'}" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-  </svg>`;
-}
-
-function showOperationList(){
-  const panel=document.getElementById('formationPanel');
-  if(panel) {
-    panel.classList.remove('active');
-    panel.setAttribute('aria-hidden','true');
-  }
-  const btn=document.getElementById('operationListBtn');
-  const fbtn=document.getElementById('formationTableBtn');
-  if(btn) btn.classList.add('active');
-  if(fbtn) fbtn.classList.remove('active');
-}
-
-let selectedFormationSeries='8500系';
-
-function renderFormationTypeTabs(){
-  const wrap=document.getElementById('formationTypeTabs');
-  if(!wrap) return;
-  wrap.innerHTML=FORMATION_TABLE_DATA.map(series=>`
-    <button type="button" class="formation-type-tab ${series.series===selectedFormationSeries?'active':''}" onclick="selectFormationSeries('${series.series}')">${series.series}</button>
-  `).join('');
-}
-
-function selectFormationSeries(seriesName){
-  if(!FORMATION_TABLE_DATA.some(s=>s.series===seriesName)) return;
-  selectedFormationSeries=seriesName;
-  renderFormationTypeTabs();
-  renderSelectedFormationSeries();
-}
-
-function renderSelectedFormationSeries(){
-  const series=FORMATION_TABLE_DATA.find(s=>s.series===selectedFormationSeries) || FORMATION_TABLE_DATA[0];
-  const dir=document.getElementById('formationPanelDirection');
-  const content=document.getElementById('formationPanelContent');
-  if(!content || !series) return;
-  if(dir) dir.textContent=series.direction;
-  content.innerHTML=series.formations.map(f=>{
-    const pantoByCar={};
-    (f.pantographs||[]).forEach(p=>{ pantoByCar[`${p.car}:${p.side}`]=p; });
-    const cars=f.cars.map((carNo,idx)=>{
-      const car=idx+1;
-      const p=pantoByCar[`${car}:front`]||pantoByCar[`${car}:back`];
-      const pHtml=p?`<div class="formation-pantograph ${p.side}" title="${p.type} / ${car}両目 / ${p.side==='front'?'前':'後'}">${pantographSVG(p.type)}</div>`:'';
-      return `<div class="formation-car">${pHtml}<span class="formation-car-number">${carNo}</span></div>`;
-    }).join('');
-    const img=(FORMATIONS.flatMap(g=>g.items||[]).find(x=>x.id===f.id)||{}).img || 'images/Nagano_noimage.png';
-    return `<div class="formation-row">
-      <div class="formation-row-label">${f.id}</div>
-      <div class="formation-icon-wrap"><img src="${img}" alt="${f.id}"></div>
-      <div class="formation-cars">${cars}</div>
-    </div>`;
-  }).join('');
-}
-
-function closeFormationTable(){
-  const panel=document.getElementById('formationPanel');
-  if(!panel) return;
-  panel.classList.remove('active');
-  panel.setAttribute('aria-hidden','true');
-  const fbtn=document.getElementById('formationTableBtn');
-  if(fbtn) fbtn.classList.remove('active');
-}
-
-function showFormationTable(){
-  const panel=document.getElementById('formationPanel');
-  if(!panel) return;
-  renderFormationTypeTabs();
-  renderSelectedFormationSeries();
-  panel.classList.add('active');
-  panel.setAttribute('aria-hidden','false');
-  const btn=document.getElementById('operationListBtn');
-  const fbtn=document.getElementById('formationTableBtn');
-  if(btn) btn.classList.remove('active');
-  if(fbtn) fbtn.classList.add('active');
-  closeSheet();
-}
-
 
 function openSheet(trainNo,fromStationTimetable=false){
   const key=String(trainNo ?? '');
@@ -1884,7 +1657,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
       group.entries.forEach((item,colIndex)=>{
         const checker=(rowIndex+colIndex)%2===0;
         const minuteClass=checker?'':' minute-alt';
-        cells.push(`<button class="station-timetable-cell station-timetable-time${minuteClass}" type="button" title="列車 ${escapeAttr(item.train.no)} / ${escapeAttr(item.time)}" onclick="openSheet('${escapeJs(item.train.no)}',true)">${String(item.minute).padStart(2,'0')}</button>`);
+        cells.push(`<button class="station-timetable-cell station-timetable-time${minuteClass}" type="button" title="列車 ${escapeAttr(item.train.no)} / ${escapeAttr(item.time)}" onclick="openSheet('${escapeJs(item.train.no)}',true)"><span class="station-timetable-train-type">${escapeAttr(getShortType(item.train.type,item.train.no))}</span><span class="station-timetable-minute">${String(item.minute)}</span><span class="station-timetable-train-dest">${escapeAttr(getShortDest(item.train.dest))}</span></button>`);
       });
       return `<div class="station-timetable-hour-row">${cells.join('')}</div>`;
     });
@@ -2033,6 +1806,8 @@ async function selectFormation(formId){
     selectionSyncInProgress=false;
   }
 }
+window.addEventListener('resize',()=>syncMovingTrainLayerGeometry());
+
 window.addEventListener('load',async ()=>{
   warmAllTrainData();
   refreshAllTrainDataCache();
@@ -2044,7 +1819,6 @@ window.addEventListener('load',async ()=>{
   initTimeControl();
   setNowTime();
   renderLine();
-  showOperationList();
   setInterval(async ()=>{
     if(isEditMode) return;
     if(followNow){
