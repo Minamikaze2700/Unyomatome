@@ -158,8 +158,8 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 .timetable-list{position:relative;overflow:hidden;z-index:1}
 .train-card{
   position:relative;
-  background:#fff;border-radius:8px;padding:12px 12px 30px;display:flex;
-  align-items:center;gap:12px;margin-bottom:16px;cursor:pointer;
+  background:#fff;border-radius:8px;padding:0;display:flex;
+  align-items:center;gap:12px;margin-bottom:0;cursor:pointer;
   border:2px solid transparent;
 }
 .train-card:hover{border-color:#bbb}
@@ -249,7 +249,7 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 .type-badge.a-express{background:#e91419}
 .type-badge.b-express{background:#2e7d32}
 .train-title{font-size:0.95rem;font-weight:700;margin-left:6px}
-.train-number{color:#1b6e27;font-weight:800;float:right}
+.train-number{color:#1b6e27;font-weight:800;float:right;margin-right:15px}
 .formation-id{font-size:1.2rem;font-weight:800;color:#1b6e27;margin-top:4px}
 .capacity-info{color:#666;font-size:.85rem;margin-top:4px}
 
@@ -1725,7 +1725,7 @@ function updateSheetContent(){
         <div class="train-info-main">
           <div>
             <span class="type-badge ${getExpressClass(train)}">${getDetailType(train.type)}</span>
-            <span class="train-title">${getDetailDest(train.dest)}</span>
+            <span class="train-title">${getDetailDest(train.dest)} 行</span>
             <span class="train-number">${train.no}</span>
           </div>
           ${train.formation && train.formation!==INITIAL_FORMATION_SELECTION.id
