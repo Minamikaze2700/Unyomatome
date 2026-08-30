@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -154,7 +152,7 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 }
 .sheet-back-btn.visible{display:inline-block;}
 .close-btn{cursor:pointer;font-size:1.2rem}
-.sheet-content{padding:16px;position:relative;overflow:hidden}
+.sheet-content{padding:16px;position:relative;overflow:hidden;min-height:0}
 .timetable-list{margin-top:16px;position:relative;overflow:hidden;z-index:1}
 .train-card{
   position:relative;
@@ -180,24 +178,127 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 .station-timetable-direction-tab.active{background:var(--primary);color:#fff;}
 .station-timetable-direction-tab:hover{background:#fff1f1;}
 .station-timetable-direction-tab.active:hover{background:var(--primary-dark);}
-.station-timetable-wrap{margin-top:4px;background:#fff;overflow:hidden;}
-.station-timetable-direction{margin-top:0;}
-.station-timetable-grid{display:flex;flex-direction:column;gap:0;align-items:flex-start;}
-.station-timetable-hour-row{display:flex;align-items:stretch;justify-content:flex-start;}
-.station-timetable-cell{width:80px;height:80px;min-width:80px;display:flex;align-items:center;justify-content:center;border:0;padding:0;line-height:1;}
-.station-timetable-hour{color:#fff;background:var(--primary);font-family:"Kosugi Maru",sans-serif;font-size:40px;font-weight:500;}
-.station-timetable-hour.hour-alt{background:#ea7e83;}
-.station-timetable-time{background:#fff;color:#000;cursor:pointer;font-family:"Kosugi Maru",sans-serif;font-size:34px;font-weight:500;}
-.station-timetable-time.minute-alt{background:#c8c8c8;}
-.station-timetable-time:hover{filter:brightness(.95);}
-.station-timetable-empty{background:#fff;}
-.station-timetable-meta{
-  padding:8px 10px;text-align:left;color:#666;font-family:"Kosugi",sans-serif;font-size:.78rem;
+
+.station-timetable-frame{
+  position:relative;
+  margin-top:4px;
+  height:53vh;
+  background:#fff;
+  border:3px solid #000;
+  border-radius:11px;
+  overflow:hidden;
+  box-sizing:border-box;
 }
-@media (max-width:959.98px){
-  .station-timetable-cell{width:80px;height:80px;min-width:80px;}
-  .station-timetable-hour{font-size:40px;}
-  .station-timetable-time{font-size:34px;}
+.station-timetable-wrap{
+  /* 530px以上は530px基準の固定サイズ。530px未満だけ幅に応じて縮小する。 */
+  position:relative;
+  container-type:inline-size;
+  margin-top:0;
+  background:#fff;
+  border:0;
+  border-radius:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  height:100%;
+  scroll-behavior:auto;
+  box-sizing:border-box;
+}
+.station-timetable-direction{margin:0;padding:0;}
+.station-timetable-empty{
+  padding:24px 18px;
+  text-align:center;
+  font-family:"Kosugi",sans-serif;
+  color:#555;
+}
+.station-timetable-row{
+  width:100%;
+  min-height:108px;
+  display:grid;
+  grid-template-columns:68px 82px 92px minmax(0,1fr);
+  align-items:center;
+  column-gap:8px;
+  padding:8px 12px;
+  border:0;
+  color:#000;
+  text-align:left;
+  cursor:pointer;
+  font-family:"Kosugi",sans-serif;
+}
+.station-timetable-row:nth-child(odd){background:#fff;}
+.station-timetable-row:nth-child(even){background:#cfcfcf;}
+.station-timetable-row:hover{filter:brightness(.97);}
+.station-timetable-row:focus-visible{outline:3px solid rgba(0,0,0,.35);outline-offset:-3px;}
+.station-timetable-train-img{
+  width:68px;
+  height:86px;
+  object-fit:contain;
+  display:block;
+  justify-self:center;
+  background:transparent;
+}
+.station-timetable-formation{
+  color:#1b6e27;
+  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size:24px;
+  line-height:1;
+  font-weight:800;
+  white-space:nowrap;
+  text-align:center;
+}
+.station-timetable-time{
+  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size:32px;
+  line-height:1;
+  font-weight:800;
+  white-space:nowrap;
+  text-align:center;
+  letter-spacing:.01em;
+}
+.station-timetable-destination{
+  font-family:"Kosugi",sans-serif;
+  font-size:32px;
+  line-height:1;
+  font-weight:500;
+  white-space:nowrap;
+  text-align:left;
+  display:flex;
+  align-items:flex-end;
+  justify-content:flex-start;
+  gap:.18em;
+  height:1em;
+}
+.station-timetable-destination-station{font-size:1em;line-height:1;}
+.station-timetable-destination-go{font-size:.8em;line-height:1;}
+/* 530px未満のみ、530pxを100%とした比率で全パーツを縮小 */
+@container (max-width:529px){
+  .station-timetable-frame{
+    border-width:.5660377cqw;
+    border-radius:2.0754717cqw;
+  }
+  .station-timetable-empty{
+    padding:4.5283019cqw 3.3962264cqw;
+  }
+  .station-timetable-row{
+    min-height:20.3773585cqw;
+    grid-template-columns:12.8301887cqw 15.4716981cqw 17.3584906cqw minmax(0,1fr);
+    column-gap:1.509434cqw;
+    padding:1.509434cqw 2.264151cqw;
+  }
+  .station-timetable-row:focus-visible{
+    outline-width:.5660377cqw;
+    outline-offset:-.5660377cqw;
+  }
+  .station-timetable-train-img{
+    width:12.8301887cqw;
+    height:16.2264151cqw;
+  }
+  .station-timetable-formation{
+    font-size:4.5283019cqw;
+  }
+  .station-timetable-time,
+  .station-timetable-destination{
+    font-size:6.0377358cqw;
+  }
 }
 .station-badge:focus{outline:3px solid rgba(0,0,0,.35);outline-offset:4px;}
 
@@ -326,10 +427,10 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 }
 
 .site-credit{
-  position:fixed;right:8px;bottom:6px;z-index:1200;
+  position:fixed;right:8px;bottom:6px;z-index:0;
   font-size:10px;line-height:1.35;color:#666;text-align:right;
   background:rgba(255,255,255,.92);padding:2px 4px;
-  pointer-events:auto;
+  pointer-events:none;
 }
 .site-credit a,.site-credit a:visited{color:inherit;text-decoration:none;}
 .site-credit a:hover{text-decoration:underline;}
@@ -1619,7 +1720,19 @@ function updateStationSheetContent(){
       ${stationTimetableHTML(station, stationTimetableDirection)}
     </div>
   `;
+  scrollStationTimetableToNext();
 }
+function scrollStationTimetableToNext(){
+  const wrap=document.getElementById('stationTimetableScroll');
+  if(!wrap) return;
+  const next=wrap.querySelector('.station-timetable-row[data-next-train="true"]')
+    || wrap.querySelector('.station-timetable-row');
+  if(!next) return;
+  requestAnimationFrame(()=>{
+    wrap.scrollTop=Math.max(0,next.offsetTop);
+  });
+}
+
 function setStationTimetableDirection(direction){
   if(!currentStationId) return;
   stationTimetableDirection=(direction==='down')?'down':'up';
@@ -1630,6 +1743,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
   const directionData={up:{label:'長野方面',entries:[]},down:{label:'湯田中方面',entries:[]}};
   const byTrain=new Map();
 
+  // 当日の全列車を常に表示し、スクロール位置だけを「次発」に合わせる。
   getVisibleTrains().forEach(train=>{
     if(String(train?.dest||'')===stationName) return; // 当駅止まりは除外
     const stops=(train.stops||[]).filter(stop=>String(stop?.station||'')===stationName);
@@ -1648,40 +1762,56 @@ function stationTimetableHTML(station, selectedDirection='up'){
     .sort((a,b)=>a.hour-b.hour||a.minute-b.minute||String(a.train.no).localeCompare(String(b.train.no),undefined,{numeric:true}))
     .forEach(entry=>directionData[entry.bucket].entries.push(entry));
 
-  const escapeAttr=value=>String(value).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const escapeJs=value=>String(value).replace(/\\/g,"\\'");
+  const escapeAttr=value=>String(value)
+    .replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const escapeJs=value=>String(value).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
 
   const renderDirection=(key)=>{
     const data=directionData[key];
     if(!data.entries.length) return '';
 
-    const hourGroups=[];
-    let currentHour=null;
-    for(const item of data.entries){
-      if(currentHour===null || currentHour.hour!==item.hour){
-        currentHour={hour:item.hour,entries:[]};
-        hourGroups.push(currentHour);
-      }
-      currentHour.entries.push(item);
-    }
+    const now=currentMinutes();
+    let nextIndex=data.entries.findIndex(entry=>(entry.hour*60+entry.minute)>=now);
+    if(nextIndex<0) nextIndex=0;
 
-    const rows=hourGroups.map((group,rowIndex)=>{
-      const hourClass=(rowIndex%2===0)?'':' hour-alt';
-      const cells=[`<div class="station-timetable-cell station-timetable-hour${hourClass}">${group.hour}</div>`];
-      group.entries.forEach((item,colIndex)=>{
-        const checker=(rowIndex+colIndex)%2===0;
-        const minuteClass=checker?'':' minute-alt';
-        cells.push(`<button class="station-timetable-cell station-timetable-time${minuteClass}" type="button" title="列車 ${escapeAttr(item.train.no)} / ${escapeAttr(item.time)}" onclick="openSheet('${escapeJs(item.train.no)}',true)">${String(item.minute).padStart(2,'0')}</button>`);
-      });
-      return `<div class="station-timetable-hour-row">${cells.join('')}</div>`;
-    });
+    const rows=data.entries.map((item,index)=>{
+      const train=item.train;
+      const selectedForm=selectionDisplayObject(train.formation);
+      const formationName=(selectedForm && selectedForm.id!==INITIAL_FORMATION_SELECTION.id)
+        ? selectedForm.name
+        : '—';
+      const imgSrc=selectedForm?.img||'images/Nagano_noimage.png';
+      const destination=`${getDetailDest(train.dest)} 行`;
+      const isNext=index===nextIndex;
 
-    return `<section class="station-timetable-direction">${rows.join('')}</section>`;
+      return `
+        <button
+          class="station-timetable-row${isNext?' is-next':''}"
+          type="button"
+          data-next-train="${isNext?'true':'false'}"
+          title="列車 ${escapeAttr(train.no)} / ${escapeAttr(item.time)} / ${escapeAttr(destination)}"
+          onclick="openSheet('${escapeJs(train.no)}',true)"
+        >
+          <img class="station-timetable-train-img" src="${escapeAttr(imgSrc)}" alt="${escapeAttr(train.no)}">
+          <span class="station-timetable-formation">${escapeAttr(formationName)}</span>
+          <span class="station-timetable-time">${escapeAttr(item.time)}</span>
+          <span class="station-timetable-destination"><span class="station-timetable-destination-station">${escapeAttr(getDetailDest(train.dest))}</span><span class="station-timetable-destination-go">行</span></span>
+        </button>
+      `;
+    }).join('');
+
+    return `<section class="station-timetable-direction" data-direction="${key}">${rows}</section>`;
   };
 
   const html=renderDirection(selectedDirection);
-  if(!html) return `<div class="station-timetable-meta">この方面の時刻表はありません。</div>`;
-  return `<div class="station-timetable-wrap">${html}</div><div class="station-timetable-meta">発時刻のみ表示・時刻をクリックすると列車情報を表示します。</div>`;
+  if(!html) return `<div class="station-timetable-empty">この方面の時刻表はありません。</div>`;
+  return `
+    <div class="station-timetable-frame">
+      <div class="station-timetable-wrap" id="stationTimetableScroll">
+        ${html}
+      </div>
+    </div>
+  `;
 }
 
 function formatFormationUpdatedAt(trainNo){
