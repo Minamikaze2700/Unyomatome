@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -513,7 +514,7 @@ window.NODA_FIREBASE_CONFIG = {
   storageBucket: "unyomatome-tobunoda.firebasestorage.app",
   messagingSenderId: "874572920675",
   appId: "1:874572920675:web:21b684ad55f6f3cbc54556",
-  measurementId: "G-mbkyq0JVD0"
+  measurementId: "G-MBKYQ0JVD0"
 };
 </script>
 <script>
@@ -1154,7 +1155,7 @@ function equinoxDateKey(year,isVernal){
   const y=year-1980;
   const base=isVernal?20.8431:23.2488;
   const drift=0.242194;
-  const day=Math.floor(base+drift*y-math.floor(y/4));
+  const day=Math.floor(base+drift*y-Math.floor(y/4));
   return `${year}-${isVernal?'03':'09'}-${String(day).padStart(2,'0')}`;
 }
 function getJapaneseNationalHolidays(year){
@@ -1300,7 +1301,7 @@ function formationIdFromInput(value){
   }
 
   // 車両番号から編成番号を特定する。
-  const normalized=v.replace(/[^A-z0-9]/g,'');
+  const normalized=v.replace(/[^A-Z0-9]/g,'');
   const formationId=VEHICLE_TO_FORMATION[normalized] || VEHICLE_TO_FORMATION[normalized.replace(/F$/,'')];
   if(formationId && formationById(formationId)){
     if(UNAVAILABLE_FORMATIONS.has(String(formationId))) return {ok:false,error:`編成「${formationById(formationId)?.name||formationId}」は入力できません。`};
@@ -1530,7 +1531,7 @@ function positionForTrain(t,minutes){
   const next=connectionNext(t);
   const nextStart=next?timeToMinutes(next.startTime):null;
 
-  if(isChainFirst && minutes>=first-reset_DWELL_MIN && minutes<first){
+  if(isChainFirst && minutes>=first-RESET_DWELL_MIN && minutes<first){
     return {pos:stationIndex(firstStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'start'};
   }
 
@@ -1708,8 +1709,8 @@ function renderTrainPositions(){
         const actualImageWidth=(imgRect.width/mobileZoom) || imageWidth;
         const imgHeight=(imgRect.height/mobileZoom) || actualImageWidth*((img.naturalHeight||30)/(img.naturalWidth||60));
         const noHeight=(noRect?.height/mobileZoom) || 12*uiScale*1.05;
-        const desiredCenterY=(rr.centerY-layerrect.top)/mobileZoom;
-        const finalTop=desiredCenterY-noheight-imgheight/2;
+        const desiredCenterY=(rr.centerY-layerRect.top)/mobileZoom;
+        const finalTop=desiredCenterY-noHeight-imgHeight/2;
 
         el.style.top=`${finalTop}px`;
         el.style.left=`${trainLeft}px`;
