@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -962,15 +961,59 @@ function chainEntries(day,trainNo){
   if(!info) return null;
   return OPERATION_CHAINS[day]?.[info.chainIndex] || null;
 }
+
+/*
+ * 船橋駅の番線折返し対応。
+ * 添付の「東武野田線 時刻表 2026」の船橋発着番線を基準に、
+ * 1番線・2番線へ到着した列車と、その後に同じ番線から発車する列車を
+ * 同一編成として扱う。30分を超える間隔の深夜→早朝接続は除外。
+ */
+const FUNABASHI_PLATFORM_TURNS = [["101A","104"],["103A","106"],["105A","108"],["107A","110"],["109A","114"],["111A","116"],["113A","120"],["115A","124"],["117A","126"],["119A","128"],["121A","2102"],["123A","130"],["125A","132"],["127A","136"],["2101A","134"],["129A","138"],["131A","2104"],["133A","140"],["135A","142"],["137A","146"],["2103A","144"],["139A","148"],["141A","2106"],["143A","150"],["145A","152"],["147A","156"],["2105A","154"],["149A","158"],["151A","2108"],["153A","160"],["155A","162"],["157A","166"],["2107A","164"],["159A","168"],["161A","2110"],["163A","170"],["165A","172"],["167A","176"],["2109A","174"],["169A","178"],["171A","180"],["173A","2112"],["175A","182"],["177A","184"],["2111A","2114"],["179A","186"],["181A","188"],["183A","190"],["2113A","2116"],["185A","192"],["187A","194"],["189A","196"],["2115A","2118"],["191A","198"],["193A","200"],["195A","202"],["2117A","2120"],["197A","204"],["199A","206"],["201A","208"],["2119A","2122"],["203A","210"],["205A","212"],["207A","214"],["2121A","2124"],["209A","216"],["211A","218"],["213A","220"],["2123A","2126"],["215A","222"],["217A","224"],["219A","226"],["2125A","2128"],["221A","228"],["223A","230"],["225A","232"],["2127A","2130"],["227A","234"],["229A","236"],["231A","238"],["2129A","2132"],["233A","240"],["235A","242"],["237A","244"],["2131A","2134"],["239A","246"],["241A","248"],["243A","250"],["2133A","2136"],["245A","252"],["247A","254"],["249A","256"],["2135A","2138"],["251A","258"],["253A","260"],["255A","262"],["2137A","2140"],["527A","264"],["259A","266"],["261A","268"],["2139A","2142"],["263A","270"],["265A","272"],["267A","274"],["2141A","2144"],["269A","276"],["271A","278"],["273A","280"],["2143A","2146"],["275A","282"],["277A","284"],["279A","286"],["2145A","2148"],["281A","288"],["283A","290"],["285A","292"],["2147A","2150"],["287A","294"],["289A","295"],["291A","298"],["2149A","2152"],["293A","300"],["295A","302"],["297A","304"],["2151A","2154"],["299A","306"],["301A","308"],["303A","310"],["2153A","1256"],["305A","312"],["307A","314"],["309A","316"],["2155A","2158"],["311A","318"],["313A","320"],["315A","322"],["2157A","2160"],["317A","324"],["319A","326"],["321A","328"],["2159A","2162"],["323A","330"],["325A","332"],["327A","334"],["2161A","2164"],["329A","336"],["331A","338"],["333A","342"],["2163A","340"],["335A","344"],["337A","346"],["339A","348"],["341A","350"],["345A","352"],["349A","354"],["351A","356"],["353A","358"],["355A","360"]];
+
+const FUNABASHI_PLATFORM_LINKS = (() => {
+  const map = Object.create(null);
+  FUNABASHI_PLATFORM_TURNS.forEach(([arrival,departure]) => {
+    map[String(arrival)] = String(departure);
+    map[String(departure)] = String(arrival);
+  });
+  return map;
+})();
+
+function formationLinkedTrainNos(day, trainNo){
+  const start = normalizeTrainNo(trainNo);
+  const result = new Set([start]);
+  const queue = [start];
+
+  while(queue.length){
+    const no = queue.shift();
+    const linked = FUNABASHI_PLATFORM_LINKS[no];
+    if(linked && !result.has(linked)){
+      result.add(linked);
+      queue.push(linked);
+    }
+
+    const info = findChain(day,no);
+    if(info){
+      const chain = OPERATION_CHAINS[day]?.[info.chainIndex] || [];
+      chain.forEach(entry => {
+        const n = normalizeTrainNo(entry.no);
+        if(n && !result.has(n)){
+          result.add(n);
+          queue.push(n);
+        }
+      });
+    }
+  }
+  return result;
+}
+
 async function recordSelection(train,formId){
   if(isNonCurrentSelectedDate(selectedDateKey)) return [];
-  const chain=chainEntries(currentDay,train.no);
-  const targetEntries=chain||[{no:String(train.no)}];
+  const linkedTrainNos=formationLinkedTrainNos(currentDay,train.no);
   const assigned=[];
   const changes={};
 
-  targetEntries.forEach(e=>{
-    const requested=normalizeTrainNo(e.no);
+  linkedTrainNos.forEach(requested=>{
     const actual=TRAIN_INDEX[requested]
       ? requested
       : Object.keys(TRAIN_INDEX).find(k=>k.replace(/A$/i,'')===requested.replace(/A$/i,'')) || null;
