@@ -1136,9 +1136,11 @@ function initSharedState(){
 }
 function getVisibleTrains(){ return TRAINS.filter(t=>t.days.includes(currentDay)).map(t=>liveTrain(t.no)||t); }
 function getShortType(type, trainNo=''){
-  // 種別表示は正式名称を使用（区間急行を「区急」に略さない）。
-  return String(type||'');
+  const value=String(type||'');
+  if(value==='区間急行') return '区急';
+  return value;
 }
+function getDetailType(type){ return String(type||''); }
 // 列車番号は上下列車とも末尾Aを付けて表示する。
 function displayTrainNo(train){
   if(!train) return '';
@@ -1391,8 +1393,7 @@ function initTimeControl(){
   input.value=formatTimeNow();
   input.addEventListener('input',setManualTime);
 }
-function displayType(type){ return getShortType(type); }
-function getDetailType(type){ return String(type||''); }
+function displayType(type){ return String(type||''); }
 function getDetailDest(dest){ return String(dest||''); }
 function getMainLabelClass(type){ return String(type||'')==='回送' ? 'deadhead' : ''; }
 function trainVisualKind(t){
