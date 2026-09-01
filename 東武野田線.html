@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -1458,6 +1457,67 @@ function connectionNext(t){
   if(timeToMinutes(t.stops[t.stops.length-1].time)>timeToMinutes(next.startTime)) return null;
   return next;
 }
+function typicalTakayanagiRunMinutes(direction){
+  // 高柳とその直前駅の通常走行時間を、時刻表上の普通列車から推定。
+  // 急行待避などで長くなっている区間は除外し、5分以内の最頻値を採用する。
+  const gaps=[];
+  for(const other of TRAINS){
+    if(other.direction!==direction || other.type!=='普通') continue;
+    const ids=(other.stops||[]).map(s=>s.station);
+    const ti=ids.indexOf('高柳');
+    if(ti<=0) continue;
+    const prev=other.stops[ti-1], curr=other.stops[ti];
+    const gap=timeToMinutes(curr.time)-timeToMinutes(prev.time);
+    if(gap>=1 && gap<=5) gaps.push(gap);
+  }
+  if(!gaps.length) return 3;
+  const counts=new Map();
+  gaps.forEach(g=>counts.set(g,(counts.get(g)||0)+1));
+  return [...counts.entries()].sort((a,b)=>b[1]-a[1]||a[0]-b[0])[0][0];
+}
+
+const TYPICAL_TAKAYANAGI_RUN = {
+  up: typicalTakayanagiRunMinutes('up'),
+  down: typicalTakayanagiRunMinutes('down')
+};
+
+function apparentTakayanagiArrival(t){
+  // メイン画面の列車アイコンだけに使う「見かけ上の高柳着時刻」。
+  // 柏～船橋間で急行に追い越される普通列車のうち、
+  // 高柳手前の区間だけ不自然に長いものを補正する。
+  if(!t || t.type!=='普通' || !['up','down'].includes(t.direction)) return null;
+  const stops=t.stops||[];
+  const ids=stops.map(s=>s.station);
+  const hi=ids.indexOf('高柳');
+  if(hi<=0) return null;
+  const prev=stops[hi-1], taka=stops[hi];
+  if(!['柏','船橋'].every(name=>ids.includes(name))) return null;
+
+  const actualGap=timeToMinutes(taka.time)-timeToMinutes(prev.time);
+  const typical=TYPICAL_TAKAYANAGI_RUN[t.direction]||3;
+  if(actualGap<=typical+1) return null;
+
+  const endpointA=t.direction==='up'?'船橋':'柏';
+  const endpointB=t.direction==='up'?'柏':'船橋';
+  const aStop=stops.find(x=>x.station===endpointA);
+  const bStop=stops.find(x=>x.station===endpointB);
+  if(!aStop || !bStop) return null;
+  const a=timeToMinutes(aStop.time), b=timeToMinutes(bStop.time);
+
+  const hasOvertakeScenario=TRAINS.some(e=>{
+    if(e===t || e.type!=='急行' || e.direction!==t.direction) return false;
+    const es=e.stops||[];
+    const ea=es.find(x=>x.station===endpointA);
+    const eb=es.find(x=>x.station===endpointB);
+    if(!ea || !eb) return false;
+    const exA=timeToMinutes(ea.time), exB=timeToMinutes(eb.time);
+    return a<exA && b>exB;
+  });
+  if(!hasOvertakeScenario) return null;
+
+  return timeToMinutes(prev.time)+typical;
+}
+
 function positionForTrain(t,minutes){
   const stops=t.stops||[];
   if(!stops.length) return null;
@@ -1467,20 +1527,60 @@ function positionForTrain(t,minutes){
   const chain=chainInfo ? OPERATION_CHAINS[currentDay][chainInfo.chainIndex] : null;
   const isChainFirst=!!chain && chainInfo.entryIndex===0;
   const isChainLast=!!chain && chainInfo.entryIndex===chain.length-1;
-  const prev=connectionPrev(t), next=connectionNext(t);
-  const prevEnd=prev?timeToMinutes(prev.endTime):null;
+  const next=connectionNext(t);
   const nextStart=next?timeToMinutes(next.startTime):null;
 
-  // 1日の一連の運用の最初の列車だけ、始発駅で発車2分前から待機。
-  // 中間の列車にはこの2分追加を適用しない。
   if(isChainFirst && minutes>=first-RESET_DWELL_MIN && minutes<first){
     return {pos:stationIndex(firstStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'start'};
   }
-  // 中間列車の始発駅側の待機は、前の列車の描画側で一度だけ表現する。
-  // ここで同じ列車をもう一度描画すると、折り返し駅で列車が2本並ぶため、
-  // 中間列車側では表示しない。
-  // Running leg.
-  if(minutes>=first && minutes<=last){
+
+  // メイン画面専用の高柳見かけ着時刻補正。
+  // 実際の時刻表や駅時刻表の表示値は変更しない。
+  const apparentArrival=apparentTakayanagiArrival(t);
+  if(apparentArrival!==null && minutes>=first && minutes<=last){
+    const ids=stops.map(s=>s.station);
+    const hi=ids.indexOf('高柳');
+    const prevStop=stops[hi-1];
+    const takaStop=stops[hi];
+    const ta=timeToMinutes(prevStop.time);
+    const apparentTd=apparentArrival;
+    const realTd=timeToMinutes(takaStop.time);
+
+    // 高柳手前は推定した着時刻まで通常より速く移動。
+    if(minutes>=ta && minutes<=apparentTd){
+      const ia=stationIndex(prevStop.station), ib=stationIndex('高柳');
+      const ratio=apparentTd===ta?0:(minutes-ta)/(apparentTd-ta);
+      return {pos:ia+(ib-ia)*ratio,side:t.direction==='down'?'right':'left',visualTrain:t,mode:'run-apparent'};
+    }
+    // 推定着～所定発は高柳で停車しているように見せる。
+    if(minutes>apparentTd && minutes<realTd){
+      return {pos:stationIndex('高柳'),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'apparent-dwell'};
+    }
+
+    // 高柳発以降は所定時刻で通常走行。
+    if(minutes>=realTd){
+      for(let i=hi;i<stops.length-1;i++){
+        const a=stops[i],b=stops[i+1];
+        const t0=timeToMinutes(a.time),t1=timeToMinutes(b.time);
+        if(minutes>=t0 && minutes<=t1){
+          const ia=stationIndex(a.station),ib=stationIndex(b.station);
+          const ratio=t1===t0?0:(minutes-t0)/(t1-t0);
+          return {pos:ia+(ib-ia)*ratio,side:t.direction==='down'?'right':'left',visualTrain:t,mode:'run'};
+        }
+      }
+    }
+
+    // 高柳より前の区間は通常時刻で走行。
+    for(let i=0;i<hi-1;i++){
+      const a=stops[i],b=stops[i+1];
+      const t0=timeToMinutes(a.time),t1=timeToMinutes(b.time);
+      if(minutes>=t0 && minutes<=t1){
+        const ia=stationIndex(a.station),ib=stationIndex(b.station);
+        const ratio=t1===t0?0:(minutes-t0)/(t1-t0);
+        return {pos:ia+(ib-ia)*ratio,side:t.direction==='down'?'right':'left',visualTrain:t,mode:'run'};
+      }
+    }
+  }else if(minutes>=first && minutes<=last){
     for(let i=0;i<stops.length-1;i++){
       const a=stops[i],b=stops[i+1];
       const ta=timeToMinutes(a.time),tb=timeToMinutes(b.time);
@@ -1491,21 +1591,17 @@ function positionForTrain(t,minutes){
       }
     }
   }
-  // 中間列車の到着駅では、次列車が続くなら到着+1分で反対側へ移動。
+
   if(next && !isChainLast && minutes>last && minutes<nextStart){
     if(minutes<=last+TURNBACK_SWITCH_MIN){
       return {pos:stationIndex(lastStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'turn-arrival'};
     }
-    // 折り返し後は「次の列車」の最新の編成状態を使う。
-    // TRAIN_INDEX は初期データ（formation:null）のため、ここを直接参照すると
-    // noimage が表示されることがある。必ず liveTrain() から取得する。
     const nextNo=trainEntryNo(next);
     const nextTrain=liveTrain(nextNo)||TRAIN_INDEX[nextNo]||null;
     const nextSide=nextTrain?(nextTrain.direction==='down'?'right':'left'): (inferDirectionFromStations(next.start,next.dest)==='down'?'right':'left');
     return {pos:stationIndex(lastStation),side:nextSide,visualTrain:nextTrain||t,mode:'turn-wait'};
   }
-  // 一日の一連の運用の最後の列車だけ、終着後2分を終着駅で表示。
-  // A→B→C なら AとCだけに適用し、Bには適用しない。
+
   if(isChainLast && minutes>=last && minutes<=last+RESET_DWELL_MIN){
     return {pos:stationIndex(lastStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'end'};
   }
