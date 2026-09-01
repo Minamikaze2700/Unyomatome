@@ -213,7 +213,7 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
   width:100%;
   min-height:108px;
   display:grid;
-  grid-template-columns:68px 82px 92px minmax(0,1fr);
+  grid-template-columns:68px 82px 92px 92px minmax(0,1fr);
   align-items:center;
   column-gap:8px;
   padding:8px 12px;
@@ -244,6 +244,16 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
   white-space:nowrap;
   text-align:center;
 }
+.station-timetable-type{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:78px;height:34px;padding:0 10px;border-radius:7px;
+  font-family:inherit;font-size:18px;line-height:1;font-weight:700;
+  white-space:nowrap;text-align:center;box-sizing:border-box;
+  background:#808080;color:#fff;
+}
+.station-timetable-type.section-express{background:#f3b6c2;color:#111;}
+.station-timetable-type.express{background:#e5007f;color:#fff;}
+.station-timetable-type.deadhead{background:#fff;color:#111;border:1px solid #bbb;}
 .station-timetable-time{
   font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
   font-size:32px;
@@ -279,7 +289,7 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
   }
   .station-timetable-row{
     min-height:20.3773585cqw;
-    grid-template-columns:12.8301887cqw 15.4716981cqw 17.3584906cqw minmax(0,1fr);
+    grid-template-columns:12.8301887cqw 15.4716981cqw 17.3584906cqw 17.3584906cqw minmax(0,1fr);
     column-gap:1.509434cqw;
     padding:1.509434cqw 2.264151cqw;
   }
@@ -297,6 +307,10 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
   .station-timetable-time,
   .station-timetable-destination{
     font-size:6.0377358cqw;
+  }
+  .station-timetable-type{
+    min-width:14.717cqw;height:6.415cqw;padding:0 1.887cqw;
+    border-radius:1.321cqw;font-size:3.396cqw;
   }
 }
 .station-badge:focus{outline:3px solid rgba(0,0,0,.35);outline-offset:4px;}
@@ -1122,11 +1136,8 @@ function initSharedState(){
 }
 function getVisibleTrains(){ return TRAINS.filter(t=>t.days.includes(currentDay)).map(t=>liveTrain(t.no)||t); }
 function getShortType(type, trainNo=''){
-  const value=String(type||'');
-  if(value==='区間急行') return '区急';
-  if(value==='普通') return '普通';
-  if(value==='急行') return '急行';
-  return value;
+  // 種別表示は正式名称を使用（区間急行を「区急」に略さない）。
+  return String(type||'');
 }
 // 列車番号は上下列車とも末尾Aを付けて表示する。
 function displayTrainNo(train){
@@ -1138,7 +1149,8 @@ function displayTrainNo(train){
 function getShortDest(dest){
   const value=String(dest||'').replace(/#1/g,'').replace(/#2/g,'').replace(/#3/g,'');
   const map={
-    '春日部':'春日'
+    '春日部':'春日',
+    '七光台':'七光'
   };
   return map[value]||value;
 }
@@ -1907,6 +1919,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
           <img class="station-timetable-train-img" src="${escapeAttr(imgSrc)}" alt="${escapeAttr(displayTrainNo(train))}">
           <span class="station-timetable-formation">${escapeAttr(formationName)}</span>
           <span class="station-timetable-time">${escapeAttr(item.time)}</span>
+          <span class="station-timetable-type ${escapeAttr(getExpressClass(train))}">${escapeAttr(getShortType(train.type,train.no))}</span>
           <span class="station-timetable-destination"><span class="station-timetable-destination-station">${escapeAttr(getDetailDest(train.dest))}</span><span class="station-timetable-destination-go">行</span></span>
         </button>
       `;
