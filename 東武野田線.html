@@ -1920,7 +1920,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
           <img class="station-timetable-train-img" src="${escapeAttr(imgSrc)}" alt="${escapeAttr(displayTrainNo(train))}">
           <span class="station-timetable-formation">${escapeAttr(formationName)}</span>
           <span class="station-timetable-time">${escapeAttr(item.time)}</span>
-          <span class="station-timetable-type ${escapeAttr(getExpressClass(train))}">${escapeAttr(getShortType(train.type,train.no))}</span>
+          <span class="station-timetable-type ${escapeAttr(getExpressClass(train))}">${escapeAttr(String(train.type||""))}</span>
           <span class="station-timetable-destination"><span class="station-timetable-destination-station">${escapeAttr(getDetailDest(train.dest))}</span><span class="station-timetable-destination-go">行</span></span>
         </button>
       `;
