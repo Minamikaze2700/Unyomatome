@@ -2416,6 +2416,9 @@ async function selectFormation(formId){
   try{
     await recordSelection(train,normalizedId);
     refreshAllTrainDataCache();
+    // 編成入力直後は、列車情報が古いスナップショットを参照しないよう
+    // 最新の列車データを現在のスナップショットにも反映する。
+    currentTrainSnapshot = liveTrain(train.no) || trainForCurrentDay(train.no) || train;
     updateSheetContent();
     renderTrainPositions();
   }catch(e){
