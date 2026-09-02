@@ -740,6 +740,7 @@ function saveLocalState(){
       operationDate:currentOperationDate,
       stateByDay:remoteRoot.stateByDay,
       formationUpdatedAtByDay:remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}},
+      pendingFormationTimestamps:pendingFormationTimestamps||{平日:{},休日:{}},
       history:remoteRoot.history,
       updatedAt:new Date().toISOString()
     }));
@@ -753,6 +754,7 @@ function loadLocalState(){
     remoteRoot.operationDate=obj.operationDate||null;
     remoteRoot.stateByDay=obj.stateByDay||{平日:{},休日:{}};
     remoteRoot.formationUpdatedAtByDay=obj.formationUpdatedAtByDay||{平日:{},休日:{}};
+    pendingFormationTimestamps=obj.pendingFormationTimestamps||{平日:{},休日:{}};
     remoteRoot.history=obj.history||{};
     currentOperationDate=remoteRoot.operationDate;
     operationHistory=historyEntries();
@@ -949,6 +951,9 @@ async function initFirebase(){
       const raw=snap.val()||{};
       const next={平日:cloneState(raw.平日||{}),休日:cloneState(raw.休日||{})};
       if(JSON.stringify(next)===JSON.stringify(remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}})) return;
+      Object.entries(pendingFormationTimestamps[currentDay]||{}).forEach(([no,ts])=>{
+        if(ts && !next[currentDay]?.[no]) next[currentDay][no]=ts;
+      });
       remoteRoot.formationUpdatedAtByDay=next;
       saveLocalState();
       if(currentTrainNo && !isEditMode) updateSheetContent();
@@ -1053,7 +1058,7 @@ async function syncRegistrationToRemote(changes={}){
     entries.forEach(([no,formId])=>{
       const key=String(no);
       if(String(registrationState[key]||'')===String(formId||'')) delete pendingFormationState[key];
-      if(pendingFormationTimestamps[currentDay]) delete pendingFormationTimestamps[currentDay][key];
+      if(!formId && pendingFormationTimestamps[currentDay]) delete pendingFormationTimestamps[currentDay][key];
     });
 
     applyRegistrationState();
@@ -1975,9 +1980,13 @@ function renderTrainPositions(){
 
       const t=item.t;
       const cls=trainVisualKind(t);
+      const formationLabel = t.formation && t.formation!==INITIAL_FORMATION_SELECTION.id
+        ? (selectionDisplayObject(t.formation)?.name || String(t.formation))
+        : '';
       el.innerHTML=`
         <span class="train-no">${displayTrainNo(t)}</span>
         <img src="${imageForTrain(t)}" alt="${displayTrainNo(t)}">
+        ${formationLabel ? `<span class="train-no train-formation">${formationLabel}</span>` : ''}
         <span class="train-label ${cls} ${getMainLabelClass(t.type)}">${trainLabelText(t)}</span>
       `;
       el.addEventListener('click',ev=>{
