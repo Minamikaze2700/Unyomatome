@@ -1544,11 +1544,10 @@ function operationContainsFiveCarNo(t){
 }
 function prescribedFormationName(t){
   if(t?.type!=='普通') return t?.defaultCars || '普通共通';
-  // 5/6両の「所定」は今日のダイヤだけを対象とし、過去・未来日は普通共通とする。
+  // 当日の普通列車は必ず5両または6両。5両運用に含まれない列車は6両とする。
+  // 過去・未来の日付については従来どおり普通共通を表示する。
   if(String(selectedDateKey)!==todayKey()) return '普通共通';
-  const five=operationContainsFiveCarNo(t);
-  if(five===null) return '普通共通';
-  return five ? '普通5両' : '普通6両';
+  return operationContainsFiveCarNo(t) === true ? '普通5両' : '普通6両';
 }
 function imageForTrain(t){
   const f=selectionDisplayObject(t.formation);
