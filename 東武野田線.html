@@ -394,7 +394,7 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
 .timetable-item:first-child::before{top:50%}
 .timetable-item:last-child::before{bottom:50%}
 .time-dot{width:18px;height:18px;background:var(--primary);border-radius:50%;z-index:2;margin-right:16px}
-.time-text{width:58px;font-weight:700;display:flex;flex-direction:column;justify-content:center;line-height:1.05;gap:0;height:40px;flex:none}.time-text span{display:block;height:20px;line-height:20px;white-space:nowrap}.time-text.two-line span:first-child{font-size:.82rem}.time-text.two-line span:last-child{font-size:1rem}
+.time-text{width:58px;font-weight:700;display:flex;flex-direction:column;justify-content:center;line-height:1.05;gap:0;height:40px;flex:none}.time-text span{display:block;height:20px;line-height:20px;white-space:nowrap}.time-text.two-line span:first-child{font-size:1rem}.time-text.two-line span:last-child{font-size:1rem}
 .station-text{font-weight:700;font-size:1.05rem;line-height:1.2;display:flex;align-items:center;min-height:40px}
 .select-box-container{position:relative;width:100%;margin:12px 0}
 .custom-select-trigger{
@@ -682,8 +682,11 @@ function timetableRowsHTML(stops){
   return buildTimetableRows(stops).map(row=>{
     // 同一駅に時刻が2つある場合、時刻表の1つ目を到着、2つ目を発車として2段表示。
     // 駅ごとの行の高さは常に56pxのままにする。
-    const twoLine=row.times.length>=2;
-    const times=twoLine ? row.times.slice(0,2) : row.times.slice(0,1);
+    const hasTwoTimes=row.times.length>=2;
+    const rawTimes=hasTwoTimes ? row.times.slice(0,2) : row.times.slice(0,1);
+    // 到着時刻と発車時刻が同一なら1つにまとめる。
+    const times=(rawTimes.length>=2 && rawTimes[0]===rawTimes[1]) ? [rawTimes[0]] : rawTimes;
+    const twoLine=times.length>=2;
     return `<div class="timetable-item"><div class="time-dot"></div><div class="time-text${twoLine?' two-line':''}">${times.map((t,i)=>`<span>${t}</span>`).join('')}</div><div class="station-text">${row.station}</div></div>`;
   }).join('');
 }
@@ -1539,7 +1542,24 @@ function operationContainsFiveCarNo(t){
   return foundTargetChain ? false : false;
 }
 function prescribedFormationName(t){
-  if(t?.type!=='普通') return t?.defaultCars || '普通共通';
+  if(!t) return '普通共通';
+
+  // 回送は、その回送の直後に入る運用の所定両数をそのまま表示する。
+  // 例：103（回送）→402A、111（回送）→810A なら、回送も後続列車と同じ所定。
+  if(String(t.type||'')==='回送'){
+    const next=linkedEntries(t).next;
+    if(next){
+      const nextNo=trainEntryNo(next);
+      const nextTrain=liveTrain(nextNo)||TRAIN_INDEX[nextNo]||null;
+      if(nextTrain) return prescribedFormationName(nextTrain);
+      if(String(selectedDateKey)===todayKey()){
+        return operationContainsFiveCarNo(next)===true ? '普通5両' : '普通6両';
+      }
+    }
+    return t?.defaultCars || '普通共通';
+  }
+
+  if(t.type!=='普通') return t?.defaultCars || '普通共通';
   // 当日の普通列車は必ず5両または6両。5両運用に含まれない列車は6両とする。
   // 過去・未来の日付については従来どおり普通共通を表示する。
   if(String(selectedDateKey)!==todayKey()) return '普通共通';
@@ -1749,6 +1769,9 @@ function apparentTakayanagiArrival(t){
 }
 
 function positionForTrain(t,minutes){
+  // 列車アイコンの移動基準を「毎分00秒」から「毎分30秒」へ変更。
+  // 時刻表上の時刻そのものは変更せず、位置計算だけ30秒後ろへずらす。
+  minutes-=0.5;
   const stops=t.stops||[];
   if(!stops.length) return null;
   const firstStation=stops[0].station, lastStation=stops[stops.length-1].station;
@@ -2139,6 +2162,8 @@ function stationTimetableHTML(station, selectedDirection='up'){
   // 当日の全列車を常に表示し、スクロール位置だけを「次発」に合わせる。
   getVisibleTrains().forEach(train=>{
     if(String(train?.dest||'')===stationName) return; // 当駅止まりは除外
+    // 駅の時刻表には回送列車を掲載しない。
+    if(String(train?.type||'')==='回送') return;
     const stops=(train.stops||[]).filter(stop=>String(stop?.station||'')===stationName);
     if(!stops.length) return;
     const stop=stops[stops.length-1]; // 同一駅が2回ある場合は発車側の時刻
