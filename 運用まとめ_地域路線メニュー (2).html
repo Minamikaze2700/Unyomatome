@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>運用まとめ 路線選択</title>
+<style>
+:root{
+  --nav-height:72px;
+  --sheet:#fff;
+  --header:#9e9e9e;
+  --overlay:rgba(0,0,0,.4);
+  --border:#d8d8d8;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:0;
+  overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;
+  background:#fff;
+}
+
+/* 一番奥のレイヤー：路線ページ */
+#pageLayer{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:0;
+  z-index:0;
+  background:#fff;
+  display:none;
+}
+
+/* ページ上に残すUIレイヤー */
+#uiLayer{
+  position:fixed;
+  inset:0;
+  z-index:10;
+  pointer-events:none;
+}
+
+/* 画面下の地域メニュー */
+#bottomNav{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:120;
+  height:var(--nav-height);
+  background:#bdbdbd;
+  border-radius:16px 16px 0 0;
+  box-shadow:0 -3px 10px rgba(0,0,0,.16);
+  display:flex;
+  align-items:stretch;
+  padding:0 4px env(safe-area-inset-bottom);
+  pointer-events:auto;
+  overflow-x:auto;
+  overflow-y:hidden;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+
+#bottomNav::-webkit-scrollbar{display:none}
+
+.nav-button{
+  flex:1 0 auto;
+  min-width:76px;
+  border:0;
+  border-left:1px solid #fff;
+  background:transparent;
+  color:#222;
+  font-size:1.08rem;
+  font-weight:700;
+  padding:0 8px;
+  cursor:pointer;
+  white-space:nowrap;
+  border-right:2px solid #fff;
+  transition:background .15s ease, color .15s ease;
+}
+
+
+.nav-button:last-child{
+  border-right:0;
+}
+
+.nav-button:hover,
+.nav-button:focus-visible{
+  background:transparent;
+  outline:none;
+}
+
+.nav-button:active{background:transparent}
+
+/* モーダル */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:transparent !important;
+  z-index:100;
+  display:none;
+  pointer-events:auto;
+}
+
+.bottom-sheet{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:-100%;
+  z-index:101;
+  max-width:620px;
+  margin:0 auto;
+  max-height:75vh;
+  min-height:0;
+  overflow-y:auto;
+  background:var(--sheet);
+  border-radius:16px 16px 0 0;
+  box-shadow:0 -4px 12px rgba(0,0,0,.18);
+  transition:bottom .3s ease-out;
+  pointer-events:auto;
+}
+
+.bottom-sheet.active{
+  bottom:var(--nav-height);
+}
+
+.sheet-header{
+  position:sticky;
+  top:0;
+  z-index:2;
+  background:#9e9e9e;
+  color:#fff;
+  padding:11px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:700;
+  border-radius:16px 16px 0 0;
+}
+
+.sheet-header-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+
+.sheet-header-title{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.close-btn{
+  cursor:pointer;
+  font-size:1.2rem;
+  line-height:1;
+  padding:2px 0 2px 10px;
+  user-select:none;
+}
+
+.sheet-content{
+  padding:16px;
+  position:relative;
+  overflow:hidden;
+  min-height:0;
+}
+
+/* 会社ごとの路線選択 */
+.company-block{
+  margin:0 0 18px;
+}
+
+.company-block:last-child{margin-bottom:0}
+
+.company-name{
+  font-size:1rem;
+  font-weight:700;
+  margin:0 0 8px;
+  color:#333;
+}
+
+.route-list{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+}
+
+.route-button{
+  min-height:48px;
+  padding:8px 12px;
+  border:1px solid #d0d0d0;
+  border-radius:8px;
+  background:#fff;
+  color:#222;
+  font-size:.98rem;
+  font-weight:600;
+  text-align:left;
+  cursor:pointer;
+  transition:background .15s ease,border-color .15s ease;
+}
+
+.route-button:hover,
+.route-button:focus-visible{
+  background:#f0f0f0;
+  border-color:#aaa;
+  outline:none;
+}
+
+.route-button:active{background:#e5e5e5}
+
+/* 内容が存在しない地域は本当に要素を増やさない */
+.empty-sheet{
+  display:none;
+}
+
+@media (max-width:520px){
+  :root{--nav-height:64px}
+  .nav-button{
+    min-width:74px;
+    font-size:1.08rem;
+    padding:0 6px;
+  }
+  .bottom-sheet{
+    max-width:none;
+  }
+  .route-list{
+    grid-template-columns:1fr;
+  }
+}
+
+@media (min-width:900px){
+  #bottomNav{
+    justify-content:center;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- 最背面：選択した路線ページを全画面固定表示 -->
+<iframe
+  id="pageLayer"
+  title="路線ページ"
+  src="about:blank"
+  loading="eager"
+  referrerpolicy="no-referrer-when-downgrade">
+</iframe>
+
+<div id="uiLayer">
+  <div class="overlay" id="overlay" onclick="closeSheet()"></div>
+
+  <!-- 運用まとめの bottom-sheet 構造を流用 -->
+  <div class="bottom-sheet" id="bottomSheet" aria-hidden="true">
+    <div class="sheet-header">
+      <div class="sheet-header-left">
+        <span class="sheet-header-title" id="sheetTitle">地域選択</span>
+      </div>
+      <span class="close-btn" onclick="closeSheet()" aria-label="閉じる">✖</span>
+    </div>
+    <div class="sheet-content" id="sheetContent"></div>
+  </div>
+
+  <!-- 下部地域メニュー -->
+  <nav id="bottomNav" aria-label="地域メニュー">
+    <button class="nav-button" type="button" onclick="openRegion('北海道')">北海道</button>
+    <button class="nav-button" type="button" onclick="openRegion('東北')">東北</button>
+    <button class="nav-button" type="button" onclick="openRegion('関東')">関東</button>
+    <button class="nav-button" type="button" onclick="openRegion('北陸')">北陸</button>
+    <button class="nav-button" type="button" onclick="openRegion('甲信')">甲信</button>
+    <button class="nav-button" type="button" onclick="openRegion('東海')">東海</button>
+    <button class="nav-button" type="button" onclick="openRegion('近畿')">近畿</button>
+    <button class="nav-button" type="button" onclick="openRegion('中国')">中国</button>
+    <button class="nav-button" type="button" onclick="openRegion('四国')">四国</button>
+    <button class="nav-button" type="button" onclick="openRegion('九州')">九州</button>
+    <button class="nav-button" type="button" onclick="openTerms()">利用規約</button>
+  </nav>
+</div>
+
+<script>
+'use strict';
+
+/*
+ * 地域 → 鉄道会社 → 路線
+ *
+ * 東海：岐阜県・三重県を含む
+ * 近畿：三重県を除く
+ *
+ * 現在登録している路線：
+ *   長野電鉄 長野線
+ *   東武鉄道 東武野田線
+ */
+const REGION_DATA = {
+  '北海道': [],
+  '東北': [],
+  '関東': [
+    {
+      company: '東武鉄道',
+      routes: [
+        { name: '野田線', fullName: '東武野田線' }
+      ]
+    }
+  ],
+  '北陸': [],
+  '甲信': [
+    {
+      company: '長野電鉄',
+      routes: [
+        { name: '長野線', fullName: '長野電鉄長野線' }
+      ]
+    }
+  ],
+  '東海': [],
+  '近畿': [],
+  '中国': [],
+  '四国': [],
+  '九州': []
+};
+
+function getSheetElements(){
+  return {
+    sheet: document.getElementById('bottomSheet'),
+    overlay: document.getElementById('overlay'),
+    title: document.getElementById('sheetTitle'),
+    content: document.getElementById('sheetContent')
+  };
+}
+
+function openRegion(region){
+  const {sheet, overlay, title, content} = getSheetElements();
+
+  title.textContent = region;
+
+  // 毎回完全に内容を作り直す
+  content.replaceChildren();
+
+  const companies = REGION_DATA[region] || [];
+
+  companies.forEach(company => {
+    const block = document.createElement('section');
+    block.className = 'company-block';
+
+    const companyName = document.createElement('h2');
+    companyName.className = 'company-name';
+    companyName.textContent = company.company;
+
+    const list = document.createElement('div');
+    list.className = 'route-list';
+
+    company.routes.forEach(route => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'route-button';
+      button.textContent = route.name;
+      button.addEventListener('click', () => openRoute(route.fullName));
+      list.appendChild(button);
+    });
+
+    block.append(companyName, list);
+    content.appendChild(block);
+  });
+
+  // 路線未登録地域は空のシート。
+  // 「それ以外のページ」はiframe等のページ要素を作らず、何も表示しない。
+  overlay.style.display = 'block';
+  sheet.classList.add('active');
+  sheet.setAttribute('aria-hidden', 'false');
+}
+
+function openTerms(){
+  const {sheet, overlay, title, content} = getSheetElements();
+
+  title.textContent = '利用規約';
+  content.replaceChildren();
+
+  // 利用規約本文は現時点では配置しない（ページ要素ゼロ）。
+  overlay.style.display = 'block';
+  sheet.classList.add('active');
+  sheet.setAttribute('aria-hidden', 'false');
+}
+
+function openRoute(fullRouteName){
+  const pageLayer = document.getElementById('pageLayer');
+
+  // 日本語を含むファイル名を正しくURLエンコード
+  const encodedName = encodeURIComponent(fullRouteName);
+  pageLayer.src =
+    'https://minamikaze2700.github.io/Unyomatome/' +
+    encodedName +
+    '.html';
+
+  // iframeは常に最背面。sheetを閉じれば路線ページが全面に出る。
+  pageLayer.style.display = 'block';
+
+  closeSheet();
+}
+
+function closeSheet(){
+  const {sheet, overlay} = getSheetElements();
+
+  overlay.style.display = 'none';
+  sheet.classList.remove('active');
+  sheet.setAttribute('aria-hidden', 'true');
+}
+
+document.addEventListener('keydown', event => {
+  if(event.key === 'Escape'){
+    closeSheet();
+  }
+});
+</script>
+
+</body>
+</html>
