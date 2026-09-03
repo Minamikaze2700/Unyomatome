@@ -118,6 +118,8 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
 .train-icon:hover{transform:translateX(var(--lane-shift,0px)) scale(1.06)}
 .train-icon img{width:60px;height:auto;object-fit:contain;display:block}
 .train-no{font-size:12px;font-weight:800;color:#1b6e27;line-height:1.05}
+.train-formation{display:flex;flex-direction:column;align-items:center;justify-content:center;white-space:nowrap;}
+.train-formation > span{display:block;font:inherit;color:inherit;line-height:1.05;white-space:nowrap;}
 .train-label{
   margin-top:2px;max-width:100px;padding:3px 5px;border-radius:4px;
   background:#808080;color:#fff;font-size:12px;line-height:1.12;
@@ -1521,6 +1523,30 @@ function selectionDisplayObject(id){
   return known || INITIAL_FORMATION_SELECTION;
 }
 
+// 編成表示を「形式 + 要素」の2行に分解する。
+// 例: 60000型6両 → [60000型, 6両] / 10030型+未更新 → [10030型, 未更新]
+function formationDisplayParts(id){
+  const obj=selectionDisplayObject(id);
+  if(!obj || obj.id===INITIAL_FORMATION_SELECTION.id) return [];
+  const type=String(obj.type||'').trim();
+  const name=String(obj.name||'').trim();
+  if(!name) return [];
+  if(type){
+    if(name===type) return [type];
+    if(name.startsWith(type)){
+      const element=name.slice(type.length).trim();
+      return element ? [type, element] : [type];
+    }
+    if(obj.kind==='variant') return [type, name];
+  }
+  const m=name.match(/^(.*?型)(.+)$/);
+  return m ? [m[1],m[2].trim()] : [name];
+}
+function formationDisplayHTML(id){
+  return formationDisplayParts(id)
+    .map(x=>`<span>${String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`).join('');
+}
+
 function normalizeFiveCarInputNo(v){
   const raw=String(v??'').trim().toUpperCase().replace(/[Ａ]/g,'A').replace(/[Ｆ]/g,'F');
   if(!raw) return '';
@@ -2004,13 +2030,13 @@ function renderTrainPositions(){
 
       const t=item.t;
       const cls=trainVisualKind(t);
-      const formationLabel = t.formation && t.formation!==INITIAL_FORMATION_SELECTION.id
-        ? (selectionDisplayObject(t.formation)?.name || String(t.formation))
-        : '';
+      const formationParts = t.formation && t.formation!==INITIAL_FORMATION_SELECTION.id
+        ? formationDisplayParts(t.formation)
+        : [];
       el.innerHTML=`
         <span class="train-no">${displayTrainNo(t)}</span>
         <img src="${imageForTrain(t)}" alt="${displayTrainNo(t)}">
-        ${formationLabel ? `<span class="train-no train-formation">${formationLabel}</span>` : ''}
+        ${formationParts.length ? `<span class="train-no train-formation">${formationParts.map(x=>`<span>${String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`).join('')}</span>` : ''}
         <span class="train-label ${cls} ${getMainLabelClass(t.type)}">${trainLabelText(t)}</span>
       `;
       el.addEventListener('click',ev=>{
@@ -2022,6 +2048,7 @@ function renderTrainPositions(){
 
       const img=el.querySelector('img');
       const noEl=el.querySelector('.train-no');
+      const formationEl=el.querySelector('.train-formation');
 
       const applyFinalPosition=()=>{
         if(!img) return;
@@ -2037,8 +2064,10 @@ function renderTrainPositions(){
         const actualImageWidth=(imgRect.width/mobileZoom) || imageWidth;
         const imgHeight=(imgRect.height/mobileZoom) || actualImageWidth*((img.naturalHeight||30)/(img.naturalWidth||60));
         const noHeight=(noRect?.height/mobileZoom) || 12*uiScale*1.05;
+        const formationRect=formationEl?.getBoundingClientRect();
+        const formationHeight=(formationRect?.height/mobileZoom) || 0;
         const desiredCenterY=(rr.centerY-layerRect.top)/mobileZoom;
-        const finalTop=desiredCenterY-noHeight-imgHeight/2;
+        const finalTop=desiredCenterY-(noHeight+imgHeight+formationHeight)/2;
 
         el.style.top=`${finalTop}px`;
         el.style.left=`${trainLeft}px`;
