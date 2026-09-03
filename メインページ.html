@@ -387,6 +387,9 @@ function openTerms(){
 function openRoute(fullRouteName){
   const pageLayer = document.getElementById('pageLayer');
 
+  // 最後に表示した路線を保存
+  localStorage.setItem('lastRoute', fullRouteName);
+
   // 日本語を含むファイル名を正しくURLエンコード
   const encodedName = encodeURIComponent(fullRouteName);
   pageLayer.src =
@@ -413,6 +416,27 @@ document.addEventListener('keydown', event => {
     closeSheet();
   }
 });
+
+/* 最後に表示した路線を初期表示 */
+(function restoreLastRoute(){
+  const lastRoute = localStorage.getItem('lastRoute');
+  if(!lastRoute) return;
+
+  const routeExists = Object.values(REGION_DATA).some(companies =>
+    companies.some(company =>
+      company.routes.some(route => route.fullName === lastRoute)
+    )
+  );
+
+  if(routeExists){
+    const pageLayer = document.getElementById('pageLayer');
+    pageLayer.src =
+      'https://minamikaze2700.github.io/Unyomatome/' +
+      encodeURIComponent(lastRoute) +
+      '.html';
+    pageLayer.style.display = 'block';
+  }
+})();
 </script>
 
 </body>
