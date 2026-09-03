@@ -110,6 +110,8 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 .train-icon:hover{transform:translateX(var(--lane-shift,0px)) scale(1.06)}
 .train-icon img{width:60px;height:auto;object-fit:contain;display:block}
 .train-no{font-size:12px;font-weight:800;color:#1b6e27;line-height:1.05}
+.train-formation{display:flex;flex-direction:column;align-items:center;justify-content:center;white-space:nowrap;}
+.train-formation > span{display:block;font:inherit;color:inherit;line-height:1.05;white-space:nowrap;}
 .train-label{
   margin-top:2px;max-width:100px;padding:3px 5px;border-radius:4px;
   background:#808080;color:#fff;font-size:12px;line-height:1.12;
@@ -214,7 +216,7 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
   width:100%;
   min-height:108px;
   display:grid;
-  grid-template-columns:68px 82px 92px minmax(0,1fr);
+  grid-template-columns:68px 82px 92px 92px minmax(0,1fr);
   align-items:center;
   column-gap:8px;
   padding:8px 12px;
@@ -244,7 +246,26 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
   font-weight:800;
   white-space:nowrap;
   text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
 }
+.station-timetable-formation-line{
+  display:block;
+  line-height:1;
+}
+.station-timetable-type{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:78px;height:34px;padding:0 10px;border-radius:7px;
+  font-family:inherit;font-size:18px;line-height:1;font-weight:700;
+  white-space:nowrap;text-align:center;box-sizing:border-box;
+  background:#808080;color:#fff;
+}
+.station-timetable-type.section-express{background:#f3b6c2;color:#111;}
+.station-timetable-type.express{background:#e91419;color:#fff;}
+.station-timetable-type.deadhead{background:#fff;color:#111;border:1px solid #bbb;}
 .station-timetable-time{
   font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
   font-size:32px;
@@ -269,6 +290,11 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
 }
 .station-timetable-destination-station{font-size:1em;line-height:1;}
 .station-timetable-destination-go{font-size:.8em;line-height:1;}
+
+.station-timetable-type.normal{background:#808080;color:#fff;}
+.station-timetable-type.b-express{background:#2e7d32;color:#fff;}
+.station-timetable-type.a-express{background:#e91419;color:#fff;}
+.station-timetable-type.deadhead{background:#fff;color:#111;border:1px solid #bbb;}
 /* 530px未満のみ、530pxを100%とした比率で全パーツを縮小 */
 @container (max-width:529px){
   .station-timetable-frame{
@@ -280,7 +306,7 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
   }
   .station-timetable-row{
     min-height:20.3773585cqw;
-    grid-template-columns:12.8301887cqw 15.4716981cqw 17.3584906cqw minmax(0,1fr);
+    grid-template-columns:12.8301887cqw 15.4716981cqw 17.3584906cqw 17.3584906cqw minmax(0,1fr);
     column-gap:1.509434cqw;
     padding:1.509434cqw 2.264151cqw;
   }
@@ -298,6 +324,10 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Kosugi",sans-serif;background
   .station-timetable-time,
   .station-timetable-destination{
     font-size:6.0377358cqw;
+  }
+  .station-timetable-type{
+    min-width:14.717cqw;height:6.415cqw;padding:0 1.887cqw;
+    border-radius:1.321cqw;font-size:3.396cqw;
   }
 }
 .station-badge:focus{outline:3px solid rgba(0,0,0,.35);outline-offset:4px;}
@@ -1281,6 +1311,26 @@ function selectionDisplayObject(id){
   const known=formationById(id);
   return known || INITIAL_FORMATION_SELECTION;
 }
+
+// 編成表示を「形式 + 編成番号」の2行に分解する。東武野田線版と同じ表示方式。
+function formationDisplayParts(id){
+  const obj=selectionDisplayObject(id);
+  if(!obj || obj.id===INITIAL_FORMATION_SELECTION.id) return [];
+  const type=String(obj.type||'').trim();
+  const name=String(obj.name||'').trim();
+  if(!name) return [];
+  if(type){
+    if(name===type) return [type];
+    if(name.startsWith(type)){
+      const element=name.slice(type.length).trim();
+      return element ? [type, element] : [type];
+    }
+    if(obj.kind==='variant') return [type, name];
+  }
+  const m=name.match(/^(.*?型)(.+)$/);
+  return m ? [m[1],m[2].trim()] : [name];
+}
+
 function prescribedFormationName(t){
   const type=String(t?.type||'');
   if(type.includes('スノーモンキー')) return '2100系';
@@ -1567,9 +1617,13 @@ function renderTrainPositions(){
 
       const t=item.t;
       const cls=trainVisualKind(t);
+      const formationParts = t.formation && t.formation!==INITIAL_FORMATION_SELECTION.id
+        ? formationDisplayParts(t.formation)
+        : [];
       el.innerHTML=`
         <span class="train-no">${t.no}</span>
         <img src="${imageForTrain(t)}" alt="${t.no}">
+        ${formationParts.length ? `<span class="train-no train-formation">${formationParts.map(x=>`<span>${String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`).join('')}</span>` : ''}
         <span class="train-label ${cls} ${getMainLabelClass(t.type)}">${trainLabelText(t)}</span>
       `;
       el.addEventListener('click',ev=>{
@@ -1581,6 +1635,7 @@ function renderTrainPositions(){
 
       const img=el.querySelector('img');
       const noEl=el.querySelector('.train-no');
+      const formationEl=el.querySelector('.train-formation');
 
       const applyFinalPosition=()=>{
         if(!img) return;
@@ -1596,8 +1651,10 @@ function renderTrainPositions(){
         const actualImageWidth=(imgRect.width/mobileZoom) || imageWidth;
         const imgHeight=(imgRect.height/mobileZoom) || actualImageWidth*((img.naturalHeight||30)/(img.naturalWidth||60));
         const noHeight=(noRect?.height/mobileZoom) || 12*uiScale*1.05;
+        const formationRect=formationEl?.getBoundingClientRect();
+        const formationHeight=(formationRect?.height/mobileZoom) || 0;
         const desiredCenterY=(rr.centerY-layerRect.top)/mobileZoom;
-        const finalTop=desiredCenterY-noHeight-imgHeight/2;
+        const finalTop=desiredCenterY-(noHeight+imgHeight+formationHeight)/2;
 
         el.style.top=`${finalTop}px`;
         el.style.left=`${trainLeft}px`;
@@ -1738,6 +1795,21 @@ function setStationTimetableDirection(direction){
   stationTimetableDirection=(direction==='down')?'down':'up';
   updateStationSheetContent();
 }
+function stationTimetableTypeText(train){
+  const type=String(train?.type||'');
+  // 種別名は列車アイコン側と同じ判定結果を使用する。
+  // これによりスノーモンキー等が列車番号・種別判定に応じて
+  // 正しくB特急として表示される。
+  const expressClass=getExpressClass(train);
+  if(expressClass==='a-express') return 'A特急';
+  if(expressClass==='b-express') return 'B特急';
+  if(type==='区間急行') return '区急';
+  if(type==='急行') return '急行';
+  if(type==='普通') return '普通';
+  if(type==='回送') return '回送';
+  return type;
+}
+
 function stationTimetableHTML(station, selectedDirection='up'){
   const stationName=String(station?.nameJa||'');
   const directionData={up:{label:'長野方面',entries:[]},down:{label:'湯田中方面',entries:[]}};
@@ -1774,12 +1846,15 @@ function stationTimetableHTML(station, selectedDirection='up'){
     let nextIndex=data.entries.findIndex(entry=>(entry.hour*60+entry.minute)>=now);
     if(nextIndex<0) nextIndex=0;
 
+    const stationTimetableFormationHTML=(train)=>{
+      const parts=formationDisplayParts(train?.formation);
+      const safeParts=parts.length ? parts : ['—'];
+      return `<span class="station-timetable-formation">${safeParts.map(x=>`<span class="station-timetable-formation-line">${escapeAttr(x)}</span>`).join('')}</span>`;
+    };
+
     const rows=data.entries.map((item,index)=>{
       const train=item.train;
       const selectedForm=selectionDisplayObject(train.formation);
-      const formationName=(selectedForm && selectedForm.id!==INITIAL_FORMATION_SELECTION.id)
-        ? selectedForm.name
-        : '—';
       const imgSrc=selectedForm?.img||'images/Nagano_noimage.png';
       const destination=`${getDetailDest(train.dest)} 行`;
       const isNext=index===nextIndex;
@@ -1793,8 +1868,9 @@ function stationTimetableHTML(station, selectedDirection='up'){
           onclick="openSheet('${escapeJs(train.no)}',true)"
         >
           <img class="station-timetable-train-img" src="${escapeAttr(imgSrc)}" alt="${escapeAttr(train.no)}">
-          <span class="station-timetable-formation">${escapeAttr(formationName)}</span>
+          ${stationTimetableFormationHTML(train)}
           <span class="station-timetable-time">${escapeAttr(item.time)}</span>
+          <span class="station-timetable-type ${escapeAttr(getExpressClass(train))}">${escapeAttr(stationTimetableTypeText(train))}</span>
           <span class="station-timetable-destination"><span class="station-timetable-destination-station">${escapeAttr(getDetailDest(train.dest))}</span><span class="station-timetable-destination-go">行</span></span>
         </button>
       `;
