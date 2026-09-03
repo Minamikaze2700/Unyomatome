@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -606,13 +605,32 @@ const TRAIN_DATA_CACHE = new Map();
 function trainCacheKey(day,no,direction=''){
   return `${day}:${String(direction||'')}:${String(no)}`;
 }
+function cloneTrainData(train){
+  return train ? {...train, stops:(train.stops||[]).map(s=>({...s}))} : null;
+}
 function baseTrainForDay(trainNo,direction=null,day=currentDay){
   const source=day==='休日' ? HOLIDAY_DOWN_TRAINS : TRAINS;
   const key=String(trainNo??'');
   const matches=source.filter(t=>String(t.no)===key);
   if(!matches.length) return null;
-  if(direction) return matches.find(t=>String(t.direction||'')===String(direction)) || null;
-  return matches[0]||null;
+  if(direction){
+    const exact=matches.find(t=>String(t.direction||'')===String(direction));
+    return cloneTrainData(exact||null);
+  }
+  return cloneTrainData(matches[0]);
+}
+function baseTrainFromEntry(entry,day=currentDay){
+  if(!entry) return null;
+  const source=day==='休日' ? HOLIDAY_DOWN_TRAINS : TRAINS;
+  const no=normalizeTrainNo(entry.no);
+  const dir=(entry.start&&entry.dest) ? inferDirectionFromStations(entry.start,entry.dest) : null;
+  const matches=source.filter(t=>String(t.no)===no && (!dir || String(t.direction||'')===dir));
+  if(!matches.length) return null;
+  if(entry.start){
+    const matched=matches.find(t=>String(t.start||'')===String(entry.start) && String(t.dest||'')===String(entry.dest));
+    if(matched) return cloneTrainData(matched);
+  }
+  return cloneTrainData(matches[0]);
 }
 function buildTimetableRows(stops){
   const rows=[];
@@ -761,39 +779,33 @@ function liveTrainCacheKey(trainNo){ return `${currentDay}:${String(trainNo)}`; 
 function refreshAllTrainDataCache(){
   LIVE_TRAIN_CACHE.clear();
   TRAIN_DATA_CACHE.clear();
-  const sourceTrains = currentDay==='休日' ? HOLIDAY_DOWN_TRAINS : TRAINS;
+  const sourceTrains = currentDay==='休日' ? HOLIDAY_DOWN_TRAINS : TRAINS.filter(t=>t.days.includes(currentDay));
   for(const t of sourceTrains){
     const key=String(t.no);
     const direction=String(t.direction||'');
-    const cached={...t, stops:(t.stops||[]).map(s=>({...s}))};
-    cached.defaultCars=prescribedFormationName(cached);
-    const effectiveFormation=Object.prototype.hasOwnProperty.call(pendingFormationState,key)
-      ? pendingFormationState[key]
-      : registrationState[key];
-    cached.formation=effectiveFormation||null;
+    const cached=cloneTrainData(t);
     const ckey=trainCacheKey(currentDay,key,direction);
     LIVE_TRAIN_CACHE.set(ckey,cached);
-    if(currentDay!=='休日') TRAIN_DATA_CACHE.set(ckey,cached);
+    TRAIN_DATA_CACHE.set(ckey,cached);
   }
 }
 function liveTrain(trainNo,direction=null){
   const key=String(trainNo??'');
   const dir=String(direction||'');
-  if(dir){
-    const cached=LIVE_TRAIN_CACHE.get(trainCacheKey(currentDay,key,dir));
-    if(cached) return cached;
-    const base=baseTrainForDay(key,dir,currentDay);
-    if(base) return base;
-  }
-  const cached=LIVE_TRAIN_CACHE.get(trainCacheKey(currentDay,key,''));
-  if(cached) return cached;
-  if(currentDay==='休日') return baseTrainForDay(key,null,currentDay);
-  return TRAIN_DATA_CACHE.get(trainCacheKey(currentDay,key,''))||baseTrainForDay(key,null,currentDay)||TRAIN_INDEX[key]||null;
+  // キャッシュを「正」とせず、必ず当日の元データから取得して編成状態だけを重ねる。
+  // これにより再描画の途中で別列車・デフォルトデータへフォールバックすることを防ぐ。
+  const base=baseTrainForDay(key,dir||null,currentDay);
+  if(!base) return null;
+  const effectiveFormation=Object.prototype.hasOwnProperty.call(pendingFormationState,key)
+    ? pendingFormationState[key]
+    : stateForTrain(registrationState,key);
+  base.formation=effectiveFormation||null;
+  return base;
 }
 function trainForCurrentDay(trainNo,direction=null){
-  const key=String(trainNo??'');
-  return liveTrain(key,direction) || baseTrainForDay(key,direction,currentDay);
+  return liveTrain(trainNo,direction) || baseTrainForDay(trainNo,direction,currentDay);
 }
+
 function refreshVisibleUI(){
   // 編成入力中は、Firebase等からの列車データ更新による再描画を停止。
   // 入力完了後のselectFormation()でまとめて最新状態を反映する。
@@ -886,7 +898,7 @@ async function preloadFirebaseState(){
 }
 
 function warmAllTrainData(){
-  for(const t of TRAINS){ TRAIN_DATA_CACHE.set(String(t.no),t); }
+  refreshAllTrainDataCache();
   prefetchTrainImages();
 }
 
@@ -1250,7 +1262,15 @@ function initSharedState(){
 }
 function getVisibleTrains(){
   const source=currentDay==='休日' ? HOLIDAY_DOWN_TRAINS : TRAINS.filter(t=>t.days.includes(currentDay));
-  return source.map(t=>liveTrain(t.no,t.direction)||t);
+  return source.map(t=>{
+    const out=cloneTrainData(t);
+    const key=String(t.no);
+    const effectiveFormation=Object.prototype.hasOwnProperty.call(pendingFormationState,key)
+      ? pendingFormationState[key]
+      : stateForTrain(registrationState,key);
+    out.formation=effectiveFormation||null;
+    return out;
+  });
 }
 function getShortType(type, trainNo=''){
   const value=String(type||'');
@@ -1833,9 +1853,7 @@ function positionForTrain(t,minutes){
     if(minutes<=last+TURNBACK_SWITCH_MIN){
       return {pos:stationIndex(lastStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'turn-arrival'};
     }
-    const nextNo=trainEntryNo(next);
-    const nextDirection=(next&&next.start&&next.dest)?(stationIndex(next.start)>stationIndex(next.dest)?'up':'down'):null;
-    const nextTrain=liveTrain(nextNo,nextDirection)||baseTrainForDay(nextNo,nextDirection,currentDay)||TRAIN_INDEX[nextNo]||null;
+    const nextTrain=baseTrainFromEntry(next,currentDay);
     const nextSide=nextTrain?(nextTrain.direction==='down'?'right':'left'): (inferDirectionFromStations(next.start,next.dest)==='down'?'right':'left');
     return {pos:stationIndex(lastStation),side:nextSide,visualTrain:nextTrain||t,mode:'turn-wait'};
   }
