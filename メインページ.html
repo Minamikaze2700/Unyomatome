@@ -474,14 +474,23 @@ function openTerms(){
 
 function syncEmbeddedPageHeight(){
   const pageLayer = document.getElementById('pageLayer');
-  if(!pageLayer) return;
+  const bottomNav = document.getElementById('bottomNav');
+  if(!pageLayer || !bottomNav) return;
 
-  // 下部メニューは42px固定
-  document.documentElement.style.setProperty('--current-nav-height', '42px');
+  // 下部メニューの「実際の上端」を取得し、
+  // iframeの下端をその位置にぴったり合わせる。
+  // 端末ごとのsafe-areaやviewport差によるズレを防ぐ。
+  const navRect = bottomNav.getBoundingClientRect();
+  const embeddedHeight = Math.max(0, navRect.top);
 
-  // 埋め込みページは下部メニューの上端まで
-  pageLayer.style.height = 'calc(100vh - 42px)';
+  document.documentElement.style.setProperty(
+    '--current-nav-height',
+    Math.max(0, window.innerHeight - navRect.top) + 'px'
+  );
+
   pageLayer.style.top = '0px';
+  pageLayer.style.bottom = 'auto';
+  pageLayer.style.height = embeddedHeight + 'px';
 }
 
 function openRoute(fullRouteName){
@@ -517,6 +526,11 @@ function closeSheet(){
 }
 
 window.addEventListener('resize', syncEmbeddedPageHeight);
+
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize', syncEmbeddedPageHeight);
+  window.visualViewport.addEventListener('scroll', syncEmbeddedPageHeight);
+}
 
 document.addEventListener('keydown', event => {
   if(event.key === 'Escape'){
