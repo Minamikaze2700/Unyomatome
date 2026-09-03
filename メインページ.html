@@ -224,6 +224,23 @@ html,body{
 
 .route-button:active{background:#e5e5e5}
 
+.route-button.upcoming{
+  background:#f3f3f3;
+  color:#888;
+  cursor:not-allowed;
+}
+.route-button.upcoming:hover,
+.route-button.upcoming:focus-visible{
+  background:#f3f3f3;
+  border-color:#d0d0d0;
+  outline:none;
+}
+
+
+/* 近日公開予定ツールチップ */
+.upcoming-tooltip{position:fixed;z-index:1000;display:none;padding:7px 11px;background:#333;color:#fff;border-radius:6px;font-size:14px;line-height:1.2;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.25);pointer-events:none}
+.upcoming-tooltip.show{display:block}
+
 /* 内容が存在しない地域は本当に要素を増やさない */
 .empty-sheet{
   display:none;
@@ -291,6 +308,8 @@ html,body{
   </nav>
 </div>
 
+<div id="upcomingTooltip" class="upcoming-tooltip">近日公開予定</div>
+
 <script>
 'use strict';
 
@@ -311,7 +330,23 @@ const REGION_DATA = {
     {
       company: '東武鉄道',
       routes: [
-        { name: '野田線', fullName: '東武野田線' }
+        { name: '野田線', fullName: '東武野田線' },
+        { name: '伊勢崎線', upcoming: true },
+        { name: '大師線', upcoming: true },
+        { name: '亀戸線', upcoming: true }
+      ]
+    },
+    {
+      company: '東京メトロ',
+      routes: [
+        { name: '日比谷線', upcoming: true },
+        { name: '半蔵門線', upcoming: true }
+      ]
+    },
+    {
+      company: '東急',
+      routes: [
+        { name: '田園都市線', upcoming: true }
       ]
     }
   ],
@@ -325,11 +360,45 @@ const REGION_DATA = {
     }
   ],
   '東海': [],
-  '近畿': [],
+  '近畿': [
+    {
+      company: '近畿日本鉄道',
+      routes: [
+        { name: '大阪線', upcoming: true },
+        { name: '奈良線・難波線', upcoming: true },
+        { name: '山田線・鳥羽線・志摩線', upcoming: true }
+      ]
+    },
+    {
+      company: '阪神電気鉄道',
+      routes: [
+        { name: '本線', upcoming: true },
+        { name: 'なんば線', upcoming: true }
+      ]
+    }
+  ],
   '中国': [],
   '四国': [],
   '九州': []
 };
+
+function showUpcomingTooltip(clientX, clientY){
+  const tooltip=document.getElementById('upcomingTooltip');
+  if(!tooltip) return;
+  tooltip.classList.add('show');
+  const margin=12;
+  const rect=tooltip.getBoundingClientRect();
+  let left=clientX+margin;
+  let top=clientY+margin;
+  if(left+rect.width>window.innerWidth-4) left=clientX-rect.width-margin;
+  if(top+rect.height>window.innerHeight-4) top=clientY-rect.height-margin;
+  tooltip.style.left=Math.max(4,left)+'px';
+  tooltip.style.top=Math.max(4,top)+'px';
+}
+function hideUpcomingTooltip(){
+  const tooltip=document.getElementById('upcomingTooltip');
+  if(tooltip) tooltip.classList.remove('show');
+}
 
 function getSheetElements(){
   return {
@@ -366,7 +435,17 @@ function openRegion(region){
       button.type = 'button';
       button.className = 'route-button';
       button.textContent = route.name;
-      button.addEventListener('click', () => openRoute(route.fullName));
+
+      if(route.upcoming){
+        button.classList.add('upcoming');
+        button.setAttribute('aria-label', route.name + '（近日公開予定）');
+        button.addEventListener('mouseenter', (event) => showUpcomingTooltip(event.clientX, event.clientY));
+        button.addEventListener('mousemove', (event) => showUpcomingTooltip(event.clientX, event.clientY));
+        button.addEventListener('mouseleave', hideUpcomingTooltip);
+        button.addEventListener('click', (event) => showUpcomingTooltip(event.clientX, event.clientY));
+      }else{
+        button.addEventListener('click', () => openRoute(route.fullName));
+      }
       list.appendChild(button);
     });
 
@@ -434,6 +513,7 @@ function closeSheet(){
   overlay.style.display = 'none';
   sheet.classList.remove('active');
   sheet.setAttribute('aria-hidden', 'true');
+  hideUpcomingTooltip();
 }
 
 window.addEventListener('resize', syncEmbeddedPageHeight);
