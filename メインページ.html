@@ -6,7 +6,8 @@
 <title>運用まとめ - メインページ</title>
 <style>
 :root{
-  --nav-height:72px;
+  --nav-height:42px;
+  --current-nav-height:42px;
   --sheet:#fff;
   --header:#9e9e9e;
   --overlay:rgba(0,0,0,.4);
@@ -28,9 +29,10 @@ html,body{
 /* 一番奥のレイヤー：路線ページ */
 #pageLayer{
   position:fixed;
-  inset:0;
+  top:0;
+  left:0;
   width:100%;
-  height:100%;
+  height:calc(100vh - 42px);
   border:0;
   z-index:0;
   background:#fff;
@@ -52,9 +54,9 @@ html,body{
   right:0;
   bottom:0;
   z-index:120;
-  height:var(--nav-height);
+  height:42px;
   background:#bdbdbd;
-  border-radius:16px 16px 0 0;
+  border-radius:12px 12px 0 0;
   box-shadow:0 -3px 10px rgba(0,0,0,.16);
   display:flex;
   align-items:stretch;
@@ -64,6 +66,17 @@ html,body{
   overflow-y:hidden;
   scrollbar-width:none;
   -webkit-overflow-scrolling:touch;
+}
+
+#bottomNav.compact{
+  height:42px;
+  border-radius:12px 12px 0 0;
+}
+
+#bottomNav.compact .nav-button{
+  min-width:58px;
+  font-size:.78rem;
+  padding:0 4px;
 }
 
 #bottomNav::-webkit-scrollbar{display:none}
@@ -125,9 +138,7 @@ html,body{
   pointer-events:auto;
 }
 
-.bottom-sheet.active{
-  bottom:var(--nav-height);
-}
+.bottom-sheet.active{bottom:0}
 
 .sheet-header{
   position:sticky;
@@ -165,7 +176,7 @@ html,body{
 }
 
 .sheet-content{
-  padding:16px;
+  padding:16px 16px 58px;
   position:relative;
   overflow:hidden;
   min-height:0;
@@ -384,6 +395,18 @@ function openTerms(){
   sheet.setAttribute('aria-hidden', 'false');
 }
 
+function syncEmbeddedPageHeight(){
+  const pageLayer = document.getElementById('pageLayer');
+  if(!pageLayer) return;
+
+  // 下部メニューは42px固定
+  document.documentElement.style.setProperty('--current-nav-height', '42px');
+
+  // 埋め込みページは下部メニューの上端まで
+  pageLayer.style.height = 'calc(100vh - 42px)';
+  pageLayer.style.top = '0px';
+}
+
 function openRoute(fullRouteName){
   const pageLayer = document.getElementById('pageLayer');
 
@@ -397,8 +420,12 @@ function openRoute(fullRouteName){
     encodedName +
     '.html';
 
-  // iframeは常に最背面。sheetを閉じれば路線ページが全面に出る。
+  // iframeは常に最背面。路線ページが表示されたら下部メニューを小さくする。
+  const bottomNav = document.getElementById('bottomNav');
+  bottomNav.classList.add('compact');
+  document.documentElement.style.setProperty('--current-nav-height', '42px');
   pageLayer.style.display = 'block';
+  syncEmbeddedPageHeight();
 
   closeSheet();
 }
@@ -410,6 +437,8 @@ function closeSheet(){
   sheet.classList.remove('active');
   sheet.setAttribute('aria-hidden', 'true');
 }
+
+window.addEventListener('resize', syncEmbeddedPageHeight);
 
 document.addEventListener('keydown', event => {
   if(event.key === 'Escape'){
@@ -434,7 +463,11 @@ document.addEventListener('keydown', event => {
       'https://minamikaze2700.github.io/Unyomatome/' +
       encodeURIComponent(lastRoute) +
       '.html';
+    const bottomNav = document.getElementById('bottomNav');
+    bottomNav.classList.add('compact');
+    document.documentElement.style.setProperty('--current-nav-height', '42px');
     pageLayer.style.display = 'block';
+    syncEmbeddedPageHeight();
   }
 })();
 </script>
