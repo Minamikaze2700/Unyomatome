@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -581,8 +582,8 @@ let currentStationId=null;
 let previousSheetContext=null;
 let isEditMode=false;
 let stationTimetableDirection='up';
-let selectedDateKey=todayKey(new Date());
-let currentDay=getScheduleDayForDate(new Date());
+let selectedDateKey=operationDateKey();
+let currentDay=getScheduleDayForDate(new Date(`${selectedDateKey}T00:00:00`));
 let followNow=true;
 let registrationState={};
 let operationHistory=[];
@@ -1026,6 +1027,11 @@ function snapshotFromStateRoot(oldRoot,dateKey){
 
 async function maybeResetForNewOperationDay(remoteCheck=false){
   const opDate=operationDateKey();
+  // 「現在時刻」モードでは、3:00を跨いだ時点で表示日付も新しい運用日に切り替える。
+  if(followNow && selectedDateKey!==opDate){
+    setSelectedDate(opDate);
+  }
+  if(!followNow && isHistoricalSelectedDate(selectedDateKey)) return;
   if(!currentOperationDate) currentOperationDate=remoteRoot.operationDate||opDate;
 
   if(firebaseReady){
@@ -1224,12 +1230,12 @@ function getScheduleDayForDate(dateObj){
   return (weekend||isJapaneseHoliday(d))?'休日':'平日';
 }
 function isHistoricalSelectedDate(dateKey){
-  const today=todayKey(new Date());
-  return String(dateKey||'') < today;
+  const currentOperationDate=operationDateKey();
+  return String(dateKey||'') < currentOperationDate;
 }
 function isNonCurrentSelectedDate(dateKey){
-  const today=todayKey(new Date());
-  return String(dateKey||'') !== today;
+  const currentOperationDate=operationDateKey();
+  return String(dateKey||'') !== currentOperationDate;
 }
 function historicalStateForDate(dateKey){
   const root=remoteRoot.history||{};
@@ -1364,14 +1370,14 @@ function currentMinutes(){
 }
 function setNowTime(){
   followNow=true;
-  // 「現在時刻」ボタンを押したときだけ、日付も今日へ戻す。
+  // 現在時刻の「日付」は3:00を境とする運用日で扱う。
   const now=new Date();
-  const today=todayKey(now);
+  const operationDate=operationDateKey(now);
   const dateInput=document.getElementById('dateInput');
-  const dateChanged=selectedDateKey!==today;
-  if(dateInput) dateInput.value=today;
+  const dateChanged=selectedDateKey!==operationDate;
+  if(dateInput) dateInput.value=operationDate;
   if(dateChanged){
-    setSelectedDate(today);
+    setSelectedDate(operationDate);
   }
   const input=document.getElementById('timeInput');
   if(input) input.value=formatTimeNow();
