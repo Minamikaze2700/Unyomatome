@@ -163,6 +163,30 @@ html,body{
   background-clip:content-box;
 }
 
+/* スクロールバー上下の矢印を表示 */
+.sheet-scroll::-webkit-scrollbar-button{
+  display:block;
+  height:16px;
+  width:12px;
+  background:#888;
+}
+
+.sheet-scroll::-webkit-scrollbar-button:vertical:decrement{
+  background:
+    linear-gradient(135deg, transparent 50%, #fff 50%) 3px 7px / 6px 6px no-repeat,
+    linear-gradient(45deg, transparent 50%, #fff 50%) 3px 4px / 6px 6px no-repeat,
+    #888;
+  border-radius:6px 6px 0 0;
+}
+
+.sheet-scroll::-webkit-scrollbar-button:vertical:increment{
+  background:
+    linear-gradient(45deg, transparent 50%, #fff 50%) 3px 6px / 6px 6px no-repeat,
+    linear-gradient(135deg, transparent 50%, #fff 50%) 3px 9px / 6px 6px no-repeat,
+    #888;
+  border-radius:0 0 6px 6px;
+}
+
 .bottom-sheet.active{bottom:0}
 
 .sheet-header{
