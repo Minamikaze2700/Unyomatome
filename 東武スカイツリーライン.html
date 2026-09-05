@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -10,16 +11,16 @@
 html,body{width:100%;max-width:100%;min-width:0;margin:0;padding:0}
 body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
 #viewportCanvas{width:100%;min-height:100vh}
-#title{height:58px;color:#fff;font-weight:500;display:flex;background:#0055b8;position:fixed;top:0;left:0;right:0;justify-content:center;align-items:center;gap:12px;border-bottom:8px solid #ff9941;z-index:100;font-size:31px;letter-spacing:.03em}
+#title{height:58px;color:#fff;font-weight:500;display:flex;background:#0055b8;position:fixed;width:100%;justify-content:center;align-items:center;gap:12px;border-bottom:8px solid #ff9941;z-index:100;font-size:31px;letter-spacing:.03em}
 .title-logo{width:42px;height:42px;object-fit:contain;display:block;flex:0 0 auto}
 .line-container{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;padding-top:58px;min-height:100vh}
 .station-row{position:relative;z-index:2;width:100%;height:var(--row-height);min-height:var(--row-height);margin:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px}
 .station-row::before{content:'';position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:12px;background:linear-gradient(to bottom,var(--line-top,#0F6CC3) 0 50%,var(--line-bottom,#0F6CC3) 50% 100%);z-index:1;pointer-events:none}
 .station-row.cut-above::before{background:linear-gradient(to bottom,transparent 0 50%,var(--line-bottom,#0F6CC3) 50% 100%)}
 .station-row.cut-below::before{background:linear-gradient(to bottom,var(--line-top,#0F6CC3) 0 50%,transparent 50% 100%)}
-.station-row.fade-down::before{background:linear-gradient(to bottom,var(--line-top,#0F6CC3) 0 50%,var(--line-bottom-fade,#0F6CC3) 50%,transparent 100%)}
-.station-row.wado-nikko-insert::before{background:linear-gradient(to bottom,var(--line-top,#0F6CC3) 0 18%,var(--line-top,#0F6CC3) 18% 34%,rgba(228,0,43,.72) 50%,rgba(228,0,43,.28) 70%,transparent 100%) !important;}
-.station-row.fade-up::before{background:linear-gradient(to bottom,transparent 0,var(--line-top-fade,#0F6CC3) 48%,var(--line-bottom,#0F6CC3) 50% 100%)}
+.station-row.fade-down::before{background:linear-gradient(to bottom,var(--line-top,#0F6CC3) 0 63.3333%,var(--line-bottom-fade,#0F6CC3) 63.3333%,transparent 100%)}
+.station-row.wado-nikko-insert::before{background:linear-gradient(to bottom,var(--line-top,#0F6CC3) 0 63.3333%,rgba(228,0,43,.72) 63.3333%,rgba(228,0,43,.28) 81.6667%,transparent 100%) !important;}
+.station-row.fade-up::before{background:linear-gradient(to bottom,transparent 0,var(--line-top-fade,#0F6CC3) 36.6667%,var(--line-bottom,#0F6CC3) 36.6667% 100%)}
 .station-row.no-line::before{display:none}
 .station-badge{--station-color:var(--primary);position:relative;width:384px;min-width:384px;height:72px;background:var(--station-color);border:0;overflow:hidden;box-shadow:0 7px 14px rgba(0,0,0,.26);padding:4px 8px;cursor:pointer;z-index:4}
 .station-badge::before{content:'';position:absolute;inset:4px 8px;z-index:0;background:#fff;clip-path:polygon(6% 0,100% 0,94% 100%,0 100%)}
@@ -72,7 +73,7 @@ const COLORS={
 
 const ROUTES={
   main:{color:COLORS.sky,stations:[
-    ['久喜','Kuki'],['和戸','Wado'],['東武動物公園','Tobu-dobutsu-koen'],['姫宮','Himemiya'],['北春日部','Kita-kasukabe'],['春日部','Kasukabe'],['一ノ割','Ichinowari'],['武里','Takesato'],['せんげん台','Sengendai'],['大袋','Obukuro'],['北越谷','Kita-koshigaya'],['越谷','Koshigaya'],['新越谷','Shin-koshigaya'],['蒲生','Gamo'],['新田','Shinden'],['獨協大学前','Dokkyodaigaku-mae'],['草加','Soka'],['谷塚','Yatsuka'],['竹ノ塚','Takenotsuka'],['西新井','Nishiarai'],['梅島','Umejima'],['五反野','Gotanno'],['小菅','Kosuge'],['北千住','Kita-senju'],['牛田','Ushida'],['堀切','Horikiri'],['鐘ヶ淵','Kanegafuchi'],['東向島','Higashi-mukojima'],['曳舟','Hikifune'],['とうきょうｽｶｲﾂﾘｰ','Tokyo Skytree'],['浅草','Asakusa']
+    ['館林','Tatebayashi'],['茂林寺前','Morinji-mae'],['川俣','Kawamata'],['羽生','Hanyu'],['南羽生','Minami-hanyu'],['加須','Kazo'],['花崎','Hanasaki'],['鷲宮','Washinomiya'],['久喜','Kuki'],['和戸','Wado'],['東武動物公園','Tobu-dobutsu-koen'],['姫宮','Himemiya'],['北春日部','Kita-kasukabe'],['春日部','Kasukabe'],['一ノ割','Ichinowari'],['武里','Takesato'],['せんげん台','Sengendai'],['大袋','Obukuro'],['北越谷','Kita-koshigaya'],['越谷','Koshigaya'],['新越谷','Shin-koshigaya'],['蒲生','Gamo'],['新田','Shinden'],['獨協大学前','Dokkyodaigaku-mae'],['草加','Soka'],['谷塚','Yatsuka'],['竹ノ塚','Takenotsuka'],['西新井','Nishiarai'],['梅島','Umejima'],['五反野','Gotanno'],['小菅','Kosuge'],['北千住','Kita-senju'],['牛田','Ushida'],['堀切','Horikiri'],['鐘ヶ淵','Kanegafuchi'],['東向島','Higashi-mukojima'],['曳舟','Hikifune'],['とうきょうｽｶｲﾂﾘｰ','Tokyo Skytree'],['浅草','Asakusa']
   ]},
   hibiya:{color:COLORS.hibiya,stations:[
     ['北千住','Kita-senju'],['南千住','Minami-senju'],['三ノ輪','Minowa'],['入谷','Iriya'],['上野','Ueno'],['仲御徒町','Naka-okachimachi'],['秋葉原','Akihabara'],['小伝馬町','Kodemmacho'],['人形町','Ningyocho'],['茅場町','Kayabacho'],['八丁堀','Hatchobori'],['築地','Tsukiji'],['東銀座','Higashi-ginza'],['銀座','Ginza'],['日比谷','Hibiya'],['霞ケ関','Kasumigaseki'],['虎ノ門ヒルズ','Toranomon Hills'],['神谷町','Kamiyacho'],['六本木','Roppongi'],['広尾','Hiro-o'],['恵比寿','Ebisu'],['中目黒','Naka-meguro']
