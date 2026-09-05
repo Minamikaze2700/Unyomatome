@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>運用まとめ - 東武スカイツリーライン</title>
+<style>
+:root{--primary:#0F6CC3;--primary-dark:#0b58a2;--bg:#fff;--sheet:#e8e8e8;--text:#111;--row-height:270px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;max-width:100%;min-width:0;margin:0;padding:0}
+body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+#viewportCanvas{width:100%;min-height:100vh}
+#title{height:58px;color:#fff;font-weight:500;display:flex;background:#0055b8;position:fixed;top:0;left:0;right:0;justify-content:center;align-items:center;gap:12px;border-bottom:8px solid #ff9941;z-index:100;font-size:31px;letter-spacing:.03em}
+.title-logo{width:42px;height:42px;object-fit:contain;display:block;flex:0 0 auto}
+.line-container{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;padding-top:58px;min-height:100vh}
+.station-row{position:relative;z-index:2;width:100%;height:var(--row-height);min-height:var(--row-height);margin:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px}
+.station-row::before{content:'';position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:12px;background:linear-gradient(to bottom,var(--line-top,#0F6CC3) 0 50%,var(--line-bottom,#0F6CC3) 50% 100%);z-index:1;pointer-events:none}
+.station-row.cut-above::before{background:linear-gradient(to bottom,transparent 0 50%,var(--line-bottom,#0F6CC3) 50% 100%)}
+.station-row.cut-below::before{background:linear-gradient(to bottom,var(--line-top,#0F6CC3) 0 50%,transparent 50% 100%)}
+.station-row.fade-down::before{background:linear-gradient(to bottom,var(--line-top,#0F6CC3) 0 50%,var(--line-bottom-fade,#0F6CC3) 50%,transparent 100%)}
+.station-row.wado-nikko-insert::before{background:linear-gradient(to bottom,var(--line-top,#0F6CC3) 0 18%,var(--line-top,#0F6CC3) 18% 34%,rgba(228,0,43,.72) 50%,rgba(228,0,43,.28) 70%,transparent 100%) !important;}
+.station-row.fade-up::before{background:linear-gradient(to bottom,transparent 0,var(--line-top-fade,#0F6CC3) 48%,var(--line-bottom,#0F6CC3) 50% 100%)}
+.station-row.no-line::before{display:none}
+.station-badge{--station-color:var(--primary);position:relative;width:384px;min-width:384px;height:72px;background:var(--station-color);border:0;overflow:hidden;box-shadow:0 7px 14px rgba(0,0,0,.26);padding:4px 8px;cursor:pointer;z-index:4}
+.station-badge::before{content:'';position:absolute;inset:4px 8px;z-index:0;background:#fff;clip-path:polygon(6% 0,100% 0,94% 100%,0 100%)}
+.station-name-ja,.station-name-en{position:relative;z-index:1;background:transparent;color:#000}
+.station-name-ja{height:61%;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:400;line-height:1}
+.station-name-en{height:33%;display:flex;align-items:center;justify-content:center;font-size:15.2px;font-weight:400;line-height:1}
+.connection-buttons{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;max-width:860px;z-index:7}
+.connection-button{appearance:none;border:2px solid var(--button-color);border-radius:7px;padding:8px 18px;background:#fff;color:var(--button-color);box-shadow:0 2px 7px rgba(0,0,0,.20);font:700 15px/1.2 sans-serif;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-width:150px;transition:filter .12s,transform .12s,background .12s,color .12s}
+.connection-button:hover{filter:brightness(.96);transform:translateY(-1px)}
+.connection-button.active{background:var(--button-color);color:#fff}
+.connection-top{margin-bottom:22px}.connection-bottom{margin-top:22px}
+
+/* 元ファイルの駅情報・時刻表シートを踏襲 */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:none}
+.bottom-sheet{position:fixed;left:0;right:0;bottom:-100%;z-index:201;max-width:620px;margin:0 auto;max-height:75vh;min-height:0;overflow-y:auto;background:var(--sheet);border-radius:16px 16px 0 0;box-shadow:0 -4px 12px rgba(0,0,0,.18);transition:bottom .3s ease-out}
+.bottom-sheet.active{bottom:0}
+.sheet-header{position:sticky;top:0;z-index:2;background:#9e9e9e;color:#fff;padding:11px 16px;display:flex;justify-content:space-between;align-items:center;font-weight:700;border-radius:16px 16px 0 0}
+.sheet-header-left{display:flex;align-items:center;gap:10px;min-width:0}.close-btn{cursor:pointer;font-size:1.2rem}.sheet-content{padding:16px;position:relative;overflow:hidden;min-height:0}
+.station-overview-card{position:relative;background:#fff;border-radius:10px;overflow:hidden;margin-bottom:16px;border:2px solid transparent;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.station-overview-main{text-align:center;padding:8px 10px 9px;background:#fff}.station-overview-name-ja{font-family:inherit;font-size:52px;line-height:.95;font-weight:500;letter-spacing:.08em;padding-left:.08em;color:#000}.station-overview-name-en{font-family:inherit;font-size:29px;line-height:1.02;font-weight:500;letter-spacing:.015em;color:#000;margin-top:2px}
+.station-direction-bar-wrap{width:100%}.station-direction-bar{width:100%;height:18px;background:linear-gradient(to right,var(--bar-left,var(--primary)) 0 50%,var(--bar-right,var(--primary)) 50% 100%);clip-path:polygon(3% 0,97% 0,100% 100%,0 100%);display:block}
+.station-direction-bar.split{background:linear-gradient(to right,var(--bar-left,#0F6CC3) 0 50%,var(--bar-right,#0F6CC3) 50% 100%)}.station-direction-bar.no-prev{clip-path:polygon(0 0,97% 0,100% 100%,0 100%)}.station-direction-bar.no-next{clip-path:polygon(3% 0,100% 0,100% 100%,0 100%)}.station-direction-bar.no-prev.no-next{clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
+.station-neighbor-row{display:flex;width:100%;min-height:54px;background:#fff}.station-neighbor{width:50%;display:flex;flex-direction:column;justify-content:flex-start;padding:2px 8px 8px;min-width:0}.station-neighbor.left{text-align:left;align-items:flex-start}.station-neighbor.right{text-align:right;align-items:flex-end}.station-neighbor-name-ja{font-family:inherit;font-size:27px;line-height:1.05;font-weight:400;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.station-neighbor-name-en{font-family:inherit;font-size:14px;line-height:1.1;font-weight:500;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;margin-top:1px}.station-neighbor.empty{visibility:hidden}
+.timetable-list{background:#fff;border-radius:8px;padding:12px 20px;margin-top:12px}.station-timetable-title{font-family:inherit;font-size:1.35rem;font-weight:700;text-align:left;padding:8px 0 10px}.station-timetable-direction-tabs{display:flex;gap:8px;margin:0 0 12px;justify-content:flex-start}.station-timetable-direction-tab{flex:0 0 50%;border:2px solid var(--primary);border-radius:6px;background:#fff;color:var(--primary);font-family:inherit;font-size:1rem;font-weight:700;padding:10px 8px;cursor:pointer}.station-timetable-direction-tab.active{background:var(--primary);color:#fff}.station-timetable-direction-tab:hover{background:#fff1f1}.station-timetable-direction-tab.active:hover{background:var(--primary-dark)}
+.station-timetable-frame{position:relative;margin-top:4px;height:53vh;background:#fff;border:3px solid #000;border-radius:11px;overflow:hidden;box-sizing:border-box}.station-timetable-wrap{position:relative;container-type:inline-size;margin-top:0;background:#fff;border:0;border-radius:0;overflow-y:auto;overflow-x:hidden;height:100%;scroll-behavior:auto;box-sizing:border-box}.station-timetable-empty{padding:24px 18px;text-align:center;font-family:inherit;color:#555}.station-timetable-row{width:100%;min-height:108px;display:grid;grid-template-columns:68px 82px 92px 92px minmax(0,1fr);align-items:center;column-gap:8px;padding:8px 12px;border:0;color:#000;text-align:left;cursor:pointer;font-family:inherit}.station-timetable-row:nth-child(odd){background:#fff}.station-timetable-row:nth-child(even){background:#cfcfcf}.station-timetable-row:hover{filter:brightness(.97)}.station-timetable-train-img{width:68px;height:86px;object-fit:contain;display:block;justify-self:center;background:transparent}.station-timetable-formation{color:#1b6e27;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:24px;line-height:1;font-weight:800;white-space:nowrap;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}.station-timetable-type{display:inline-flex;align-items:center;justify-content:center;min-width:78px;height:34px;padding:0 10px;border-radius:7px;font-family:inherit;font-size:18px;line-height:1;font-weight:700;white-space:nowrap;text-align:center;box-sizing:border-box;background:#808080;color:#fff}.station-timetable-time{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:32px;line-height:1;font-weight:800;white-space:nowrap;text-align:center;letter-spacing:.01em}.station-timetable-destination{font-family:inherit;font-size:32px;line-height:1;font-weight:500;white-space:nowrap;text-align:left;display:flex;align-items:flex-end;justify-content:flex-start;gap:.18em;height:1em}.station-timetable-type.express{background:#e5007f;color:#fff}.station-timetable-type.section-express{background:#f3b6c2;color:#111}.station-timetable-type.deadhead{background:#fff;color:#111;border:1px solid #bbb}
+.train-card{position:relative;background:#fff;border-radius:8px;padding:0;display:flex;align-items:center;gap:12px;margin-bottom:0;cursor:pointer;border:2px solid transparent}.train-card-img{width:75px;height:auto;object-fit:contain}.train-info-main{flex:1}.type-badge{background:#616161;color:#fff;padding:3px 8px;border-radius:4px;font-size:.78rem;display:inline-block}.type-badge.express{background:#e83e8c}.type-badge.section-express{background:#ffb6c1}.train-title{font-size:.95rem;font-weight:700;margin-left:6px}.train-number{color:#1b6e27;font-weight:800;float:right;margin-right:15px}.formation-id{font-size:1.2rem;font-weight:800;color:#1b6e27;margin-top:4px}.capacity-info{color:#666;font-size:.85rem;margin-top:4px}
+@container (max-width:529px){.station-timetable-frame{border-width:.5660377cqw;border-radius:2.0754717cqw}.station-timetable-empty{padding:4.5283019cqw 3.3962264cqw}.station-timetable-row{min-height:20.3773585cqw;grid-template-columns:12.8301887cqw 15.4716981cqw 17.3584906cqw 17.3584906cqw minmax(0,1fr);column-gap:1.509434cqw;padding:1.509434cqw 2.264151cqw}.station-timetable-train-img{width:12.8301887cqw;height:16.2264151cqw}.station-timetable-formation{font-size:4.5283019cqw}.station-timetable-time,.station-timetable-destination{font-size:6.0377358cqw}.station-timetable-type{min-width:14.717cqw;height:6.415cqw;padding:0 1.887cqw;border-radius:1.321cqw;font-size:3.396cqw}}
+@media(max-width:959.98px){html,body{width:100%;min-width:0;max-width:100%;overflow-x:hidden}#viewportCanvas{width:1920px;min-width:1920px;max-width:none;margin-left:-480px;zoom:calc(100vw / 960px)}#viewportCanvas #title,#viewportCanvas .line-container{width:1920px;max-width:none;min-width:0}}
+</style>
+</head>
+<body>
+<div id="viewportCanvas">
+<h1 id="title"><img class="title-logo" src="https://static.tobuspapp.jp/html/operation_tobupo/img/xxxhdpi/pos_icon_skytreeline.png" alt="TS"><span>東武スカイツリーライン</span></h1>
+<div class="line-container" id="lineContainer"></div>
+</div>
+<div class="overlay" id="overlay"></div>
+<div class="bottom-sheet" id="bottomSheet">
+  <div class="sheet-header"><div class="sheet-header-left"><span>駅情報</span></div><span class="close-btn" id="closeBtn">✖</span></div>
+  <div class="sheet-content" id="sheetContent"></div>
+</div>
+<script>
+const COLORS={
+  isesaki:'#E4002B',
+  sky:'#0F6CC3',
+  nikko:'#FFA600',
+  hibiya:'#B5B5AC',
+  hanzomon:'#8F76D6',
+  denentoshi:'#00B395'
+};
+
+const ROUTES={
+  main:{color:COLORS.sky,stations:[
+    ['久喜','Kuki'],['和戸','Wado'],['東武動物公園','Tobu-dobutsu-koen'],['姫宮','Himemiya'],['北春日部','Kita-kasukabe'],['春日部','Kasukabe'],['一ノ割','Ichinowari'],['武里','Takesato'],['せんげん台','Sengendai'],['大袋','Obukuro'],['北越谷','Kita-koshigaya'],['越谷','Koshigaya'],['新越谷','Shin-koshigaya'],['蒲生','Gamo'],['新田','Shinden'],['獨協大学前','Dokkyodaigaku-mae'],['草加','Soka'],['谷塚','Yatsuka'],['竹ノ塚','Takenotsuka'],['西新井','Nishiarai'],['梅島','Umejima'],['五反野','Gotanno'],['小菅','Kosuge'],['北千住','Kita-senju'],['牛田','Ushida'],['堀切','Horikiri'],['鐘ヶ淵','Kanegafuchi'],['東向島','Higashi-mukojima'],['曳舟','Hikifune'],['とうきょうｽｶｲﾂﾘｰ','Tokyo Skytree'],['浅草','Asakusa']
+  ]},
+  hibiya:{color:COLORS.hibiya,stations:[
+    ['北千住','Kita-senju'],['南千住','Minami-senju'],['三ノ輪','Minowa'],['入谷','Iriya'],['上野','Ueno'],['仲御徒町','Naka-okachimachi'],['秋葉原','Akihabara'],['小伝馬町','Kodemmacho'],['人形町','Ningyocho'],['茅場町','Kayabacho'],['八丁堀','Hatchobori'],['築地','Tsukiji'],['東銀座','Higashi-ginza'],['銀座','Ginza'],['日比谷','Hibiya'],['霞ケ関','Kasumigaseki'],['虎ノ門ヒルズ','Toranomon Hills'],['神谷町','Kamiyacho'],['六本木','Roppongi'],['広尾','Hiro-o'],['恵比寿','Ebisu'],['中目黒','Naka-meguro']
+  ]},
+  hanzomon:{color:COLORS.hanzomon,stations:[
+    ['押上','Oshiage'],['錦糸町','Kinshicho'],['住吉','Sumiyoshi'],['清澄白河','Kiyosumi-shirakawa'],['水天宮前','Suitengumae'],['三越前','Mitsukoshimae'],['大手町','Otemachi'],['神保町','Jimbocho'],['九段下','Kudanshita'],['半蔵門','Hanzomon'],['永田町','Nagatacho'],['青山一丁目','Aoyama-itchome'],['表参道','Omote-sando'],['渋谷','Shibuya']
+  ]},
+  denentoshi:{color:COLORS.denentoshi,stations:[
+    ['渋谷','Shibuya'],['池尻大橋','Ikejiri-ohashi'],['三軒茶屋','Sangen-jaya'],['駒沢大学','Komazawa-daigaku'],['桜新町','Sakura-shinmachi'],['用賀','Yoga'],['二子玉川','Futako-tamagawa'],['二子新地','Futako-shinchi'],['高津','Takatsu'],['溝の口','Mizonokuchi'],['梶が谷','Kajigaya'],['宮崎台','Miyazakidai'],['宮前平','Miyamaedaira'],['鷺沼','Saginuma'],['たまプラーザ','Tama-plaza'],['あざみ野','Azamino'],['江田','Eda'],['市が尾','Ichigao'],['藤が丘','Fujigaoka'],['青葉台','Aobadai'],['田奈','Tana'],['長津田','Nagatsuta'],['つくし野','Tsukushino'],['すずかけ台','Suzukakedai'],['南町田ｸﾞﾗﾝﾍﾞﾘｰﾊﾟｰｸ','Minami-machida Grandberry Park'],['つきみ野','Tsukimino'],['中央林間','Chuo-rinkan']
+  ]},
+  nikko:{color:COLORS.nikko,stations:[
+    ['南栗橋','Minami-kurihashi'],['幸手','Satte'],['杉戸高野台','Sugitotakanodai'],['東武動物公園','Tobu-dobutsu-koen']
+  ]}
+};
+
+/* 時刻表を後から追加できるよう、元ファイルと同じ基本データ構造を用意。初期状態では空。 */
+const TRAINS=[];
+const FORMATIONS=[];
+let visibleRoute='main';
+let activeBranches=new Set();
+let stationTimetableDirection='up';
+let currentStationId=null;
+let currentStationRoute='main';
+
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function stationId(routeKey,station){return routeKey+'::'+station[0];}
+function lineColorFor(routeKey){return ROUTES[routeKey]?.color||COLORS.sky}
+function stationById(id){
+  const [routeKey,name]=String(id).split('::');
+  const route=ROUTES[routeKey];
+  if(!route)return null;
+  const st=route.stations.find(x=>x[0]===name);
+  return st?{routeKey,st}:null;
+}
+
+function stationBadge(st,routeKey,optStationColor=null){
+ if(!st || !st[0]) return document.createElement('div');
+ const badge=document.createElement('div');
+ const color=lineColorFor(routeKey);
+ badge.className='station-badge'; badge.tabIndex=0; badge.setAttribute('role','button'); badge.style.setProperty('--station-color',optStationColor||color);
+ badge.innerHTML='<div class="station-name-ja"></div><div class="station-name-en"></div>';
+ const ja=badge.querySelector('.station-name-ja'); ja.textContent=st[0];
+ badge.querySelector('.station-name-en').textContent=st[1];
+ /* 元ファイルの文字間隔調整をそのまま使用 */
+ const len=[...st[0].trim()].length;
+ let ls='0'; if(len<=2)ls='.9em'; else if(len===3)ls='.3em'; else if(len===4)ls='.0em'; else if(len===5)ls='.0em'; else if(len===6)ls='.0em'; else if(len===7)ls='.0em';
+ ja.style.letterSpacing=ls; ja.style.paddingLeft=ls;
+ const open=()=>openStationSheet(st,routeKey); badge.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();open()}); badge.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}});
+ return badge;
+}
+function connectionButton(label,color,action,isActive=false){const b=document.createElement('button');b.type='button';b.className='connection-button'+(isActive?' active':'');b.style.setProperty('--button-color',color);b.textContent='▼ '+label;b.setAttribute('aria-pressed',String(isActive));b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();action()});return b}
+
+function createRow(st,routeKey,opt={}){
+ const row=document.createElement('div'); row.className='station-row';
+ const top=opt.lineTop??lineColorFor(routeKey), bottom=opt.lineBottom??lineColorFor(routeKey);
+ row.style.setProperty('--line-top',top); row.style.setProperty('--line-bottom',bottom);
+ if(opt.fadeDown){row.style.setProperty('--line-bottom-fade',opt.fadeColor||bottom);row.classList.add('fade-down')}
+ if(opt.fadeUp){row.style.setProperty('--line-top-fade',opt.fadeColor||top);row.classList.add('fade-up')}
+ if(opt.wadoNikkoInsert)row.classList.add('wado-nikko-insert')
+ if(opt.cutAbove)row.classList.add('cut-above'); if(opt.cutBelow)row.classList.add('cut-below'); if(opt.noLine)row.classList.add('no-line');
+ if(opt.above){const wrap=document.createElement('div');wrap.className='connection-buttons connection-top';wrap.appendChild(connectionButton(opt.above.label,opt.above.color,opt.above.action,!!opt.above.active));row.appendChild(wrap)}
+ row.appendChild(stationBadge(st,routeKey,opt.stationColor||null));
+ if(opt.buttons?.length){const wrap=document.createElement('div');wrap.className='connection-buttons connection-bottom';opt.buttons.forEach(x=>wrap.appendChild(connectionButton(x.label,x.color,x.action,!!x.active)));row.appendChild(wrap)}
+ return row;
+}
+
+function toggleBranch(key){
+  if(activeBranches.has(key)) activeBranches.delete(key); else activeBranches.add(key);
+  const y=window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+  render();
+  requestAnimationFrame(()=>window.scrollTo({top:y,left:0,behavior:'auto'}));
+}
+function buttonSpecForMain(st){
+  const n=st[0];
+  if(n==='東武動物公園')return {above:{label:'日光線',color:COLORS.nikko,action:()=>toggleBranch('nikko'),active:activeBranches.has('nikko')}};
+  if(n==='北千住')return {buttons:[{label:'日比谷線',color:COLORS.hibiya,action:()=>toggleBranch('hibiya'),active:activeBranches.has('hibiya')}]};
+  if(n==='曳舟')return {buttons:[{label:'押上・半蔵門線・田園都市線',color:COLORS.hanzomon,action:()=>toggleBranch('hanzomon'),active:activeBranches.has('hanzomon')}]};
+  return {};
+}
+function edgeColor(routeKey,a,b){
+  const A=a?.[0]||'', B=b?.[0]||'';
+  if(routeKey==='main'){
+    const main=ROUTES.main.stations, ia=main.findIndex(x=>x[0]===A), ib=main.findIndex(x=>x[0]===B), zoo=main.findIndex(x=>x[0]==='東武動物公園');
+    if(ia<0||ib<0||Math.abs(ia-ib)!==1) return COLORS.sky;
+    return Math.min(ia,ib)<zoo?COLORS.isesaki:COLORS.sky;
+  }
+  if(routeKey==='hanzomon' && (A==='渋谷'||B==='渋谷')) return COLORS.hanzomon;
+  if(routeKey==='denentoshi') return COLORS.denentoshi;
+  if(routeKey==='hibiya') return COLORS.hibiya;
+  if(routeKey==='nikko') return COLORS.nikko;
+  return lineColorFor(routeKey);
+}
+function buildScreenRows(){
+  const rows=[];
+  const main=ROUTES.main.stations;
+  const push=(st,routeKey,opt={})=>rows.push({st,routeKey,opt:{...opt}});
+
+  for(let i=0;i<main.length;i++){
+    const st=main[i], next=main[i+1], prev=main[i-1];
+
+    // 日光線：東武動物公園の直前に上側へ挿入。
+    if(st[0]==='東武動物公園' && activeBranches.has('nikko')){
+      ROUTES.nikko.stations.slice(0,-1).forEach((x,j)=>{
+        push(x,'nikko',{
+          lineTop:COLORS.nikko,
+          lineBottom:COLORS.nikko,
+          stationColor:COLORS.nikko,
+          cutAbove:j===0,
+          noLineAbove:j===0
+        });
+      });
+    }
+
+    const opt=buttonSpecForMain(st);
+    // 本線の端は明示的に切る。久喜の上・浅草の下には線を出さない。
+    if(i===0) opt.cutAbove=true;
+    if(i===main.length-1) opt.cutBelow=true;
+    // 久喜の上は切断。ただし久喜→和戸の区間は伊勢崎線色を必ず連続させる。
+    if(st[0]==='久喜') opt.lineTop='transparent';
+
+    // 画面上でこの駅から次の駅へ伸びる本線区間の色。
+    opt.stationColor=next?edgeColor('main',st,next):edgeColor('main',prev,st);
+    opt.lineTop=prev?edgeColor('main',prev,st):'transparent';
+    opt.lineBottom=next?edgeColor('main',st,next):'transparent';
+
+    if(st[0]==='東武動物公園' && activeBranches.has('nikko')){
+      opt.lineTop=COLORS.nikko;
+      opt.lineBottom=COLORS.sky;
+      opt.stationColor=COLORS.sky;
+    }
+    if(st[0]==='北千住' && activeBranches.has('hibiya')){
+      opt.lineTop=COLORS.sky;
+      opt.lineBottom=COLORS.hibiya;
+      opt.stationColor=COLORS.hibiya;
+    }
+    if(st[0]==='曳舟' && activeBranches.has('hanzomon')){
+      // 曳舟→押上はスカイツリーライン色。
+      opt.lineTop=COLORS.sky;
+      opt.lineBottom=COLORS.sky;
+      opt.stationColor=COLORS.sky;
+    }
+    if(st[0]==='和戸' && activeBranches.has('nikko')){
+      // 久喜→和戸は伊勢崎線色で完全に連続。和戸より下側だけを赤→透明にする。
+      opt.wadoNikkoInsert=true; opt.lineTop=COLORS.isesaki; opt.lineBottom='transparent';
+      opt.lineTop=COLORS.isesaki;
+      opt.lineBottom='transparent';
+      opt.stationColor=COLORS.isesaki;
+    }
+    push(st,'main',opt);
+
+    // 日比谷線：北千住の下から中目黒まで。終点の下で切断し、その後に本線を別系統として再開。
+    if(st[0]==='北千住' && activeBranches.has('hibiya')){
+      ROUTES.hibiya.stations.slice(1).forEach((x,j)=>{
+        const last=x[0]==='中目黒';
+        push(x,'hibiya',{
+          lineTop:COLORS.hibiya,
+          lineBottom:COLORS.hibiya,
+          stationColor:COLORS.hibiya,
+          cutBelow:last,
+          breakAfter:last
+        });
+      });
+      if(next){
+        const nextOpt=buttonSpecForMain(next);
+        nextOpt.breakBefore=true;
+        // 本線復帰駅は「駅として置く」が、分岐終点との間は線を接続しない。
+        nextOpt.fadeUp=true; nextOpt.fadeColor=COLORS.sky;
+        nextOpt.fadeUp=true; nextOpt.fadeColor=COLORS.sky;
+        push(next,'main',nextOpt);
+        i++;
+      }
+    }
+
+    // 半蔵門線・田園都市線：曳舟の下から中央林間まで。
+    if(st[0]==='曳舟' && activeBranches.has('hanzomon')){
+      ROUTES.hanzomon.stations.forEach((x,j)=>{
+        const isOshiage=x[0]==='押上';
+        const isShibuya=x[0]==='渋谷';
+        push(x,'hanzomon',{
+          lineTop:isOshiage?COLORS.sky:COLORS.hanzomon,
+          lineBottom:isShibuya?COLORS.denentoshi:COLORS.hanzomon,
+          stationColor:isShibuya?COLORS.denentoshi:COLORS.hanzomon
+        });
+      });
+      ROUTES.denentoshi.stations.slice(1).forEach(x=>{
+        const last=x[0]==='中央林間';
+        push(x,'denentoshi',{
+          lineTop:COLORS.denentoshi,
+          lineBottom:COLORS.denentoshi,
+          stationColor:COLORS.denentoshi,
+          cutBelow:last,
+          breakAfter:last
+        });
+      });
+      if(next){
+        const nextOpt=buttonSpecForMain(next);
+        nextOpt.breakBefore=true;
+        nextOpt.fadeUp=true; nextOpt.fadeColor=COLORS.sky;
+        nextOpt.branchReturn=true;
+        push(next,'main',nextOpt);
+        i++;
+      }
+    }
+  }
+
+  // すべての線色は、画面に実際に並んだ行同士から決定する。
+  // breakBefore/breakAfter がある場合、その両側には接続線を作らない。
+  for(let i=0;i<rows.length;i++){
+    const r=rows[i], prev=rows[i-1], next=rows[i+1];
+    const prevBroken=!!r.opt.breakBefore || !!prev?.opt?.breakAfter;
+    const nextBroken=!!r.opt.breakAfter || !!next?.opt?.breakBefore;
+    const prevColor=(!prev || prevBroken)?null:screenEdgeColor(prev,r);
+    const nextColor=(!next || nextBroken)?null:screenEdgeColor(r,next);
+
+    // 分岐・本線の境界では、画面上の直前/直後区間の色を優先。
+    if(prevColor) r.opt.lineTop=prevColor;
+    else if(prevBroken || !prev) r.opt.lineTop='transparent';
+    if(nextColor) r.opt.lineBottom=nextColor;
+    else if(nextBroken || !next) r.opt.lineBottom='transparent';
+
+    // ラベル色は「その駅→次の駅」の区間色を基本とし、終端では直前区間色。
+    if(nextColor) r.opt.stationColor=nextColor;
+    else if(prevColor) r.opt.stationColor=prevColor;
+
+    // 特殊なフェードは区間色の再計算に上書きさせない。
+    if(r.st[0]==='和戸' && activeBranches.has('nikko')){
+      r.opt.fadeDown=true;
+      r.opt.lineTop=COLORS.isesaki;
+      r.opt.fadeColor=COLORS.isesaki;
+      r.opt.lineBottom='transparent';
+      r.opt.stationColor=nextColor||COLORS.isesaki;
+    }
+    // 日光線挿入直後の南栗橋は、和戸との間を実線でつながない。
+    // 和戸側の下半分だけを「伊勢崎線色→透明」のグラデーションにし、
+    // 南栗橋の上半分は透明にする。南栗橋の下側から日光線色を再開する。
+    if(r.st[0]==='南栗橋' && activeBranches.has('nikko')){
+      const p=rows[i-1];
+      if(p?.st?.[0]==='和戸'){
+        r.opt.fadeUp=false;
+        r.opt.lineTop='transparent';
+        r.opt.lineBottom=COLORS.nikko;
+        r.opt.stationColor=COLORS.nikko;
+      }
+    }
+    if(r.opt.branchReturn){
+      r.opt.fadeUp=true;
+      r.opt.fadeColor=COLORS.sky;
+      r.opt.lineTop=COLORS.sky;
+      r.opt.lineBottom=nextColor||COLORS.sky;
+    }
+  }
+  return rows;
+}
+function render(){
+  const lc=document.getElementById('lineContainer');
+  lc.innerHTML='';
+  buildScreenRows().forEach(r=>lc.appendChild(createRow(r.st,r.routeKey,r.opt)));
+}
+
+function screenEdgeColor(a,b){
+  if(!a||!b)return null;
+  const A=a.st[0], B=b.st[0];
+  if(a.routeKey===b.routeKey) return edgeColor(a.routeKey,a.st,b.st);
+  const pair=[A,B].sort().join('|');
+  // 接続部の実際の線色。
+  if(pair===['曳舟','押上'].sort().join('|')) return COLORS.sky;
+  if(pair===['北千住','南千住'].sort().join('|')) return COLORS.hibiya;
+  if(pair===['和戸','南栗橋'].sort().join('|')) return COLORS.isesaki;
+  if(pair===['東武動物公園','杉戸高野台'].sort().join('|')) return COLORS.nikko;
+  if(pair===['東武動物公園','姫宮'].sort().join('|')) return COLORS.sky;
+  if(pair===['渋谷','表参道'].sort().join('|')) return COLORS.hanzomon;
+  if(pair===['渋谷','池尻大橋'].sort().join('|')) return COLORS.denentoshi;
+  return null;
+}
+
+/* ---- 駅詳細 ---- */
+function getDisplayedStations(routeKey){
+  if(routeKey==='main')return ROUTES.main.stations;
+  if(routeKey==='nikko')return ROUTES.nikko.stations;
+  if(routeKey==='hibiya')return ROUTES.hibiya.stations;
+  if(routeKey==='hanzomon')return ROUTES.hanzomon.stations;
+  if(routeKey==='denentoshi')return ROUTES.denentoshi.stations;
+  return ROUTES.main.stations;
+}
+function routeDirectionLabels(routeKey,st){
+  const name=st?.[0]||'';
+  if(routeKey==='nikko') return ['浅草・押上方面','南栗橋方面'];
+  if(routeKey==='hibiya') return ['中目黒方面','北千住方面'];
+  if(routeKey==='hanzomon'){
+    if(name==='押上') return ['渋谷方面','久喜・南栗橋方面'];
+    if(name==='渋谷') return ['中央林間方面','押上方面'];
+    return ['渋谷方面','押上方面'];
+  }
+  if(routeKey==='denentoshi'){
+    if(name==='渋谷') return ['中央林間方面','押上方面'];
+    return ['中央林間方面','渋谷方面'];
+  }
+  if(routeKey==='main'){
+    const main=ROUTES.main.stations;
+    const idx=main.findIndex(x=>x[0]===name);
+    const zoo=main.findIndex(x=>x[0]==='東武動物公園');
+    const kita=main.findIndex(x=>x[0]==='北千住');
+    const hiki=main.findIndex(x=>x[0]==='曳舟');
+    const skytree=main.findIndex(x=>x[0]==='とうきょうｽｶｲﾂﾘｰ');
+    const asakusa=main.findIndex(x=>x[0]==='浅草');
+    // 久喜～東武動物公園：浅草・押上方面／久喜方面
+    if(idx>=0 && idx<zoo) return ['浅草・押上方面','久喜方面'];
+    // 東武動物公園は日光線との合流点。
+    if(idx===zoo) return ['浅草・押上方面','久喜・南栗橋方面'];
+    // 東武動物公園～北千住：浅草・押上方面／久喜・南栗橋方面
+    if(idx>zoo && idx<=kita) return ['浅草・押上・中目黒方面','久喜・南栗橋方面'];
+    if(idx===hiki) return ['浅草・押上方面','久喜・南栗橋方面'];
+    // とうきょうスカイツリー～浅草：浅草方面／久喜・南栗橋方面
+    if(idx>hiki && idx<=asakusa) return ['浅草方面','久喜・南栗橋方面'];
+    return ['浅草・押上方面','久喜・南栗橋方面'];
+  }
+  return ['上り','下り'];
+}
+
+function stationScreenNeighbors(st,routeKey){
+  const rows=buildScreenRows();
+  const idx=rows.findIndex(r=>r.routeKey===routeKey && r.st[0]===st[0]);
+  if(idx<0)return {prev:null,next:null,prevColor:null,nextColor:null};
+  const cur=rows[idx];
+
+  // A駅 → 分岐線 → B駅 の場合、B駅の左隣はA駅。
+  // ただし、画面上で実際に隣接していない本線駅は隣駅として扱わない。
+  if(routeKey==='main' && st[0]==='牛田' && activeBranches.has('hibiya')){
+    const a=rows.find(r=>r.routeKey==='main' && r.st[0]==='北千住');
+    const b=idx<rows.length-1 ? rows[idx+1] : null;
+    return {prev:a||null,next:(b && !b.opt.breakBefore)?b:null,prevColor:a?COLORS.hibiya:null,nextColor:(b&&!b.opt.breakBefore)?screenEdgeColor(cur,b):null};
+  }
+  if(routeKey==='main' && st[0]==='とうきょうｽｶｲﾂﾘｰ' && activeBranches.has('hanzomon')){
+    const a=rows.find(r=>r.routeKey==='main' && r.st[0]==='曳舟');
+    const b=idx<rows.length-1 ? rows[idx+1] : null;
+    return {prev:a||null,next:(b && !b.opt.breakBefore)?b:null,prevColor:a?COLORS.sky:null,nextColor:(b&&!b.opt.breakBefore)?screenEdgeColor(cur,b):null};
+  }
+
+  // 日光線を表示しているときの東武動物公園は、左隣を杉戸高野台にする。
+  if(routeKey==='main' && st[0]==='東武動物公園' && activeBranches.has('nikko')){
+    const a=rows.find(r=>r.routeKey==='nikko' && r.st[0]==='杉戸高野台');
+    const b=idx<rows.length-1 ? rows[idx+1] : null;
+    return {prev:a||null,next:(b && !b.opt.breakBefore)?b:null,prevColor:a?COLORS.nikko:null,nextColor:(b&&!b.opt.breakBefore)?screenEdgeColor(cur,b):null};
+  }
+
+  // 和戸の右隣は、日光線表示中でも画面上の本線側の東武動物公園。
+  if(routeKey==='main' && st[0]==='和戸'){
+    const a=idx>0 ? rows[idx-1] : null;
+    const b=rows.find(r=>r.routeKey==='main' && r.st[0]==='東武動物公園');
+    const prevBroken=!!cur.opt.breakBefore || !!a?.opt?.breakAfter;
+    return {prev:prevBroken?null:a,next:b||null,prevColor:(!prevBroken&&a)?screenEdgeColor(a,cur):null,nextColor:b?COLORS.isesaki:null};
+  }
+
+  // 南栗橋は日光線の起点なので左隣なし。
+  if(routeKey==='nikko' && st[0]==='南栗橋'){
+    const next=rows[idx+1] || null;
+    const nextColor=(next&&!next.opt.breakBefore)?screenEdgeColor(cur,next):null;
+    return {prev:null,next:(next&&!next.opt.breakBefore)?next:null,prevColor:null,nextColor};
+  }
+
+  // 分岐線終点は、そのまま本線へつながっているようには扱わない。
+  const prevRow=rows[idx-1]||null;
+  const nextRow=rows[idx+1]||null;
+  const prevBreak=!!cur.opt.breakBefore || !!prevRow?.opt?.breakAfter;
+  const nextBreak=!!cur.opt.breakAfter || !!nextRow?.opt?.breakBefore;
+  const prev=(!prevBreak&&prevRow)?prevRow:null;
+  const next=(!nextBreak&&nextRow)?nextRow:null;
+  return {
+    prev,next,
+    prevColor:prev?screenEdgeColor(prev,cur):null,
+    nextColor:next?screenEdgeColor(cur,next):null
+  };
+}
+function openStationSheet(st,routeKey){currentStationId=stationId(routeKey,st);currentStationRoute=routeKey;stationTimetableDirection='up';updateStationSheetContent();document.getElementById('overlay').style.display='block';document.getElementById('bottomSheet').classList.add('active')}
+function closeSheet(){document.getElementById('overlay').style.display='none';document.getElementById('bottomSheet').classList.remove('active');currentStationId=null}
+function stationTimetableEntries(st,routeKey,direction){
+  const name=st[0];
+  return TRAINS.filter(t=>{const stops=Array.isArray(t.stops)?t.stops:[];if(!stops.some(s=>String(s.station)===name))return false;return direction==='up'?String(t.direction||'')==='up':String(t.direction||'')==='down';}).sort((a,b)=>String(a.stops?.find(s=>s.station===name)?.time||'').localeCompare(String(b.stops?.find(s=>s.station===name)?.time||'')));
+}
+function trainRowHTML(train,st){const stop=(train.stops||[]).find(s=>String(s.station)===String(st[0]));const cls=String(train.type)==='急行'?'express':String(train.type)==='区間急行'?'section-express':String(train.type)==='回送'?'deadhead':'';return `<div class="station-timetable-row" tabindex="0" onclick="openTrainSheet('${esc(train.no)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openTrainSheet('${esc(train.no)}')}"><div></div><div class="station-timetable-formation">${esc(train.formation||'')}</div><div class="station-timetable-type ${cls}">${esc(train.type||'')}</div><div class="station-timetable-time">${esc(stop?.time||'')}</div><div class="station-timetable-destination"><span class="station-timetable-destination-station">${esc(train.dest||'')}</span></div></div>`}
+function stationTimetableHTML(st,routeKey,direction){const entries=stationTimetableEntries(st,routeKey,direction);if(!entries.length)return '';return `<div class="station-timetable-frame"><div class="station-timetable-wrap" id="stationTimetableScroll">${entries.map(t=>trainRowHTML(t,st)).join('')}</div></div>`}
+function updateStationSheetContent(){
+  const found=stationById(currentStationId), content=document.getElementById('sheetContent'); if(!found||!content)return;
+  const {routeKey,st}=found; const {prev,next,prevColor,nextColor}=stationScreenNeighbors(st,routeKey); const labels=routeDirectionLabels(routeKey,st);
+  content.style.setProperty('--primary',nextColor||lineColorFor(routeKey));content.style.setProperty('--primary-dark',nextColor||lineColorFor(routeKey));
+  const split=(prevColor&&nextColor&&prevColor!==nextColor)?' split':'';
+  const bar=`<div class="station-direction-bar${!prev?' no-prev':''}${!next?' no-next':''}${split}" style="--bar-left:${prevColor||nextColor||lineColorFor(routeKey)};--bar-right:${nextColor||prevColor||lineColorFor(routeKey)}"></div>`;
+  content.innerHTML=`<div class="station-overview-card station-info-card"><div class="station-overview-main"><div class="station-overview-name-ja">${esc(st[0])}</div><div class="station-overview-name-en">${esc(st[1])}</div></div><div class="station-direction-bar-wrap">${bar}</div><div class="station-neighbor-row"><div class="station-neighbor left${prev?'':' empty'}" style="--neighbor-color:${prevColor||'#000'}"><div class="station-neighbor-name-ja">${esc(prev?.st?.[0]||'')}</div><div class="station-neighbor-name-en">${esc(prev?.st?.[1]||'')}</div></div><div class="station-neighbor right${next?'':' empty'}" style="--neighbor-color:${nextColor||'#000'}"><div class="station-neighbor-name-ja">${esc(next?.st?.[0]||'')}</div><div class="station-neighbor-name-en">${esc(next?.st?.[1]||'')}</div></div></div></div><div class="timetable-list"><div class="station-timetable-title">時刻表</div><div class="station-timetable-direction-tabs"><button class="station-timetable-direction-tab ${stationTimetableDirection==='up'?'active':''}" onclick="setStationTimetableDirection('up')">${esc(labels[0])}</button><button class="station-timetable-direction-tab ${stationTimetableDirection==='down'?'active':''}" onclick="setStationTimetableDirection('down')">${esc(labels[1])}</button></div>${stationTimetableHTML(st,routeKey,stationTimetableDirection)}</div>`;
+  content.querySelectorAll('.station-overview-name-ja,.station-overview-name-en,.station-neighbor-name-ja,.station-neighbor-name-en').forEach(el=>el.style.color='#000');
+}
+function setStationTimetableDirection(direction){stationTimetableDirection=direction==='down'?'down':'up';updateStationSheetContent()}
+function openTrainSheet(no){const train=TRAINS.find(t=>String(t.no)===String(no));if(!train)return;const content=document.getElementById('sheetContent');content.innerHTML=`<div class="station-overview-card"><div class="station-overview-main"><div class="station-overview-name-ja">${esc(train.type||'')}</div><div class="station-overview-name-en">${esc(train.no||'')}</div></div></div><div class="timetable-list"><div class="station-timetable-title">${esc(train.start||'')} → ${esc(train.dest||'')}</div>${(train.stops||[]).map(s=>`<div style="display:flex;align-items:center;gap:16px;padding:8px 0;border-bottom:1px solid #ddd"><strong style="width:70px">${esc(s.time)}</strong><span>${esc(s.station)}</span></div>`).join('')}</div>`}
+document.getElementById('closeBtn').addEventListener('click',closeSheet);document.getElementById('overlay').addEventListener('click',closeSheet);document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
+render();
+</script>
+</body>
+</html>
