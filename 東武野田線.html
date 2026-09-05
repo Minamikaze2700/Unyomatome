@@ -1284,8 +1284,16 @@ function initSharedState(){
     }catch(err){ console.warn('storage sync failed',err); }
   });
 }
+function syncCurrentScheduleDay(){
+  // 選択日付を唯一の基準にして、平日／土休日の状態を常に同期する。
+  // currentDay が別処理で古い値になっていても、時刻表が平日固定にならないようにする。
+  const d=new Date(`${selectedDateKey}T00:00:00`);
+  if(!Number.isNaN(d.getTime())) currentDay=getScheduleDayForDate(d);
+  return currentDay;
+}
 function getVisibleTrains(){
-  const source=currentDay==='休日' ? HOLIDAY_TRAINS : TRAINS.filter(t=>t.days.includes(currentDay));
+  const day=syncCurrentScheduleDay();
+  const source=day==='休日' ? HOLIDAY_TRAINS : TRAINS.filter(t=>t.days.includes(day));
   return source.map(t=>liveTrain(t.no,t.direction)||t);
 }
 function getShortType(type, trainNo=''){
@@ -2183,6 +2191,8 @@ function serviceDayMinute(hour,minute){
 }
 
 function stationTimetableHTML(station, selectedDirection='up'){
+  // 駅時刻表も選択日付から直接ダイヤ区分を同期。
+  syncCurrentScheduleDay();
   const stationName=String(station?.nameJa||'');
   const directionData={up:{label:'長野方面',entries:[]},down:{label:'湯田中方面',entries:[]}};
   const byTrain=new Map();
@@ -2489,8 +2499,11 @@ window.addEventListener('load',async ()=>{
   currentOperationDate=currentOperationDate||operationDateKey();
   await initFirebase();
   await maybeResetForNewOperationDay();
+  // 初期化処理後も、表示日付に対応するダイヤ区分を再確定する。
+  syncCurrentScheduleDay();
   initTimeControl();
   setNowTime();
+  syncCurrentScheduleDay();
   renderLine();
   setInterval(async ()=>{
     if(isEditMode) return;
