@@ -173,7 +173,7 @@ const FORMATIONS=[
 
   // 地上運用：春日部支所所属のみ
   {type:'10000型',typeImg:imgTB(10000),items:[11801,11802,11607,11601,11602,11603,11604,11605,11608,11201,11202,11203,11204].map(n=>({id:`${n}F`,name:`${n}F`,img:imgTB(n),cars:(n>=11801&&n<=11802)?8:(n>=11600&&n<11700)?6:2,kasukabe:true}))},
-  {type:'10030型',typeImg:imgTB(10000),items:[
+  {type:'10030型',typeImg:imgTB(10030),items:[
     11655,11656,11657,11658,11659,11660,11662,11663,11664,11665,11667,
     11431,11432,11433,11436,11437,11447,11435,11434,11444,11451,11453,11454,11458,11459,
     11264,11265,11267,11268
@@ -826,8 +826,8 @@ function updateSheetContent(){
     const valueFront=parts[0]||'';
     const valueRear=parts[1]||'';
     const optionsForSlot=(slot)=>`<div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}',${slot})"><img src="${INITIAL_FORMATION_SELECTION.img}" class="option-img"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>`+FORMATIONS.filter(g=>g.type!=='500系+500系' && formationCategoryAllowedForTrain(train,g.type)).map(g=>`<div class="option-header option-category-header" onclick="selectFormation('${g.type}',${slot})"><img src="${g.typeImg}" class="option-img"><span>${g.type}</span></div>${g.items.map(f=>f.disabled?`<div class="option-item disabled"><img src="${f.img}" class="option-img"><span>${f.name}</span></div>`:`<div class="option-item" onclick="selectFormation('${f.id}',${slot})"><img src="${f.img}" class="option-img"><span>${f.name}</span></div>`).join('')}`).join('');
-    const frontTrigger=`<div class="custom-select-trigger" onclick="formationEditSlot=0;toggleDropdown(0)"><div style="display:flex;align-items:center;gap:10px"><img src="${esc(selectionDisplayObject(valueFront).img)}" style="width:auto;height:70px;object-fit:contain"><span>前寄：${esc(selectionDisplayObject(valueFront).name)}</span></div>▼</div>`;
-    const rearTrigger=`<div class="custom-select-trigger" onclick="formationEditSlot=1;toggleDropdown(1)"><div style="display:flex;align-items:center;gap:10px"><img src="${esc(selectionDisplayObject(valueRear).img)}" style="width:auto;height:70px;object-fit:contain"><span>後ろ寄：${esc(selectionDisplayObject(valueRear).name)}</span></div>▼</div>`;
+    const frontTrigger=`<div class="custom-select-trigger" onclick="formationEditSlot=0;toggleDropdown(0)"><div style="display:flex;align-items:center;gap:10px"><img src="${esc(selectionDisplayObject(valueFront).img)}" style="width:auto;height:70px;object-fit:contain"><span>前寄り：${esc(selectionDisplayObject(valueFront).name)}</span></div>▼</div>`;
+    const rearTrigger=`<div class="custom-select-trigger" onclick="formationEditSlot=1;toggleDropdown(1)"><div style="display:flex;align-items:center;gap:10px"><img src="${esc(selectionDisplayObject(valueRear).img)}" style="width:auto;height:70px;object-fit:contain"><span>後寄り：${esc(selectionDisplayObject(valueRear).name)}</span></div>▼</div>`;
     const manualComposite=composite
       ? `<div class="formation-manual-input"><input id="formationManualInput" type="text" inputmode="text" autocomplete="off" value="${esc(formationValue)}" placeholder="車両番号または編成番号を入力 「+」で区切ることにより併結入力可"><button type="button" onclick="registerFormationFromInput()">登録</button></div>`
       : `<div class="formation-manual-input"><input id="formationManualInput" type="text" inputmode="text" autocomplete="off" value="${esc(valueFront)}" placeholder="車両番号または編成番号を入力"><button type="button" onclick="registerFormationFromInput()">登録</button></div>`;
