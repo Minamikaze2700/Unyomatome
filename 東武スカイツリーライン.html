@@ -38,7 +38,12 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
 .bottom-sheet{position:fixed;left:0;right:0;bottom:-100%;z-index:201;max-width:820px;margin:0 auto;max-height:75vh;min-height:0;overflow-y:auto;background:var(--sheet);border-radius:16px 16px 0 0;box-shadow:0 -4px 12px rgba(0,0,0,.18);transition:bottom .3s ease-out}
 .bottom-sheet.active{bottom:0}
 .sheet-header{position:sticky;top:0;z-index:1000;background:#9e9e9e;color:#fff;padding:11px 16px;display:flex;justify-content:space-between;align-items:center;font-weight:700;border-radius:16px 16px 0 0}
-.sheet-header-left{display:flex;align-items:center;gap:10px;min-width:0}.close-btn{cursor:pointer;font-size:1.2rem}.sheet-content{padding:16px;position:relative;overflow:hidden;min-height:0}
+
+.sheet-header-left{display:flex;align-items:center;gap:10px;min-width:0}
+.sheet-back-btn{display:none;width:28px;height:28px;border:0;background:transparent;color:#fff;padding:0;cursor:pointer;position:relative;flex:0 0 28px}
+.sheet-back-btn::before{content:"";position:absolute;left:7px;top:6px;width:13px;height:13px;border-left:4px solid currentColor;border-bottom:4px solid currentColor;transform:rotate(45deg);box-sizing:border-box}
+.sheet-back-btn.visible{display:inline-block}
+.close-btn{cursor:pointer;font-size:1.2rem}.sheet-content{padding:16px;position:relative;overflow:hidden;min-height:0}
 .station-overview-card{position:relative;background:#fff;border-radius:10px;overflow:hidden;margin-bottom:16px;border:2px solid transparent;box-shadow:0 1px 2px rgba(0,0,0,.05)}
 .station-overview-main{text-align:center;padding:8px 10px 9px;background:#fff}.station-overview-name-ja{font-family:inherit;font-size:52px;line-height:.95;font-weight:500;letter-spacing:.08em;padding-left:.08em;color:#000}.station-overview-name-en{font-family:inherit;font-size:29px;line-height:1.02;font-weight:500;letter-spacing:.015em;color:#000;margin-top:2px}
 .station-direction-bar-wrap{width:100%}.station-direction-bar{width:100%;height:18px;background:linear-gradient(to right,var(--bar-left,var(--primary)) 0 50%,var(--bar-right,var(--primary)) 50% 100%);clip-path:polygon(3% 0,97% 0,100% 100%,0 100%);display:block}
@@ -121,7 +126,7 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
 <div class="line-container" id="lineContainer"><div class="moving-train-layer" id="movingTrainLayer"></div></div>
 </div>
 <div class="overlay" id="overlay"></div>
-<div class="bottom-sheet" id="bottomSheet"><div class="sheet-header"><div class="sheet-header-left"><span id="sheetHeaderTitle">駅情報</span></div><span class="close-btn" id="closeBtn">✖</span></div><div class="sheet-content" id="sheetContent"></div></div>
+<div class="bottom-sheet" id="bottomSheet"><div class="sheet-header"><div class="sheet-header-left"><button id="sheetBackBtn" class="sheet-back-btn" type="button" aria-label="駅情報に戻る" onclick="sheetBack()"></button><span id="sheetHeaderTitle">駅情報</span></div><span class="close-btn" id="closeBtn">✖</span></div><div class="sheet-content" id="sheetContent"></div></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
@@ -455,18 +460,24 @@ let registrationState={平日:{},休日:{}};
 let formationUpdatedAt={平日:{},休日:{}};
 let remoteByProject={};
 let firebaseApps={},firebaseDbs={},firebaseReady=false;
+let currentOperationDate='';
 const REG_STORAGE_KEY='tobuskytree_formation_state_v2';
 
-function todayKey(d=new Date()){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function todayKey(d=new Date()){const x=new Date(d);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;}
 function operationDateKey(d=new Date()){const x=new Date(d);if(x.getHours()<RESET_HOUR)x.setDate(x.getDate()-1);return todayKey(x);}
 function scheduleDayForKey(key){const d=new Date(`${key}T00:00:00`);return [0,6].includes(d.getDay())?'休日':'平日';}
 function currentRegistrationDay(){return currentDay;}
 function selectedIsCurrentOperation(){return selectedDateKey===operationDateKey();}
 function saveLocal(){
-  try{localStorage.setItem(REG_STORAGE_KEY,JSON.stringify({registrationState,formationUpdatedAt}));}catch(e){}
+  try{localStorage.setItem(REG_STORAGE_KEY,JSON.stringify({registrationState,formationUpdatedAt,currentOperationDate}));}catch(e){}
 }
 function loadLocal(){
-  try{const x=JSON.parse(localStorage.getItem(REG_STORAGE_KEY)||'{}');if(x.registrationState)registrationState={平日:{...(x.registrationState.平日||{})},休日:{...(x.registrationState.休日||{})}};if(x.formationUpdatedAt)formationUpdatedAt={平日:{...(x.formationUpdatedAt.平日||{})},休日:{...(x.formationUpdatedAt.休日||{})}};}catch(e){}
+  try{
+    const x=JSON.parse(localStorage.getItem(REG_STORAGE_KEY)||'{}');
+    if(x.registrationState)registrationState={平日:{...(x.registrationState.平日||{})},休日:{...(x.registrationState.休日||{})}};
+    if(x.formationUpdatedAt)formationUpdatedAt={平日:{...(x.formationUpdatedAt.平日||{})},休日:{...(x.formationUpdatedAt.休日||{})}};
+    currentOperationDate=x.currentOperationDate||currentOperationDate||operationDateKey();
+  }catch(e){}
 }
 function syncCurrentScheduleDay(){
   currentDay=scheduleDayForKey(selectedDateKey||operationDateKey());
@@ -490,6 +501,40 @@ function initDateTimeControls(){
   setSelectedDate(operationDateKey());
   document.getElementById('dateInput')?.addEventListener('change',e=>setSelectedDate(e.target.value));
   const ti=document.getElementById('timeInput');if(ti){ti.value=formatTimeNow();ti.addEventListener('input',setManualTime);}
+}
+
+async function maybeResetForNewOperationDay(){
+  const opDate=operationDateKey();
+  // 野田線と同じく、現在時刻モードでは3:00を境に表示日付を新しい運用日に切り替える。
+  if(followNow && selectedDateKey!==opDate) setSelectedDate(opDate);
+  if(!currentOperationDate) currentOperationDate=opDate;
+  if(currentOperationDate===opDate) return;
+
+  // 新しい運用日に切り替わったら、当日の編成入力状態を初期化する。
+  registrationState={平日:{},休日:{}};
+  formationUpdatedAt={平日:{},休日:{}};
+  currentOperationDate=opDate;
+  saveLocal();
+  renderTrainPositions();
+  if(currentTrainNo&&!isEditMode)updateSheetContent();
+
+  // Firebase側も各系統ごとに同じ運用日を記録し、旧当日データを新日に持ち越さない。
+  if(firebaseReady){
+    await Promise.all(Object.entries(firebaseDbs).map(async ([key,db])=>{
+      if(!db)return;
+      try{
+        await db.ref('運用').transaction(current=>{
+          const root=current&&typeof current==='object'?current:{};
+          root.stateByDay={平日:{},休日:{}};
+          root.formationUpdatedAtByDay={平日:{},休日:{}};
+          root.operationDate=opDate;
+          root.updatedAt=Date.now();
+          return root;
+        });
+        if(remoteByProject[key]) remoteByProject[key].operationDate=opDate;
+      }catch(e){console.warn('運用日リセット失敗',key,e);}
+    }));
+  }
 }
 
 function trainGroupKey(t){
@@ -521,6 +566,7 @@ async function initFirebase(){
       ref.on('value',snap=>{
         const root=snap.val()||{};
         remoteByProject[key]=root;
+        if(root.operationDate && !currentOperationDate) currentOperationDate=String(root.operationDate);
         const states=root.stateByDay||root;
         for(const day of ['平日','休日']){
           if(states?.[day]&&typeof states[day]==='object') registrationState[day]={...(registrationState[day]||{}),...states[day]};
@@ -739,7 +785,7 @@ function trainRowHTML(train,st){
   const stop=((train.stops||[]).filter(s=>String(s?.station||'')===String(st[0]))).pop();
   const form=selectionDisplayObject(train.formation);
   const cls=getExpressClass(train);
-  return `<button class="station-timetable-row" type="button" title="列車 ${esc(displayTrainNo(train))} / ${esc(stop?.time||'')} / ${esc(train.dest||'')} 行" onclick="openTrainSheet('${esc(train.no)}')"><img class="station-timetable-train-img" src="${esc(form?.img||INITIAL_FORMATION_SELECTION.img)}" alt="${esc(displayTrainNo(train))}"><span class="station-timetable-formation">${formationDisplayHTML(train.formation)||'—'}</span><span class="station-timetable-type ${cls}">${esc(timetableTypeLabel(train))}</span><span class="station-timetable-time">${esc(stop?.time||'')}</span><span class="station-timetable-destination"><span class="station-timetable-destination-station${destinationScaleClass(train.dest)}">${esc(train.dest||'')}</span><span class="station-timetable-destination-go">行</span></span></button>`;
+  return `<button class="station-timetable-row" type="button" title="列車 ${esc(displayTrainNo(train))} / ${esc(stop?.time||'')} / ${esc(train.dest||'')} 行" onclick="openTrainSheet('${esc(train.no)}',{type:'station-timetable',stationId:currentStationId,direction:stationTimetableDirection})"><img class="station-timetable-train-img" src="${esc(form?.img||INITIAL_FORMATION_SELECTION.img)}" alt="${esc(displayTrainNo(train))}"><span class="station-timetable-formation">${formationDisplayHTML(train.formation)||'—'}</span><span class="station-timetable-type ${cls}">${esc(timetableTypeLabel(train))}</span><span class="station-timetable-time">${esc(stop?.time||'')}</span><span class="station-timetable-destination"><span class="station-timetable-destination-station${destinationScaleClass(train.dest)}">${esc(train.dest||'')}</span><span class="station-timetable-destination-go">行</span></span></button>`;
 }
 function stationTimetableHTML(st,routeKey,direction){
   const entries=stationTimetableEntries(st,routeKey,direction);
@@ -776,8 +822,22 @@ function updateStationSheetContent(){
   content.innerHTML=`<div class="station-overview-card station-info-card"><div class="station-overview-main"><div class="station-overview-name-ja">${esc(st[0])}</div><div class="station-overview-name-en">${esc(st[1])}</div></div><div class="station-direction-bar-wrap">${bar}</div><div class="station-neighbor-row"><div class="station-neighbor left${prev?'':' empty'}"><div class="station-neighbor-name-ja">${esc(prev?.st?.[0]||'')}</div><div class="station-neighbor-name-en">${esc(prev?.st?.[1]||'')}</div></div><div class="station-neighbor right${next?'':' empty'}"><div class="station-neighbor-name-ja">${esc(next?.st?.[0]||'')}</div><div class="station-neighbor-name-en">${esc(next?.st?.[1]||'')}</div></div></div></div><div class="timetable-list"><div class="station-timetable-title">時刻表</div><div class="station-timetable-direction-tabs"><button class="station-timetable-direction-tab ${stationTimetableDirection==='up'?'active':''}" type="button" onclick="setStationTimetableDirection('up')">${esc(labels[0])}</button><button class="station-timetable-direction-tab ${stationTimetableDirection==='down'?'active':''}" type="button" onclick="setStationTimetableDirection('down')">${esc(labels[1])}</button></div>${entries.length?`<div class="station-timetable-frame"><div class="station-timetable-wrap" id="stationTimetableScroll">${rows}</div></div>`:'<div class="station-timetable-empty">該当する列車はありません</div>'}</div>`;
   scrollStationTimetableToNext();
 }
-function openStationSheet(st,routeKey){currentStationId=stationId(routeKey,st);stationTimetableDirection='up';isEditMode=false;document.getElementById('sheetHeaderTitle').textContent='駅情報';updateStationSheetContent();scrollStationTimetableToNext();document.getElementById('overlay').style.display='block';document.getElementById('bottomSheet').classList.add('active');}
-function closeSheet(){document.getElementById('overlay').style.display='none';document.getElementById('bottomSheet').classList.remove('active','editing');currentStationId=null;currentTrainNo=null;isEditMode=false;}
+function setSheetBackVisible(visible){const btn=document.getElementById('sheetBackBtn');if(btn)btn.classList.toggle('visible',!!visible);}
+function openStationSheet(st,routeKey){currentStationId=stationId(routeKey,st);currentStationRoute=routeKey||'main';stationTimetableDirection='up';isEditMode=false;previousSheetContext=null;setSheetBackVisible(false);document.getElementById('sheetHeaderTitle').textContent='駅情報';updateStationSheetContent();scrollStationTimetableToNext();document.getElementById('overlay').style.display='block';document.getElementById('bottomSheet').classList.add('active');}
+function sheetBack(){
+  if(previousSheetContext?.type==='station-timetable'){
+    const ctx=previousSheetContext;
+    previousSheetContext=null;
+    openStationSheetById(ctx.stationId,ctx.direction);
+    return;
+  }
+  closeSheet();
+}
+function openStationSheetById(stationIdValue,direction='up'){
+  const found=stationById(stationIdValue);if(!found)return;
+  currentStationId=stationIdValue;currentStationRoute=found.routeKey;stationTimetableDirection=direction==='down'?'down':'up';isEditMode=false;setSheetBackVisible(false);document.getElementById('sheetHeaderTitle').textContent='駅情報';updateStationSheetContent();scrollStationTimetableToNext();document.getElementById('overlay').style.display='block';document.getElementById('bottomSheet').classList.add('active');
+}
+function closeSheet(){document.getElementById('overlay').style.display='none';document.getElementById('bottomSheet').classList.remove('active','editing');currentStationId=null;currentTrainNo=null;currentStationRoute='main';isEditMode=false;previousSheetContext=null;setSheetBackVisible(false);}
 
 /* 列車詳細・編成入力 */
 function stopGuideStationName(name){
@@ -906,9 +966,11 @@ async function selectFormation(id,slot=0){
     await saveCompositeFormation(current[0]||null,null,true);
   }
 }
-function openTrainSheet(no){
+function openTrainSheet(no,fromContext=null){
   const train=liveTrain(no);if(!train)return;
-  currentTrainNo=String(no);currentTrainSnapshot=train;currentStationId=null;isEditMode=false;previousSheetContext=null;
+  currentTrainNo=String(no);currentTrainSnapshot=train;currentStationId=null;isEditMode=false;
+  previousSheetContext=(fromContext&&fromContext.type==='station-timetable')?{type:'station-timetable',stationId:fromContext.stationId,direction:fromContext.direction==='down'?'down':'up'}:null;
+  setSheetBackVisible(!!previousSheetContext);
   document.getElementById('sheetHeaderTitle').textContent='列車情報';updateSheetContent();document.getElementById('overlay').style.display='block';document.getElementById('bottomSheet').classList.add('active');
 }
 
@@ -1303,8 +1365,17 @@ function initStationSheetEvents(){
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
 }
 async function init(){
-  initDateTimeControls();loadLocal();render();initStationSheetEvents();await initFirebase();render();renderTrainPositions();
-  setInterval(()=>{if(followNow){const input=document.getElementById('timeInput');if(input)input.value=formatTimeNow();const op=operationDateKey();if(selectedDateKey!==op)setSelectedDate(op);}renderTrainPositions();},1000);
+  initDateTimeControls();
+  loadLocal();
+  render();
+  initStationSheetEvents();
+  await initFirebase();
+  currentOperationDate=currentOperationDate||operationDateKey();
+  await maybeResetForNewOperationDay();
+  render();
+  renderTrainPositions();
+  setInterval(()=>{if(followNow){const input=document.getElementById('timeInput');if(input)input.value=formatTimeNow();}renderTrainPositions();},1000);
+  setInterval(()=>{maybeResetForNewOperationDay();},60000);
 }
 init();
 </script>
