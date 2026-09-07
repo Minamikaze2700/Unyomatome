@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -408,8 +409,31 @@ function formatTimeNow(){const d=new Date();return `${String(d.getHours()).padSt
 function setNowTime(){followNow=true;setSelectedDate(operationDateKey());const input=document.getElementById('timeInput');if(input)input.value=formatTimeNow();document.getElementById('nowBtn')?.classList.add('active');}
 function setManualTime(){followNow=false;document.getElementById('nowBtn')?.classList.remove('active');}
 function currentMinutes(){
-  if(followNow){const d=new Date();const base=d.getHours()*60+d.getMinutes()+d.getSeconds()/60+d.getMilliseconds()/60000;return d.getHours()<RESET_HOUR?base+1440:base;}
-  const input=document.getElementById('timeInput'),value=input?.value||formatTimeNow();const [h,m]=String(value).split(':').map(Number);const base=(h||0)*60+(m||0);return h<RESET_HOUR?base+1440:base;
+  // 運用日基準（3:00を境に日付が切り替わる）の分数を返す。
+  if(followNow){
+    const d=new Date();
+    const base=d.getHours()*60+d.getMinutes()+d.getSeconds()/60+d.getMilliseconds()/60000;
+    return d.getHours()<RESET_HOUR?base+1440:base;
+  }
+  const input=document.getElementById('timeInput'),value=input?.value||formatTimeNow();
+  const [h,m]=String(value).split(':').map(Number);
+  const hh=Number.isFinite(h)?h:0, mm=Number.isFinite(m)?m:0;
+  const base=hh*60+mm;
+  return hh<RESET_HOUR?base+1440:base;
+}
+
+function trainRunsAtMinute(t,minutes){
+  const stops=Array.isArray(t?.stops)?t.stops:[];
+  if(stops.length<2) return false;
+  const first=serviceDayMinuteFromTime(stops[0]?.time);
+  let last=serviceDayMinuteFromTime(stops[stops.length-1]?.time);
+  if(!Number.isFinite(first)||!Number.isFinite(last)) return false;
+  if(last<first) last+=1440;
+  let m=Number(minutes);
+  if(!Number.isFinite(m)) return false;
+  while(m<first) m+=1440;
+  // 終着時刻までは表示。終着を過ぎた列車は必ず非表示。
+  return m>=first && m<=last;
 }
 function initDateTimeControls(){
   setSelectedDate(operationDateKey());
@@ -964,7 +988,12 @@ function updateSheetContent(){
     const parts=formationValue.split('+').map(x=>x.trim()).filter(Boolean);
     const valueFront=parts[0]||'';
     const valueRear=parts[1]||'';
-    const optionsForSlot=(slot)=>{const otherSelected=slot===0?valueRear:valueFront;return `<div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}',${slot})"><img src="${INITIAL_FORMATION_SELECTION.img}" class="option-img"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>`+FORMATIONS.filter(g=>g.type!=='500系+500系'&&formationCategoryAllowedForTrain(train,g.type)).map(g=>`<div class="option-header option-category-header" onclick="selectFormation('${g.type}',${slot})"><img src="${g.typeImg}" class="option-img"><span>${g.type}</span></div>${g.items.filter(f=>f.id!==otherSelected).map(f=>f.disabled?`<div class="option-item disabled"><img src="${f.img}" class="option-img"><span>${f.name}</span></div>`:`<div class="option-item" onclick="selectFormation('${f.id}',${slot})"><img src="${f.img}" class="option-img"><span>${f.name}</span></div>`).join('')}`).join('')};
+    const optionsForSlot=(slot)=>{
+    const otherSelected=slot===0?valueRear:valueFront;
+    return `<div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}',${slot})"><img src="${INITIAL_FORMATION_SELECTION.img}" class="option-img"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>`+FORMATIONS.filter(g=>g.type!=='500系+500系'&&formationCategoryAllowedForTrain(train,g.type)).map(g=>`<div class="option-header option-category-header" onclick="selectFormation('${g.type}',${slot})"><img src="${g.typeImg}" class="option-img"><span>${g.type}</span></div>${g.items.map(f=>{
+      const duplicateActualFormation=f.id===otherSelected;
+      return f.disabled?`<div class="option-item disabled"><img src="${f.img}" class="option-img"><span>${f.name}</span></div>`:(duplicateActualFormation?`<div class="option-item disabled"><img src="${f.img}" class="option-img"><span>${f.name}</span></div>`:`<div class="option-item" onclick="selectFormation('${f.id}',${slot})"><img src="${f.img}" class="option-img"><span>${f.name}</span></div>`);
+    }).join('')}`).join('')};
     const frontTrigger=`<div class="custom-select-trigger" onclick="formationEditSlot=0;toggleDropdown(0)"><div style="display:flex;align-items:center;gap:10px"><img src="${esc(selectionDisplayObject(valueFront).img)}" style="width:auto;height:70px;object-fit:contain"><span>前寄り：${esc(selectionDisplayObject(valueFront).name)}</span></div>▼</div>`;
     const rearTrigger=`<div class="custom-select-trigger" onclick="formationEditSlot=1;toggleDropdown(1)"><div style="display:flex;align-items:center;gap:10px"><img src="${esc(selectionDisplayObject(valueRear).img)}" style="width:auto;height:70px;object-fit:contain"><span>後寄り：${esc(selectionDisplayObject(valueRear).name)}</span></div>▼</div>`;
     const manualComposite=composite
@@ -1040,9 +1069,14 @@ async function selectFormation(id,slot=0){
   }
   const normalizedId=id===INITIAL_FORMATION_SELECTION.id?'':String(id);
   if(composite && normalizedId && current[slot===0?1:0]===normalizedId){
-    const err=document.getElementById('formationInputError');
-    if(err)err.textContent='2編成では同じ編成を2本選択できません。';
-    return;
+    // 「10030型+10030型」のような同じ形式は許可する。
+    // 禁止するのは、実際の同一編成（例：11655F+11655F）の重複だけ。
+    const isFormationType=FORMATIONS.some(g=>g.type===normalizedId);
+    if(!isFormationType){
+      const err=document.getElementById('formationInputError');
+      if(err)err.textContent='2編成では同じ編成を2本選択できません。';
+      return;
+    }
   }
   current[slot]=normalizedId;
   if(composite){
@@ -1124,6 +1158,9 @@ function branchHiddenAtTime(t,minutes){
 
 function trainPosition(t,minutes){
   const stops=t.stops||[];if(stops.length<2)return null;
+  // まず列車全体の運転時間外を除外する。
+  // 区間補間の都合で、始発前・終着後の列車が路線図に残ることを防ぐ。
+  if(!trainRunsAtMinute(t,minutes)) return null;
   // 通過駅を含む列車は、通過予定時刻を補間して分岐線表示中の非表示区間を判定する。
   // そのため「前駅→後駅」の停車駅ペアが存在しなくても、適切な時刻に表示へ復帰する。
   if(branchHiddenAtTime(t,minutes)) return null;
