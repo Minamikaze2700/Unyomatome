@@ -66,7 +66,7 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
 .time-now-btn.active{background:var(--primary);color:#fff}
 .time-input{width:110px;border:2px solid #ccc;border-radius:999px;padding:7px 12px;font:inherit;font-weight:700;text-align:center;background:#fff;color:#111}
 .time-label{font-weight:700;color:#555}
-.timetable-item{display:flex;align-items:center;padding:8px 0;position:relative;height:56px;min-height:56px;box-sizing:border-box}.timetable-item::before{content:'';position:absolute;left:7px;top:0;bottom:0;width:4px;background:var(--primary);z-index:0}.timetable-item:first-child::before{top:50%}.timetable-item:last-child::before{bottom:50%}.time-dot{width:18px;height:18px;background:var(--primary);border-radius:50%;z-index:1;margin-right:16px;flex:none}.time-text{width:58px;font-weight:700;display:flex;flex-direction:column;justify-content:center;line-height:1.05;gap:0;height:40px;flex:none}.time-text span{display:block;height:20px;line-height:20px;white-space:nowrap}.station-text{font-weight:700;font-size:1.05rem;line-height:1.2;display:flex;align-items:center;min-height:40px}.timetable-list{background:#fff;border-radius:8px;padding:12px 20px;margin-top:12px}.train-card-img{width:75px;height:auto;object-fit:contain}.train-card{min-height:136px}.sheet-header-left{font-size:1rem}
+.timetable-item{display:flex;align-items:center;padding:8px 0;position:relative;height:56px;min-height:56px;box-sizing:border-box}.timetable-item::before{content:'';position:absolute;left:7px;top:0;bottom:0;width:4px;background:linear-gradient(to bottom,var(--timetable-line-top,var(--primary)) 0 50%,var(--timetable-line-bottom,var(--primary)) 50% 100%);z-index:0}.timetable-item:first-child::before{top:50%}.timetable-item:last-child::before{bottom:50%}.timetable-item:first-child::before{background:var(--timetable-line-bottom,var(--primary))}.timetable-item:last-child::before{background:var(--timetable-line-top,var(--primary))}.time-dot{width:18px;height:18px;background:var(--timetable-dot-color,var(--primary));border-radius:50%;z-index:1;margin-right:16px;flex:none}.time-text{width:58px;font-weight:700;display:flex;flex-direction:column;justify-content:center;line-height:1.05;gap:0;height:40px;flex:none}.time-text span{display:block;height:20px;line-height:20px;white-space:nowrap}.station-text{font-weight:700;font-size:1.05rem;line-height:1.2;display:flex;align-items:center;min-height:40px}.timetable-list{background:#fff;border-radius:8px;padding:12px 20px;margin-top:12px}.train-card-img{width:75px;height:auto;object-fit:contain}.train-card{min-height:136px}.sheet-header-left{font-size:1rem}
 .moving-train-layer{position:absolute;inset:0;z-index:6;pointer-events:none}
 .train-icon{position:absolute;top:0;width:66px;display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:transform .15s;pointer-events:auto}
 .train-icon.left,.train-icon.right{right:auto}
@@ -851,13 +851,67 @@ function timetableTypeLabel(t){
   // 駅時刻表の種別表記だけTHライナーを半角カタカナ表記にする。
   return String(t?.type||'')==='THライナー'?'THﾗｲﾅｰ':String(t?.type||'');
 }
+function timetableSegmentColor(stops,i){
+  const a=String(stops?.[i]?.station||''), b=String(stops?.[i+1]?.station||'');
+  if(!a||!b) return null;
+  const pair=[a,b].sort().join('|');
+
+  // まず実際の路線図上の本線区間を判定する。
+  // 東武動物公園以北＝伊勢崎線、東武動物公園以南＝スカイツリーライン。
+  if(MAIN_NAMES.includes(a)&&MAIN_NAMES.includes(b)) return edgeColor('main',[a,''],[b,'']);
+
+  // 北千住～押上は直通列車・特急系の停車駅列で「北千住→押上」と
+  // まとめられていても、ここはスカイツリーライン色で統一する。
+  if(pair==='北千住|押上') return COLORS.sky;
+
+  // 本線と枝線の境界。
+  if(pair==='北千住|南千住') return COLORS.hibiya;
+  if(pair==='曳舟|押上') return COLORS.sky;
+  if(pair==='東武動物公園|杉戸高野台') return COLORS.nikko;
+  if(pair==='渋谷|表参道') return COLORS.hanzomon;
+  if(pair==='渋谷|池尻大橋') return COLORS.denentoshi;
+
+  // 列車データ上で中間駅を省略する特急もあるため、
+  // 「両端の駅が同一路線上に存在する」だけでなく、特急停車区間そのものを判定。
+  const nikkoLimitedNames=new Set(['東武動物公園','春日部','栃木','新鹿沼','下今市','東武日光']);
+  const isesakiLimitedNames=new Set(['館林','久喜','東武動物公園']);
+  if(nikkoLimitedNames.has(a)&&nikkoLimitedNames.has(b)) return COLORS.nikko;
+  if(isesakiLimitedNames.has(a)&&isesakiLimitedNames.has(b)) return COLORS.isesaki;
+
+  // 特急が北千住から東武動物公園方面へ走る場合はスカイツリーライン色。
+  const skyLimitedNames=new Set(['北千住','曳舟','とうきょうｽｶｲﾂﾘｰ','浅草','東武動物公園']);
+  if(skyLimitedNames.has(a)&&skyLimitedNames.has(b)) return COLORS.sky;
+
+  // 通常の枝線は駅リストから判定。
+  const routeKeys=['hibiya','hanzomon','denentoshi','nikko'];
+  for(const rk of routeKeys){
+    const names=ROUTES[rk]?.stations?.map(x=>x[0])||[];
+    if(names.includes(a)&&names.includes(b)) return lineColorFor(rk);
+  }
+  return null;
+}
+function timetableStationColor(stops,i){
+  // 駅の丸は「その駅から次に進む路線」の色にする。
+  // これにより路線が切り替わる駅（例：北千住・押上・渋谷等）は次路線の色になる。
+  const nextColor=timetableSegmentColor(stops,i);
+  if(nextColor) return nextColor;
+  const prevColor=i>0?timetableSegmentColor(stops,i-1):null;
+  return prevColor||lineColorFor('main');
+}
 function timetableRowsHTML(stops){
   let html='';
   for(let i=0;i<stops.length;){
     const station=stops[i].station;const times=[stops[i].time];let j=i+1;
     while(j<stops.length&&stops[j].station===station){times.push(stops[j].time);j++;}
     const shown=(times.length>1&&times[0]!==times[1])?times.slice(0,2):[times[0]];
-    html+=`<div class="timetable-item"><div class="time-dot"></div><div class="time-text${shown.length>1?' two-line':''}">${shown.map(x=>`<span>${esc(x)}</span>`).join('')}</div><div class="station-text">${esc(stopGuideStationName(station))}</div></div>`;i=j;
+    // 丸の色は「その駅から次に進む路線」、丸と丸の間の線は「その区間の路線」にする。
+    // したがって路線切替駅では、切替駅の丸だけ次路線色になり、手前の線は手前路線色のまま。
+    const dotColor=timetableStationColor(stops,i);
+    // 線は「駅間」を1色で描く。現在駅の上半分は前区間、下半分は次区間。
+    const topLineColor=i>0?timetableSegmentColor(stops,i-1):null;
+    const bottomLineColor=timetableSegmentColor(stops,j-1)||topLineColor||dotColor;
+    const lineStyle=`--timetable-line-top:${topLineColor||bottomLineColor};--timetable-line-bottom:${bottomLineColor};--timetable-dot-color:${dotColor};`;
+    html+=`<div class="timetable-item" style="${lineStyle}"><div class="time-dot"></div><div class="time-text${shown.length>1?' two-line':''}">${shown.map(x=>`<span>${esc(x)}</span>`).join('')}</div><div class="station-text">${esc(stopGuideStationName(station))}</div></div>`;i=j;
   }
   return html;
 }
@@ -1059,6 +1113,20 @@ function trainPosition(t,minutes){
     if(mm>=t0&&mm<=t1){
       const pair=findVisualRowPair(a.station,b.station,t);
       if(!pair)return null;
+      // 日光線などの枝線を表示しているとき、枝線を走らない列車が
+      // 本線の駅間を補間した結果、枝線側の駅行へ重なって見えるのを防ぐ。
+      // 「枝線を実際に走る列車」だけは枝線内の駅間をそのまま描画する。
+      if(activeBranches.has('nikko') && !trainUsesNikkoBranch(t) && visualPairCrossesActiveBranch(pair)){
+        return null;
+      }
+      // 日光線を開いたとき、伊勢崎線・本線の列車が日光線の駅列へ
+      // 乗り入れたように見えないようにする。
+      // 日光線の駅行が本線の途中へ挿入されるため、DOM上の行間が大きい
+      // （visualGap > 2）区間は、そのまま補間すると必ず枝線上を横切ってしまう。
+      // 本線系統の列車はこの区間では表示しない。
+      if(t.service==='chijou' && activeBranches.has('nikko') && (pair.r1-pair.r0)>2){
+        return null;
+      }
       const q=(t1-t0)?(mm-t0)/(t1-t0):0;
       const clampedQ=Math.max(0,Math.min(1,q));
       // 枝線表示中は、本線の隣接駅の間に枝線の駅行が多数挿入される。
@@ -1117,14 +1185,39 @@ function routeKeyForTrainStation(t,name){
 
 // 枝線の区間に入れる列車をサービス単位で厳密に制限する。
 // 共有駅を含む境界区間（北千住→南千住、曳舟→押上、渋谷→池尻大橋）もここで判定する。
+function trainUsesNikkoBranch(t){
+  const stops=Array.isArray(t?.stops)?t.stops:[];
+  return stops.some(s=>{
+    const n=String(s?.station||'');
+    return NIKKO_NAMES.includes(n) && n!=='東武動物公園';
+  });
+}
+
+function visualPairCrossesActiveBranch(pair){
+  if(!pair || !activeBranches || !activeBranches.size) return false;
+  const rows=[...document.querySelectorAll('.station-row')];
+  const lo=Math.min(pair.r0,pair.r1),hi=Math.max(pair.r0,pair.r1);
+  for(let i=lo;i<=hi;i++){
+    const rk=rows[i]?.dataset?.routeKey||'main';
+    if(activeBranches.has(rk) && rk!=='main') return true;
+  }
+  return false;
+}
+
 function segmentServiceAllowed(t,aName,bName){
   const service=String(t?.service||'');
   const a=String(aName||''), b=String(bName||'');
   const pair=[a,b].sort().join('|');
 
+  // 日光線は service 名ではなく、実際の停車駅に日光線区間が含まれる列車だけを許可。
+  // 特急は service:'tokkyu' でも東武日光まで走るため、service名だけでは判定しない。
+  const nikkoOnly=
+    (NIKKO_NAMES.includes(a) && a!=='東武動物公園') ||
+    (NIKKO_NAMES.includes(b) && b!=='東武動物公園') ||
+    pair==='東武動物公園|杉戸高野台';
+
   // 本線と枝線の境界を含め、枝線側へ入れるサービスを明示する。
-  // 北千住は日比谷線にも半蔵門線側にも現れる共有駅なので、
-  // 「北千住が含まれる」だけでは日比谷線扱いにしない。
+  // 北千住は日比谷線・半蔵門線側にも現れる共有駅。
   const hibiyaOnly =
     (HIBIYA_NAMES.includes(a) && a!=='北千住') ||
     (HIBIYA_NAMES.includes(b) && b!=='北千住') ||
@@ -1140,6 +1233,7 @@ function segmentServiceAllowed(t,aName,bName){
     (DENENTOSHI_NAMES.includes(b) && b!=='渋谷') ||
     pair==='渋谷|池尻大橋';
 
+  if(nikkoOnly) return trainUsesNikkoBranch(t);
   if(hibiyaOnly) return service==='hibiya';
   if(hanzomonOnly || denentoshiOnly) return service==='hanzomon';
   return true;
@@ -1251,7 +1345,7 @@ function trainAllowedOnRouteStation(t,routeKey,stationName){
   if(routeKey==='denentoshi') return service==='hanzomon';
   if(routeKey==='hanzomon') return service==='hanzomon';
   if(routeKey==='hibiya') return service==='hibiya';
-  if(routeKey==='nikko') return service==='nikko';
+  if(routeKey==='nikko') return trainUsesNikkoBranch(t);
   return true;
 }
 function serviceTopologyValid(t){
@@ -1265,7 +1359,7 @@ function serviceTopologyValid(t){
   const hasNikko=stops.some(n=>NIKKO_NAMES.includes(n) && n!=='東武動物公園');
   if((hasHanzomon||hasDenentoshi) && service!=='hanzomon') return false;
   if(hasHibiya && service!=='hibiya') return false;
-  if(hasNikko && service!=='nikko') return false;
+  if(hasNikko && !(service==='nikko' || service==='tokkyu')) return false;
   // 半蔵門線直通列車は押上を境に田園都市線へ連続して入れる。
   if(service==='hanzomon' && !hasHanzomon && !hasDenentoshi) return false;
   if(service==='hibiya' && !hasHibiya) return false;
@@ -1278,7 +1372,7 @@ function trainAllowedOnVisibleBranch(t,stationName){
   if(!actuallyStops) return false;
   if(DENENTOSHI_NAMES.includes(stationName) || HANZOMON_NAMES.includes(stationName)) return t.service==='hanzomon';
   if(HIBIYA_NAMES.includes(stationName) && stationName!=='北千住') return t.service==='hibiya';
-  if(NIKKO_NAMES.includes(stationName) && stationName!=='東武動物公園') return t.service==='nikko';
+  if(NIKKO_NAMES.includes(stationName) && stationName!=='東武動物公園') return trainUsesNikkoBranch(t);
   return true;
 }
 function currentRowIndexForStation(name){const rows=[...document.querySelectorAll('.station-row')];return rows.findIndex(r=>r.querySelector('.station-name-ja')?.textContent===name);}
