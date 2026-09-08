@@ -203,7 +203,7 @@ const INITIAL_FORMATION_SELECTION={id:'__INITIAL__',name:'編成未選択',img:'
 
 const FIREBASE_PROJECTS={
  tokkyu:{appName:"tobultdexp",label:"特急",config:{apiKey:"AIzaSyBvREMcKsKdEq2SKqB5C-W8oQLfPMJTaxA",authDomain:"unyomatome-tobultdexp.firebaseapp.com",projectId:"unyomatome-tobultdexp",storageBucket:"unyomatome-tobultdexp.firebasestorage.app",databaseURL:"https://unyomatome-tobultdexp-default-rtdb.asia-southeast1.firebasedatabase.app",messagingSenderId:"342090185277",appId:"1:342090185277:web:804de64fc594e1073a8854",measurementId:"G-74YNBEB1P9"}},
- chijou:{appName:"tobuisesakichijo",label:"地上運用",config:{apiKey:"AIzaSyDOz_4IqmM_d5e9J69eSAbYvDreXdOxTNs",authDomain:"unyomatome-tobuisesakichijo.firebaseapp.com",projectId:"unyomatome-tobuisesakichijo",databaseURL:"https://unyomatome-tobuisesakichijo-default-rtdb.asia-southeast1.firebasedatabase.app",storageBucket:"unyomatome-tobuisesakichijo.firebasestorage.app",messagingSenderId:"663466463103",appId:"1:663466463103:web:e433e801f3f6161e93144a",measurementId:"G-FV09WEWZ8T"}},
+ tschijou:{appName:"tobuisesakichijo",label:"地上運用",config:{apiKey:"AIzaSyDOz_4IqmM_d5e9J69eSAbYvDreXdOxTNs",authDomain:"unyomatome-tobuisesakichijo.firebaseapp.com",projectId:"unyomatome-tobuisesakichijo",databaseURL:"https://unyomatome-tobuisesakichijo-default-rtdb.asia-southeast1.firebasedatabase.app",storageBucket:"unyomatome-tobuisesakichijo.firebasestorage.app",messagingSenderId:"663466463103",appId:"1:663466463103:web:e433e801f3f6161e93144a",measurementId:"G-FV09WEWZ8T"}},
  hanzomon:{appName:"tobuhanzomon",label:"半蔵門線直通",config:{apiKey:"AIzaSyAuQaHkSK5R9l4dS_f_WDN7ltGlYfVUcNI",authDomain:"unyomatome-hanzomon.firebaseapp.com",projectId:"unyomatome-hanzomon",storageBucket:"unyomatome-hanzomon.firebasestorage.app",databaseURL:"https://unyomatome-hanzomon-default-rtdb.asia-southeast1.firebasedatabase.app",messagingSenderId:"228275224313",appId:"1:228275224313:web:7e32ccf34c7c1f1b122c28",measurementId:"G-0KLD8ZSNK9"}},
  hibiya:{appName:"tobuhibiya",label:"日比谷線直通",config:{apiKey:"AIzaSyDImRSbXqokzvten3NhlDrRbqKFxGchIxE",authDomain:"unyomatome-hibiya.firebaseapp.com",projectId:"unyomatome-hibiya",storageBucket:"unyomatome-hibiya.firebasestorage.app",databaseURL:"https://unyomatome-hibiya-default-rtdb.asia-southeast1.firebasedatabase.app",messagingSenderId:"177413220554",appId:"1:177413220554:web:dde8dcd769b9367b31ac33",measurementId:"G-V29G9V8DCN"}}
 };
@@ -320,7 +320,7 @@ function prescribedFormationName(t){
     const end=no.slice(-1);
     return end==='T' ? '東武車' : end==='S' ? 'メトロ車' : end==='K' ? '東急車' : '70000型';
   }
-  if(service==='chijou') return '地上運用';
+  if(service==='tschijou') return '地上運用';
   return t?.defaultCars||'7両';
 }
 function getExpressClass(t){
@@ -373,12 +373,12 @@ function mainBetween(a,b){
 function stationNameKey(name){return String(name??'').trim().replace(/とうきょうｽｶｲﾂﾘｰ/g,'とうきょうスカイツリー');}
 function stationNamesEqual(a,b){return stationNameKey(a)===stationNameKey(b);}
 // 時刻表データは系統ごとのJSONファイルから読み込む。
-// JSONファイル名は既存Firebaseプロジェクト名と統一：tokkyu / chijou / hanzomon / hibiya
+// JSONファイル名は既存Firebaseプロジェクト名と統一：tokkyu / tschijou / hanzomon / hibiya
 let TRAINS = [];
 const TRAIN_DATA_BASE = 'https://minamikaze2700.github.io/Unyomatome/timetable/';
 const TRAIN_DATA_FILES = {
   tokkyu: `${TRAIN_DATA_BASE}tokkyu.json`,
-  chijou: `${TRAIN_DATA_BASE}chijou.json`,
+  tschijou: `${TRAIN_DATA_BASE}tschijou.json`,
   hanzomon: `${TRAIN_DATA_BASE}hanzomon.json`,
   hibiya: `${TRAIN_DATA_BASE}hibiya.json`
 };
@@ -531,7 +531,7 @@ function trainGroupKey(t){
   if(t.service==='hibiya')return 'hibiya';
   if(t.service==='hanzomon')return 'hanzomon';
   if(t.type==='特急')return 'tokkyu';
-  return 'chijou';
+  return 'tschijou';
 }
 function liveTrain(no){
   const base=TRAINS.find(t=>String(t.no)===String(no)); if(!base)return null;
@@ -1023,7 +1023,7 @@ function formationCategoryAllowedForTrain(t,groupType){
   if(groupType==='500系+500系') return prescribed==='500系+500系';
   if(service==='hanzomon') return ['50000型','50050型','東京メトロ8000系','東京メトロ08系','東京メトロ18000系','東急5000系','東急2020系'].includes(groupType);
   if(service==='hibiya') return ['70000型','70090型','東京メトロ13000系'].includes(groupType);
-  if(service==='chijou') return ['10000型','10030型'].includes(groupType);
+  if(service==='tschijou') return ['10000型','10030型'].includes(groupType);
   if(type==='特急') return ['100系','200系','500系','N100系'].includes(groupType);
   return false;
 }
@@ -1298,7 +1298,7 @@ function trainPosition(t,minutes){
       // 日光線の駅行が本線の途中へ挿入されるため、DOM上の行間が大きい
       // （visualGap > 2）区間は、そのまま補間すると必ず枝線上を横切ってしまう。
       // 本線系統の列車はこの区間では表示しない。
-      if(t.service==='chijou' && activeBranches.has('nikko') && (pair.r1-pair.r0)>2){
+      if(t.service==='tschijou' && activeBranches.has('nikko') && (pair.r1-pair.r0)>2){
         return null;
       }
       const q=(t1-t0)?(mm-t0)/(t1-t0):0;
@@ -1309,7 +1309,7 @@ function trainPosition(t,minutes){
       // 「本線側の入口→本線側の出口」だけを使って描画する。
       const visualGap=pair.r1-pair.r0;
       let visualPos;
-      if(t.service==='chijou'||t.service==='tokkyu'){
+      if(t.service==='tschijou'||t.service==='tokkyu'){
         if(visualGap>2){
           // 本線駅の間に分岐線の駅が大量に挿入される区間では、
           // DOM上の駅番号をそのまま補間すると本線列車が分岐線の駅列の上に表示される。
@@ -1439,7 +1439,7 @@ function findVisualRowPair(aName,bName,t=null){
   const forced=visualRouteKeysForSegment(t,aName,bName);
   // 地上運用・特急は本線上の駅間だけを使用する。
   // 同名駅の分岐線側DOMを誤って拾わないよう、本線系統は常に main/main を固定する。
-  const mainOnly=(t?.service==='chijou'||t?.service==='tokkyu');
+  const mainOnly=(t?.service==='tschijou'||t?.service==='tokkyu');
   const routeA=mainOnly?'main':(forced?forced[0]:routeKeyForTrainStation(t,aName));
   const routeB=mainOnly?'main':(forced?forced[1]:routeKeyForTrainStation(t,bName));
   const A=[],B=[];
@@ -1578,7 +1578,7 @@ function renderTrainPositions(){
       if(!allowed) continue;
     }
     // 本線系統（地上・特急）は枝線行を絶対に走行しない。
-    if((t.service==='chijou'||t.service==='tokkyu') && pairRows.some(r=>r?.dataset?.routeKey!=='main')) continue;
+    if((t.service==='tschijou'||t.service==='tokkyu') && pairRows.some(r=>r?.dataset?.routeKey!=='main')) continue;
     if(!trainAllowedOnVisibleBranch(t,p.stationA)||!trainAllowedOnVisibleBranch(t,p.stationB))continue;
     const laneBase=laneForTrain(t,p,minutes);
     // 列車アイコンの表示側は野田線版と同じく列車の進行方向で固定。
