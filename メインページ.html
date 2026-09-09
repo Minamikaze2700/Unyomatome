@@ -567,10 +567,7 @@ document.addEventListener('keydown', event => {
   }
 });
 
-/* メインページ表示時に、最後に選択した路線ページも即座に読み込む。
- * iframeをabout:blankのままにせず、ページ本体と同時に埋め込みページをロードする。
- * 前バージョンと同じく、最後に選択した路線はlocalStorageから復元する。
- */
+/* メインページ表示時に、最後に選択した路線ページを毎回強制再読み込み */
 (function restoreLastRoute(){
   const pageLayer = document.getElementById('pageLayer');
   const bottomNav = document.getElementById('bottomNav');
@@ -586,26 +583,39 @@ document.addEventListener('keydown', event => {
     );
 
     if(routeExists){
-      pageLayer.src =
+      const routeUrl =
         'https://minamikaze2700.github.io/Unyomatome/' +
         encodeURIComponent(lastRoute) +
         '.html';
+
+      /*
+       * メインページを開くたびに必ず強制再読み込み。
+       * URLにキャッシュ回避用の時刻パラメータを付けることで、
+       * iframe内の以前のページキャッシュを使わず再取得させる。
+       */
+      const reloadUrl = routeUrl + '?_reload=' + Date.now();
+
+      pageLayer.src = 'about:blank';
+      pageLayer.style.display = 'block';
+
+      // いったんabout:blankに切り替えた後、強制的に新しいURLを読み込む
+      requestAnimationFrame(() => {
+        pageLayer.src = reloadUrl;
+      });
+
       bottomNav.classList.add('compact');
       document.documentElement.style.setProperty('--current-nav-height', '42px');
-      pageLayer.style.display = 'block';
       syncEmbeddedPageHeight();
       return;
     }
   }
 
-  /* 前回の選択がない場合も、埋め込みページ領域を初期化して表示。
-   * これによりメインページが表示された時点でiframe自体が読み込み対象になる。
-   * 実際の路線が未選択ならabout:blankのままなので、余計な路線は開かない。
-   */
+  // 保存済み路線がない場合はiframeを表示するが路線は読み込まない。
   pageLayer.style.display = 'block';
+  pageLayer.src = 'about:blank';
+  bottomNav.classList.remove('compact');
   syncEmbeddedPageHeight();
-})();
-</script>
+})();</script>
 
 </body>
 </html>
