@@ -567,29 +567,43 @@ document.addEventListener('keydown', event => {
   }
 });
 
-/* 最後に表示した路線を初期表示 */
+/* メインページ表示時に、最後に選択した路線ページも即座に読み込む。
+ * iframeをabout:blankのままにせず、ページ本体と同時に埋め込みページをロードする。
+ * 前バージョンと同じく、最後に選択した路線はlocalStorageから復元する。
+ */
 (function restoreLastRoute(){
+  const pageLayer = document.getElementById('pageLayer');
+  const bottomNav = document.getElementById('bottomNav');
+  if(!pageLayer || !bottomNav) return;
+
   const lastRoute = localStorage.getItem('lastRoute');
-  if(!lastRoute) return;
 
-  const routeExists = Object.values(REGION_DATA).some(companies =>
-    companies.some(company =>
-      company.routes.some(route => route.fullName === lastRoute)
-    )
-  );
+  if(lastRoute){
+    const routeExists = Object.values(REGION_DATA).some(companies =>
+      companies.some(company =>
+        company.routes.some(route => route.fullName === lastRoute)
+      )
+    );
 
-  if(routeExists){
-    const pageLayer = document.getElementById('pageLayer');
-    pageLayer.src =
-      'https://minamikaze2700.github.io/Unyomatome/' +
-      encodeURIComponent(lastRoute) +
-      '.html';
-    const bottomNav = document.getElementById('bottomNav');
-    bottomNav.classList.add('compact');
-    document.documentElement.style.setProperty('--current-nav-height', '42px');
-    pageLayer.style.display = 'block';
-    syncEmbeddedPageHeight();
+    if(routeExists){
+      pageLayer.src =
+        'https://minamikaze2700.github.io/Unyomatome/' +
+        encodeURIComponent(lastRoute) +
+        '.html';
+      bottomNav.classList.add('compact');
+      document.documentElement.style.setProperty('--current-nav-height', '42px');
+      pageLayer.style.display = 'block';
+      syncEmbeddedPageHeight();
+      return;
+    }
   }
+
+  /* 前回の選択がない場合も、埋め込みページ領域を初期化して表示。
+   * これによりメインページが表示された時点でiframe自体が読み込み対象になる。
+   * 実際の路線が未選択ならabout:blankのままなので、余計な路線は開かない。
+   */
+  pageLayer.style.display = 'block';
+  syncEmbeddedPageHeight();
 })();
 </script>
 
