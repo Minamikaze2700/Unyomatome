@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -1223,7 +1224,7 @@ function trainTimeAtMainStation(t,stationName){
 
   // まず実停車時刻を優先。
   for(const s of stops){
-    if(stationNameKey(s?.station)===target && s?.time) return timeToMinutes(s.time);
+    if(stationNameKey(s?.station)===target && s?.time) return serviceDayMinuteFromTime(s.time);
   }
 
   // 通過駅なら、直前・直後の停車駅から本線上の駅間距離で時刻を補間する。
@@ -1236,7 +1237,7 @@ function trainTimeAtMainStation(t,stationName){
     if(ai<0||bi<0)continue;
     const lo=Math.min(ai,bi),hi=Math.max(ai,bi);
     if(targetIndex<lo||targetIndex>hi||ai===bi)continue;
-    let t0=timeToMinutes(a.time),t1=timeToMinutes(b.time);
+    let t0=serviceDayMinuteFromTime(a.time),t1=serviceDayMinuteFromTime(b.time);
     if(t1<t0)t1+=1440;
     const q=(targetIndex-ai)/(bi-ai);
     return t0+(t1-t0)*q;
@@ -1285,7 +1286,7 @@ function trainPosition(t,minutes){
   if(branchHiddenAtTime(t,minutes)) return null;
   let m=minutes;
   for(let i=0;i<stops.length-1;i++){
-    const a=stops[i],b=stops[i+1];let t0=timeToMinutes(a.time),t1=timeToMinutes(b.time);
+    const a=stops[i],b=stops[i+1];let t0=serviceDayMinuteFromTime(a.time),t1=serviceDayMinuteFromTime(b.time);
     if(t1<t0)t1+=1440;
     let mm=m;if(mm<t0)mm+=1440;
     if(mm>=t0&&mm<=t1){
