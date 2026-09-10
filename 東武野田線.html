@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -1553,16 +1554,23 @@ function formatTimeNow(){
   return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
 }
 function currentMinutes(){
+  // 時刻入力・現在時刻とも、03:00を境とする「運用日」の分数で扱う。
+  // 0:00～2:59は1440分台にすることで、前日の23時台から続く列車が
+  // 日付変更後もそのまま位置計算へ入れる。
   if(followNow){
     const d=new Date();
-    // 現在時刻は秒まで使い、列車位置を1秒単位で連続的に更新する。
-    return d.getHours()*60+d.getMinutes()+d.getSeconds()/60+d.getMilliseconds()/60000;
+    const base=d.getHours()*60+d.getMinutes()+d.getSeconds()/60+d.getMilliseconds()/60000;
+    return d.getHours()<RESET_HOUR ? base+1440 : base;
   }
   const input=document.getElementById('timeInput');
   const value=input?.value || formatTimeNow();
   const [h,m]=String(value).split(':').map(Number);
-  if(Number.isFinite(h) && Number.isFinite(m)) return h*60+m;
-  return new Date().getHours()*60+new Date().getMinutes();
+  if(Number.isFinite(h) && Number.isFinite(m)){
+    return h<RESET_HOUR ? h*60+m+1440 : h*60+m;
+  }
+  const d=new Date();
+  const base=d.getHours()*60+d.getMinutes();
+  return d.getHours()<RESET_HOUR ? base+1440 : base;
 }
 function setNowTime(){
   followNow=true;
@@ -1667,7 +1675,13 @@ function renderLine(){
   });
   renderTrainPositions();
 }
-function timeToMinutes(value){ const [h,m]=String(value).split(':').map(Number); return h*60+m; }
+function timeToMinutes(value){
+  const [h,m]=String(value).split(':').map(Number);
+  if(!Number.isFinite(h)||!Number.isFinite(m)) return NaN;
+  // 運用日は03:00を境にする。0:00～2:59の時刻は翌日扱いとして
+  // 1440分台へ持ち上げ、23時台から続く列車を同一運用日で比較できるようにする。
+  return h<RESET_HOUR ? h*60+m+1440 : h*60+m;
+}
 function inferDirectionFromStations(a,b){
   const ia=stationIndex(a),ib=stationIndex(b);
   return ia>ib?'up':'down';
