@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -135,6 +134,8 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script>
+const TURNBACK_SWITCH_MIN=1;
+const RESET_DWELL_MIN=2;
 const COLORS={
   isesaki:'#E4002B',sky:'#0F6CC3',nikko:'#FFA600',hibiya:'#B5B5AC',hanzomon:'#8F76D6',denentoshi:'#00B395'
 };
@@ -276,9 +277,12 @@ function formationIdFromInput(value){
   if(/^[A-Z]?\d{4,6}F$/i.test(raw)) return {ok:true,id:raw.toUpperCase()};
   return {ok:false,error:`車両番号・編成番号「${raw}」に該当する編成が見つかりません。`};
 }
-function formationDisplayParts(id){
+function formationDisplayParts(id,direction=null){
   if(!id)return [];
-  const ids=String(id).split('+').map(x=>x.trim()).filter(Boolean);
+  let ids=String(id).split('+').map(x=>x.trim()).filter(Boolean);
+  // 編成入力は「前寄り+後ろ寄り」で保持する。
+  // 浅草方面（up）へ折り返す場合だけ、実車の前後に合わせて表示順を反転する。
+  if(String(direction||'').toLowerCase()==='up' && ids.length>1) ids=ids.reverse();
   return ids.flatMap(one=>{
     const f=selectionDisplayObject(one);
     if(!f||f.id===INITIAL_FORMATION_SELECTION.id)return [];
@@ -286,9 +290,16 @@ function formationDisplayParts(id){
     if(f.kind==='variant') return [f.type,f.name].filter(Boolean); return f.type&&f.name.startsWith(f.type)?[f.type,f.name.slice(f.type.length).trim()].filter(Boolean):[f.name];
   });
 }
-function formationDisplayHTML(id){return formationDisplayParts(id).map(x=>`<span>${esc(x)}</span>`).join('');}
+function formationDisplayHTML(id,direction=null){return formationDisplayParts(id,direction).map(x=>`<span>${esc(x)}</span>`).join('');}
+function trainFormationIdsFor(t){
+  let parts=String(t?.formation||'').split('+').map(x=>x.trim()).filter(Boolean);
+  // 編成入力欄の「前寄り・後ろ寄り」は列車の向きに合わせて実車の前後順で表示する。
+  // 選択肢一覧そのものは slot=0/1 の固定ルールのまま。
+  if(String(t?.direction||'').toLowerCase()==='up' && parts.length>1) parts=parts.reverse();
+  return parts;
+}
 function trainImageFor(t){
-  const parts=String(t?.formation||'').split('+').map(x=>x.trim()).filter(Boolean);
+  const parts=trainFormationIdsFor(t);
   if(!parts.length)return INITIAL_FORMATION_SELECTION.img;
   return selectionDisplayObject(parts[0]).img||NOIMAGE_IMG;
 }
@@ -380,6 +391,39 @@ function stationNamesEqual(a,b){return stationNameKey(a)===stationNameKey(b);}
 // 時刻表データは系統ごとのJSONファイルから読み込む。
 // 地上運用の時刻表JSONは tschijo.json を使用。
 let TRAINS = [];
+
+/* 平日運用連結：Excel「平日」シートで横に並んでいる列車を同一運用として扱う。
+   1行に左→右の順で並ぶ列車は、前列車の終着駅と次列車の始発駅が一致することを確認した上で連結。
+   0:00～2:59の時刻は運用日基準（+1440分）で比較する。 */
+const OPERATION_CHAINS = {"平日":[[{"no":"802","type":"普通","start":"北千住","startTime":"05:10","dest":"浅草","endTime":"05:25"},{"no":"2503","type":"区間急行","start":"浅草","startTime":"05:30","dest":"館林","endTime":"06:57"}],[{"no":"804","type":"普通","start":"北千住","startTime":"05:21","dest":"浅草","endTime":"05:36"},{"no":"801","type":"普通","start":"浅草","startTime":"05:45","dest":"北千住","endTime":"06:04"}],[{"no":"806","type":"普通","start":"北千住","startTime":"05:30","dest":"浅草","endTime":"05:48"},{"no":"803","type":"普通","start":"浅草","startTime":"05:58","dest":"北千住","endTime":"06:15"}],[{"no":"808","type":"普通","start":"北千住","startTime":"05:46","dest":"浅草","endTime":"06:03"},{"no":"3601","type":"区間準急","start":"浅草","startTime":"06:13","dest":"南栗橋","endTime":"07:35"}],[{"no":"810","type":"普通","start":"北千住","startTime":"05:59","dest":"浅草","endTime":"06:16"},{"no":"805","type":"普通","start":"浅草","startTime":"06:25","dest":"北千住","endTime":"06:40"}],[{"no":"2502","type":"区間急行","start":"館林","startTime":"04:58","dest":"浅草","endTime":"06:24"},{"no":"807","type":"普通","start":"浅草","startTime":"06:39","dest":"北千住","endTime":"06:54"}],[{"no":"812","type":"普通","start":"北千住","startTime":"06:16","dest":"浅草","endTime":"06:33"},{"no":"2505","type":"区間急行","start":"浅草","startTime":"06:50","dest":"館林","endTime":"08:23"}],[{"no":"814","type":"普通","start":"北千住","startTime":"06:30","dest":"浅草","endTime":"06:47"},{"no":"2507","type":"区間急行","start":"浅草","startTime":"07:03","dest":"館林","endTime":"08:33"}],[{"no":"2504","type":"区間急行","start":"館林","startTime":"05:27","dest":"浅草","endTime":"06:58"},{"no":"2509","type":"区間急行","start":"浅草","startTime":"07:10","dest":"館林","endTime":"08:43"}],[{"no":"816","type":"普通","start":"北千住","startTime":"06:54","dest":"浅草","endTime":"07:10"},{"no":"3501","type":"区間準急","start":"浅草","startTime":"07:18","dest":"館林","endTime":"08:59"}],[{"no":"818","type":"普通","start":"北千住","startTime":"07:05","dest":"浅草","endTime":"07:25"},{"no":"3503","type":"区間準急","start":"浅草","startTime":"07:33","dest":"館林","endTime":"09:21"}],[{"no":"2506","type":"区間急行","start":"館林","startTime":"05:53","dest":"浅草","endTime":"07:36"},{"no":"3701","type":"区間準急","start":"浅草","startTime":"07:43","dest":"東武動物公園","endTime":"08:48"}],[{"no":"2508","type":"区間急行","start":"館林","startTime":"06:06","dest":"浅草","endTime":"07:46"},{"no":"3505","type":"区間準急","start":"浅草","startTime":"07:52","dest":"館林","endTime":"09:53"}],[{"no":"2510","type":"区間急行","start":"館林","startTime":"06:16","dest":"浅草","endTime":"07:55"},{"no":"809","type":"普通","start":"浅草","startTime":"08:01","dest":"北千住","endTime":"08:19"}],[{"no":"2512","type":"区間急行","start":"館林","startTime":"06:27","dest":"浅草","endTime":"08:05"},{"no":"3801","type":"区間準急","start":"浅草","startTime":"08:11","dest":"北春日部","endTime":"09:13"}],[{"no":"2514","type":"区間急行","start":"館林","startTime":"06:36","dest":"浅草","endTime":"08:14"},{"no":"3507","type":"区間準急","start":"浅草","startTime":"08:21","dest":"館林","endTime":"10:07"}],[{"no":"2516","type":"区間急行","start":"館林","startTime":"06:45","dest":"浅草","endTime":"08:24"},{"no":"2603","type":"区間急行","start":"浅草","startTime":"08:32","dest":"南栗橋","endTime":"09:43"}],[{"no":"2518","type":"区間急行","start":"館林","startTime":"06:52","dest":"浅草","endTime":"08:35"},{"no":"811","type":"普通","start":"浅草","startTime":"08:43","dest":"北千住","endTime":"09:01"}],[{"no":"2520","type":"区間急行","start":"館林","startTime":"07:04","dest":"浅草","endTime":"08:46"},{"no":"3803","type":"区間準急","start":"浅草","startTime":"08:51","dest":"北春日部","endTime":"09:50"}],[{"no":"2522","type":"区間急行","start":"館林","startTime":"07:15","dest":"浅草","endTime":"08:54"},{"no":"3603","type":"区間準急","start":"浅草","startTime":"09:03","dest":"南栗橋","endTime":"10:27"}],[{"no":"2524","type":"区間急行","start":"館林","startTime":"07:25","dest":"浅草","endTime":"09:06"},{"no":"3509","type":"区間準急","start":"浅草","startTime":"09:13","dest":"館林","endTime":"11:07"}],[{"no":"2526","type":"区間急行","start":"館林","startTime":"07:35","dest":"浅草","endTime":"09:16"},{"no":"813","type":"普通","start":"浅草","startTime":"09:21","dest":"北千住","endTime":"09:39"}],[{"no":"2528","type":"区間急行","start":"館林","startTime":"07:47","dest":"浅草","endTime":"09:20"},{"no":"815","type":"普通","start":"浅草","startTime":"09:33","dest":"北千住","endTime":"09:49"}],[{"no":"2530","type":"区間急行","start":"館林","startTime":"07:58","dest":"浅草","endTime":"09:36"},{"no":"817","type":"普通","start":"浅草","startTime":"09:43","dest":"北千住","endTime":"10:00"}],[{"no":"2604","type":"区間急行","start":"南栗橋","startTime":"08:28","dest":"浅草","endTime":"09:39"},{"no":"819","type":"普通","start":"浅草","startTime":"09:52","dest":"北千住","endTime":"10:09"}],[{"no":"2532","type":"区間急行","start":"館林","startTime":"08:19","dest":"浅草","endTime":"09:55"},{"no":"821","type":"普通","start":"浅草","startTime":"10:02","dest":"北千住","endTime":"10:19"}],[{"no":"820","type":"普通","start":"北千住","startTime":"09:45","dest":"浅草","endTime":"10:02"},{"no":"823","type":"普通","start":"浅草","startTime":"10:12","dest":"北千住","endTime":"10:29"}],[{"no":"822","type":"普通","start":"北千住","startTime":"09:55","dest":"浅草","endTime":"10:12"},{"no":"825","type":"普通","start":"浅草","startTime":"10:22","dest":"北千住","endTime":"10:39"}],[{"no":"3702","type":"区間準急","start":"東武動物公園","startTime":"09:15","dest":"浅草","endTime":"10:22"},{"no":"827","type":"普通","start":"浅草","startTime":"10:32","dest":"北千住","endTime":"10:49"}],[{"no":"824","type":"普通","start":"北千住","startTime":"10:14","dest":"浅草","endTime":"10:31"},{"no":"829","type":"普通","start":"浅草","startTime":"10:42","dest":"北千住","endTime":"10:59"}],[{"no":"3502","type":"区間準急","start":"館林","startTime":"08:52","dest":"浅草","endTime":"10:41"},{"no":"831","type":"普通","start":"浅草","startTime":"10:52","dest":"北千住","endTime":"11:09"}],[{"no":"826","type":"普通","start":"北千住","startTime":"10:34","dest":"浅草","endTime":"10:51"},{"no":"833","type":"普通","start":"浅草","startTime":"11:02","dest":"北千住","endTime":"11:19"}],[{"no":"828","type":"普通","start":"北千住","startTime":"10:44","dest":"浅草","endTime":"11:01"},{"no":"835","type":"普通","start":"浅草","startTime":"11:12","dest":"北千住","endTime":"11:29"}],[{"no":"830","type":"普通","start":"北千住","startTime":"10:54","dest":"浅草","endTime":"11:11"},{"no":"837","type":"普通","start":"浅草","startTime":"11:22","dest":"北千住","endTime":"11:39"}],[{"no":"3504","type":"区間準急","start":"館林","startTime":"09:30","dest":"浅草","endTime":"11:21"},{"no":"839","type":"普通","start":"浅草","startTime":"11:32","dest":"北千住","endTime":"11:49"}],[{"no":"832","type":"普通","start":"北千住","startTime":"11:14","dest":"浅草","endTime":"11:31"},{"no":"841","type":"普通","start":"浅草","startTime":"11:42","dest":"北千住","endTime":"11:59"}],[{"no":"834","type":"普通","start":"北千住","startTime":"11:24","dest":"浅草","endTime":"11:41"},{"no":"843","type":"普通","start":"浅草","startTime":"11:52","dest":"北千住","endTime":"12:11"}],[{"no":"836","type":"普通","start":"北千住","startTime":"11:34","dest":"浅草","endTime":"11:51"},{"no":"845","type":"普通","start":"浅草","startTime":"12:02","dest":"北千住","endTime":"12:19"}],[{"no":"838","type":"普通","start":"北千住","startTime":"11:44","dest":"浅草","endTime":"12:01"},{"no":"847","type":"普通","start":"浅草","startTime":"12:12","dest":"北千住","endTime":"12:29"}],[{"no":"840","type":"普通","start":"北千住","startTime":"11:54","dest":"浅草","endTime":"12:11"},{"no":"849","type":"普通","start":"浅草","startTime":"12:22","dest":"北千住","endTime":"12:39"}],[{"no":"842","type":"普通","start":"北千住","startTime":"12:04","dest":"浅草","endTime":"12:21"},{"no":"851","type":"普通","start":"浅草","startTime":"12:32","dest":"北千住","endTime":"12:49"}],[{"no":"844","type":"普通","start":"北千住","startTime":"12:14","dest":"浅草","endTime":"12:31"},{"no":"853","type":"普通","start":"浅草","startTime":"12:42","dest":"北千住","endTime":"12:59"}],[{"no":"846","type":"普通","start":"北千住","startTime":"12:24","dest":"浅草","endTime":"12:41"},{"no":"855","type":"普通","start":"浅草","startTime":"12:52","dest":"北千住","endTime":"13:09"}],[{"no":"848","type":"普通","start":"北千住","startTime":"12:34","dest":"浅草","endTime":"12:51"},{"no":"857","type":"普通","start":"浅草","startTime":"13:02","dest":"北千住","endTime":"13:19"}],[{"no":"850","type":"普通","start":"北千住","startTime":"12:44","dest":"浅草","endTime":"13:01"},{"no":"859","type":"普通","start":"浅草","startTime":"13:12","dest":"北千住","endTime":"13:29"}],[{"no":"852","type":"普通","start":"北千住","startTime":"12:54","dest":"浅草","endTime":"13:11"},{"no":"861","type":"普通","start":"浅草","startTime":"13:22","dest":"北千住","endTime":"13:39"}],[{"no":"854","type":"普通","start":"北千住","startTime":"13:04","dest":"浅草","endTime":"13:21"},{"no":"863","type":"普通","start":"浅草","startTime":"13:32","dest":"北千住","endTime":"13:49"}],[{"no":"856","type":"普通","start":"北千住","startTime":"13:14","dest":"浅草","endTime":"13:31"},{"no":"865","type":"普通","start":"浅草","startTime":"13:42","dest":"北千住","endTime":"13:59"}],[{"no":"858","type":"普通","start":"北千住","startTime":"13:24","dest":"浅草","endTime":"13:41"},{"no":"867","type":"普通","start":"浅草","startTime":"13:52","dest":"北千住","endTime":"14:09"}],[{"no":"860","type":"普通","start":"北千住","startTime":"13:34","dest":"浅草","endTime":"13:51"},{"no":"869","type":"普通","start":"浅草","startTime":"14:02","dest":"北千住","endTime":"14:19"}],[{"no":"862","type":"普通","start":"北千住","startTime":"13:44","dest":"浅草","endTime":"14:01"},{"no":"871","type":"普通","start":"浅草","startTime":"14:12","dest":"北千住","endTime":"14:29"}],[{"no":"864","type":"普通","start":"北千住","startTime":"13:54","dest":"浅草","endTime":"14:11"},{"no":"873","type":"普通","start":"浅草","startTime":"14:22","dest":"北千住","endTime":"14:39"}],[{"no":"866","type":"普通","start":"北千住","startTime":"14:04","dest":"浅草","endTime":"14:21"},{"no":"875","type":"普通","start":"浅草","startTime":"14:32","dest":"北千住","endTime":"14:49"}],[{"no":"868","type":"普通","start":"北千住","startTime":"14:14","dest":"浅草","endTime":"14:31"},{"no":"877","type":"普通","start":"浅草","startTime":"14:42","dest":"北千住","endTime":"14:59"}],[{"no":"870","type":"普通","start":"北千住","startTime":"14:24","dest":"浅草","endTime":"14:41"},{"no":"879","type":"普通","start":"浅草","startTime":"14:52","dest":"北千住","endTime":"15:09"}],[{"no":"872","type":"普通","start":"北千住","startTime":"14:34","dest":"浅草","endTime":"14:51"},{"no":"881","type":"普通","start":"浅草","startTime":"15:02","dest":"北千住","endTime":"15:19"}],[{"no":"874","type":"普通","start":"北千住","startTime":"14:44","dest":"浅草","endTime":"15:01"},{"no":"883","type":"普通","start":"浅草","startTime":"15:12","dest":"北千住","endTime":"15:29"}],[{"no":"876","type":"普通","start":"北千住","startTime":"14:54","dest":"浅草","endTime":"15:11"},{"no":"885","type":"普通","start":"浅草","startTime":"15:22","dest":"北千住","endTime":"15:39"}],[{"no":"878","type":"普通","start":"北千住","startTime":"15:04","dest":"浅草","endTime":"15:21"},{"no":"887","type":"普通","start":"浅草","startTime":"15:32","dest":"北千住","endTime":"15:49"}],[{"no":"880","type":"普通","start":"北千住","startTime":"15:14","dest":"浅草","endTime":"15:31"},{"no":"889","type":"普通","start":"浅草","startTime":"15:42","dest":"北千住","endTime":"15:59"}],[{"no":"882","type":"普通","start":"北千住","startTime":"15:24","dest":"浅草","endTime":"15:41"},{"no":"891","type":"普通","start":"浅草","startTime":"15:52","dest":"北千住","endTime":"16:09"}],[{"no":"884","type":"普通","start":"北千住","startTime":"15:34","dest":"浅草","endTime":"15:51"},{"no":"893","type":"普通","start":"浅草","startTime":"16:02","dest":"北千住","endTime":"16:19"}],[{"no":"886","type":"普通","start":"北千住","startTime":"15:44","dest":"浅草","endTime":"16:01"},{"no":"895","type":"普通","start":"浅草","startTime":"16:13","dest":"北千住","endTime":"16:29"}],[{"no":"888","type":"普通","start":"北千住","startTime":"15:54","dest":"浅草","endTime":"16:11"},{"no":"897","type":"普通","start":"浅草","startTime":"16:22","dest":"北千住","endTime":"16:39"}],[{"no":"890","type":"普通","start":"北千住","startTime":"16:04","dest":"浅草","endTime":"16:21"},{"no":"899","type":"普通","start":"浅草","startTime":"16:32","dest":"北千住","endTime":"16:49"}],[{"no":"892","type":"普通","start":"北千住","startTime":"16:14","dest":"浅草","endTime":"16:31"},{"no":"901","type":"普通","start":"浅草","startTime":"16:42","dest":"北千住","endTime":"16:59"}],[{"no":"894","type":"普通","start":"北千住","startTime":"16:24","dest":"浅草","endTime":"16:41"},{"no":"3605","type":"区間準急","start":"浅草","startTime":"16:52","dest":"南栗橋","endTime":"18:10"}],[{"no":"896","type":"普通","start":"北千住","startTime":"16:34","dest":"浅草","endTime":"16:51"},{"no":"3511","type":"区間準急","start":"浅草","startTime":"17:02","dest":"館林","endTime":"18:46"}],[{"no":"898","type":"普通","start":"北千住","startTime":"16:44","dest":"浅草","endTime":"17:01"},{"no":"3805","type":"区間準急","start":"浅草","startTime":"17:12","dest":"北越谷","endTime":"17:52"}],[{"no":"900","type":"普通","start":"北千住","startTime":"16:54","dest":"浅草","endTime":"17:11"},{"no":"3513","type":"区間準急","start":"浅草","startTime":"17:22","dest":"館林","endTime":"19:13"}],[{"no":"902","type":"普通","start":"北千住","startTime":"17:04","dest":"浅草","endTime":"17:21"},{"no":"3607","type":"区間準急","start":"浅草","startTime":"17:32","dest":"南栗橋","endTime":"19:02"}],[{"no":"904","type":"普通","start":"北千住","startTime":"17:14","dest":"浅草","endTime":"17:31"},{"no":"3807","type":"区間準急","start":"浅草","startTime":"17:42","dest":"北春日部","endTime":"18:43"}],[{"no":"906","type":"普通","start":"北千住","startTime":"17:24","dest":"浅草","endTime":"17:41"},{"no":"2511","type":"区間急行","start":"浅草","startTime":"17:52","dest":"館林","endTime":"19:31"}],[{"no":"908","type":"普通","start":"北千住","startTime":"17:34","dest":"浅草","endTime":"17:51"},{"no":"3703","type":"区間準急","start":"浅草","startTime":"18:02","dest":"東武動物公園","endTime":"19:09"}],[{"no":"910","type":"普通","start":"北千住","startTime":"17:44","dest":"浅草","endTime":"18:01"},{"no":"3809","type":"区間準急","start":"浅草","startTime":"18:12","dest":"北越谷","endTime":"18:52"}],[{"no":"912","type":"普通","start":"北千住","startTime":"17:54","dest":"浅草","endTime":"18:11"},{"no":"3515","type":"区間準急","start":"浅草","startTime":"18:22","dest":"館林","endTime":"20:13"}],[{"no":"914","type":"普通","start":"北千住","startTime":"18:04","dest":"浅草","endTime":"18:21"},{"no":"3609","type":"区間準急","start":"浅草","startTime":"18:32","dest":"南栗橋","endTime":"19:58"}],[{"no":"916","type":"普通","start":"北千住","startTime":"18:14","dest":"浅草","endTime":"18:31"},{"no":"3811","type":"区間準急","start":"浅草","startTime":"18:42","dest":"北春日部","endTime":"19:43"}],[{"no":"3802","type":"区間準急","start":"北春日部","startTime":"17:42","dest":"浅草","endTime":"18:41"},{"no":"2513","type":"区間急行","start":"浅草","startTime":"18:52","dest":"館林","endTime":"20:30"}],[{"no":"918","type":"普通","start":"北千住","startTime":"18:34","dest":"浅草","endTime":"18:51"},{"no":"3611","type":"区間準急","start":"浅草","startTime":"19:02","dest":"南栗橋","endTime":"20:24"}],[{"no":"3602","type":"区間準急","start":"南栗橋","startTime":"17:25","dest":"浅草","endTime":"19:01"},{"no":"3813","type":"区間準急","start":"浅草","startTime":"19:12","dest":"北越谷","endTime":"19:52"}],[{"no":"920","type":"普通","start":"北千住","startTime":"18:54","dest":"浅草","endTime":"19:11"},{"no":"3517","type":"区間準急","start":"浅草","startTime":"19:22","dest":"久喜","endTime":"20:41"}],[{"no":"3704","type":"区間準急","start":"東武動物公園","startTime":"18:11","dest":"浅草","endTime":"19:21"},{"no":"3613","type":"区間準急","start":"浅草","startTime":"19:32","dest":"南栗橋","endTime":"20:58"}],[{"no":"922","type":"普通","start":"北千住","startTime":"19:14","dest":"浅草","endTime":"19:31"},{"no":"3815","type":"区間準急","start":"浅草","startTime":"19:42","dest":"北越谷","endTime":"20:22"}],[{"no":"3804","type":"区間準急","start":"北春日部","startTime":"18:41","dest":"浅草","endTime":"19:45"},{"no":"2515","type":"区間急行","start":"浅草","startTime":"19:52","dest":"館林","endTime":"21:30"}],[{"no":"3706","type":"区間準急","start":"東武動物公園","startTime":"18:43","dest":"浅草","endTime":"19:51"},{"no":"3817","type":"区間準急","start":"浅草","startTime":"20:02","dest":"北越谷","endTime":"20:42"}],[{"no":"924","type":"普通","start":"北千住","startTime":"19:44","dest":"浅草","endTime":"20:01"},{"no":"3519","type":"区間準急","start":"浅草","startTime":"20:12","dest":"館林","endTime":"22:09"}],[{"no":"3708","type":"区間準急","start":"東武動物公園","startTime":"18:58","dest":"浅草","endTime":"20:11"},{"no":"3819","type":"区間準急","start":"浅草","startTime":"20:22","dest":"北春日部","endTime":"21:24"}],[{"no":"3506","type":"区間準急","start":"館林","startTime":"18:23","dest":"浅草","endTime":"20:21"},{"no":"3615","type":"区間準急","start":"浅草","startTime":"20:32","dest":"南栗橋","endTime":"21:56"}],[{"no":"3806","type":"区間準急","start":"北春日部","startTime":"19:31","dest":"浅草","endTime":"20:31"},{"no":"3521","type":"区間準急","start":"浅草","startTime":"20:42","dest":"館林","endTime":"22:42"}],[{"no":"3710","type":"区間準急","start":"東武動物公園","startTime":"19:28","dest":"浅草","endTime":"20:45"},{"no":"903","type":"普通","start":"浅草","startTime":"20:52","dest":"北千住","endTime":"21:09"}],[{"no":"3712","type":"区間準急","start":"東武動物公園","startTime":"19:39","dest":"浅草","endTime":"20:51"},{"no":"905","type":"普通","start":"浅草","startTime":"21:02","dest":"北千住","endTime":"21:19"}],[{"no":"926","type":"普通","start":"北千住","startTime":"20:44","dest":"浅草","endTime":"21:01"},{"no":"3523","type":"区間準急","start":"浅草","startTime":"21:12","dest":"館林","endTime":"23:05"}],[{"no":"3714","type":"区間準急","start":"東武動物公園","startTime":"20:07","dest":"浅草","endTime":"21:11"},{"no":"907","type":"普通","start":"浅草","startTime":"21:22","dest":"北千住","endTime":"21:39"}],[{"no":"928","type":"普通","start":"北千住","startTime":"21:04","dest":"浅草","endTime":"21:21"},{"no":"909","type":"普通","start":"浅草","startTime":"21:32","dest":"北千住","endTime":"21:49"}],[{"no":"930","type":"普通","start":"北千住","startTime":"21:16","dest":"浅草","endTime":"21:32"},{"no":"911","type":"普通","start":"浅草","startTime":"21:42","dest":"北千住","endTime":"21:59"}],[{"no":"932","type":"普通","start":"北千住","startTime":"21:24","dest":"浅草","endTime":"21:41"},{"no":"2517","type":"区間急行","start":"浅草","startTime":"21:52","dest":"館林","endTime":"23:25"}],[{"no":"934","type":"普通","start":"北千住","startTime":"21:34","dest":"浅草","endTime":"21:51"},{"no":"913","type":"普通","start":"浅草","startTime":"22:02","dest":"北千住","endTime":"22:19"}],[{"no":"3508","type":"区間準急","start":"久喜","startTime":"20:52","dest":"浅草","endTime":"22:01"},{"no":"3525","type":"区間準急","start":"浅草","startTime":"22:12","dest":"館林","endTime":"23:54"}],[{"no":"936","type":"普通","start":"北千住","startTime":"21:54","dest":"浅草","endTime":"22:11"},{"no":"915","type":"普通","start":"浅草","startTime":"22:22","dest":"北千住","endTime":"22:39"}],[{"no":"938","type":"普通","start":"北千住","startTime":"22:04","dest":"浅草","endTime":"22:21"},{"no":"917","type":"普通","start":"浅草","startTime":"22:32","dest":"北千住","endTime":"22:49"}],[{"no":"940","type":"普通","start":"北千住","startTime":"22:14","dest":"浅草","endTime":"22:31"},{"no":"2519","type":"区間急行","start":"浅草","startTime":"22:42","dest":"館林","endTime":"00:14"}],[{"no":"3510","type":"区間準急","start":"館林","startTime":"20:54","dest":"浅草","endTime":"22:41"},{"no":"919","type":"普通","start":"浅草","startTime":"22:52","dest":"北千住","endTime":"23:09"}],[{"no":"942","type":"普通","start":"北千住","startTime":"22:34","dest":"浅草","endTime":"22:51"},{"no":"2521","type":"区間急行","start":"浅草","startTime":"23:02","dest":"館林","endTime":"00:32"}],[{"no":"3716","type":"区間準急","start":"東武動物公園","startTime":"21:54","dest":"浅草","endTime":"23:01"},{"no":"921","type":"普通","start":"浅草","startTime":"23:11","dest":"北千住","endTime":"23:28"}],[{"no":"944","type":"普通","start":"北千住","startTime":"22:56","dest":"浅草","endTime":"23:14"},{"no":"923","type":"普通","start":"浅草","startTime":"23:22","dest":"北千住","endTime":"23:39"}],[{"no":"946","type":"普通","start":"北千住","startTime":"23:11","dest":"浅草","endTime":"23:27"},{"no":"925","type":"普通","start":"浅草","startTime":"23:36","dest":"北千住","endTime":"23:53"}],[{"no":"3512","type":"区間準急","start":"館林","startTime":"22:10","dest":"浅草","endTime":"23:44"},{"no":"3821","type":"区間準急","start":"浅草","startTime":"23:50","dest":"北春日部","endTime":"00:50"}],[{"no":"2534","type":"区間急行","start":"館林","startTime":"22:34","dest":"浅草","endTime":"00:04"},{"no":"927","type":"普通","start":"浅草","startTime":"00:09","dest":"北千住","endTime":"00:27"}]],"休日":[]};
+const CHAIN_INDEX = {平日:{},休日:{}};
+for(const day of ['平日','休日']){
+  (OPERATION_CHAINS[day]||[]).forEach((chain,chainIndex)=>{
+    const chainId=`${day}-${String(chainIndex+1).padStart(3,'0')}`;
+    chain.forEach((entry,entryIndex)=>{
+      const raw=String(entry.no||'');
+      if(!raw) return;
+      const canonical=raw.replace(/A$/i,'');
+      const info={chainId,chainIndex,entryIndex,entry};
+      CHAIN_INDEX[day][raw]=info;
+      if(!CHAIN_INDEX[day][canonical]) CHAIN_INDEX[day][canonical]=info;
+    });
+  });
+}
+function normalizeChainTrainNo(v){
+  if(v===null||v===undefined) return '';
+  const s=String(v);
+  return /^\d+\.0$/.test(s)?s.slice(0,-2):s;
+}
+function findOperationChain(day,trainNo){
+  const raw=normalizeChainTrainNo(trainNo);
+  return CHAIN_INDEX[day]?.[raw] || CHAIN_INDEX[day]?.[raw.replace(/A$/i,'')] || null;
+}
+function chainEntryForTrain(day,trainNo){
+  const info=findOperationChain(day,trainNo);
+  return info ? {...info,chain:OPERATION_CHAINS[day]?.[info.chainIndex]||null} : null;
+}
+
 const TRAIN_DATA_BASE = 'https://minamikaze2700.github.io/Unyomatome/timetable/';
 const TRAIN_DATA_FILES = {
   tokkyu: `${TRAIN_DATA_BASE}tokkyu.json`,
@@ -538,9 +582,13 @@ function trainGroupKey(t){
   if(t.type==='特急')return 'tokkyu';
   return 'chijou';
 }
-function liveTrain(no){
-  const base=TRAINS.find(t=>String(t.no)===String(no)); if(!base)return null;
-  const form=registrationState[currentDay]?.[String(no)]||null;
+function liveTrain(no,direction=null){
+  const key=String(no);
+  const candidates=TRAINS.filter(t=>String(t?.no)===key);
+  if(!candidates.length)return null;
+  const dir=String(direction||'').toLowerCase();
+  const base=dir? (candidates.find(t=>String(t?.direction||'').toLowerCase()===dir)||candidates[0]) : candidates[0];
+  const form=registrationState[currentDay]?.[key]||null;
   return {...base,formation:form};
 }
 function formationTimestamp(no){return formationUpdatedAt[currentDay]?.[String(no)]||'';}
@@ -645,23 +693,80 @@ async function initFirebase(){
   syncStatus(firebaseReady?'Firebase接続済み':'Firebase接続失敗');
   return firebaseReady;
 }
+function formationLinkedTrainNos(day,trainNo){
+  const start=normalizeChainTrainNo(trainNo);
+  const result=new Set();
+  const queue=[start];
+  const chains=OPERATION_CHAINS[day]||[];
+  while(queue.length){
+    const no=queue.shift();
+    if(!no||result.has(no)) continue;
+    result.add(no);
+    for(const chain of chains){
+      if(!chain.some(e=>normalizeChainTrainNo(e?.no)===no)) continue;
+      for(const e of chain){
+        const n=normalizeChainTrainNo(e?.no);
+        if(n&&!result.has(n)) queue.push(n);
+      }
+    }
+  }
+  return result;
+}
+
 async function recordSelection(train,formId){
-  if(!selectedIsCurrentOperation())return;
-  const day=currentDay,key=String(train.no);
+  if(!selectedIsCurrentOperation())return [];
+  const day=currentDay;
+  const value=formId&&formId!==INITIAL_FORMATION_SELECTION.id?String(formId):null;
   registrationState[day]=registrationState[day]||{};
   formationUpdatedAt[day]=formationUpdatedAt[day]||{};
-  const value=formId&&formId!==INITIAL_FORMATION_SELECTION.id?String(formId):null;
-  if(value){registrationState[day][key]=value;formationUpdatedAt[day][key]=new Date().toISOString();}
-  else{delete registrationState[day][key];delete formationUpdatedAt[day][key];}
-  saveLocal();renderTrainPositions();updateSheetContent();
-  const ref=firebaseRefForTrain(train);
-  if(firebaseReady&&ref){
+
+  const linked=formationLinkedTrainNos(day,train.no);
+  const changes={};
+  const projectUpdates={};
+  const stamp=new Date().toISOString();
+
+  for(const requested of linked){
+    const actualBase=TRAINS.find(t=>normalizeChainTrainNo(t?.no)===requested);
+    if(!actualBase) continue;
+    const actual=String(actualBase.no);
+    if(value){
+      registrationState[day][actual]=value;
+      formationUpdatedAt[day][actual]=stamp;
+    }else{
+      delete registrationState[day][actual];
+      delete formationUpdatedAt[day][actual];
+    }
+    changes[actual]=value;
+    const group=trainGroupKey(actualBase);
+    projectUpdates[group]=projectUpdates[group]||{};
+    projectUpdates[group][actual]=value;
+  }
+
+  saveLocal();
+  renderTrainPositions();
+  updateSheetContent();
+
+  if(firebaseReady){
     try{
-      await ref.child('stateByDay').child(day).update({[key]:value});
-      await ref.child('formationUpdatedAtByDay').child(day).update({[key]:value?formationUpdatedAt[day][key]:null});
+      for(const [group,updates] of Object.entries(projectUpdates)){
+        const db=firebaseDbs[group];
+        if(!db) continue;
+        await db.ref('運用').child('stateByDay').child(day).update(updates);
+        const tsUpdates={};
+        Object.keys(updates).forEach(no=>{
+          tsUpdates[no]=updates[no]?formationUpdatedAt[day][no]:null;
+        });
+        await db.ref('運用').child('formationUpdatedAtByDay').child(day).update(tsUpdates);
+      }
       syncStatus('Firebase同期済み');
-    }catch(e){console.error(e);syncStatus('Firebase書込失敗（ローカル保存済み）');}
-  }else syncStatus('ローカル保存済み');
+    }catch(e){
+      console.error('編成連結同期失敗',e);
+      syncStatus('Firebase書込失敗（ローカル保存済み）');
+    }
+  }else{
+    syncStatus('ローカル保存済み');
+  }
+  return Object.keys(changes);
 }
 
 /* 路線図 */
@@ -815,10 +920,12 @@ function getVisibleTrains(){
     if(!base || !Array.isArray(base.stops) || base.stops.length<2) continue;
     if(Array.isArray(base.days) && base.days.length && !base.days.includes(day)) continue;
     const no=String(base.no||'');
-    const signature=`${String(base.service||'')}|${no}|${String(base.direction||'')}`;
+    const baseDirection=String(base.direction||'');
+    if(suppressedTurnbackKeys.has(`${no}|${baseDirection}`)) continue;
+    const signature=`${String(base.service||'')}|${no}|${baseDirection}`;
     if(!no || seen.has(signature)) continue;
     seen.add(signature);
-    out.push(liveTrain(no)||base);
+    out.push(liveTrain(no,base.direction)||base);
   }
   return out;
 }
@@ -893,7 +1000,7 @@ function trainRowHTML(train,st){
   const stop=((train.stops||[]).filter(s=>stationNamesEqual(s?.station, st[0]))).pop();
   const form=selectionDisplayObject(train.formation);
   const cls=getExpressClass(train);
-  return `<button class="station-timetable-row" type="button" title="列車 ${esc(displayTrainNo(train))} / ${esc(stop?.time||'')} / ${esc(train.dest||'')} 行" onclick="openTrainSheet('${esc(train.no)}',{type:'station-timetable',stationId:currentStationId,direction:stationTimetableDirection})"><img class="station-timetable-train-img" src="${esc(form?.img||NOIMAGE_IMG)}" alt="${esc(displayTrainNo(train))}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span class="station-timetable-formation">${formationDisplayHTML(train.formation)||'—'}</span><span class="station-timetable-type ${cls}">${esc(timetableTypeLabel(train))}</span><span class="station-timetable-time">${esc(stop?.time||'')}</span><span class="station-timetable-destination"><span class="station-timetable-destination-station${destinationScaleClass(train.dest)}">${esc(train.dest||'')}</span><span class="station-timetable-destination-go">行</span></span></button>`;
+  return `<button class="station-timetable-row" type="button" title="列車 ${esc(displayTrainNo(train))} / ${esc(stop?.time||'')} / ${esc(train.dest||'')} 行" onclick="openTrainSheet('${esc(train.no)}',{type:'station-timetable',stationId:currentStationId,direction:stationTimetableDirection})"><img class="station-timetable-train-img" src="${esc(form?.img||NOIMAGE_IMG)}" alt="${esc(displayTrainNo(train))}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span class="station-timetable-formation">${formationDisplayHTML(train.formation,train.direction)||'—'}</span><span class="station-timetable-type ${cls}">${esc(timetableTypeLabel(train))}</span><span class="station-timetable-time">${esc(stop?.time||'')}</span><span class="station-timetable-destination"><span class="station-timetable-destination-station${destinationScaleClass(train.dest)}">${esc(train.dest||'')}</span><span class="station-timetable-destination-go">行</span></span></button>`;
 }
 function stationTimetableHTML(st,routeKey,direction){
   const entries=stationTimetableEntries(st,routeKey,direction);
@@ -907,6 +1014,148 @@ function stationTimetableHTML(st,routeKey,direction){
   return `<div class="station-timetable-frame"><div class="station-timetable-wrap" id="stationTimetableScroll">${rows}</div></div>`;
 }
 function serviceDayMinuteFromTime(time){const m=String(time||'').match(/^(\d+):(\d{2})$/);if(!m)return Infinity;const h=Number(m[1]),mi=Number(m[2]);return h<RESET_HOUR? h*60+mi+1440:h*60+mi;}
+
+function trainFromChainEntry(entry){
+  if(!entry) return null;
+  const wanted=normalizeChainTrainNo(entry.no);
+  const si=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(entry.start));
+  const di=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(entry.dest));
+  const dir=(si>=0&&di>=0&&si>di)?'up':(si>=0&&di>=0&&si<di)?'down':null;
+  const all=Array.isArray(TRAINS)?TRAINS:[];
+  const candidates=all.filter(t=>normalizeChainTrainNo(t?.no)===wanted);
+  // 折返し後の列車情報は、同一列番に複数方向の定義がある場合でも
+  // 「次の運用エントリ」の方向に一致する列車をそのまま使う。
+  // liveTrain(no) は列番だけで最初の列車を返すため、ここでは使わない。
+  const directed=candidates.find(t=>!dir||String(t?.direction||'').toLowerCase()===dir);
+  const selected=directed||candidates[0]||null;
+  if(selected){
+    const form=registrationState[currentDay]?.[String(selected.no)]||null;
+    return {...selected,formation:form};
+  }
+  const fallback=liveTrain(wanted);
+  return fallback||null;
+}
+function connectionNextSky(t){
+  const info=chainEntryForTrain(currentDay,t?.no);
+  if(!info?.chain) return null;
+  const next=info.chain[info.entryIndex+1];
+  if(!next) return null;
+  if(stationNameKey(next.start)!==stationNameKey(t.dest)) return null;
+  const end=serviceDayMinuteFromTime(t?.stops?.filter(s=>String(s?.station||'')!=='着番線').at(-1)?.time);
+  const start=serviceDayMinuteFromTime(next.startTime);
+  if(!Number.isFinite(end)||!Number.isFinite(start)||start<end) return null;
+  return next;
+}
+function operationChainPosition(t,minutes){
+  // 野田線と同じ終点到着後の折返し処理を使用。
+  // ただしスカイツリーライン側の時刻・駅名正規化に合わせている。
+  const base=trainPosition(t,minutes);
+  const info=chainEntryForTrain(currentDay,t?.no);
+  if(!info?.chain) return base;
+  const chain=info.chain;
+  const idx=info.entryIndex;
+  const entry=chain[idx];
+  if(!entry) return base;
+
+  const stops=Array.isArray(t?.stops)?t.stops.filter(s=>String(s?.station||'')!=='着番線'):[];
+  const first=serviceDayMinuteFromTime(stops[0]?.time);
+  const last=serviceDayMinuteFromTime(stops.at(-1)?.time);
+  if(!Number.isFinite(first)||!Number.isFinite(last)) return base;
+
+  const isChainFirst=idx===0;
+  const isChainLast=idx===chain.length-1;
+  const next=connectionNextSky(t);
+  const nextStart=next?serviceDayMinuteFromTime(next.startTime):null;
+
+  // 野田線と同じく、連結運用の先頭列車は始発2分前から始発駅で待機。
+  if(isChainFirst && minutes>=first-RESET_DWELL_MIN && minutes<first){
+    const ai=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(entry.start));
+    if(ai>=0){
+      const side=t.direction==='down'?'right':'left';
+      return {
+        pos:ai,
+        stationA:entry.start,
+        stationB:entry.start,
+        side,
+        visualTrain:t,
+        mode:'start',
+        terminal:true,
+        terminalTime:first,
+        terminalStation:entry.start,
+        terminalEntryIndex:idx
+      };
+    }
+  }
+
+  // 終点到着後の折返しはここだけで処理する。
+  // 到着から1分間は到着列車の情報をそのまま表示する。
+  // 1分経過した瞬間に、次の運用エントリの情報へ置き換えて反対側へ移動する。
+  // それ以降、次列車の発車時刻までは追加の終点処理を行わない。
+  if(next && !isChainLast && Number.isFinite(nextStart)){
+    const lastStation=String(entry.dest);
+    const ai=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(lastStation));
+    if(ai>=0 && minutes>last && minutes<nextStart){
+      if(minutes<last+TURNBACK_SWITCH_MIN){
+        return {
+          pos:ai,
+          stationA:lastStation,
+          stationB:lastStation,
+          side:t.direction==='down'?'right':'left',
+          visualTrain:t,
+          mode:'turn-arrival',
+          terminal:true,
+          terminalTime:last,
+          terminalStation:lastStation,
+          terminalEntryIndex:idx,
+          terminalArrivalOrder:last
+        };
+      }
+
+      const nextTrain=trainFromChainEntry(next);
+      // 1分経過した瞬間に「次の列車の情報」へ置き換え、
+      // 次列車が実際に表示される側へ同時に切り替える。
+      // スカイツリーラインの通常描画と同じく、down=left / up=right。
+      const nextDirection=String(nextTrain?.direction||'').toLowerCase() ||
+        (stationIndex(next.start)>stationIndex(next.dest)?'up':'down');
+      const nextSide=nextDirection==='down'?'left':'right';
+      return {
+        pos:ai,
+        stationA:lastStation,
+        stationB:lastStation,
+        side:nextSide,
+        visualTrain:nextTrain||t,
+        mode:'turn-wait',
+        terminal:true,
+        terminalTime:nextStart,
+        terminalStation:lastStation,
+        terminalEntryIndex:idx
+      };
+    }
+  }
+
+  // 野田線と同じく、連結運用の末尾列車は終着2分後まで終着駅に保持。
+  if(isChainLast && minutes>=last && minutes<=last+RESET_DWELL_MIN){
+    const ai=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(entry.dest));
+    if(ai>=0){
+      return {
+        pos:ai,
+        stationA:entry.dest,
+        stationB:entry.dest,
+        side:t.direction==='down'?'right':'left',
+        visualTrain:t,
+        mode:'end',
+        terminal:true,
+        terminalTime:last,
+        terminalStation:entry.dest,
+        terminalEntryIndex:idx,
+        terminalArrivalOrder:last
+      };
+    }
+  }
+
+  return base;
+}
+
 function scrollStationTimetableToNext(){const wrap=document.getElementById('stationTimetableScroll');if(!wrap)return;const next=wrap.querySelector('[data-next-train="true"]')||wrap.querySelector('.station-timetable-row');if(!next)return;requestAnimationFrame(()=>{wrap.scrollTop=Math.max(0,next.offsetTop);});}
 function setStationTimetableDirection(direction){
   stationTimetableDirection = direction === 'down' ? 'down' : 'up';
@@ -1028,7 +1277,11 @@ function formationCategoryAllowedForTrain(t,groupType){
   if(groupType==='500系+500系') return prescribed==='500系+500系';
   if(service==='hanzomon') return ['50000型','50050型','東京メトロ8000系','東京メトロ08系','東京メトロ18000系','東急5000系','東急2020系'].includes(groupType);
   if(service==='hibiya') return ['70000型','70090型','東京メトロ13000系'].includes(groupType);
-  if(service==='chijou') return ['10000型','10030型'].includes(groupType);
+  // 地上運用はJSONのserviceが欠落している列車も含めて選択可能にする。
+  // （普通・急行・区間急行・準急・区間準急は地上運用として扱う）
+  if(service==='chijou' || (!service && ['普通','急行','区間急行','準急','区間準急'].includes(type))){
+    return ['10000型','10030型'].includes(groupType);
+  }
   if(type==='特急') return ['100系','200系','500系','N100系'].includes(groupType);
   return false;
 }
@@ -1044,7 +1297,7 @@ function updateSheetContent(){
     const formationText=formationValue?formationDisplayParts(formationValue).join(' + '):'';
     content.innerHTML=`<div class="train-card${selectedDateKey===operationDateKey()?'':' historical-readonly'}" ${selectedDateKey===operationDateKey()?'onclick="switchToEditMode()"':''}><img src="${esc(trainImageFor(train))}" class="train-card-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div><span class="type-badge ${getExpressClass(train)}">${esc(limitedExpressDisplayName(train))}</span><span class="train-title">${esc(train.dest||'')} 行</span><span class="train-number">${esc(train.no)}</span></div>${formationValue?`<div class="formation-id">${esc(formationText)}</div>`:`<div class="input-trigger-btn">ここから編成を入力</div>`}<div class="capacity-info">所定:${esc(prescribedFormationName(train))}</div></div>${formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${esc(formatFormationUpdatedAt(train.no))}</div>`:''}</div><div class="timetable-list">${timetableRowsHTML(train.stops)}</div><div class="sync-status" id="syncStatus"></div>`;
   }else{
-    const parts=formationValue.split('+').map(x=>x.trim()).filter(Boolean);
+    const parts=trainFormationIdsFor(train);
     const valueFront=parts[0]||'';
     const valueRear=parts[1]||'';
     const optionsForSlot=(slot)=>{
@@ -1059,10 +1312,10 @@ function updateSheetContent(){
         const safeImg=`<img src="${esc(img)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'">`;
         let hiddenByPair=false;
         if(composite){
+          // 前寄りは常に地上運用の全編成を選択肢として表示する。
+          // 後ろ寄りだけ、選択済みの前寄り編成に応じて組み合わせを絞る。
           if(slot===1 && frontCars!=null){
             hiddenByPair=!allowedRearCars.has(cars);
-          }else if(slot===0 && rearCars!=null){
-            hiddenByPair=!isAllowedCompositePair(cars,rearCars);
           }
         }
         if(hiddenByPair) return '';
@@ -1076,14 +1329,14 @@ function updateSheetContent(){
         const vCars=formationCarsById(v.id);
         let hidden=false;
         if(composite){
+          // 前寄りは地上運用の全編成を常に表示する。
           if(slot===1 && frontCars!=null && vCars!=null) hidden=!allowedRearCars.has(vCars);
-          else if(slot===0 && rearCars!=null && vCars!=null) hidden=!isAllowedCompositePair(vCars,rearCars);
         }
         if(hidden)return '';
         const vimg=v.img||NOIMAGE_IMG;
         return `<div class="option-header option-subheader" onclick="selectFormation('${v.id}',${slot})"><img src="${esc(vimg)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${v.name}</span></div>`;
       };
-      const groupHtml=FORMATIONS.filter(g=>g.type!=='500系+500系'&&formationCategoryAllowedForTrain(train,g.type)).map(g=>{
+      const groupHtml=FORMATIONS.filter(g=>g.type!=='500系+500系'&&(composite&&slot===0?['10000型','10030型'].includes(g.type):formationCategoryAllowedForTrain(train,g.type))).map(g=>{
         const variantsHtml=(g.variants||[]).map(v=>renderVariant(v,g,slot)).join('');
         const variantItems=(g.variants||[]).flatMap(v=>v.items||[]).map(renderItem).join('');
         const directHtml=(g.items||[]).map(renderItem).join('');
@@ -1094,8 +1347,9 @@ function updateSheetContent(){
     };
     const frontTrigger=`<div class="custom-select-trigger" onclick="formationEditSlot=0;toggleDropdown(0)"><div style="display:flex;align-items:center;gap:10px"><img src="${esc(selectionDisplayObject(valueFront).img||NOIMAGE_IMG)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'" style="width:auto;height:70px;object-fit:contain"><span>前寄り：${esc(selectionDisplayObject(valueFront).name)}</span></div>▼</div>`;
     const rearTrigger=`<div class="custom-select-trigger" onclick="formationEditSlot=1;toggleDropdown(1)"><div style="display:flex;align-items:center;gap:10px"><img src="${esc(selectionDisplayObject(valueRear).img||NOIMAGE_IMG)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'" style="width:auto;height:70px;object-fit:contain"><span>後寄り：${esc(selectionDisplayObject(valueRear).name)}</span></div>▼</div>`;
+    const inputFormationValue=parts.join('+');
     const manualComposite=composite
-      ? `<div class="formation-manual-input"><input id="formationManualInput" type="text" inputmode="text" autocomplete="off" value="${esc(formationValue)}" placeholder="車両番号または編成番号を入力 「+」で区切ることにより併結入力可"><button type="button" onclick="registerFormationFromInput()">登録</button></div>`
+      ? `<div class="formation-manual-input"><input id="formationManualInput" type="text" inputmode="text" autocomplete="off" value="${esc(inputFormationValue)}" placeholder="車両番号または編成番号を入力 「+」で区切ることにより併結入力可"><button type="button" onclick="registerFormationFromInput()">登録</button></div>`
       : `<div class="formation-manual-input"><input id="formationManualInput" type="text" inputmode="text" autocomplete="off" value="${esc(valueFront)}" placeholder="車両番号または編成番号を入力"><button type="button" onclick="registerFormationFromInput()">登録</button></div>`;
     const selectorHtml=composite
       ? `<div class="select-box-container"><div class="formation-select-row composite"><div class="formation-select-field">${frontTrigger}<div class="custom-select-options" id="dropdownOptions0">${optionsForSlot(0)}</div></div><div class="formation-select-field">${rearTrigger}<div class="custom-select-options" id="dropdownOptions1">${optionsForSlot(1)}</div></div></div></div>`
@@ -1104,6 +1358,10 @@ function updateSheetContent(){
   }
 }
 function switchToEditMode(){if(!selectedIsCurrentOperation())return;if(!liveTrain(currentTrainNo))return;isEditMode=true;document.getElementById('bottomSheet')?.classList.add('editing');updateSheetContent();}
+function formationStoredOrderForTrain(t,front,rear){
+  const a=String(front||'').trim(),b=String(rear||'').trim();
+  return {front:a,rear:b};
+}
 function registerFormationFromInput(){
   const input=document.getElementById('formationManualInput'),err=document.getElementById('formationInputError');
   if(err)err.textContent='';
@@ -1119,7 +1377,8 @@ function registerFormationFromInput(){
     if(ra.id===rb.id){if(err)err.textContent='2編成では同じ編成を2本選択できません。';input?.focus();return;}
     const ca=formationCarsById(ra.id),cb=formationCarsById(rb.id);
     if(ca==null||cb==null||!isAllowedCompositePair(ca,cb)){if(err)err.textContent='2編成の組み合わせは 6+2、4+4、4+2（前後逆可）のみ入力できます。';input?.focus();return;}
-    return saveCompositeFormation(ra.id,rb.id);
+    const stored=formationStoredOrderForTrain(train,ra.id,rb.id);
+    return saveCompositeFormation(stored.front,stored.rear);
   }
   if(raw.includes('+')){if(err)err.textContent='この列車は2編成入力に対応していません。';input?.focus();return;}
   const result=formationIdFromInput(raw);
@@ -1155,7 +1414,7 @@ async function selectFormation(id,slot=0){
   if(!selectedIsCurrentOperation())return;
   const train=liveTrain(currentTrainNo);if(!train)return;
   const composite=allowsCompositeFormation(train);
-  const current=String(train.formation||'').split('+').filter(Boolean);
+  const current=trainFormationIdsFor(train);
   const hadBothBefore=!!(composite && current[0] && current[1]);
   if(slot===1 && !composite)return;
   // 2編成入力は「前寄→後ろ寄」の順で選択する。
@@ -1193,19 +1452,24 @@ async function selectFormation(id,slot=0){
     current[slot]=normalizedId;
     // 8両・6両は単独編成、2編成は6+2・4+4・4+2のみ許可。
     if(front && !rear){
+      // 前寄りは地上運用で使用する全ての両数（2/4/6/8両）を選択可能。
+      // 2編成の組み合わせ確定時のみ、6+2・4+4・4+2を検証する。
       const cf=formationCarsById(front);
-      if(cf==null || !isAllowedSingleFormation(cf)){
+      if(cf==null || ![2,4,6,8].includes(Number(cf))){
         const err=document.getElementById('formationInputError');
-        if(err)err.textContent='単独で登録できるのは8両または6両編成のみです。';
+        if(err)err.textContent='地上運用の前寄りは2・4・6・8両編成を選択できます。';
         current[slot]='';
         return;
       }
     }
     // すでに2編成登録済みの列車で片方を置き替えた場合は、
     // その選択だけで編集画面を閉じず、2編成入力中の状態を維持する。
-    await saveCompositeFormation(front,rear,!!(front&&rear),hadBothBefore);
+    const stored=formationStoredOrderForTrain(train,front,rear);
+    await saveCompositeFormation(stored.front||null,stored.rear||null,!!(front&&rear),hadBothBefore);
   }else{
-    await saveCompositeFormation(current[0]||null,null,true);
+    const selectedId=current[0]||null;
+    const stored=formationStoredOrderForTrain(train,selectedId,null);
+    await saveCompositeFormation(stored.front||null,null,true);
   }
 }
 function openTrainSheet(no,fromContext=null){
@@ -1448,11 +1712,12 @@ function findVisualRowPair(aName,bName,t=null){
   const routeA=mainOnly?'main':(forced?forced[0]:routeKeyForTrainStation(t,aName));
   const routeB=mainOnly?'main':(forced?forced[1]:routeKeyForTrainStation(t,bName));
   const A=[],B=[];
+  const keyA=stationNameKey(aName),keyB=stationNameKey(bName);
   rows.forEach((r,i)=>{
-    const n=r.querySelector('.station-name-ja')?.textContent||'';
+    const n=stationNameKey(r.querySelector('.station-name-ja')?.textContent||'');
     const rk=r.dataset.routeKey||'main';
-    if(n===aName && (!routeA || rk===routeA)) A.push(i);
-    if(n===bName && (!routeB || rk===routeB)) B.push(i);
+    if(n===keyA && (!routeA || rk===routeA)) A.push(i);
+    if(n===keyB && (!routeB || rk===routeB)) B.push(i);
   });
   if(!A.length||!B.length)return null;
   let best=null,bestGap=Infinity;
@@ -1561,76 +1826,130 @@ function renderTrainPositions(){
   const minutes=currentMinutes();
   const visible=[];
   const seen=new Set();
+
+  // 折返し待機中は、元列車の描画を使って次列車を表示する。
+  // その次列車自身が別ルートの通常描画で二重表示されないよう、
+  // 発車時刻まではこの集合に入れて抑止する。
+  const suppressedTurnbackKeys=new Set();
+  for(const base of TRAINS){
+    if(!base || !Array.isArray(base.days) || !base.days.includes(currentDay)) continue;
+    const next=connectionNextSky(base);
+    if(!next) continue;
+    const stops=Array.isArray(base.stops)?base.stops.filter(x=>String(x?.station||'')!=='着番線'):[];
+    const last=serviceDayMinuteFromTime(stops.at(-1)?.time);
+    const nextStart=serviceDayMinuteFromTime(next.startTime);
+    if(Number.isFinite(last) && Number.isFinite(nextStart) && minutes>=last+TURNBACK_SWITCH_MIN && minutes<nextStart){
+      const nt=trainFromChainEntry(next);
+      if(nt){
+        suppressedTurnbackKeys.add(`${String(nt.no||'')}|${String(nt.direction||'')}`);
+      }
+    }
+  }
+
   for(const base of TRAINS){
     if(!base || !Array.isArray(base.days) || !base.days.includes(currentDay)) continue;
     const no=String(base.no||'');
     const signature=`${String(base.service||'')}|${no}|${String(base.direction||'')}`;
     if(!no || seen.has(signature)) continue;
     seen.add(signature);
-    visible.push(liveTrain(no)||base);
+    visible.push(liveTrain(no,base.direction)||base);
   }
   const occupied={left:[],right:[]};
   for(const t of visible){
     // 路線系統の停車駅構成を先に検証する。これで本線列車が半蔵門線・田園都市線・日比谷線へ混入することを防ぐ。
     if(!serviceTopologyValid(t)) continue;
-    const p=trainPosition(t,minutes);if(!p||!p.stationA||!p.stationB)continue;
-    if(!segmentServiceAllowed(t,p.stationA,p.stationB))continue;
-    const pair=findVisualRowPair(p.stationA,p.stationB,t);
-    if(!pair)continue;
-    const pairRows=[rows[pair.r0],rows[pair.r1]];
+    const p=operationChainPosition(t,minutes);if(!p||(!p.stationA&&!p.stationB))continue;
+
+    // 終着駅での折返し待機は駅そのものに停車している状態なので、
+    // 通常の「駅間区間」のサービス判定を通さず、その駅の行を直接使う。
+    let pair=null,pairRows=[];
+    if(!p.terminal){
+      if(!segmentServiceAllowed(t,p.stationA,p.stationB))continue;
+      pair=findVisualRowPair(p.stationA,p.stationB,t);
+      if(!pair)continue;
+      pairRows=[rows[pair.r0],rows[pair.r1]];
       if(pairRows.some(r=>r?.dataset?.routeKey && r.dataset.routeKey!=='main')){
-      const allowed=pairRows.every(r=>trainAllowedOnRouteStation(t,r.dataset.routeKey,pairRows[0]===r?p.stationA:p.stationB));
-      if(!allowed) continue;
-    }
-    // 本線系統（地上・特急）は枝線行を絶対に走行しない。
-    if((t.service==='chijou'||t.service==='tokkyu') && pairRows.some(r=>r?.dataset?.routeKey!=='main')) continue;
-    if(!trainAllowedOnVisibleBranch(t,p.stationA)||!trainAllowedOnVisibleBranch(t,p.stationB))continue;
-    const laneBase=laneForTrain(t,p,minutes);
-    // 列車アイコンの表示側は野田線版と同じく列車の進行方向で固定。
-    // 左＝館林方面（下り）、右＝浅草方面（上り）。
-    // 駅名・行先の順序から再判定すると、枝線直通列車や途中駅始発で
-    // 反転することがあるため、ダミー列車の direction を唯一の基準にする。
-    // メイン線上では、実際に走っている駅間の順序から左右を決定する。
-    // MAIN_NAMES は 館林→浅草 の順なので、駅番号が減る方向＝館林方面(左)、
-    // 増える方向＝浅草方面(右)。これにより direction 値が誤っていても、
-    // 浅草方面列車が館林側へ混入するのを防ぐ。枝線区間では direction を使用する。
-    const ai=MAIN_NAMES.indexOf(p.stationA), bi=MAIN_NAMES.indexOf(p.stationB);
-    let side=null;
-    if(ai>=0 && bi>=0 && ai!==bi){
-      side=bi<ai ? 'left' : 'right';
+        const allowed=pairRows.every(r=>trainAllowedOnRouteStation(t,r.dataset.routeKey,pairRows[0]===r?p.stationA:p.stationB));
+        if(!allowed) continue;
+      }
+      // 本線系統（地上・特急）は枝線行を絶対に走行しない。
+      if((t.service==='chijou'||t.service==='tokkyu') && pairRows.some(r=>r?.dataset?.routeKey!=='main')) continue;
+      if(!trainAllowedOnVisibleBranch(t,p.stationA)||!trainAllowedOnVisibleBranch(t,p.stationB))continue;
     }else{
-      const dir=String(t.direction||'').toLowerCase();
-      side=dir==='down' ? 'left' : dir==='up' ? 'right' : null;
+      const terminalIndex=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(p.terminalStation||p.stationA));
+      if(terminalIndex<0)continue;
+      p.pos=terminalIndex;
+    }
+    const laneBase=p.terminal?0:laneForTrain(t,p,minutes);
+    // 連結運用で終着した列車は着時刻の1分後まで到着側に表示し、
+    // その後は次列車の進行方向側へ切り替える。operationChainPosition() が返した
+    // p.side / p.visualTrain を最優先して使う。これを無視して元列車のdirectionを
+    // 再計算すると、折返し列車が反対側へ移動せず重なってしまう。
+    const ai=MAIN_NAMES.indexOf(p.stationA), bi=MAIN_NAMES.indexOf(p.stationB);
+    let side=p.side||null;
+    if(!side){
+      if(ai>=0 && bi>=0 && ai!==bi){
+        side=bi<ai ? 'left' : 'right';
+      }else{
+        const dir=String(t.direction||'').toLowerCase();
+        side=dir==='down' ? 'left' : dir==='up' ? 'right' : null;
+      }
     }
     if(!side) continue;
-    occupied[side].push({t,pos:p.pos,baseLane:laneBase});
+    const displayTrain=p.visualTrain||t;
+    // 野田線と同じく、折返し待機中の列車は同一終端駅での到着順を
+    // 反転させてからレーンへ割り当てる。
+    // ここで terminal 情報を occupied 側へ確実に引き渡す。
+    occupied[side].push({
+      t:displayTrain,
+      pos:p.pos,
+      baseLane:laneBase,
+      mode:p.mode||'',
+      terminalStation:p.terminalStation||'',
+      terminalArrivalOrder:Number.isFinite(p.terminalArrivalOrder)?p.terminalArrivalOrder:Infinity,
+      terminalSwitch:!!p.terminalSwitch
+    });
   }
   const layerRect=layer.getBoundingClientRect(),layoutWidth=window.innerWidth<960?1920:layerRect.width||1920;
   const centerX=layoutWidth/2,trainWidth=66,laneGap=20;
   const rowRectAt=pos=>{const p=Math.max(0,Math.min(rows.length-1,pos)),i0=Math.floor(p),i1=Math.min(rows.length-1,Math.ceil(p));const r0=rows[i0].getBoundingClientRect(),r1=rows[i1].getBoundingClientRect(),f=p-i0;return {centerY:r0.top+r0.height/2+(r1.top+r1.height/2-(r0.top+r0.height/2))*f};};
   ['left','right'].forEach(side=>{
-    occupied[side].sort((a,b)=>a.pos-b.pos||String(a.t.no).localeCompare(String(b.t.no),undefined,{numeric:true}));
+    occupied[side].sort((a,b)=>{
+      const dp=a.pos-b.pos;
+      if(Math.abs(dp)>0.24) return dp;
+      const at=String(a.terminalStation||'');
+      const bt=String(b.terminalStation||'');
+      if(at!==bt) return at.localeCompare(bt,'ja');
+      // 同じ終端駅に複数列車がいる場合、通常は到着順。
+      // chain-wait（着後1分経過後の折返し待機）では順序を反転し、
+      // 到着時に前にいた列車が反対側では後ろ、後ろだった列車が前になる。
+      const aa=Number.isFinite(a.terminalArrivalOrder)?a.terminalArrivalOrder:Infinity;
+      const bb=Number.isFinite(b.terminalArrivalOrder)?b.terminalArrivalOrder:Infinity;
+      const hasTurn=a.terminalSwitch||b.terminalSwitch||a.mode==='chain-wait'||b.mode==='chain-wait';
+      if(hasTurn && aa!==bb) return bb-aa;
+      if(!hasTurn && aa!==bb) return aa-bb;
+      return String(a.t.no).localeCompare(String(b.t.no),undefined,{numeric:true});
+    });
     const used=[];
     occupied[side].forEach(item=>{
-      // 3本目(lane 2)は追越し専用。単なる列車同士の重なり回避では使用しない。
-      const canUsePassingLane=item.baseLane===1 && isPassingOvertake(item.t,trainPosition(item.t,minutes),minutes);
+      // 同じ側・ほぼ同じ位置に2列車以上ある場合は、野田線と同じく
+      // アイコンを横方向へ順番にずらして重なりを防ぐ。
+      // 折返し後は同位置の並び順を反転させて前後関係を維持する。
       let lane=item.baseLane;
-      if(used.some(u=>Math.abs(u.pos-item.pos)<0.24&&u.lane===lane) && canUsePassingLane){
-        lane=2;
-        // 追越し列車同士が重なっても3本目を4本目へ拡張しない。
-        if(used.some(u=>Math.abs(u.pos-item.pos)<0.24&&u.lane===2)) lane=1;
+      while(used.some(u=>Math.abs(u.pos-item.pos)<0.24&&u.lane===lane)){
+        lane++;
       }
       used.push({pos:item.pos,lane});
       const rr=rowRectAt(item.pos);if(!rr)return;
       const t=item.t,el=document.createElement('div');el.className=`train-icon ${side}`;el.style.visibility='hidden';el.style.transition='none';
-      const formParts=formationDisplayParts(t.formation);
+      const formParts=formationDisplayParts(t.formation,t.direction);
       el.innerHTML=`<span class="train-no">${esc(displayTrainNo(t))}</span><img src="${esc(trainImageFor(t))}" alt="${esc(displayTrainNo(t))}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'">${formParts.length?`<span class="train-no train-formation">${formParts.map(x=>`<span>${esc(x)}</span>`).join('')}</span>`:''}<span class="train-label ${trainLabelClass(t)}"><span>${esc(mainShortType(t))} ${esc(mainShortDest(t.dest))}</span></span>`;
       const mobileZoom=window.innerWidth<960?window.innerWidth/960:1;
       const img=el.querySelector('img'),noEl=el.querySelector('.train-no'),formationEl=el.querySelector('.train-formation');
       const laneOffset=lane*(trainWidth+laneGap);
       const leftPos=side==='left'?centerX-340-laneOffset:centerX+340-trainWidth+laneOffset;
       el.style.left=`${leftPos}px`;el.style.right='auto';el.style.setProperty('--lane-shift','0px');
-      el.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();openTrainSheet(t.no);});
+      el.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();openTrainSheet(t.no,null,t.direction);});
       layer.appendChild(el);
       const apply=()=>{
         const ir=img?.getBoundingClientRect(),nr=noEl?.getBoundingClientRect(),fr=formationEl?.getBoundingClientRect();
