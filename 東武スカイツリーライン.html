@@ -921,7 +921,6 @@ function getVisibleTrains(){
     if(Array.isArray(base.days) && base.days.length && !base.days.includes(day)) continue;
     const no=String(base.no||'');
     const baseDirection=String(base.direction||'');
-    if(suppressedTurnbackKeys.has(`${no}|${baseDirection}`)) continue;
     const signature=`${String(base.service||'')}|${no}|${baseDirection}`;
     if(!no || seen.has(signature)) continue;
     seen.add(signature);
@@ -1100,7 +1099,7 @@ function operationChainPosition(t,minutes){
           pos:ai,
           stationA:lastStation,
           stationB:lastStation,
-          side:t.direction==='down'?'right':'left',
+          side:t.direction==='down'?'left':'right',
           visualTrain:t,
           mode:'turn-arrival',
           terminal:true,
