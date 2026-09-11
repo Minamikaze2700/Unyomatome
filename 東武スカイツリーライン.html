@@ -451,12 +451,34 @@ async function loadTrainData(){
       // JSON側の駅名を内部表記へ統一。路線図の表示ラベルは変更しない。
       const normalized = json.map(t=>({
         ...t,
+        service,
         dest: stationNameKey(t?.dest),
         stops: Array.isArray(t?.stops) ? t.stops
           .filter(x=>stationNameKey(x?.station)!=='着番線')
           .map(x=>({...x, station:stationNameKey(x?.station)})) : []
       }));
-      return [service,normalized];
+      // 同じ系統・同じ列番がJSONに複数回現れても、1本の編成状態を共有する。
+      // 方向が異なる定義は別列車として保持する。平休で分かれている場合はdaysを統合。
+      const merged=new Map();
+      for(const t of normalized){
+        const k=`${service}|${String(t?.no||'')}|${String(t?.direction||'').toLowerCase()}`;
+        if(!t?.no){continue;}
+        const prev=merged.get(k);
+        if(!prev){
+          merged.set(k,{...t,days:Array.isArray(t.days)?[...new Set(t.days)]:t.days});
+          continue;
+        }
+        if(Array.isArray(prev.days)||Array.isArray(t.days)){
+          prev.days=[...new Set([...(Array.isArray(prev.days)?prev.days:[]),...(Array.isArray(t.days)?t.days:[])])];
+        }
+        if((t.stops||[]).length>(prev.stops||[]).length) prev.stops=t.stops;
+        if(!prev.dest&&t.dest)prev.dest=t.dest;
+        if(!prev.type&&t.type)prev.type=t.type;
+        if(!prev.limitedName&&t.limitedName)prev.limitedName=t.limitedName;
+        if(t.hasTHLinerOperation===true)prev.hasTHLinerOperation=true;
+        if(t.splitLiberty===true)prev.splitLiberty=true;
+      }
+      return [service,[...merged.values()]];
     }catch(err){
       console.warn(`${service} の時刻表JSON読み込みに失敗しました`,err);
       return [service,[]];
@@ -473,6 +495,7 @@ let selectedDateKey='';
 let currentDay='平日';
 let followNow=true;
 let currentTrainNo=null;
+let currentTrainService=null;
 let currentTrainSnapshot=null;
 let currentStationId=null;
 let currentStationRoute='main';
@@ -585,21 +608,45 @@ async function maybeResetForNewOperationDay(){
 }
 
 function trainGroupKey(t){
-  if(t.service==='hibiya')return 'hibiya';
-  if(t.service==='hanzomon')return 'hanzomon';
-  if(t.type==='特急')return 'tokkyu';
+  if(t?.service==='hibiya')return 'hibiya';
+  if(t?.service==='hanzomon')return 'hanzomon';
+  if(t?.service==='tokkyu' || t?.type==='特急')return 'tokkyu';
+  if(t?.service==='chijou')return 'chijou';
   return 'chijou';
 }
-function liveTrain(no,direction=null){
+function trainStateKey(no,service){
+  const svc=String(service||'chijou');
+  return `${svc}|${String(no)}`;
+}
+function currentSelectedService(){
+  return String(currentTrainService || currentTrainSnapshot?.service || '').trim() || null;
+}
+function getStoredFormation(no,service){
+  const state=registrationState[currentDay]||{};
+  const scoped=trainStateKey(no,service||'chijou');
+  if(Object.prototype.hasOwnProperty.call(state,scoped)) return state[scoped]||null;
+  // 旧形式（列番のみ）との互換性。新形式があればそちらを優先する。
+  if(service==='chijou' || !service) return state[String(no)]||null;
+  return null;
+}
+function getFormationTimestamp(no,service){
+  const state=formationUpdatedAt[currentDay]||{};
+  const scoped=trainStateKey(no,service||'chijou');
+  if(Object.prototype.hasOwnProperty.call(state,scoped)) return state[scoped]||'';
+  if(service==='chijou' || !service) return state[String(no)]||'';
+  return '';
+}
+function liveTrain(no,direction=null,service=null){
   const key=String(no);
-  const candidates=TRAINS.filter(t=>String(t?.no)===key);
+  const scopedService=String(service || currentSelectedService() || '').trim();
+  const candidates=TRAINS.filter(t=>String(t?.no)===key && (!scopedService || String(t?.service||'')===scopedService));
   if(!candidates.length)return null;
   const dir=String(direction||'').toLowerCase();
   const base=dir? (candidates.find(t=>String(t?.direction||'').toLowerCase()===dir)||candidates[0]) : candidates[0];
-  const form=registrationState[currentDay]?.[key]||null;
+  const form=getStoredFormation(key,scopedService||base?.service||'chijou');
   return {...base,formation:form};
 }
-function formationTimestamp(no){return formationUpdatedAt[currentDay]?.[String(no)]||'';}
+function formationTimestamp(no,service=null){return getFormationTimestamp(no,service||currentSelectedService());}
 function syncStatus(text){document.querySelectorAll('#syncStatus').forEach(e=>e.textContent='共有同期：'+text);}
 
 function firebaseRefForTrain(train){
@@ -672,13 +719,21 @@ async function initFirebase(){
         const latestStates=latest.stateByDay||latest;
         for(const day of ['平日','休日']){
           if(latestStates?.[day]&&typeof latestStates[day]==='object'){
-            registrationState[day]={...(registrationState[day]||{}),...latestStates[day]};
+            registrationState[day]=registrationState[day]||{};
+            for(const [no,val] of Object.entries(latestStates[day])){
+              // Firebaseは系統ごとに別プロジェクトだが、ローカル側では
+              // 半蔵門線と日比谷線の同一列番が衝突しないよう系統をキーに含める。
+              registrationState[day][trainStateKey(no,key)]=val;
+            }
           }
         }
         const latestTs=latest.formationUpdatedAtByDay||{};
         for(const day of ['平日','休日']){
           if(latestTs?.[day]&&typeof latestTs[day]==='object'){
-            formationUpdatedAt[day]={...(formationUpdatedAt[day]||{}),...latestTs[day]};
+            formationUpdatedAt[day]=formationUpdatedAt[day]||{};
+            for(const [no,val] of Object.entries(latestTs[day])){
+              formationUpdatedAt[day][trainStateKey(no,key)]=val;
+            }
           }
         }
         saveLocal();
@@ -701,10 +756,13 @@ async function initFirebase(){
   syncStatus(firebaseReady?'Firebase接続済み':'Firebase接続失敗');
   return firebaseReady;
 }
-function formationLinkedTrainNos(day,trainNo){
+function formationLinkedTrainNos(day,trainNo,service=null){
   const start=normalizeChainTrainNo(trainNo);
+  const svc=String(service||'chijou');
   const result=new Set();
   const queue=[start];
+  // 運用連結は地上運用の列車だけを対象にする。
+  if(svc!=='chijou') return start?[start]:[];
   const chains=OPERATION_CHAINS[day]||[];
   while(queue.length){
     const no=queue.shift();
@@ -728,26 +786,29 @@ async function recordSelection(train,formId){
   registrationState[day]=registrationState[day]||{};
   formationUpdatedAt[day]=formationUpdatedAt[day]||{};
 
-  const linked=formationLinkedTrainNos(day,train.no);
+  const service=trainGroupKey(train);
+  const linked=formationLinkedTrainNos(day,train.no,service);
   const changes={};
   const projectUpdates={};
   const stamp=new Date().toISOString();
 
   for(const requested of linked){
-    const actualBase=TRAINS.find(t=>normalizeChainTrainNo(t?.no)===requested);
+    const actualBase=(TRAINS||[]).find(t=>
+      normalizeChainTrainNo(t?.no)===requested && trainGroupKey(t)===service
+    );
     if(!actualBase) continue;
     const actual=String(actualBase.no);
+    const stateKey=trainStateKey(actual,service);
     if(value){
-      registrationState[day][actual]=value;
-      formationUpdatedAt[day][actual]=stamp;
+      registrationState[day][stateKey]=value;
+      formationUpdatedAt[day][stateKey]=stamp;
     }else{
-      delete registrationState[day][actual];
-      delete formationUpdatedAt[day][actual];
+      delete registrationState[day][stateKey];
+      delete formationUpdatedAt[day][stateKey];
     }
-    changes[actual]=value;
-    const group=trainGroupKey(actualBase);
-    projectUpdates[group]=projectUpdates[group]||{};
-    projectUpdates[group][actual]=value;
+    changes[stateKey]=value;
+    projectUpdates[service]=projectUpdates[service]||{};
+    projectUpdates[service][actual]=value;
   }
 
   saveLocal();
@@ -762,7 +823,8 @@ async function recordSelection(train,formId){
         await db.ref('運用').child('stateByDay').child(day).update(updates);
         const tsUpdates={};
         Object.keys(updates).forEach(no=>{
-          tsUpdates[no]=updates[no]?formationUpdatedAt[day][no]:null;
+          const stateKey=trainStateKey(no,group);
+          tsUpdates[no]=updates[no]?formationUpdatedAt[day][stateKey]:null;
         });
         await db.ref('運用').child('formationUpdatedAtByDay').child(day).update(tsUpdates);
       }
@@ -932,7 +994,7 @@ function getVisibleTrains(){
     const signature=`${String(base.service||'')}|${no}|${baseDirection}`;
     if(!no || seen.has(signature)) continue;
     seen.add(signature);
-    out.push(liveTrain(no,base.direction)||base);
+    out.push(liveTrain(no,base.direction,base.service)||base);
   }
   return out;
 }
@@ -996,7 +1058,7 @@ function stationTimetableEntries(st,routeKey,direction){
     if(side!==wantedSide) continue;
 
     // 1本目・2本目の線路（レーン）で分割しない。同じ方面なら全て同じ時刻表へ統合する。
-    const key=String(train.no||'');
+    const key=`${trainGroupKey(train)}|${String(train.no||'')}`;
     if(!key || byTrain.has(key)) continue;
     byTrain.set(key,{train,stop});
   }
@@ -1008,7 +1070,7 @@ function trainRowHTML(train,st){
   const form=selectionDisplayObject(train.formation);
   const cls=getExpressClass(train);
   const trainImg=trainImageFor(train);
-  return `<button class="station-timetable-row" type="button" title="列車 ${esc(displayTrainNo(train))} / ${esc(stop?.time||'')} / ${esc(train.dest||'')} 行" onclick="openTrainSheet('${esc(train.no)}',{type:'station-timetable',stationId:currentStationId,direction:stationTimetableDirection})"><img class="station-timetable-train-img" src="${esc(trainImg)}" alt="${esc(displayTrainNo(train))}" onerror="this.onerror=null;this.src='${DEFAULT_TRAIN_IMG.hanzomon}'"><span class="station-timetable-formation">${formationDisplayHTML(train.formation,train.direction)||'—'}</span><span class="station-timetable-type ${cls}">${esc(timetableTypeLabel(train))}</span><span class="station-timetable-time">${esc(stop?.time||'')}</span><span class="station-timetable-destination"><span class="station-timetable-destination-station${destinationScaleClass(train.dest)}">${esc(train.dest||'')}</span><span class="station-timetable-destination-go">行</span></span></button>`;
+  return `<button class="station-timetable-row" type="button" title="列車 ${esc(displayTrainNo(train))} / ${esc(stop?.time||'')} / ${esc(train.dest||'')} 行" onclick="openTrainSheet('${esc(train.no)}',{type:'station-timetable',stationId:currentStationId,direction:stationTimetableDirection},'${esc(train.service||trainGroupKey(train))}')"><img class="station-timetable-train-img" src="${esc(trainImg)}" alt="${esc(displayTrainNo(train))}" onerror="this.onerror=null;this.src='${DEFAULT_TRAIN_IMG.hanzomon}'"><span class="station-timetable-formation">${formationDisplayHTML(train.formation,train.direction)||'—'}</span><span class="station-timetable-type ${cls}">${esc(timetableTypeLabel(train))}</span><span class="station-timetable-time">${esc(stop?.time||'')}</span><span class="station-timetable-destination"><span class="station-timetable-destination-station${destinationScaleClass(train.dest)}">${esc(train.dest||'')}</span><span class="station-timetable-destination-go">行</span></span></button>`;
 }
 function stationTimetableHTML(st,routeKey,direction){
   const entries=stationTimetableEntries(st,routeKey,direction);
@@ -1037,10 +1099,10 @@ function trainFromChainEntry(entry){
   const directed=candidates.find(t=>!dir||String(t?.direction||'').toLowerCase()===dir);
   const selected=directed||candidates[0]||null;
   if(selected){
-    const form=registrationState[currentDay]?.[String(selected.no)]||null;
+    const form=getStoredFormation(String(selected.no),'chijou');
     return {...selected,formation:form};
   }
-  const fallback=liveTrain(wanted);
+  const fallback=liveTrain(wanted,null,'chijou');
   return fallback||null;
 }
 function connectionNextSky(t){
@@ -1277,7 +1339,7 @@ function timetableRowsHTML(stops){
   }
   return html;
 }
-function formatFormationUpdatedAt(no){const ts=formationTimestamp(no);if(!ts)return '';const d=new Date(ts);return Number.isNaN(d.getTime())?'':`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
+function formatFormationUpdatedAt(no,service=null){const ts=formationTimestamp(no,service);if(!ts)return '';const d=new Date(ts);return Number.isNaN(d.getTime())?'':`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
 function formationCategoryAllowedForTrain(t,groupType){
   const service=String(t?.service||'');
   const type=String(t?.type||'');
@@ -1296,14 +1358,14 @@ function formationCategoryAllowedForTrain(t,groupType){
 
 function updateSheetContent(){
   if(currentStationId){updateStationSheetContent();return;}
-  const train=liveTrain(currentTrainNo);if(!train)return;
+  const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService());if(!train)return;
   const formationValue=String(train.formation||'');
   const selected=selectionDisplayObject(formationValue.split('+')[0]||'');
   const composite=allowsCompositeFormation(train);
   const content=document.getElementById('sheetContent');
   if(!isEditMode){
     const formationText=formationValue?formationDisplayParts(formationValue).join(' + '):'';
-    content.innerHTML=`<div class="train-card${selectedDateKey===operationDateKey()?'':' historical-readonly'}" ${selectedDateKey===operationDateKey()?'onclick="switchToEditMode()"':''}><img src="${esc(trainImageFor(train))}" class="train-card-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div><span class="type-badge ${getExpressClass(train)}">${esc(limitedExpressDisplayName(train))}</span><span class="train-title">${esc(train.dest||'')} 行</span><span class="train-number">${esc(train.no)}</span></div>${formationValue?`<div class="formation-id">${esc(formationText)}</div>`:`<div class="input-trigger-btn">ここから編成を入力</div>`}<div class="capacity-info">所定:${esc(prescribedFormationName(train))}</div></div>${formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${esc(formatFormationUpdatedAt(train.no))}</div>`:''}</div><div class="timetable-list">${timetableRowsHTML(train.stops)}</div><div class="sync-status" id="syncStatus"></div>`;
+    content.innerHTML=`<div class="train-card${selectedDateKey===operationDateKey()?'':' historical-readonly'}" ${selectedDateKey===operationDateKey()?'onclick="switchToEditMode()"':''}><img src="${esc(trainImageFor(train))}" class="train-card-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div><span class="type-badge ${getExpressClass(train)}">${esc(limitedExpressDisplayName(train))}</span><span class="train-title">${esc(train.dest||'')} 行</span><span class="train-number">${esc(train.no)}</span></div>${formationValue?`<div class="formation-id">${esc(formationText)}</div>`:`<div class="input-trigger-btn">ここから編成を入力</div>`}<div class="capacity-info">所定:${esc(prescribedFormationName(train))}</div></div>${formatFormationUpdatedAt(train.no,currentSelectedService())?`<div class="formation-updated-at">編成入力：${esc(formatFormationUpdatedAt(train.no,currentSelectedService()))}</div>`:''}</div><div class="timetable-list">${timetableRowsHTML(train.stops)}</div><div class="sync-status" id="syncStatus"></div>`;
   }else{
     const parts=trainFormationIdsFor(train);
     const valueFront=parts[0]||'';
@@ -1365,7 +1427,7 @@ function updateSheetContent(){
     content.innerHTML=`<div class="train-card"><img src="${esc(trainImageFor(train))}" class="train-card-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div><span class="type-badge ${getExpressClass(train)}">${esc(limitedExpressDisplayName(train))}</span><span class="train-title">${esc(train.dest||'')} 行</span><span class="train-number">${esc(train.no)}</span></div><div class="input-trigger-btn" style="background:#b71c1c;">編成を入力中</div><div class="capacity-info">所定:${esc(prescribedFormationName(train))}</div></div></div><div style="text-align:left;font-weight:700;margin:6px 0 4px;font-size:1.1rem;">編成入力</div>${manualComposite}<div id="formationInputError" class="formation-input-error"></div>${selectorHtml}<div class="sync-status" id="syncStatus"></div>`;
   }
 }
-function switchToEditMode(){if(!selectedIsCurrentOperation())return;if(!liveTrain(currentTrainNo))return;isEditMode=true;document.getElementById('bottomSheet')?.classList.add('editing');updateSheetContent();}
+function switchToEditMode(){if(!selectedIsCurrentOperation())return;if(!liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService()))return;isEditMode=true;document.getElementById('bottomSheet')?.classList.add('editing');updateSheetContent();}
 function formationStoredOrderForTrain(t,front,rear){
   const a=String(front||'').trim(),b=String(rear||'').trim();
   return {front:a,rear:b};
@@ -1374,7 +1436,7 @@ function registerFormationFromInput(){
   const input=document.getElementById('formationManualInput'),err=document.getElementById('formationInputError');
   if(err)err.textContent='';
   const raw=String(input?.value||'').trim();
-  const train=liveTrain(currentTrainNo);
+  const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService());
   if(!train)return;
   const composite=allowsCompositeFormation(train);
   if(composite && raw.includes('+')){
@@ -1394,7 +1456,7 @@ function registerFormationFromInput(){
   return saveCompositeFormation(result.id,null);
 }
 async function saveCompositeFormation(front,rear,finalize=true,keepEditing=false){
-  const train=liveTrain(currentTrainNo);if(!train)return;
+  const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService());if(!train)return;
   const composite=allowsCompositeFormation(train);
   const value=composite?[front,rear].filter(Boolean).join('+'):(front||'');
   await recordSelection(train,value||null);
@@ -1420,7 +1482,7 @@ function toggleDropdown(slot=0){
 }
 async function selectFormation(id,slot=0){
   if(!selectedIsCurrentOperation())return;
-  const train=liveTrain(currentTrainNo);if(!train)return;
+  const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService());if(!train)return;
   const composite=allowsCompositeFormation(train);
   const current=trainFormationIdsFor(train);
   const hadBothBefore=!!(composite && current[0] && current[1]);
@@ -1480,10 +1542,11 @@ async function selectFormation(id,slot=0){
     await saveCompositeFormation(stored.front||null,null,true);
   }
 }
-function openTrainSheet(no,fromContext=null){
-  const train=liveTrain(no);if(!train)return;
-  currentTrainNo=String(no);currentTrainSnapshot=train;currentStationId=null;isEditMode=false;
-  previousSheetContext=(fromContext&&fromContext.type==='station-timetable')?{type:'station-timetable',stationId:fromContext.stationId,direction:fromContext.direction==='down'?'down':'up'}:null;
+function openTrainSheet(no,fromContext=null,service=null){
+  const svc=String(service||fromContext?.service||'').trim()||null;
+  const train=liveTrain(no,fromContext?.direction==='down'?'down':fromContext?.direction==='up'?'up':null,svc);if(!train)return;
+  currentTrainNo=String(no);currentTrainService=svc||train.service||trainGroupKey(train);currentTrainSnapshot=train;currentStationId=null;isEditMode=false;
+  previousSheetContext=(fromContext&&fromContext.type==='station-timetable')?{type:'station-timetable',stationId:fromContext.stationId,direction:fromContext.direction==='down'?'down':'up',service:currentTrainService}:null;
   setSheetBackVisible(!!previousSheetContext);
   document.getElementById('sheetHeaderTitle').textContent='列車情報';updateSheetContent();document.getElementById('overlay').style.display='block';document.getElementById('bottomSheet').classList.add('active');
 }
@@ -1762,7 +1825,7 @@ function isPassingOvertake(t,p,minutes){
     if(String(otherBase.direction||'')!==myDir)continue;
     if(trainServiceRank(otherBase)>=myRank)continue;
     if(!['普通','区間急行'].includes(String(otherBase.type||'')))continue;
-    const other=liveTrain(otherBase.no)||otherBase;
+    const other=liveTrain(otherBase.no,otherBase.direction,otherBase.service)||otherBase;
     const op=trainPosition(other,minutes);
     if(!op)continue;
     if(!(op.stationA===p.stationA||op.stationA===p.stationB||op.stationB===p.stationA||op.stationB===p.stationB))continue;
@@ -1860,7 +1923,7 @@ function renderTrainPositions(){
     const signature=`${String(base.service||'')}|${no}|${String(base.direction||'')}`;
     if(!no || seen.has(signature)) continue;
     seen.add(signature);
-    visible.push(liveTrain(no,base.direction)||base);
+    visible.push(liveTrain(no,base.direction,base.service)||base);
   }
   const occupied={left:[],right:[]};
   for(const t of visible){
@@ -1957,7 +2020,7 @@ function renderTrainPositions(){
       const laneOffset=lane*(trainWidth+laneGap);
       const leftPos=side==='left'?centerX-340-laneOffset:centerX+340-trainWidth+laneOffset;
       el.style.left=`${leftPos}px`;el.style.right='auto';el.style.setProperty('--lane-shift','0px');
-      el.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();openTrainSheet(t.no,null,t.direction);});
+      el.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();openTrainSheet(t.no,null,t.service||trainGroupKey(t));});
       layer.appendChild(el);
       const apply=()=>{
         const ir=img?.getBoundingClientRect(),nr=noEl?.getBoundingClientRect(),fr=formationEl?.getBoundingClientRect();
