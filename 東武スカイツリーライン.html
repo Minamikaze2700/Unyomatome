@@ -164,7 +164,13 @@ const imgTB=n=>`${FORMATION_IMG_BASE}TB${n}.png`;
 const imgTRTA=n=>`${FORMATION_IMG_BASE}TRTA${n}.png`;
 const imgTKK=n=>`${FORMATION_IMG_BASE}TKK${n}.png`;
 const imgN100=n=>`${FORMATION_IMG_BASE}TBN${n}.png`;
-const NOIMAGE_IMG=`${FORMATION_IMG_BASE}TS_noimage.png`;
+const DEFAULT_TRAIN_IMG={
+  chijou:`${FORMATION_IMG_BASE}tschijo.png`,
+  hanzomon:`${FORMATION_IMG_BASE}TSZ.png`,
+  hibiya:`${FORMATION_IMG_BASE}TSH.png`,
+  tokkyu:`${FORMATION_IMG_BASE}tokkyu.png`
+};
+const NOIMAGE_IMG=DEFAULT_TRAIN_IMG.hanzomon;
 
 /* 編成データ：各系統で選択肢を独立。編成アイコンは実在する画像URLを使用 */
 const FORMATIONS=[
@@ -199,7 +205,7 @@ const FORMATIONS=[
   {type:'N100系',typeImg:imgN100(100),items:[101,102,103,104].map(n=>({id:`N${n}F`,name:`N${n}F`,img:imgN100(n),cars:6}))}
 ];
 
-const INITIAL_FORMATION_SELECTION={id:'__INITIAL__',name:'編成未選択',img:'https://minamikaze2700.github.io/Unyomatome/images/TS_noimage.png',kind:'placeholder'};
+const INITIAL_FORMATION_SELECTION={id:'__INITIAL__',name:'編成未選択',img:DEFAULT_TRAIN_IMG.hanzomon,kind:'placeholder'};
 
 const FIREBASE_PROJECTS={
  tokkyu:{appName:"tobultdexp",label:"特急",config:{apiKey:"AIzaSyBvREMcKsKdEq2SKqB5C-W8oQLfPMJTaxA",authDomain:"unyomatome-tobultdexp.firebaseapp.com",projectId:"unyomatome-tobultdexp",storageBucket:"unyomatome-tobultdexp.firebasestorage.app",databaseURL:"https://unyomatome-tobultdexp-default-rtdb.asia-southeast1.firebasedatabase.app",messagingSenderId:"342090185277",appId:"1:342090185277:web:804de64fc594e1073a8854",measurementId:"G-74YNBEB1P9"}},
@@ -300,7 +306,9 @@ function trainFormationIdsFor(t){
 }
 function trainImageFor(t){
   const parts=trainFormationIdsFor(t);
-  if(!parts.length)return INITIAL_FORMATION_SELECTION.img;
+  if(!parts.length){
+    return DEFAULT_TRAIN_IMG[trainGroupKey(t)]||DEFAULT_TRAIN_IMG.hanzomon;
+  }
   return selectionDisplayObject(parts[0]).img||NOIMAGE_IMG;
 }
 function allowsCompositeFormation(t){
@@ -999,7 +1007,8 @@ function trainRowHTML(train,st){
   const stop=((train.stops||[]).filter(s=>stationNamesEqual(s?.station, st[0]))).pop();
   const form=selectionDisplayObject(train.formation);
   const cls=getExpressClass(train);
-  return `<button class="station-timetable-row" type="button" title="列車 ${esc(displayTrainNo(train))} / ${esc(stop?.time||'')} / ${esc(train.dest||'')} 行" onclick="openTrainSheet('${esc(train.no)}',{type:'station-timetable',stationId:currentStationId,direction:stationTimetableDirection})"><img class="station-timetable-train-img" src="${esc(form?.img||NOIMAGE_IMG)}" alt="${esc(displayTrainNo(train))}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span class="station-timetable-formation">${formationDisplayHTML(train.formation,train.direction)||'—'}</span><span class="station-timetable-type ${cls}">${esc(timetableTypeLabel(train))}</span><span class="station-timetable-time">${esc(stop?.time||'')}</span><span class="station-timetable-destination"><span class="station-timetable-destination-station${destinationScaleClass(train.dest)}">${esc(train.dest||'')}</span><span class="station-timetable-destination-go">行</span></span></button>`;
+  const trainImg=trainImageFor(train);
+  return `<button class="station-timetable-row" type="button" title="列車 ${esc(displayTrainNo(train))} / ${esc(stop?.time||'')} / ${esc(train.dest||'')} 行" onclick="openTrainSheet('${esc(train.no)}',{type:'station-timetable',stationId:currentStationId,direction:stationTimetableDirection})"><img class="station-timetable-train-img" src="${esc(trainImg)}" alt="${esc(displayTrainNo(train))}" onerror="this.onerror=null;this.src='${DEFAULT_TRAIN_IMG.hanzomon}'"><span class="station-timetable-formation">${formationDisplayHTML(train.formation,train.direction)||'—'}</span><span class="station-timetable-type ${cls}">${esc(timetableTypeLabel(train))}</span><span class="station-timetable-time">${esc(stop?.time||'')}</span><span class="station-timetable-destination"><span class="station-timetable-destination-station${destinationScaleClass(train.dest)}">${esc(train.dest||'')}</span><span class="station-timetable-destination-go">行</span></span></button>`;
 }
 function stationTimetableHTML(st,routeKey,direction){
   const entries=stationTimetableEntries(st,routeKey,direction);
