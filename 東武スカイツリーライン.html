@@ -175,34 +175,26 @@ const NOIMAGE_IMG=DEFAULT_TRAIN_IMG.hanzomon;
 /* 編成データ：各系統で選択肢を独立。編成アイコンは実在する画像URLを使用 */
 const FORMATIONS=[
   // 半蔵門線直通
-  {type:'50000型',typeImg:imgTB(50000),items:[51008,51009].map(n=>({id:`${n}F`,name:`${n}F`,img:imgTB(n),cars:10}))},
-  {type:'50050型',typeImg:imgTB(50050),items:Array.from({length:18},(_,i)=>51051+i).map(n=>({id:`${n}F`,name:`${n}F`,img:imgTB(n),cars:10}))},
-  {type:'東京メトロ8000系',typeImg:imgTRTA('8000'),items:[8109,8116].map(n=>({id:`${n}F`,name:`${n}F`,img:imgTRTA(`${n}`),cars:10}))},
-  {type:'東京メトロ08系',typeImg:imgTRTA('08'),items:Array.from({length:6},(_,i)=>101+i).map(n=>({id:`08-${n}F`,name:`08-${n}F`,img:imgTRTA(`08${n}`),cars:10}))},
-  {type:'東京メトロ18000系',typeImg:imgTRTA('18000'),items:Array.from({length:19},(_,i)=>18101+i).map(n=>({id:`${n}F`,name:`${n}F`,img:imgTRTA(n),cars:10}))},
-  {type:'東急5000系',typeImg:imgTKK(5000),items:Array.from({length:20},(_,i)=>5101+i).map(n=>({id:`${n}F`,name:`${n}F`,img:imgTKK(n),cars:10,disabled:n===5101}))},
-  {type:'東急2020系',typeImg:imgTKK(2020),items:Array.from({length:32},(_,i)=>2121+i).map(n=>({id:`${n}F`,name:`${n}F`,img:imgTKK(n),cars:10,disabled:[2135,2151,2152].includes(n)}))},
+  {type:'50000型',typeImg:imgTB(50000),items:[{id:'51008F',name:'51008F',img:imgTB(51008),cars:10},{id:'51009F',name:'51009F',img:imgTB(51009),cars:10}]},
+  {type:'50050型',typeImg:imgTB(50050),items:[{id:'51051F',name:'51051F',img:imgTB(51051),cars:10},{id:'51052F',name:'51052F',img:imgTB(51052),cars:10},{id:'51053F',name:'51053F',img:imgTB(51053),cars:10},{id:'51054F',name:'51054F',img:imgTB(51054),cars:10},{id:'51055F',name:'51055F',img:imgTB(51055),cars:10},{id:'51056F',name:'51056F',img:imgTB(51056),cars:10},{id:'51057F',name:'51057F',img:imgTB(51057),cars:10},{id:'51058F',name:'51058F',img:imgTB(51058),cars:10},{id:'51059F',name:'51059F',img:imgTB(51059),cars:10},{id:'51060F',name:'51060F',img:imgTB(51060),cars:10},{id:'51061F',name:'51061F',img:imgTB(51061),cars:10},{id:'51062F',name:'51062F',img:imgTB(51062),cars:10},{id:'51063F',name:'51063F',img:imgTB(51063),cars:10},{id:'51064F',name:'51064F',img:imgTB(51064),cars:10},{id:'51065F',name:'51065F',img:imgTB(51065),cars:10},{id:'51066F',name:'51066F',img:imgTB(51066),cars:10},{id:'51067F',name:'51067F',img:imgTB(51067),cars:10},{id:'51068F',name:'51068F',img:imgTB(51068),cars:10}]},
+  {type:'東京メトロ8000系',typeImg:imgTRTA('8000'),items:[{id:'8109F',name:'8109F',img:imgTRTA('8109'),cars:10},{id:'8116F',name:'8116F',img:imgTRTA('8116'),cars:10}]},
+  {type:'東京メトロ08系',typeImg:imgTRTA('08'),items:[{id:'08-101F',name:'08-101F',img:imgTRTA('08101'),cars:10},{id:'08-102F',name:'08-102F',img:imgTRTA('08102'),cars:10},{id:'08-103F',name:'08-103F',img:imgTRTA('08103'),cars:10},{id:'08-104F',name:'08-104F',img:imgTRTA('08104'),cars:10},{id:'08-105F',name:'08-105F',img:imgTRTA('08105'),cars:10},{id:'08-106F',name:'08-106F',img:imgTRTA('08106'),cars:10}]},
+  {type:'東京メトロ18000系',typeImg:imgTRTA('18000'),items:[{id:'18101F',name:'18101F',img:imgTRTA(18101),cars:10},{id:'18102F',name:'18102F',img:imgTRTA(18102),cars:10},{id:'18103F',name:'18103F',img:imgTRTA(18103),cars:10},{id:'18104F',name:'18104F',img:imgTRTA(18104),cars:10},{id:'18105F',name:'18105F',img:imgTRTA(18105),cars:10},{id:'18106F',name:'18106F',img:imgTRTA(18106),cars:10},{id:'18107F',name:'18107F',img:imgTRTA(18107),cars:10},{id:'18108F',name:'18108F',img:imgTRTA(18108),cars:10},{id:'18109F',name:'18109F',img:imgTRTA(18109),cars:10},{id:'18110F',name:'18110F',img:imgTRTA(18110),cars:10},{id:'18111F',name:'18111F',img:imgTRTA(18111),cars:10},{id:'18112F',name:'18112F',img:imgTRTA(18112),cars:10},{id:'18113F',name:'18113F',img:imgTRTA(18113),cars:10},{id:'18114F',name:'18114F',img:imgTRTA(18114),cars:10},{id:'18115F',name:'18115F',img:imgTRTA(18115),cars:10},{id:'18116F',name:'18116F',img:imgTRTA(18116),cars:10},{id:'18117F',name:'18117F',img:imgTRTA(18117),cars:10},{id:'18118F',name:'18118F',img:imgTRTA(18118),cars:10},{id:'18119F',name:'18119F',img:imgTRTA(18119),cars:10}]},
+  {type:'東急5000系',typeImg:imgTKK(5000),items:[{id:'5101F',name:'5101F',img:imgTKK(5101),cars:10,disabled:true},{id:'5102F',name:'5102F',img:imgTKK(5102),cars:10},{id:'5103F',name:'5103F',img:imgTKK(5103),cars:10},{id:'5104F',name:'5104F',img:imgTKK(5104),cars:10},{id:'5105F',name:'5105F',img:imgTKK(5105),cars:10},{id:'5106F',name:'5106F',img:imgTKK(5106),cars:10},{id:'5107F',name:'5107F',img:imgTKK(5107),cars:10},{id:'5108F',name:'5108F',img:imgTKK(5108),cars:10},{id:'5109F',name:'5109F',img:imgTKK(5109),cars:10},{id:'5110F',name:'5110F',img:imgTKK(5110),cars:10},{id:'5111F',name:'5111F',img:imgTKK(5111),cars:10},{id:'5112F',name:'5112F',img:imgTKK(5112),cars:10},{id:'5113F',name:'5113F',img:imgTKK(5113),cars:10},{id:'5114F',name:'5114F',img:imgTKK(5114),cars:10},{id:'5115F',name:'5115F',img:imgTKK(5115),cars:10},{id:'5116F',name:'5116F',img:imgTKK(5116),cars:10},{id:'5117F',name:'5117F',img:imgTKK(5117),cars:10},{id:'5120F',name:'5120F',img:imgTKK(5120),cars:10}]},
+  {type:'東急2020系',typeImg:imgTKK(2020),items:[{id:'2121F',name:'2121F',img:imgTKK(2121),cars:10},{id:'2122F',name:'2122F',img:imgTKK(2122),cars:10},{id:'2123F',name:'2123F',img:imgTKK(2123),cars:10},{id:'2124F',name:'2124F',img:imgTKK(2124),cars:10},{id:'2125F',name:'2125F',img:imgTKK(2125),cars:10},{id:'2126F',name:'2126F',img:imgTKK(2126),cars:10},{id:'2127F',name:'2127F',img:imgTKK(2127),cars:10},{id:'2128F',name:'2128F',img:imgTKK(2128),cars:10},{id:'2129F',name:'2129F',img:imgTKK(2129),cars:10},{id:'2130F',name:'2130F',img:imgTKK(2130),cars:10},{id:'2131F',name:'2131F',img:imgTKK(2131),cars:10},{id:'2132F',name:'2132F',img:imgTKK(2132),cars:10},{id:'2133F',name:'2133F',img:imgTKK(2133),cars:10},{id:'2134F',name:'2134F',img:imgTKK(2134),cars:10},{id:'2135F',name:'2135F',img:imgTKK(2135),cars:10,disabled:true},{id:'2136F',name:'2136F',img:imgTKK(2136),cars:10},{id:'2137F',name:'2137F',img:imgTKK(2137),cars:10},{id:'2138F',name:'2138F',img:imgTKK(2138),cars:10},{id:'2139F',name:'2139F',img:imgTKK(2139),cars:10},{id:'2140F',name:'2140F',img:imgTKK(2140),cars:10},{id:'2141F',name:'2141F',img:imgTKK(2141),cars:10},{id:'2142F',name:'2142F',img:imgTKK(2142),cars:10},{id:'2143F',name:'2143F',img:imgTKK(2143),cars:10},{id:'2144F',name:'2144F',img:imgTKK(2144),cars:10},{id:'2145F',name:'2145F',img:imgTKK(2145),cars:10},{id:'2146F',name:'2146F',img:imgTKK(2146),cars:10},{id:'2147F',name:'2147F',img:imgTKK(2147),cars:10},{id:'2148F',name:'2148F',img:imgTKK(2148),cars:10},{id:'2149F',name:'2149F',img:imgTKK(2149),cars:10},{id:'2150F',name:'2150F',img:imgTKK(2150),cars:10},{id:'2151F',name:'2151F',img:imgTKK(2151),cars:10,disabled:true},{id:'2152F',name:'2152F',img:imgTKK(2152),cars:10,disabled:true}]},
   // 日比谷線直通
-  {type:'70000型',typeImg:imgTB(70000),items:Array.from({length:18},(_,i)=>71701+i).map(n=>({id:`${n}F`,name:`${n}F`,img:imgTB(n),cars:7}))},
-  {type:'70090型',typeImg:imgTB(70000),items:Array.from({length:6},(_,i)=>71791+i).map(n=>({id:`${n}F`,name:`${n}F`,img:imgTB(n),cars:7}))},
-  {type:'東京メトロ13000系',typeImg:imgTRTA(13000),items:[...Array.from({length:22},(_,i)=>13101+i),...Array.from({length:4},(_,i)=>13141+i)].map(n=>({id:`${n}F`,name:`${n}F`,img:imgTRTA(n),cars:7}))},
+  {type:'70000型',typeImg:imgTB(70000),items:[{id:'71701F',name:'71701F',img:imgTB(71701),cars:7},{id:'71702F',name:'71702F',img:imgTB(71702),cars:7},{id:'71703F',name:'71703F',img:imgTB(71703),cars:7},{id:'71704F',name:'71704F',img:imgTB(71704),cars:7},{id:'71705F',name:'71705F',img:imgTB(71705),cars:7},{id:'71706F',name:'71706F',img:imgTB(71706),cars:7},{id:'71707F',name:'71707F',img:imgTB(71707),cars:7},{id:'71708F',name:'71708F',img:imgTB(71708),cars:7},{id:'71709F',name:'71709F',img:imgTB(71709),cars:7},{id:'71710F',name:'71710F',img:imgTB(71710),cars:7},{id:'71711F',name:'71711F',img:imgTB(71711),cars:7},{id:'71712F',name:'71712F',img:imgTB(71712),cars:7},{id:'71713F',name:'71713F',img:imgTB(71713),cars:7},{id:'71714F',name:'71714F',img:imgTB(71714),cars:7},{id:'71715F',name:'71715F',img:imgTB(71715),cars:7},{id:'71716F',name:'71716F',img:imgTB(71716),cars:7},{id:'71717F',name:'71717F',img:imgTB(71717),cars:7},{id:'71718F',name:'71718F',img:imgTB(71718),cars:7}]},
+  {type:'70090型',typeImg:imgTB(70000),items:[{id:'71791F',name:'71791F',img:imgTB(71791),cars:7},{id:'71792F',name:'71792F',img:imgTB(71792),cars:7},{id:'71793F',name:'71793F',img:imgTB(71793),cars:7},{id:'71794F',name:'71794F',img:imgTB(71794),cars:7},{id:'71795F',name:'71795F',img:imgTB(71795),cars:7},{id:'71796F',name:'71796F',img:imgTB(71796),cars:7}]},
+  {type:'東京メトロ13000系',typeImg:imgTRTA(13000),items:[{id:'13101F',name:'13101F',img:imgTRTA(13101),cars:7},{id:'13102F',name:'13102F',img:imgTRTA(13102),cars:7},{id:'13103F',name:'13103F',img:imgTRTA(13103),cars:7},{id:'13104F',name:'13104F',img:imgTRTA(13104),cars:7},{id:'13105F',name:'13105F',img:imgTRTA(13105),cars:7},{id:'13106F',name:'13106F',img:imgTRTA(13106),cars:7},{id:'13107F',name:'13107F',img:imgTRTA(13107),cars:7},{id:'13108F',name:'13108F',img:imgTRTA(13108),cars:7},{id:'13109F',name:'13109F',img:imgTRTA(13109),cars:7},{id:'13110F',name:'13110F',img:imgTRTA(13110),cars:7},{id:'13111F',name:'13111F',img:imgTRTA(13111),cars:7},{id:'13112F',name:'13112F',img:imgTRTA(13112),cars:7},{id:'13113F',name:'13113F',img:imgTRTA(13113),cars:7},{id:'13114F',name:'13114F',img:imgTRTA(13114),cars:7},{id:'13115F',name:'13115F',img:imgTRTA(13115),cars:7},{id:'13116F',name:'13116F',img:imgTRTA(13116),cars:7},{id:'13117F',name:'13117F',img:imgTRTA(13117),cars:7},{id:'13118F',name:'13118F',img:imgTRTA(13118),cars:7},{id:'13119F',name:'13119F',img:imgTRTA(13119),cars:7},{id:'13120F',name:'13120F',img:imgTRTA(13120),cars:7},{id:'13121F',name:'13121F',img:imgTRTA(13121),cars:7},{id:'13122F',name:'13122F',img:imgTRTA(13122),cars:7},{id:'13141F',name:'13141F',img:imgTRTA(13141),cars:7},{id:'13142F',name:'13142F',img:imgTRTA(13142),cars:7},{id:'13143F',name:'13143F',img:imgTRTA(13143),cars:7},{id:'13144F',name:'13144F',img:imgTRTA(13144),cars:7}]},
   // 地上運用：春日部支所所属のみ
-  {type:'10000型',typeImg:imgTB(10000),variants:[
-    {id:'10000_8car',name:'10000型8両',img:imgTB(10000),items:[11801,11802].map(n=>({id:`${n}F`,name:`${n}F`,img:imgTB(n),cars:8}))},
-    {id:'10000_6car',name:'10000型6両',img:imgTB(10000),items:[11601,11602,11603,11604,11605,11606,11607,11608].map(n=>({id:`${n}F`,name:`${n}F`,img:imgTB(n),cars:6,disabled:n===11606}))}
-  ]},
-  {type:'10030型',typeImg:imgTB(10030),variants:[
-    {id:'10030_2car',name:'10030型2両',img:imgTB(10030),items:[11264,11265,11267,11268].map(n=>({id:`${n}F`,name:`${n}F`,img:imgTB(n),cars:2}))},
-    {id:'10030_4car_unupdated',name:'10030型4両 未更新',img:imgTB(10030),items:[11431,11432,11433,11436,11437,11447,11435,11434,11444,11451,11453,11454,11458,11459].map(n=>({id:`${n}F`,name:`${n}F`,img:imgTB(n),cars:4}))},
-    {id:'10030_4car_updated',name:'10030型4両 更新',img:`${FORMATION_IMG_BASE}TD10030_updated.png`,items:[]},
-    {id:'10030_6car',name:'10030型6両',img:imgTB(10030),items:[11655,11656,11657,11658,11659,11660,11662,11663,11664,11665,11667].map(n=>({id:`${n}F`,name:`${n}F`,img:imgTB(n),cars:6}))}
-  ]},
+  {type:'10000型',typeImg:imgTB(10000),variants:[{id:'10000_8car',name:'10000型8両',img:imgTB(10000),items:[{id:'11801F',name:'11801F',img:imgTB(11801),cars:8},{id:'11802F',name:'11802F',img:imgTB(11802),cars:8}]},{id:'10000_6car',name:'10000型6両',img:imgTB(10000),items:[{id:'11601F',name:'11601F',img:imgTB(11601),cars:6},{id:'11602F',name:'11602F',img:imgTB(11602),cars:6},{id:'11603F',name:'11603F',img:imgTB(11603),cars:6},{id:'11604F',name:'11604F',img:imgTB(11604),cars:6},{id:'11605F',name:'11605F',img:imgTB(11605),cars:6},{id:'11606F',name:'11606F',img:imgTB(11606),cars:6,disabled:true},{id:'11607F',name:'11607F',img:imgTB(11607),cars:6},{id:'11608F',name:'11608F',img:imgTB(11608),cars:6}]}]},
+  {type:'10030型',typeImg:imgTB(10030),variants:[{id:'10030_2car',name:'10030型2両',img:imgTB(10030),items:[{id:'11264F',name:'11264F',img:imgTB(11264),cars:2},{id:'11265F',name:'11265F',img:imgTB(11265),cars:2},{id:'11267F',name:'11267F',img:imgTB(11267),cars:2},{id:'11268F',name:'11268F',img:imgTB(11268),cars:2}]},{id:'10030_4car_unupdated',name:'10030型4両 未更新',img:imgTB(10030),items:[{id:'11431F',name:'11431F',img:imgTB(11431),cars:4},{id:'11432F',name:'11432F',img:imgTB(11432),cars:4},{id:'11433F',name:'11433F',img:imgTB(11433),cars:4},{id:'11436F',name:'11436F',img:imgTB(11436),cars:4},{id:'11437F',name:'11437F',img:imgTB(11437),cars:4},{id:'11447F',name:'11447F',img:imgTB(11447),cars:4},{id:'11435F',name:'11435F',img:imgTB(11435),cars:4},{id:'11434F',name:'11434F',img:imgTB(11434),cars:4},{id:'11444F',name:'11444F',img:imgTB(11444),cars:4},{id:'11451F',name:'11451F',img:imgTB(11451),cars:4},{id:'11453F',name:'11453F',img:imgTB(11453),cars:4},{id:'11454F',name:'11454F',img:imgTB(11454),cars:4},{id:'11458F',name:'11458F',img:imgTB(11458),cars:4},{id:'11459F',name:'11459F',img:imgTB(11459),cars:4}]},{id:'10030_4car_updated',name:'10030型4両 更新',img:imgTB(10030),cars:4,items:[]},{id:'10030_6car',name:'10030型6両',img:imgTB(10030),items:[{id:'11655F',name:'11655F',img:imgTB(11655),cars:6},{id:'11656F',name:'11656F',img:imgTB(11656),cars:6},{id:'11657F',name:'11657F',img:imgTB(11657),cars:6},{id:'11658F',name:'11658F',img:imgTB(11658),cars:6},{id:'11659F',name:'11659F',img:imgTB(11659),cars:6},{id:'11660F',name:'11660F',img:imgTB(11660),cars:6},{id:'11662F',name:'11662F',img:imgTB(11662),cars:6},{id:'11663F',name:'11663F',img:imgTB(11663),cars:6},{id:'11664F',name:'11664F',img:imgTB(11664),cars:6},{id:'11665F',name:'11665F',img:imgTB(11665),cars:6},{id:'11667F',name:'11667F',img:imgTB(11667),cars:6}]}]},
   // 特急
-  {type:'100系',typeImg:imgTB(100),items:[102,103,106,107,108,109].map(n=>({id:`${n}F`,name:`${n}F`,img:imgTB(n),cars:6}))},
-  {type:'200系',typeImg:imgTB(200),items:[203,204,205,206,207,209].map(n=>({id:`${n}F`,name:`${n}F`,img:imgTB(n),cars:6}))},
-  {type:'500系',typeImg:imgTB(500),items:Array.from({length:17},(_,i)=>501+i).map(n=>({id:`${n}F`,name:`${n}F`,img:imgTB(n),cars:3}))},
+  {type:'100系',typeImg:imgTB(100),items:[{id:'102F',name:'102F',img:imgTB(102),cars:6},{id:'103F',name:'103F',img:imgTB(103),cars:6},{id:'106F',name:'106F',img:imgTB(106),cars:6},{id:'107F',name:'107F',img:imgTB(107),cars:6},{id:'108F',name:'108F',img:imgTB(108),cars:6},{id:'109F',name:'109F',img:imgTB(109),cars:6}]},
+  {type:'200系',typeImg:imgTB(200),items:[{id:'203F',name:'203F',img:imgTB(203),cars:6},{id:'204F',name:'204F',img:imgTB(204),cars:6},{id:'205F',name:'205F',img:imgTB(205),cars:6},{id:'206F',name:'206F',img:imgTB(206),cars:6},{id:'207F',name:'207F',img:imgTB(207),cars:6},{id:'209F',name:'209F',img:imgTB(209),cars:6}]},
+  {type:'500系',typeImg:imgTB(500),items:[{id:'501F',name:'501F',img:imgTB(501),cars:3},{id:'502F',name:'502F',img:imgTB(502),cars:3},{id:'503F',name:'503F',img:imgTB(503),cars:3},{id:'504F',name:'504F',img:imgTB(504),cars:3},{id:'505F',name:'505F',img:imgTB(505),cars:3},{id:'506F',name:'506F',img:imgTB(506),cars:3},{id:'507F',name:'507F',img:imgTB(507),cars:3},{id:'508F',name:'508F',img:imgTB(508),cars:3},{id:'509F',name:'509F',img:imgTB(509),cars:3},{id:'510F',name:'510F',img:imgTB(510),cars:3},{id:'511F',name:'511F',img:imgTB(511),cars:3},{id:'512F',name:'512F',img:imgTB(512),cars:3},{id:'513F',name:'513F',img:imgTB(513),cars:3},{id:'514F',name:'514F',img:imgTB(514),cars:3},{id:'515F',name:'515F',img:imgTB(515),cars:3},{id:'516F',name:'516F',img:imgTB(516),cars:3},{id:'517F',name:'517F',img:imgTB(517),cars:3}]},
   {type:'500系+500系',typeImg:imgTB(500),items:[]},
-  {type:'N100系',typeImg:imgN100(100),items:[101,102,103,104].map(n=>({id:`N${n}F`,name:`N${n}F`,img:imgN100(n),cars:6}))}
+  {type:'N100系',typeImg:imgN100(100),items:[{id:'N101F',name:'N101F',img:imgN100(101),cars:6},{id:'N102F',name:'N102F',img:imgN100(102),cars:6},{id:'N103F',name:'N103F',img:imgN100(103),cars:6},{id:'N104F',name:'N104F',img:imgN100(104),cars:6}]}
 ];
 
 const INITIAL_FORMATION_SELECTION={id:'__INITIAL__',name:'編成未選択',img:DEFAULT_TRAIN_IMG.hanzomon,kind:'placeholder'};
@@ -248,7 +240,10 @@ function formationCarsById(id){
   return null;
 }
 function isAllowedCompositePair(carsA,carsB){
+  // 両数未指定（10000型・10030型）が含まれる場合は、形式段階では組み合わせを拒否しない。
+  // 実編成の両数が確定している場合のみ 6+2 / 4+4 / 4+2 を判定する。
   const a=Number(carsA),b=Number(carsB);
+  if(!Number.isFinite(a)||!Number.isFinite(b))return true;
   return (a===6&&b===2)||(a===2&&b===6)||(a===4&&b===4)||(a===4&&b===2)||(a===2&&b===4);
 }
 function allowedRearCarsForFront(cars){
@@ -256,7 +251,11 @@ function allowedRearCarsForFront(cars){
   if(c===6)return new Set([2]);
   if(c===4)return new Set([4,2]);
   if(c===2)return new Set([6,4]);
-  return new Set();
+  return new Set([2,4,6]);
+}
+function formationHasPossibleCompositePartner(cars){
+  const c=Number(cars);
+  return c===2||c===4||c===6;
 }
 function isAllowedSingleFormation(cars){
   const c=Number(cars);
@@ -293,7 +292,7 @@ function formationDisplayParts(id,direction=null){
     const f=selectionDisplayObject(one);
     if(!f||f.id===INITIAL_FORMATION_SELECTION.id)return [];
     if(f.kind==='manual')return [f.name];
-    if(f.kind==='variant') return [f.type,f.name].filter(Boolean); return f.type&&f.name.startsWith(f.type)?[f.type,f.name.slice(f.type.length).trim()].filter(Boolean):[f.name];
+    if(f.kind==='variant') return [f.name].filter(Boolean); return f.type&&f.name.startsWith(f.type)?[f.name]:[f.name];
   });
 }
 function formationDisplayHTML(id,direction=null){return formationDisplayParts(id,direction).map(x=>`<span>${esc(x)}</span>`).join('');}
@@ -457,26 +456,30 @@ async function loadTrainData(){
           .filter(x=>stationNameKey(x?.station)!=='着番線')
           .map(x=>({...x, station:stationNameKey(x?.station)})) : []
       }));
-      // 同じ系統・同じ列番がJSONに複数回現れても、1本の編成状態を共有する。
-      // 方向が異なる定義は別列車として保持する。平休で分かれている場合はdaysを統合。
+      // 平日と休日で同じ系統・列番が存在しても、時刻表データは絶対に混ぜない。
+      // 1列車を「系統＋列番＋方向＋運転日」で管理し、各日の時刻・停車駅をそのまま保持する。
+      // days未指定のデータは平日として扱う。
       const merged=new Map();
       for(const t of normalized){
-        const k=`${service}|${String(t?.no||'')}|${String(t?.direction||'').toLowerCase()}`;
-        if(!t?.no){continue;}
-        const prev=merged.get(k);
-        if(!prev){
-          merged.set(k,{...t,days:Array.isArray(t.days)?[...new Set(t.days)]:t.days});
-          continue;
+        if(!t?.no) continue;
+        const rawDays=Array.isArray(t.days)&&t.days.length?t.days:['平日'];
+        for(const day of rawDays){
+          if(day!=='平日'&&day!=='休日') continue;
+          const k=`${service}|${String(t.no)}|${String(t.direction||'').toLowerCase()}|${day}`;
+          const item={...t,days:[day]};
+          const prev=merged.get(k);
+          if(!prev){
+            merged.set(k,item);
+            continue;
+          }
+          // 同一運転日・同一系統・同一列番・同一方向で重複している場合のみ統合する。
+          if((item.stops||[]).length>(prev.stops||[]).length) prev.stops=item.stops;
+          if(!prev.dest&&item.dest)prev.dest=item.dest;
+          if(!prev.type&&item.type)prev.type=item.type;
+          if(!prev.limitedName&&item.limitedName)prev.limitedName=item.limitedName;
+          if(item.hasTHLinerOperation===true)prev.hasTHLinerOperation=true;
+          if(item.splitLiberty===true)prev.splitLiberty=true;
         }
-        if(Array.isArray(prev.days)||Array.isArray(t.days)){
-          prev.days=[...new Set([...(Array.isArray(prev.days)?prev.days:[]),...(Array.isArray(t.days)?t.days:[])])];
-        }
-        if((t.stops||[]).length>(prev.stops||[]).length) prev.stops=t.stops;
-        if(!prev.dest&&t.dest)prev.dest=t.dest;
-        if(!prev.type&&t.type)prev.type=t.type;
-        if(!prev.limitedName&&t.limitedName)prev.limitedName=t.limitedName;
-        if(t.hasTHLinerOperation===true)prev.hasTHLinerOperation=true;
-        if(t.splitLiberty===true)prev.splitLiberty=true;
       }
       return [service,[...merged.values()]];
     }catch(err){
@@ -619,7 +622,7 @@ function trainStateKey(no,service){
   return `${svc}|${String(no)}`;
 }
 function currentSelectedService(){
-  return String(currentTrainService || currentTrainSnapshot?.service || '').trim() || null;
+  return String(currentTrainService || currentTrainSnapshot?.service || (currentTrainSnapshot ? trainGroupKey(currentTrainSnapshot) : '') || '').trim() || null;
 }
 function getStoredFormation(no,service){
   const state=registrationState[currentDay]||{};
@@ -639,7 +642,7 @@ function getFormationTimestamp(no,service){
 function liveTrain(no,direction=null,service=null){
   const key=String(no);
   const scopedService=String(service || currentSelectedService() || '').trim();
-  const candidates=TRAINS.filter(t=>String(t?.no)===key && (!scopedService || String(t?.service||'')===scopedService));
+  const candidates=TRAINS.filter(t=>String(t?.no)===key && (!scopedService || String(t?.service||'')===scopedService) && (!Array.isArray(t?.days) || !t.days.length || t.days.includes(currentDay||'平日')));
   if(!candidates.length)return null;
   const dir=String(direction||'').toLowerCase();
   const base=dir? (candidates.find(t=>String(t?.direction||'').toLowerCase()===dir)||candidates[0]) : candidates[0];
@@ -761,7 +764,9 @@ function formationLinkedTrainNos(day,trainNo,service=null){
   const svc=String(service||'chijou');
   const result=new Set();
   const queue=[start];
-  // 運用連結は地上運用の列車だけを対象にする。
+  // 地上運用は運用連結をたどる。
+  // 半蔵門線・日比谷線・特急は運用連結の対象外だが、
+  // 編成入力そのものは各系統で独立して保存するため、入力した列番自身を返す。
   if(svc!=='chijou') return start?[start]:[];
   const chains=OPERATION_CHAINS[day]||[];
   while(queue.length){
@@ -1092,7 +1097,7 @@ function trainFromChainEntry(entry){
   const di=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(entry.dest));
   const dir=(si>=0&&di>=0&&si>di)?'up':(si>=0&&di>=0&&si<di)?'down':null;
   const all=Array.isArray(TRAINS)?TRAINS:[];
-  const candidates=all.filter(t=>normalizeChainTrainNo(t?.no)===wanted);
+  const candidates=all.filter(t=>normalizeChainTrainNo(t?.no)===wanted && (!Array.isArray(t?.days) || !t.days.length || t.days.includes(currentDay||'平日')));
   // 折返し後の列車情報は、同一列番に複数方向の定義がある場合でも
   // 「次の運用エントリ」の方向に一致する列車をそのまま使う。
   // liveTrain(no) は列番だけで最初の列車を返すため、ここでは使わない。
@@ -1341,15 +1346,15 @@ function timetableRowsHTML(stops){
 }
 function formatFormationUpdatedAt(no,service=null){const ts=formationTimestamp(no,service);if(!ts)return '';const d=new Date(ts);return Number.isNaN(d.getTime())?'':`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
 function formationCategoryAllowedForTrain(t,groupType){
-  const service=String(t?.service||'');
+  // 列車データ側のserviceを最優先し、万一欠落していてもtrainGroupKeyで補完する。
+  const service=String(t?.service||trainGroupKey(t)||'').trim();
   const type=String(t?.type||'');
   const prescribed=String(prescribedFormationName(t)||'');
   if(groupType==='500系+500系') return prescribed==='500系+500系';
   if(service==='hanzomon') return ['50000型','50050型','東京メトロ8000系','東京メトロ08系','東京メトロ18000系','東急5000系','東急2020系'].includes(groupType);
   if(service==='hibiya') return ['70000型','70090型','東京メトロ13000系'].includes(groupType);
   // 地上運用はJSONのserviceが欠落している列車も含めて選択可能にする。
-  // （普通・急行・区間急行・準急・区間準急は地上運用として扱う）
-  if(service==='chijou' || (!service && ['普通','急行','区間急行','準急','区間準急'].includes(type))){
+  if(service==='chijou' || (!t?.service && ['普通','急行','区間急行','準急','区間準急'].includes(type))){
     return ['10000型','10030型'].includes(groupType);
   }
   if(type==='特急') return ['100系','200系','500系','N100系'].includes(groupType);
@@ -1358,7 +1363,11 @@ function formationCategoryAllowedForTrain(t,groupType){
 
 function updateSheetContent(){
   if(currentStationId){updateStationSheetContent();return;}
-  const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService());if(!train)return;
+  const loadedTrain=liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService()) || currentTrainSnapshot;if(!loadedTrain)return;
+  // 列車情報を開いた時点で選択されている系統を明示的に引き継ぐ。
+  // 同一列番が半蔵門線・日比谷線に存在する場合でも、編成入力先を取り違えない。
+  const effectiveService=String(currentSelectedService()||loadedTrain.service||trainGroupKey(loadedTrain)||'').trim();
+  const train={...loadedTrain,service:effectiveService};
   const formationValue=String(train.formation||'');
   const selected=selectionDisplayObject(formationValue.split('+')[0]||'');
   const composite=allowsCompositeFormation(train);
@@ -1375,19 +1384,15 @@ function updateSheetContent(){
       const frontCars=formationCarsById(valueFront);
       const rearCars=formationCarsById(valueRear);
       const allowedRearCars=allowedRearCarsForFront(frontCars);
+      // 8両編成を前寄りに選択した場合、後ろ寄りは編成なし（デフォルト）のみ。
+      const rearLockedByEight=Boolean(composite && slot===1 && frontCars===8);
       const renderItem=f=>{
         const cars=Number(f.cars);
         const duplicateActualFormation=f.id===otherSelected;
         const img=f.img||NOIMAGE_IMG;
         const safeImg=`<img src="${esc(img)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'">`;
         let hiddenByPair=false;
-        if(composite){
-          // 前寄りは常に地上運用の全編成を選択肢として表示する。
-          // 後ろ寄りだけ、選択済みの前寄り編成に応じて組み合わせを絞る。
-          if(slot===1 && frontCars!=null){
-            hiddenByPair=!allowedRearCars.has(cars);
-          }
-        }
+        if(composite && slot===1 && frontCars!=null && cars && !allowedRearCars.has(cars)) hiddenByPair=true;
         if(hiddenByPair) return '';
         return f.disabled
           ? `<div class="option-item disabled">${safeImg}<span>${f.name}</span></div>`
@@ -1398,20 +1403,25 @@ function updateSheetContent(){
       const renderVariant=(v,group,slot)=>{
         const vCars=formationCarsById(v.id);
         let hidden=false;
-        if(composite){
-          // 前寄りは地上運用の全編成を常に表示する。
-          if(slot===1 && frontCars!=null && vCars!=null) hidden=!allowedRearCars.has(vCars);
-        }
-        if(hidden)return '';
+        if(composite && slot===1 && frontCars!=null && vCars!=null) hidden=!allowedRearCars.has(vCars);
+        if(hidden) return '';
         const vimg=v.img||NOIMAGE_IMG;
-        return `<div class="option-header option-subheader" onclick="selectFormation('${v.id}',${slot})"><img src="${esc(vimg)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${v.name}</span></div>`;
+        const disabledDuplicate=v.id===otherSelected;
+        const clickable=!disabledDuplicate && (!composite || slot===0 || frontCars==null || vCars==null || allowedRearCars.has(vCars));
+        return `<div class="option-header option-subheader${disabledDuplicate?' disabled':''}" ${clickable?`onclick="selectFormation('${v.id}',${slot})"`:''}><img src="${esc(vimg)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${v.name}</span></div>`;
       };
-      const groupHtml=FORMATIONS.filter(g=>g.type!=='500系+500系'&&(composite&&slot===0?['10000型','10030型'].includes(g.type):formationCategoryAllowedForTrain(train,g.type))).map(g=>{
+      if(rearLockedByEight){
+        return `<div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}',${slot})"><img src="${INITIAL_FORMATION_SELECTION.img}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>`;
+      }
+      const groupHtml=FORMATIONS.filter(g=>g.type!=='500系+500系'&&formationCategoryAllowedForTrain(train,g.type)).map(g=>{
         const variantsHtml=(g.variants||[]).map(v=>renderVariant(v,g,slot)).join('');
         const variantItems=(g.variants||[]).flatMap(v=>v.items||[]).map(renderItem).join('');
         const directHtml=(g.items||[]).map(renderItem).join('');
         const gimg=g.typeImg||NOIMAGE_IMG;
-        return `<div class="option-header option-category-header" onclick="selectFormation('${g.type}',${slot})"><img src="${esc(gimg)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${g.type}</span></div>${variantsHtml}${variantItems}${directHtml}`;
+        // 10000型・10030型は両数未指定の形式そのものも常に選択可能。
+        const typeSelectable=(g.type==='10000型'||g.type==='10030型');
+        const groupHeader = `<div class="option-header option-category-header" onclick="selectFormation('${g.type}',${slot})"><img src="${esc(gimg)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${g.type}</span></div>`;
+        return `${groupHeader}${variantsHtml}${variantItems}${directHtml}`;
       }).join('');
       return `<div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}',${slot})"><img src="${INITIAL_FORMATION_SELECTION.img}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>${groupHtml}`;
     };
@@ -1427,7 +1437,7 @@ function updateSheetContent(){
     content.innerHTML=`<div class="train-card"><img src="${esc(trainImageFor(train))}" class="train-card-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div><span class="type-badge ${getExpressClass(train)}">${esc(limitedExpressDisplayName(train))}</span><span class="train-title">${esc(train.dest||'')} 行</span><span class="train-number">${esc(train.no)}</span></div><div class="input-trigger-btn" style="background:#b71c1c;">編成を入力中</div><div class="capacity-info">所定:${esc(prescribedFormationName(train))}</div></div></div><div style="text-align:left;font-weight:700;margin:6px 0 4px;font-size:1.1rem;">編成入力</div>${manualComposite}<div id="formationInputError" class="formation-input-error"></div>${selectorHtml}<div class="sync-status" id="syncStatus"></div>`;
   }
 }
-function switchToEditMode(){if(!selectedIsCurrentOperation())return;if(!liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService()))return;isEditMode=true;document.getElementById('bottomSheet')?.classList.add('editing');updateSheetContent();}
+function switchToEditMode(){if(!selectedIsCurrentOperation())return;const loaded=liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService())||currentTrainSnapshot;if(!loaded)return;currentTrainSnapshot={...loaded,service:String(currentSelectedService()||loaded.service||trainGroupKey(loaded))};isEditMode=true;document.getElementById('bottomSheet')?.classList.add('editing');updateSheetContent();}
 function formationStoredOrderForTrain(t,front,rear){
   const a=String(front||'').trim(),b=String(rear||'').trim();
   return {front:a,rear:b};
@@ -1456,7 +1466,8 @@ function registerFormationFromInput(){
   return saveCompositeFormation(result.id,null);
 }
 async function saveCompositeFormation(front,rear,finalize=true,keepEditing=false){
-  const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService());if(!train)return;
+  const loadedTrain=liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService()) || currentTrainSnapshot;if(!loadedTrain)return;
+  const train={...loadedTrain,service:String(currentSelectedService()||loadedTrain.service||trainGroupKey(loadedTrain)||'').trim()};
   const composite=allowsCompositeFormation(train);
   const value=composite?[front,rear].filter(Boolean).join('+'):(front||'');
   await recordSelection(train,value||null);
@@ -1482,65 +1493,74 @@ function toggleDropdown(slot=0){
 }
 async function selectFormation(id,slot=0){
   if(!selectedIsCurrentOperation())return;
-  const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService());if(!train)return;
+  const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService()) || currentTrainSnapshot;if(!train)return;
   const composite=allowsCompositeFormation(train);
   const current=trainFormationIdsFor(train);
-  const hadBothBefore=!!(composite && current[0] && current[1]);
+  const normalizedId=id===INITIAL_FORMATION_SELECTION.id?'':String(id);
   if(slot===1 && !composite)return;
-  // 2編成入力は「前寄→後ろ寄」の順で選択する。
-  // 前寄が未選択の状態で後ろ寄だけを保存すると「+」区切りでは位置を保持できないため、
-  // 後ろ寄プルダウンは前寄選択後に有効化する。
+
   if(composite && slot===1 && !current[0]){
     document.querySelectorAll('.custom-select-options').forEach(el=>{el.classList.remove('open');el.style.maxHeight='';});
     const err=document.getElementById('formationInputError');
     if(err)err.textContent='先に前寄りの編成を選択してください。';
     return;
   }
-  const normalizedId=id===INITIAL_FORMATION_SELECTION.id?'':String(id);
+
+  if(composite && slot===1 && current[0] && formationCarsById(current[0])===8 && normalizedId){
+    const err=document.getElementById('formationInputError');
+    if(err)err.textContent='8両編成では後ろ寄りの編成を選択できません。';
+    return;
+  }
+
   if(composite && normalizedId && current[slot===0?1:0]===normalizedId){
-    // 「10030型+10030型」のような同じ形式は許可する。
-    // 禁止するのは、実際の同一編成（例：11655F+11655F）の重複だけ。
     const isFormationType=FORMATIONS.some(g=>g.type===normalizedId);
     if(!isFormationType){
       const err=document.getElementById('formationInputError');
-      if(err)err.textContent='2編成では同じ編成を2本選択できません。';
+      if(err)err.textContent='2編成では同じ実編成を2本選択できません。';
       return;
     }
   }
-  if(composite){
-    const tentative=current.slice();
-    tentative[slot]=normalizedId;
-    const front=tentative[0]||null,rear=tentative[1]||null;
-    if(slot===1 && front && rear){
-      const cf=formationCarsById(front),cr=formationCarsById(rear);
-      if(cf==null||cr==null||!isAllowedCompositePair(cf,cr)){
-        const err=document.getElementById('formationInputError');
-        if(err)err.textContent='この組み合わせは使用できません。6+2、4+4、4+2（前後逆可）のみ選択できます。';
-        return;
-      }
-    }
-    current[slot]=normalizedId;
-    // 8両・6両は単独編成、2編成は6+2・4+4・4+2のみ許可。
-    if(front && !rear){
-      // 前寄りは地上運用で使用する全ての両数（2/4/6/8両）を選択可能。
-      // 2編成の組み合わせ確定時のみ、6+2・4+4・4+2を検証する。
-      const cf=formationCarsById(front);
-      if(cf==null || ![2,4,6,8].includes(Number(cf))){
-        const err=document.getElementById('formationInputError');
-        if(err)err.textContent='地上運用の前寄りは2・4・6・8両編成を選択できます。';
-        current[slot]='';
-        return;
-      }
-    }
-    // すでに2編成登録済みの列車で片方を置き替えた場合は、
-    // その選択だけで編集画面を閉じず、2編成入力中の状態を維持する。
-    const stored=formationStoredOrderForTrain(train,front,rear);
-    await saveCompositeFormation(stored.front||null,stored.rear||null,!!(front&&rear),hadBothBefore);
-  }else{
-    const selectedId=current[0]||null;
-    const stored=formationStoredOrderForTrain(train,selectedId,null);
-    await saveCompositeFormation(stored.front||null,null,true);
+
+  if(!composite){
+    await saveCompositeFormation(normalizedId||null,null,true,false);
+    return;
   }
+
+  const tentative=[current[0]||'',current[1]||''];
+  tentative[slot]=normalizedId;
+  const front=tentative[0]||null,rear=tentative[1]||null;
+  const cf=formationCarsById(front),cr=formationCarsById(rear);
+
+  // 前寄りは、実編成だけでなく10000型・10030型の両数未指定形式も常に選択可能。
+  // 8両・6両は単独編成として確定し、2/4/6両が選ばれた場合のみ後ろ寄りを待つ。
+  if(slot===0 && front && !rear){
+    if(cf!=null && ![2,4,6,8].includes(Number(cf))){
+      const err=document.getElementById('formationInputError');
+      if(err)err.textContent='地上運用の前寄りは2・4・6・8両編成、または両数未指定の形式を選択できます。';
+      return;
+    }
+    const singleOnly=(cf===8 || cf==null || ['10000型','10030型'].includes(front));
+    if(singleOnly){
+      await saveCompositeFormation(front,null,true,false);
+      return;
+    }
+  }
+
+  if(front && rear){
+    if(!isAllowedCompositePair(cf,cr)){
+      const err=document.getElementById('formationInputError');
+      if(err)err.textContent='この組み合わせは使用できません。6+2、4+4、4+2（前後逆可）のみ選択できます。';
+      return;
+    }
+    if(cf!=null && cr!=null && cf===cr && !FORMATIONS.some(g=>g.type===front && g.type===rear)){
+      const err=document.getElementById('formationInputError');
+      if(err)err.textContent='同一編成を2本選択することはできません。';
+      return;
+    }
+  }
+
+  const stored=formationStoredOrderForTrain(train,front,rear);
+  await saveCompositeFormation(stored.front||null,stored.rear||null,!!(front&&rear),false);
 }
 function openTrainSheet(no,fromContext=null,service=null){
   const svc=String(service||fromContext?.service||'').trim()||null;
@@ -1875,9 +1895,10 @@ function serviceTopologyValid(t){
   if((hasHanzomon||hasDenentoshi) && service!=='hanzomon') return false;
   if(hasHibiya && service!=='hibiya') return false;
   if(hasNikko && !(service==='nikko' || service==='tokkyu')) return false;
-  // 半蔵門線直通列車は押上を境に田園都市線へ連続して入れる。
-  if(service==='hanzomon' && !hasHanzomon && !hasDenentoshi) return false;
-  if(service==='hibiya' && !hasHibiya) return false;
+  // 直通列車のJSONが本線側（北越谷～押上／北千住）までしか記述されていない場合でも、
+  // service が hanzomon / hibiya なら本線上の列車として描画を許可する。
+  // これにより、押上・南千住以遠の停車時刻を持たないデータでも直通列車が消えない。
+  if(service==='hanzomon' || service==='hibiya') return true;
   if(service==='nikko' && !hasNikko) return false;
   return true;
 }
