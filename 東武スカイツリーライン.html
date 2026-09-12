@@ -280,33 +280,85 @@ function selectionDisplayObject(id){
   if(raw && /^[A-Z]?\d{4,6}F$/i.test(raw)) return {id:raw,name:raw.toUpperCase(),img:INITIAL_FORMATION_SELECTION.img,kind:'manual',type:'manual'};
   return INITIAL_FORMATION_SELECTION;
 }
-function formationIdFromInput(value){
+function allowedFormationGroupsForTrain(t){
+  if(!t)return FORMATIONS;
+  return FORMATIONS.filter(g=>g.type!=='500系+500系'&&formationCategoryAllowedForTrain(t,g.type));
+}
+function allowedFormationEntriesForTrain(t){
+  const groups=allowedFormationGroupsForTrain(t);
+  const entries=[];
+  for(const g of groups){
+    // 形式そのもの
+    entries.push({id:g.type,name:g.type,img:g.typeImg,kind:'type',type:g.type,group:g});
+    for(const v of g.variants||[]){
+      entries.push({...v,kind:'variant',type:g.type,group:g,variantId:v.id});
+      for(const f of v.items||[]) entries.push({...f,type:g.type,group:g,variantId:v.id,variantName:v.name});
+    }
+    for(const f of g.items||[]) entries.push({...f,type:g.type,group:g});
+  }
+  return entries;
+}
+function formationIdFromInput(value, trainOverride=null){
   let raw=String(value??'').trim().toUpperCase().replace(/[Ｆ]/g,'F');
   if(!raw)return {ok:false,error:'形式・車両番号または編成番号を入力してください。'};
+  const train=trainOverride||liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService())||currentTrainSnapshot||null;
+  const allowed=allowedFormationEntriesForTrain(train);
+  if(!allowed.length)return {ok:false,error:'この列車では入力可能な編成がありません。'};
+
   // 「形式 車両番号」「形式:車両番号」「形式|車両番号」も許可。
   const parts=raw.split(/[|:：\s]+/).map(x=>x.trim()).filter(Boolean);
   let specifiedType='';
-  if(parts.length>=2){ specifiedType=parts[0]; raw=parts.slice(1).join(''); }
+  if(parts.length>=2){
+    specifiedType=parts[0];
+    raw=parts.slice(1).join('');
+  }
   const compact=raw.replace(/[　 ]+/g,'');
-  const groups=specifiedType?FORMATIONS.filter(g=>g.type.toUpperCase()===specifiedType||g.type.toUpperCase().includes(specifiedType)):FORMATIONS;
-  // 形式名そのものを入力した場合は、形式選択として扱う。
-  const typeHit=FORMATIONS.find(g=>g.type.toUpperCase()===compact);
-  if(typeHit)return {ok:true,id:typeHit.type};
+
+  const typeMatches=allowed.filter(x=>String(x.type||x.id).toUpperCase()===String(specifiedType||'').toUpperCase() || (!specifiedType && false));
+  const scoped=specifiedType
+    ? allowed.filter(x=>String(x.type||'').toUpperCase()===specifiedType || String(x.id||'').toUpperCase()===specifiedType || String(x.name||'').toUpperCase()===specifiedType)
+    : allowed;
+
+  // 形式名そのものを入力した場合は、選択肢に存在する形式だけ受け付ける。
+  const typeHit=allowed.find(x=>x.kind==='type'&&String(x.id).toUpperCase()===compact);
+  if(typeHit)return {ok:true,id:typeHit.id};
+  const variantHit=allowed.find(x=>x.kind==='variant'&&(String(x.id).toUpperCase()===compact||String(x.name).toUpperCase()===compact));
+  if(variantHit)return {ok:true,id:variantHit.id};
+
   const candidates=[compact,compact.endsWith('F')?compact.slice(0,-1):compact,compact+'F'];
-  for(const c of candidates){for(const g of groups){
-    const f=(g.items||[]).find(x=>String(x.id).toUpperCase()===c)||(g.variants||[]).flatMap(v=>v.items||[]).find(x=>String(x.id).toUpperCase()===c);
-    if(f){if(f.disabled)return {ok:false,error:`編成「${f.name}」は入力できません。`};return {ok:true,id:f.id};}
-  }}
-  const normalized=compact.replace(/[^A-Z0-9]/g,'').replace(/F$/,'');
-  // 車両番号（末尾にFを付けても車両番号として探索）を全形式・variant内から検索。
-  for(const g of groups){
-    const all=[...(g.items||[]),...(g.variants||[]).flatMap(v=>v.items||[])];
-    for(const f of all){
-      const base=String(f.id).replace(/F$/i,'');
-      for(let k=0;k<10;k++) if(String(Number(base)+k*1000)===normalized) return {ok:true,id:f.id};
+  for(const c of candidates){
+    const f=scoped.find(x=>x.kind!=='type'&&String(x.id).toUpperCase()===c);
+    if(f){
+      if(f.disabled)return {ok:false,error:`編成「${f.name}」は入力できません。`};
+      return {ok:true,id:f.id};
     }
   }
-  return {ok:false,error:`車両番号・編成番号「${compact}」に該当する編成が見つかりません。形式を併記する場合は「形式 車両番号」と入力してください。`};
+
+  // 車両番号は、選択肢に実在する編成IDの「Fを除いた完全一致」のみ許可。
+  // 以前の「+1000」推測は別系統の編成まで拾うため廃止。
+  const normalized=compact.replace(/[^A-Z0-9-]/g,'').replace(/F$/,'');
+  const vehicleMatches=scoped.filter(x=>{
+    if(x.kind==='type'||x.kind==='variant')return false;
+    const base=String(x.id||'').toUpperCase().replace(/F$/,'');
+    return base===normalized;
+  });
+  if(vehicleMatches.length===1){
+    const f=vehicleMatches[0];
+    if(f.disabled)return {ok:false,error:`編成「${f.name}」は入力できません。`};
+    return {ok:true,id:f.id};
+  }
+
+  // 「形式 車両番号」で形式を明示した場合は、その形式に属する車番だけを検索。
+  if(specifiedType){
+    const typeScope=allowed.filter(x=>String(x.type||'').toUpperCase()===specifiedType);
+    const exact=typeScope.filter(x=>x.kind!=='type'&&x.kind!=='variant'&&String(x.id||'').toUpperCase().replace(/F$/,'')===normalized);
+    if(exact.length===1){
+      const f=exact[0];
+      if(f.disabled)return {ok:false,error:`編成「${f.name}」は入力できません。`};
+      return {ok:true,id:f.id};
+    }
+  }
+  return {ok:false,error:`入力された編成・車両番号「${compact}」は、この列車で選択できる編成に存在しません。`};
 }
 function formationDisplayParts(id,direction=null){
   if(!id)return [];
@@ -1594,14 +1646,14 @@ function registerFormationFromInput(){
   if(composite && raw.includes('+')){
     const pieces=raw.split('+').map(x=>x.trim()).filter(Boolean);
     if(pieces.length!==2){if(err)err.textContent='2編成の場合は「前寄+後ろ寄」の2編成で入力してください。';input?.focus();return;}
-    const ra=formationIdFromInput(pieces[0]),rb=formationIdFromInput(pieces[1]);
+    const ra=formationIdFromInput(pieces[0],train),rb=formationIdFromInput(pieces[1],train);
     if(!ra.ok||!rb.ok){if(err)err.textContent=(ra.ok?rb.error:ra.error);input?.focus();return;}
     if(ra.id===rb.id){if(err)err.textContent='2編成では同じ編成を2本選択できません。';input?.focus();return;}
     const stored=formationStoredOrderForTrain(train,ra.id,rb.id);
     return saveCompositeFormation(stored.front,stored.rear);
   }
   if(raw.includes('+')){if(err)err.textContent='この列車は2編成入力に対応していません。';input?.focus();return;}
-  const result=formationIdFromInput(raw);
+  const result=formationIdFromInput(raw,train);
   if(!result.ok){if(err)err.textContent=result.error;input?.focus();return;}
   return saveCompositeFormation(result.id,null);
 }
