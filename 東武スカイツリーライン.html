@@ -27,6 +27,19 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
 .station-name-ja,.station-name-en{position:relative;z-index:1;background:transparent;color:#000}
 .station-name-ja{height:61%;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:400;line-height:1}
 .station-name-en{height:33%;display:flex;align-items:center;justify-content:center;font-size:15.2px;font-weight:400;line-height:1}
+
+/* 会社別駅名標：東武は従来デザインのまま、東京メトロ・東急だけ専用デザイン */
+.station-badge.station-badge-metro{padding:0;background:var(--station-color);border:0;}
+.station-badge.station-badge-metro::before{inset:4px;background:linear-gradient(to bottom,#fff 0 72%,var(--station-color) 72% 100%);clip-path:none;}
+.station-badge.station-badge-metro .station-name-ja{height:64%;font-size:36px;font-weight:400;color:#000;}
+.station-badge.station-badge-metro .station-name-en{height:31%;font-size:15.2px;font-weight:400;color:#fff;align-items:center;}
+
+.station-badge.station-badge-tokyu{padding:0;background:#3a3a3a;border:4px solid var(--station-color);border-radius:0;box-shadow:0 7px 14px rgba(0,0,0,.26);}
+.station-badge.station-badge-tokyu::before{display:none;}
+.station-badge.station-badge-tokyu::after{content:'';position:absolute;left:0;right:0;top:64%;height:3px;background:var(--station-color);z-index:1;}
+.station-badge.station-badge-tokyu .station-name-ja{height:64%;font-size:36px;font-weight:400;color:#fff;}
+.station-badge.station-badge-tokyu .station-name-en{height:30%;font-size:15.2px;font-weight:400;color:#fff;}
+
 .connection-buttons{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;max-width:860px;z-index:7}
 .connection-button{appearance:none;border:2px solid var(--button-color);border-radius:7px;padding:8px 18px;background:#fff;color:var(--button-color);box-shadow:0 2px 7px rgba(0,0,0,.20);font:700 15px/1.2 sans-serif;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-width:150px;transition:filter .12s,transform .12s,background .12s,color .12s}
 .connection-button:hover{filter:brightness(.96);transform:translateY(-1px)}
@@ -895,8 +908,12 @@ function stationId(routeKey,station){return routeKey+'::'+station[0];}
 function lineColorFor(routeKey){return ROUTES[routeKey]?.color||COLORS.sky;}
 function stationById(id){const [routeKey,name]=String(id).split('::');const route=ROUTES[routeKey];if(!route)return null;const st=route.stations.find(x=>x[0]===name);return st?{routeKey,st}:null;}
 function stationBadge(st,routeKey,optStationColor=null){
-  const badge=document.createElement('div');badge.className='station-badge';badge.tabIndex=0;badge.setAttribute('role','button');
-  badge.style.setProperty('--station-color',optStationColor||lineColorFor(routeKey));
+  const badge=document.createElement('div');
+  const stationColor=optStationColor||lineColorFor(routeKey);
+  const colorKey=String(stationColor).trim().toUpperCase();
+  const companyClass=(colorKey==='#8F76D6'||colorKey==='#B5B5AC')?' station-badge-metro':(colorKey==='#00B395'?' station-badge-tokyu':'');
+  badge.className='station-badge'+companyClass;badge.tabIndex=0;badge.setAttribute('role','button');
+  badge.style.setProperty('--station-color',stationColor);
   badge.innerHTML=`<div class="station-name-ja">${esc(st[0])}</div><div class="station-name-en">${esc(st[1])}</div>`;
   const len=[...st[0].trim()].length;let ls='0';if(len<=2)ls='.9em';else if(len===3)ls='.3em';badge.querySelector('.station-name-ja').style.letterSpacing=ls;badge.querySelector('.station-name-ja').style.paddingLeft=ls;
   const open=()=>openStationSheet(st,routeKey);badge.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();open()});badge.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}});return badge;
@@ -2083,6 +2100,26 @@ function trainAllowedOnVisibleBranch(t,stationName){
   return true;
 }
 function currentRowIndexForStation(name){const rows=[...document.querySelectorAll('.station-row')];return rows.findIndex(r=>r.querySelector('.station-name-ja')?.textContent===name);}
+
+/* 列車が駅に停車しているときは、MAIN_NAMESの番号ではなく
+   現在DOMに実際に表示されている駅行を使う。
+   半蔵門線などの枝線表示時は同名駅が複数存在するため、系統も合わせて選ぶ。 */
+function visualStationRowIndexForTrain(t,name){
+  const key=stationNameKey(name);
+  const routeKey=routeKeyForTrainStation(t,name);
+  const rows=[...document.querySelectorAll('.station-row')];
+
+  const exact=rows.findIndex(r=>
+    stationNameKey(r.querySelector('.station-name-ja')?.textContent||'')===key &&
+    (r.dataset.routeKey||'main')===routeKey
+  );
+  if(exact>=0)return exact;
+
+  return rows.findIndex(r=>
+    stationNameKey(r.querySelector('.station-name-ja')?.textContent||'')===key
+  );
+}
+
 function renderTrainPositions(){
   const layer=document.getElementById('movingTrainLayer');if(!layer)return;layer.innerHTML='';
   const rows=[...document.querySelectorAll('.station-row')];if(!rows.length)return;
@@ -2141,7 +2178,8 @@ function renderTrainPositions(){
       if((t.service==='chijou'||t.service==='tokkyu') && pairRows.some(r=>r?.dataset?.routeKey!=='main')) continue;
       if(!trainAllowedOnVisibleBranch(t,p.stationA)||!trainAllowedOnVisibleBranch(t,p.stationB))continue;
     }else{
-      const terminalIndex=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(p.terminalStation||p.stationA));
+      const terminalName=p.terminalStation||p.stationA||p.stationB;
+      const terminalIndex=visualStationRowIndexForTrain(t,terminalName);
       if(terminalIndex<0)continue;
       p.pos=terminalIndex;
     }
