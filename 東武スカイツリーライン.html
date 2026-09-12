@@ -77,7 +77,7 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
 .train-label.hanzomon-local{background:#2d78c4;color:#fff}.train-label.express{background:#cf3282;color:#fff}.train-label.section-express{background:#e99ebf;color:#111}.train-label.semi-express{background:#48a839;color:#fff}.train-label.section-semi{background:#c1ca1f;color:#111}.train-label.th-liner{background:#fff;color:#111;border:1px solid #aaa}.train-label.limited-orange{background:#f49c00;color:#fff}.train-label.limited-green{background:#006e3f;color:#fff}.train-label.limited-white{background:#fff;color:#111;border:1px solid #aaa}.train-label.limited-red{background:#ea5532;color:#fff}
 .bottom-sheet.editing{height:75vh;max-height:75vh;min-height:75vh}.bottom-sheet.editing .sheet-content{min-height:calc(75vh - 58px)}
 .train-card{cursor:pointer;position:relative}.train-card.historical-readonly{cursor:default}.formation-updated-at{position:absolute;right:12px;bottom:8px;font-size:.78rem;color:#777}
-.input-trigger-btn{background:var(--primary);color:#fff;padding:4px 8px;border-radius:4px;font-size:.75rem;margin-top:4px;display:inline-block}
+.input-trigger-btn{background:#c62828;color:#fff;padding:4px 8px;border-radius:4px;font-size:.75rem;margin-top:4px;display:inline-block}
 .formation-manual-input{display:flex;gap:8px;margin:6px 0;align-items:stretch}.formation-manual-input input{flex:1;min-width:0;border:2px solid #ccc;border-radius:8px;padding:10px;font:inherit;font-weight:700}.formation-manual-input button{border:0;border-radius:8px;background:var(--primary);color:#fff;padding:0 14px;font:inherit;font-weight:700;cursor:pointer}
 .formation-input-error{min-height:0;color:#c62828;font-size:.8rem;font-weight:700;margin:2px 0 4px}.select-box-container{position:relative;width:100%;margin:12px 0}.formation-select-row{display:flex;gap:8px;width:100%}.formation-select-row>.custom-select-trigger{flex:1;min-width:0}.formation-select-row.single{display:flex}.formation-select-row.single>.custom-select-trigger{flex:1}.formation-select-row.composite{flex-direction:row;gap:8px;align-items:flex-start}.formation-select-field{position:relative;width:calc(50% - 4px);min-width:0;z-index:1}.formation-select-field:focus-within{z-index:20}.formation-select-row.composite>.formation-select-field>.custom-select-trigger{width:100%;flex:0 0 auto}.formation-select-field>.custom-select-options{top:calc(100% + 6px);left:0;right:0}.select-box-container>.custom-select-options{top:calc(100% + 6px)}.custom-select-trigger{background:#fff;border:2px solid #ccc;border-radius:8px;padding:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:700;font-size:1.1rem;color:#1b6e27}.custom-select-options{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ccc;border-radius:8px;max-height:250px;overflow-y:auto;z-index:200;display:none;box-shadow:0 4px 10px rgba(0,0,0,.15)}.custom-select-options.open{display:block}.option-header,.option-item{display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid #f0f0f0}.option-header{background:#f0f0f0;padding-left:16px;font-weight:700;font-size:1.1rem}.option-item{padding-left:16px;min-height:60px;font-size:1.1rem}.option-item:hover,.option-header:hover{background:#e8f5e9}.option-item.initial-option{background:#e0e0e0}.option-img{width:auto;height:60px;object-fit:contain}.option-category-header{cursor:pointer!important;pointer-events:auto;background:#f0f0f0!important;}
 .option-subheader{background:#e8f7ff!important;padding-left:16px!important;font-size:1.15rem!important;cursor:pointer!important;pointer-events:auto;}
@@ -571,8 +571,8 @@ function trainRunsAtMinute(t,minutes){
   let m=Number(minutes);
   if(!Number.isFinite(m)) return false;
   while(m<first) m+=1440;
-  // 終着時刻までは表示。終着を過ぎた列車は必ず非表示。
-  return m>=first && m<=last;
+  // 発車は hh:mm:45、終着到着は hh:mm:15 として表示範囲を補正。
+  return m>=first+0.75 && m<=last+0.25;
 }
 function initDateTimeControls(){
   setSelectedDate(operationDateKey());
@@ -1166,7 +1166,9 @@ function operationChainPosition(t,minutes){
   const isChainFirst=idx===0;
   const isChainLast=idx===chain.length-1;
   const next=connectionNextSky(t);
-  const nextStart=next?serviceDayMinuteFromTime(next.startTime):null;
+  const nextStartRaw=next?serviceDayMinuteFromTime(next.startTime):null;
+  const arrivalTime=last+0.25;
+  const nextStart=Number.isFinite(nextStartRaw)?nextStartRaw+0.75:null;
 
   // 野田線と同じく、連結運用の先頭列車は始発2分前から始発駅で待機。
   if(isChainFirst && minutes>=first-RESET_DWELL_MIN && minutes<first){
@@ -1195,8 +1197,8 @@ function operationChainPosition(t,minutes){
   if(next && !isChainLast && Number.isFinite(nextStart)){
     const lastStation=String(entry.dest);
     const ai=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(lastStation));
-    if(ai>=0 && minutes>last && minutes<nextStart){
-      if(minutes<last+TURNBACK_SWITCH_MIN){
+    if(ai>=0 && minutes>arrivalTime && minutes<nextStart){
+      if(minutes<arrivalTime+TURNBACK_SWITCH_MIN){
         return {
           pos:ai,
           stationA:lastStation,
@@ -1205,7 +1207,7 @@ function operationChainPosition(t,minutes){
           visualTrain:t,
           mode:'turn-arrival',
           terminal:true,
-          terminalTime:last,
+          terminalTime:arrivalTime,
           terminalStation:lastStation,
           terminalEntryIndex:idx,
           terminalArrivalOrder:last
@@ -1235,7 +1237,7 @@ function operationChainPosition(t,minutes){
   }
 
   // 野田線と同じく、連結運用の末尾列車は終着2分後まで終着駅に保持。
-  if(isChainLast && minutes>=last && minutes<=last+RESET_DWELL_MIN){
+  if(isChainLast && minutes>=arrivalTime && minutes<=arrivalTime+RESET_DWELL_MIN){
     const ai=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(entry.dest));
     if(ai>=0){
       return {
@@ -1246,7 +1248,7 @@ function operationChainPosition(t,minutes){
         visualTrain:t,
         mode:'end',
         terminal:true,
-        terminalTime:last,
+        terminalTime:arrivalTime,
         terminalStation:entry.dest,
         terminalEntryIndex:idx,
         terminalArrivalOrder:last
@@ -1733,9 +1735,40 @@ function trainPosition(t,minutes){
   // そのため「前駅→後駅」の停車駅ペアが存在しなくても、適切な時刻に表示へ復帰する。
   if(branchHiddenAtTime(t,minutes)) return null;
   let m=minutes;
+  // 各駅の停車時間も表示する。
+  // 時刻表上の駅時刻を基準に、到着は hh:mm:15、発車は hh:mm:45 とする。
+  // これにより、到着(:15)～発車(:45)の30秒間も列車アイコンを消さない。
+  for(let i=0;i<stops.length;i++){
+    const s=stops[i];
+    const rawStop=serviceDayMinuteFromTime(s.time);
+    if(!Number.isFinite(rawStop)) continue;
+    let sm=rawStop;
+    if(m<sm) sm+=1440;
+    const arrive=sm+0.25;
+    const depart=sm+0.75;
+    if(i>0 && m>=arrive && m<depart){
+      const station=String(s.station||'');
+      const ai=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(station));
+      if(ai>=0){
+        const dir=String(t.direction||'').toLowerCase();
+        return {
+          pos:ai,
+          stationA:station,
+          stationB:station,
+          side:dir==='down'?'left':dir==='up'?'right':null,
+          terminal:true,
+          stationDwell:true,
+          stationTime:sm
+        };
+      }
+    }
+  }
+
   for(let i=0;i<stops.length-1;i++){
-    const a=stops[i],b=stops[i+1];let t0=serviceDayMinuteFromTime(a.time),t1=serviceDayMinuteFromTime(b.time);
-    if(t1<t0)t1+=1440;
+    const a=stops[i],b=stops[i+1];let rawT0=serviceDayMinuteFromTime(a.time),rawT1=serviceDayMinuteFromTime(b.time);
+    if(rawT1<rawT0)rawT1+=1440;
+    // 発車は hh:mm:45、到着は hh:mm:15 とする。
+    const t0=rawT0+0.75, t1=rawT1+0.25;
     let mm=m;if(mm<t0)mm+=1440;
     if(mm>=t0&&mm<=t1){
       const pair=findVisualRowPair(a.station,b.station,t);
@@ -2028,7 +2061,9 @@ function renderTrainPositions(){
     const stops=Array.isArray(base.stops)?base.stops.filter(x=>String(x?.station||'')!=='着番線'):[];
     const last=serviceDayMinuteFromTime(stops.at(-1)?.time);
     const nextStart=serviceDayMinuteFromTime(next.startTime);
-    if(Number.isFinite(last) && Number.isFinite(nextStart) && minutes>=last+TURNBACK_SWITCH_MIN && minutes<nextStart){
+    const arrivalTime=Number.isFinite(last)?last+0.25:NaN;
+    const departureTime=Number.isFinite(nextStart)?nextStart+0.75:NaN;
+    if(Number.isFinite(arrivalTime) && Number.isFinite(departureTime) && minutes>=arrivalTime+TURNBACK_SWITCH_MIN && minutes<departureTime){
       const nt=trainFromChainEntry(next);
       if(nt){
         suppressedTurnbackKeys.add(`${String(nt.no||'')}|${String(nt.direction||'')}`);
@@ -2150,7 +2185,7 @@ function renderTrainPositions(){
         const ir=img?.getBoundingClientRect(),nr=noEl?.getBoundingClientRect(),fr=formationEl?.getBoundingClientRect();
         const ih=(ir?.height||60)/mobileZoom,nh=(nr?.height||12)/mobileZoom,fh=(fr?.height||0)/mobileZoom;
         const desired=(rr.centerY-layerRect.top)/mobileZoom;
-        el.style.top=`${desired-(nh+ih+fh)/2}px`;el.style.visibility='visible';
+        el.style.top=`${desired-nh-ih/2}px`;el.style.visibility='visible';
       };
       if(img?.complete&&img.naturalWidth)apply();else img?.addEventListener('load',apply,{once:true});
     });
