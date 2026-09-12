@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -349,9 +350,10 @@ function prescribedFormationName(t){
 }
 function getExpressClass(t){
   const x=String(t?.type||'');
-  const service=String(t?.service||trainGroupKey(t)||'');
-  const hanzomonType=(t&&typeof t.typeByRoute==='object')?String(t.typeByRoute.hanzomon||x):x;
-  if(service==='hanzomon' && (hanzomonType==='各停'||hanzomonType==='各駅停車'||x==='各停'||x==='各駅停車')) return 'hanzomon-local';
+  // ここに渡される t.type は、trainTypeAtPosition() で区間別に決定済み。
+  // 半蔵門線直通だからといって typeByRoute.hanzomon を優先すると、
+  // 東武線内の準急・急行まで青固定になってしまうため、表示中の type のみで判定する。
+  if(x==='各停'||x==='各駅停車') return 'hanzomon-local';
   if(x==='特急'){
     const name=String(t?.limitedName||'');
     // リバティ系を最優先。その後スペーシアX、りょうもう、きぬ・けごんの順。
@@ -559,8 +561,29 @@ function currentMinutes(){
   const input=document.getElementById('timeInput'),value=input?.value||formatTimeNow();
   const [h,m]=String(value).split(':').map(Number);
   const hh=Number.isFinite(h)?h:0, mm=Number.isFinite(m)?m:0;
-  const base=hh*60+mm;
+  // 任意時刻入力時は、その入力時刻の30秒時点を表示基準とする。
+  const base=hh*60+mm+0.5;
   return hh<RESET_HOUR?base+1440:base;
+}
+function isStartDwellMinute(minutes,departureRaw){
+  const m=Number(minutes),d=Number(departureRaw);
+  if(!Number.isFinite(m)||!Number.isFinite(d)) return false;
+  let mm=m;
+  while(mm<d-RESET_DWELL_MIN) mm+=1440;
+  while(mm>=d+1440) mm-=1440;
+  // 手入力時は hh:mm:30 を基準にし、発車時刻の2分前を hh:mm:30 として表示開始。
+  const start=d-RESET_DWELL_MIN+0.5;
+  return mm>=start && mm<d+0.75;
+}
+function isEndDwellMinute(minutes,arrivalRaw){
+  const m=Number(minutes),d=Number(arrivalRaw);
+  if(!Number.isFinite(m)||!Number.isFinite(d)) return false;
+  let mm=m;
+  while(mm<d-1440) mm+=1440;
+  while(mm>=d+1440) mm-=1440;
+  // 到着時刻を hh:mm:15 とし、2分後の hh:mm:30 まで表示する。
+  // 任意時刻入力は hh:mm:30 (= +0.5分) なので、終了境界は d+2.5分。
+  return mm>=d+0.25 && mm<=d+RESET_DWELL_MIN+0.5;
 }
 
 function trainRunsAtMinute(t,minutes){
@@ -1149,7 +1172,34 @@ function connectionNextSky(t){
   if(!Number.isFinite(end)||!Number.isFinite(start)||start<end) return null;
   return next;
 }
+function startDwellPositionSky(t,minutes){
+  const stops=Array.isArray(t?.stops)?t.stops.filter(s=>String(s?.station||'')!=='着番線'):[];
+  if(!stops.length) return null;
+  const departureRaw=serviceDayMinuteFromTime(stops[0]?.time);
+  if(!Number.isFinite(departureRaw) || !isStartDwellMinute(minutes,departureRaw)) return null;
+  const station=String(stops[0]?.station||'');
+  const ai=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(station));
+  if(ai<0) return null;
+  const dir=String(t?.direction||'').toLowerCase();
+  const side=dir==='down'?'left':dir==='up'?'right':null;
+  if(!side) return null;
+  return {
+    pos:ai,
+    stationA:station,
+    stationB:station,
+    side,
+    visualTrain:t,
+    mode:'start-dwell',
+    terminal:true,
+    stationDwell:true,
+    terminalTime:departureRaw+0.75,
+    terminalStation:station
+  };
+}
 function operationChainPosition(t,minutes){
+  // 野田線と同じく、始発駅の2分前表示を最優先で判定する。
+  const startDwell=startDwellPositionSky(t,minutes);
+  if(startDwell) return startDwell;
   // 野田線と同じ終点到着後の折返し処理を使用。
   // ただしスカイツリーライン側の時刻・駅名正規化に合わせている。
   const base=trainPosition(t,minutes);
@@ -1164,6 +1214,7 @@ function operationChainPosition(t,minutes){
   const first=serviceDayMinuteFromTime(stops[0]?.time);
   const last=serviceDayMinuteFromTime(stops.at(-1)?.time);
   if(!Number.isFinite(first)||!Number.isFinite(last)) return base;
+  const firstDeparture=first+0.75;
 
   const isChainFirst=idx===0;
   const isChainLast=idx===chain.length-1;
@@ -1171,26 +1222,6 @@ function operationChainPosition(t,minutes){
   const nextStartRaw=next?serviceDayMinuteFromTime(next.startTime):null;
   const arrivalTime=last+0.25;
   const nextStart=Number.isFinite(nextStartRaw)?nextStartRaw+0.75:null;
-
-  // 野田線と同じく、連結運用の先頭列車は始発2分前から始発駅で待機。
-  if(isChainFirst && minutes>=first-RESET_DWELL_MIN && minutes<first){
-    const ai=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(entry.start));
-    if(ai>=0){
-      const side=t.direction==='down'?'right':'left';
-      return {
-        pos:ai,
-        stationA:entry.start,
-        stationB:entry.start,
-        side,
-        visualTrain:t,
-        mode:'start',
-        terminal:true,
-        terminalTime:first,
-        terminalStation:entry.start,
-        terminalEntryIndex:idx
-      };
-    }
-  }
 
   // 終点到着後の折返しはここだけで処理する。
   // 到着から1分間は到着列車の情報をそのまま表示する。
@@ -1239,7 +1270,7 @@ function operationChainPosition(t,minutes){
   }
 
   // 野田線と同じく、連結運用の末尾列車は終着2分後まで終着駅に保持。
-  if(isChainLast && minutes>=arrivalTime && minutes<=arrivalTime+RESET_DWELL_MIN){
+  if(isChainLast && isEndDwellMinute(minutes,last)){
     const ai=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(entry.dest));
     if(ai>=0){
       return {
@@ -1328,11 +1359,11 @@ function trainTypeAtPosition(t,p){
   if(service!=='hanzomon') return String(t?.type||'');
   const a=stationNameKey(p?.stationA||'');
   const b=stationNameKey(p?.stationB||'');
-  // 区間の始点駅を基準にする。押上着時点では東武線内、押上発から半蔵門線内。
-  if(a==='押上' || HANZOMON_NAMES.includes(a) || a==='渋谷') return trainTypeBySection(t,'hanzomon');
-  if(DENENTOSHI_NAMES.includes(a)) return trainTypeBySection(t,'denentoshi');
-  if(a || b) return trainTypeBySection(t,'tobu');
-  return String(t?.type||'');
+  // 区間の両端がどの路線に属するかで種別を決める。
+  // 押上～曳舟は東武線区間なので、押上を含んでいても半蔵門線扱いにしない。
+  if(HANZOMON_NAMES.includes(a) && HANZOMON_NAMES.includes(b)) return trainTypeBySection(t,'hanzomon');
+  if(DENENTOSHI_NAMES.includes(a) && DENENTOSHI_NAMES.includes(b)) return trainTypeBySection(t,'denentoshi');
+  return trainTypeBySection(t,'tobu');
 }
 function timetableTypeLabel(t,stationName=null){
   // 駅時刻表・列車詳細では、選択駅での正式な種別名を表示する。
@@ -1447,7 +1478,7 @@ function updateSheetContent(){
   const content=document.getElementById('sheetContent');
   if(!isEditMode){
     const formationText=formationValue?formationDisplayParts(formationValue).join(' + '):'';
-    content.innerHTML=`<div class="train-card${selectedDateKey===operationDateKey()?'':' historical-readonly'}" ${selectedDateKey===operationDateKey()?'onclick="switchToEditMode()"':''}><img src="${esc(trainImageFor(train))}" class="train-card-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div><span class="type-badge ${getExpressClass(train)}">${esc(limitedExpressDisplayName(train))}</span><span class="train-title">${esc(train.dest||'')} 行</span><span class="train-number">${esc(train.no)}</span></div>${formationValue?`<div class="formation-id">${esc(formationText)}</div>`:`<div class="input-trigger-btn">ここから編成を入力</div>`}<div class="capacity-info">所定:${esc(prescribedFormationName(train))}</div></div>${formatFormationUpdatedAt(train.no,currentSelectedService())?`<div class="formation-updated-at">編成入力：${esc(formatFormationUpdatedAt(train.no,currentSelectedService()))}</div>`:''}</div><div class="timetable-list">${timetableRowsHTML(train.stops)}</div><div class="sync-status" id="syncStatus"></div>`;
+    content.innerHTML=`<div class="train-card${selectedDateKey===operationDateKey()?'':' historical-readonly'}" ${selectedDateKey===operationDateKey()?'onclick="switchToEditMode()"':''}><img src="${esc(trainImageFor(train))}" class="train-card-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div><span class="type-badge ${getExpressClass({...train,type:(previousSheetContext?.displayType||train?.type)})}">${esc(previousSheetContext?.displayType||limitedExpressDisplayName(train))}</span><span class="train-title">${esc(train.dest||'')} 行</span><span class="train-number">${esc(train.no)}</span></div>${formationValue?`<div class="formation-id">${esc(formationText)}</div>`:`<div class="input-trigger-btn">ここから編成を入力</div>`}<div class="capacity-info">所定:${esc(prescribedFormationName(train))}</div></div>${formatFormationUpdatedAt(train.no,currentSelectedService())?`<div class="formation-updated-at">編成入力：${esc(formatFormationUpdatedAt(train.no,currentSelectedService()))}</div>`:''}</div><div class="timetable-list">${timetableRowsHTML(train.stops)}</div><div class="sync-status" id="syncStatus"></div>`;
   }else{
     const parts=trainStoredFormationIds(train);
     const valueFront=parts[0]||'';
@@ -1505,7 +1536,7 @@ function updateSheetContent(){
     const selectorHtml=composite
       ? `<div class="select-box-container"><div class="formation-select-row composite"><div class="formation-select-field">${frontTrigger}<div class="custom-select-options" id="dropdownOptions0">${optionsForSlot(0)}</div></div><div class="formation-select-field">${rearTrigger}<div class="custom-select-options" id="dropdownOptions1">${optionsForSlot(1)}</div></div></div></div>`
       : `<div class="select-box-container"><div class="formation-select-row single"><div class="custom-select-trigger" onclick="formationEditSlot=0;toggleDropdown(0)"><div style="display:flex;align-items:center;gap:10px"><img src="${esc(selected.img||initialImg||NOIMAGE_IMG)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'" style="width:auto;height:70px;object-fit:contain"><span>${esc(selected.name)}</span></div>▼</div></div><div class="custom-select-options" id="dropdownOptions0">${optionsForSlot(0)}</div></div>`;
-    content.innerHTML=`<div class="train-card"><img src="${esc(trainImageFor(train))}" class="train-card-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div><span class="type-badge ${getExpressClass(train)}">${esc(limitedExpressDisplayName(train))}</span><span class="train-title">${esc(train.dest||'')} 行</span><span class="train-number">${esc(train.no)}</span></div><div class="input-trigger-btn" style="background:#b71c1c;">編成を入力中</div><div class="capacity-info">所定:${esc(prescribedFormationName(train))}</div></div></div><div style="text-align:left;font-weight:700;margin:6px 0 4px;font-size:1.1rem;">編成入力</div>${manualComposite}<div id="formationInputError" class="formation-input-error"></div>${selectorHtml}<div class="sync-status" id="syncStatus"></div>`;
+    content.innerHTML=`<div class="train-card"><img src="${esc(trainImageFor(train))}" class="train-card-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div><span class="type-badge ${getExpressClass({...train,type:(previousSheetContext?.displayType||train?.type)})}">${esc(previousSheetContext?.displayType||limitedExpressDisplayName(train))}</span><span class="train-title">${esc(train.dest||'')} 行</span><span class="train-number">${esc(train.no)}</span></div><div class="input-trigger-btn" style="background:#b71c1c;">編成を入力中</div><div class="capacity-info">所定:${esc(prescribedFormationName(train))}</div></div></div><div style="text-align:left;font-weight:700;margin:6px 0 4px;font-size:1.1rem;">編成入力</div>${manualComposite}<div id="formationInputError" class="formation-input-error"></div>${selectorHtml}<div class="sync-status" id="syncStatus"></div>`;
   }
 }
 function switchToEditMode(){
@@ -1703,6 +1734,40 @@ function branchHiddenAtTime(t,minutes){
 
 function trainPosition(t,minutes){
   const stops=t.stops||[];if(stops.length<2)return null;
+
+  // 折り返しを伴わない列車は、始発駅で発車2分前から発車時刻まで、
+  // 終着駅で到着時刻から2分後まで停車表示する。
+  // 折り返し運用は operationChainPosition() 側で別処理するため、ここでは除外。
+  const chainInfoForDwell=chainEntryForTrain(currentDay,t?.no);
+  // 発車2分前表示は通常走行時間外なので、通常の運転時間判定より先に処理する。
+  if(!chainInfoForDwell?.chain){
+    const firstRaw=serviceDayMinuteFromTime(stops[0]?.time);
+    let lastRaw=serviceDayMinuteFromTime(stops.at(-1)?.time);
+    if(Number.isFinite(firstRaw)&&Number.isFinite(lastRaw)){
+      if(lastRaw<firstRaw) lastRaw+=1440;
+      let dm=Number(minutes);
+      if(Number.isFinite(dm)){
+        while(dm<firstRaw) dm+=1440;
+        const firstDeparture=firstRaw+0.75;
+        const lastArrival=lastRaw+0.25;
+        if(isStartDwellMinute(dm,firstRaw)){
+          const ai=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(stops[0]?.station));
+          if(ai>=0){
+            const dir=String(t.direction||'').toLowerCase();
+            return {pos:ai,stationA:stops[0].station,stationB:stops[0].station,side:dir==='down'?'left':dir==='up'?'right':null,terminal:true,stationDwell:true,mode:'start-dwell'};
+          }
+        }
+        if(isEndDwellMinute(dm,lastRaw)){
+          const ai=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(stops.at(-1)?.station));
+          if(ai>=0){
+            const dir=String(t.direction||'').toLowerCase();
+            return {pos:ai,stationA:stops.at(-1).station,stationB:stops.at(-1).station,side:dir==='down'?'left':dir==='up'?'right':null,terminal:true,stationDwell:true,mode:'end-dwell'};
+          }
+        }
+      }
+    }
+  }
+
   // まず列車全体の運転時間外を除外する。
   // 区間補間の都合で、始発前・終着後の列車が路線図に残ることを防ぐ。
   if(!trainRunsAtMinute(t,minutes)) return null;
@@ -2147,7 +2212,7 @@ function renderTrainPositions(){
       const formParts=formationDisplayParts(t.formation,t.direction);
       const displayType=trainTypeAtPosition(t,item);
       const displayTrain={...t,type:displayType};
-      const displayLabelClass=(displayType==='各停'||displayType==='各駅停車') ? 'hanzomon-local' : trainLabelClass(displayTrain);
+      const displayLabelClass=getExpressClass(displayTrain);
       el.innerHTML=`<span class="train-no">${esc(displayTrainNo(t))}</span><img src="${esc(trainImageFor(t))}" alt="${esc(displayTrainNo(t))}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'">${formParts.length?`<span class="train-no train-formation">${formParts.map(x=>`<span>${esc(x)}</span>`).join('')}</span>`:''}<span class="train-label ${displayLabelClass}"><span>${esc(mainShortType(displayTrain))} ${esc(mainShortDest(t.dest))}</span></span>`;
       const mobileZoom=window.innerWidth<960?window.innerWidth/960:1;
       const img=el.querySelector('img'),noEl=el.querySelector('.train-no'),formationEl=el.querySelector('.train-formation');
