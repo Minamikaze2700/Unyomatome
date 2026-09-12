@@ -1621,7 +1621,10 @@ async function selectFormation(id,slot=0){
       if(err)err.textContent='地上運用の前寄りは2・4・6・8両編成、または両数未指定の形式を選択できます。';
       return;
     }
-    const singleOnly=(cf===8 || cf==null || ['10000型','10030型'].includes(front));
+    // 8両だけは単独編成として確定。
+    // 両数未指定の形式（10000型・10030型）は前寄りに選んでも
+    // 後ろ寄りとの組み合わせ入力を続行できるようにする。
+    const singleOnly=(cf===8);
     if(singleOnly){
       await saveCompositeFormation(front,null,true,false);
       return;
