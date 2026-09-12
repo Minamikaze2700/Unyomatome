@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -282,18 +281,32 @@ function selectionDisplayObject(id){
   return INITIAL_FORMATION_SELECTION;
 }
 function formationIdFromInput(value){
-  const raw=String(value??'').trim().toUpperCase().replace(/[Ｆ]/g,'F').replace(/[　 ]+/g,'');
-  if(!raw)return {ok:false,error:'車両番号または編成番号を入力してください。'};
-  const candidates=[raw,raw.endsWith('F')?raw.slice(0,-1):raw,raw+'F'];
-  for(const c of candidates){const f=formationById(c);if(f&&f.kind!=='type'){if(f.disabled)return {ok:false,error:`編成「${f.name}」は入力できません。`};return {ok:true,id:f.id};}}
-  const normalized=raw.replace(/[^A-Z0-9]/g,'').replace(/F$/,'');
-  for(const g of FORMATIONS) for(const f of g.items||[]){
-    /* 7両編成の各車両番号を許容（例 71701～77701） */
-    const base=String(f.id);
-    for(let k=0;k<7;k++) if(String(Number(base)+k*1000)===normalized) return {ok:true,id:f.id};
+  let raw=String(value??'').trim().toUpperCase().replace(/[Ｆ]/g,'F');
+  if(!raw)return {ok:false,error:'形式・車両番号または編成番号を入力してください。'};
+  // 「形式 車両番号」「形式:車両番号」「形式|車両番号」も許可。
+  const parts=raw.split(/[|:：\s]+/).map(x=>x.trim()).filter(Boolean);
+  let specifiedType='';
+  if(parts.length>=2){ specifiedType=parts[0]; raw=parts.slice(1).join(''); }
+  const compact=raw.replace(/[　 ]+/g,'');
+  const groups=specifiedType?FORMATIONS.filter(g=>g.type.toUpperCase()===specifiedType||g.type.toUpperCase().includes(specifiedType)):FORMATIONS;
+  // 形式名そのものを入力した場合は、形式選択として扱う。
+  const typeHit=FORMATIONS.find(g=>g.type.toUpperCase()===compact);
+  if(typeHit)return {ok:true,id:typeHit.type};
+  const candidates=[compact,compact.endsWith('F')?compact.slice(0,-1):compact,compact+'F'];
+  for(const c of candidates){for(const g of groups){
+    const f=(g.items||[]).find(x=>String(x.id).toUpperCase()===c)||(g.variants||[]).flatMap(v=>v.items||[]).find(x=>String(x.id).toUpperCase()===c);
+    if(f){if(f.disabled)return {ok:false,error:`編成「${f.name}」は入力できません。`};return {ok:true,id:f.id};}
+  }}
+  const normalized=compact.replace(/[^A-Z0-9]/g,'').replace(/F$/,'');
+  // 車両番号（末尾にFを付けても車両番号として探索）を全形式・variant内から検索。
+  for(const g of groups){
+    const all=[...(g.items||[]),...(g.variants||[]).flatMap(v=>v.items||[])];
+    for(const f of all){
+      const base=String(f.id).replace(/F$/i,'');
+      for(let k=0;k<10;k++) if(String(Number(base)+k*1000)===normalized) return {ok:true,id:f.id};
+    }
   }
-  if(/^[A-Z]?\d{4,6}F$/i.test(raw)) return {ok:true,id:raw.toUpperCase()};
-  return {ok:false,error:`車両番号・編成番号「${raw}」に該当する編成が見つかりません。`};
+  return {ok:false,error:`車両番号・編成番号「${compact}」に該当する編成が見つかりません。形式を併記する場合は「形式 車両番号」と入力してください。`};
 }
 function formationDisplayParts(id,direction=null){
   if(!id)return [];
@@ -1488,7 +1501,8 @@ function updateSheetContent(){
   // 列車情報を開いた時点で選択されている系統を明示的に引き継ぐ。
   // 同一列番が半蔵門線・日比谷線に存在する場合でも、編成入力先を取り違えない。
   const effectiveService=String(currentSelectedService()||loadedTrain.service||trainGroupKey(loadedTrain)||'').trim();
-  const train={...loadedTrain,service:effectiveService,type:effectiveDetailType(loadedTrain)};
+  const stableDisplayType=String(previousSheetContext?.displayType||currentTrainSnapshot?.displayType||'').trim();
+  const train={...loadedTrain,service:effectiveService,type:(stableDisplayType||effectiveDetailType(loadedTrain)),displayType:stableDisplayType||undefined};
   const formationValue=String(train.formation||'');
   const selected=selectionDisplayObject(formationValue.split('+')[0]||'');
   const composite=allowsCompositeFormation(train);
@@ -1549,7 +1563,7 @@ function updateSheetContent(){
     const inputFormationValue=parts.join('+');
     const manualComposite=composite
       ? `<div class="formation-manual-input"><input id="formationManualInput" type="text" inputmode="text" autocomplete="off" value="${esc(inputFormationValue)}" placeholder="車両番号または編成番号を入力 「+」で区切ることにより併結入力可"><button type="button" onclick="registerFormationFromInput()">登録</button></div>`
-      : `<div class="formation-manual-input"><input id="formationManualInput" type="text" inputmode="text" autocomplete="off" value="${esc(valueFront)}" placeholder="車両番号または編成番号を入力"><button type="button" onclick="registerFormationFromInput()">登録</button></div>`;
+      : `<div class="formation-manual-input"><input id="formationManualInput" type="text" inputmode="text" autocomplete="off" value="${esc(valueFront)}" placeholder="形式・車両番号または編成番号を入力（例：50000系 51008）"><button type="button" onclick="registerFormationFromInput()">登録</button></div>`;
     const selectorHtml=composite
       ? `<div class="select-box-container"><div class="formation-select-row composite"><div class="formation-select-field">${frontTrigger}<div class="custom-select-options" id="dropdownOptions0">${optionsForSlot(0)}</div></div><div class="formation-select-field">${rearTrigger}<div class="custom-select-options" id="dropdownOptions1">${optionsForSlot(1)}</div></div></div></div>`
       : `<div class="select-box-container"><div class="formation-select-row single"><div class="custom-select-trigger" onclick="formationEditSlot=0;toggleDropdown(0)"><div style="display:flex;align-items:center;gap:10px"><img src="${esc(selected.img||initialImg||NOIMAGE_IMG)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'" style="width:auto;height:70px;object-fit:contain"><span>${esc(selected.name)}</span></div>▼</div></div><div class="custom-select-options" id="dropdownOptions0">${optionsForSlot(0)}</div></div>`;
@@ -1591,19 +1605,27 @@ function registerFormationFromInput(){
   if(!result.ok){if(err)err.textContent=result.error;input?.focus();return;}
   return saveCompositeFormation(result.id,null);
 }
-async function saveCompositeFormation(front,rear,finalize=true,keepEditing=false){
+async function saveCompositeFormation(front,rear,finalize=true,keepEditing=false,allowPartialFinalize=false){
   const loadedTrain=liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService()) || currentTrainSnapshot;if(!loadedTrain)return;
-  const train={...loadedTrain,service:String(currentSelectedService()||loadedTrain.service||trainGroupKey(loadedTrain)||'').trim()};
+  // 編成入力中に列車種別を変更しない。
+  // Firebase/ローカルの編成保存とは独立して、開いていた列車の表示種別を保持する。
+  const preservedDisplayType=String(
+    previousSheetContext?.displayType ||
+    currentTrainSnapshot?.displayType ||
+    loadedTrain?.type ||
+    ''
+  ).trim();
+  const train={...loadedTrain,service:String(currentSelectedService()||loadedTrain.service||trainGroupKey(loadedTrain)||'').trim(),displayType:preservedDisplayType||undefined};
   const composite=allowsCompositeFormation(train);
   const value=composite?[front,rear].filter(Boolean).join('+'):(front||'');
   await recordSelection(train,value||null);
   // 「編成未選択」を選んだ直後に、古いスナップショットやFirebaseの旧値で
   // 一瞬元へ戻らないよう、現在表示中の列車にも即時反映する。
   if(currentTrainNo!=null && String(currentTrainNo)===String(train.no)){
-    currentTrainSnapshot={...train,formation:value||null,service:train.service||currentSelectedService()||trainGroupKey(train)};
+    currentTrainSnapshot={...currentTrainSnapshot,...train,formation:value||null,service:train.service||currentSelectedService()||trainGroupKey(train),displayType:preservedDisplayType||undefined};
   }
   document.querySelectorAll('.custom-select-options').forEach(el=>{el.classList.remove('open');el.style.maxHeight='';});
-  if(composite && (!(front&&rear) || keepEditing)){
+  if(composite && (!(front&&rear) || keepEditing) && !allowPartialFinalize){
     // 2編成入力では、既存の2編成のうち片方だけを置き替えた場合も
     // その場で「設定完了」にせず、編集画面を維持する。
     isEditMode=true;
@@ -1651,21 +1673,13 @@ async function selectFormation(id,slot=0){
     return;
   }
 
-  if(isInitial){
-    // 選択したスロットだけを明示的に空欄へ戻す。
-    // 既存のもう一方の編成はそのまま保持する。
-    const clearedValue=[front,rear].filter(Boolean).join('+')||null;
-    const svc=String(currentSelectedService()||train.service||trainGroupKey(train)||'').trim();
-    currentTrainSnapshot={...train,formation:clearedValue,service:svc};
-    await recordSelection({...train,service:svc},clearedValue);
-    currentTrainSnapshot={...currentTrainSnapshot,formation:clearedValue,service:svc};
-    isEditMode=true;
-    document.getElementById('bottomSheet')?.classList.add('editing');
-    updateSheetContent();
-    renderTrainPositions();
-    return;
-  }
-  await saveCompositeFormation(tentative[0]||null,tentative[1]||null,Boolean(tentative[0]&&tentative[1]),false);
+  // 「編成未選択」も通常の編成選択と同じ保存・確定フローに通す。
+  // 単編成列車なら未選択へ戻した時点でも自動確定し、
+  // 併結列車は前後2編成が揃っていなければ編集状態を維持する。
+  const shouldFinalize=isInitial || !composite || Boolean(tentative[0]&&tentative[1]);
+  // 地上列車（2編成）でも「編成未選択」は有効な選択として扱い、
+  // その選択時は単編成列車と同じく、その場で入力を確定する。
+  await saveCompositeFormation(tentative[0]||null,tentative[1]||null,shouldFinalize,false,isInitial);
 }
 function effectiveDetailType(train){
   // 駅時刻表から開いた場合は、選択した駅での種別をそのまま表示する。
