@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -383,7 +384,7 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
 
 .formation-updated-at{position:absolute;right:12px;bottom:8px;font-size:.78rem;color:#777;text-align:right;} 
 .input-trigger-btn{
-  background:var(--primary);color:#fff;padding:4px 8px;border-radius:4px;
+  background:#c62828;color:#fff;padding:4px 8px;border-radius:4px;
   font-size:.75rem;margin-top:4px;display:inline-block;
 }
 .formation-manual-input{display:flex;gap:8px;margin:6px 0;align-items:stretch;}
@@ -484,6 +485,7 @@ body{font-family:sans-serif;}
 .option-disabled:hover{background:#fff!important;}
 
  #title{background:#00aeef;border-bottom:8px solid #1ff020;}
+.input-trigger-btn{background:#c62828 !important;color:#fff;}
 </style>
 </head>
 <body>
@@ -1773,19 +1775,17 @@ function apparentTakayanagiArrival(t){
 }
 
 function positionForTrain(t,minutes){
-  // 列車アイコンの移動基準を「毎分00秒」から「毎分30秒」へ変更。
-  // 時刻表上の時刻そのものは変更せず、位置計算だけ30秒後ろへずらす。
-  minutes-=0.5;
+  // 列車アイコンは、時刻表の発車時刻を hh:mm:45、到着時刻を hh:mm:15 として描画する。
   const stops=t.stops||[];
   if(!stops.length) return null;
   const firstStation=stops[0].station, lastStation=stops[stops.length-1].station;
-  const first=timeToMinutes(stops[0].time), last=timeToMinutes(stops[stops.length-1].time);
+  const first=timeToMinutes(stops[0].time)+0.75, last=timeToMinutes(stops[stops.length-1].time)+0.25;
   const chainInfo=findChain(currentDay,t.no);
   const chain=chainInfo ? OPERATION_CHAINS[currentDay][chainInfo.chainIndex] : null;
   const isChainFirst=!!chain && chainInfo.entryIndex===0;
   const isChainLast=!!chain && chainInfo.entryIndex===chain.length-1;
   const next=connectionNext(t);
-  const nextStart=next?timeToMinutes(next.startTime):null;
+  const nextStart=next?timeToMinutes(next.startTime)+0.75:null;
 
   if(isChainFirst && minutes>=first-RESET_DWELL_MIN && minutes<first){
     return {pos:stationIndex(firstStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'start'};
@@ -1802,8 +1802,8 @@ function positionForTrain(t,minutes){
       const si=ids.indexOf(station);
       if(si<=0) continue;
       const prevStop=stops[si-1], targetStop=stops[si];
-      const prevTime=timeToMinutes(prevStop.time);
-      const realTime=timeToMinutes(targetStop.time);
+      const prevTime=timeToMinutes(prevStop.time)+0.75;
+      const realTime=timeToMinutes(targetStop.time)+0.25;
       const apparentTime=holidayProv[station];
       if(minutes>=prevTime && minutes<=apparentTime){
         const ia=stationIndex(prevStop.station), ib=stationIndex(station);
@@ -1816,7 +1816,7 @@ function positionForTrain(t,minutes){
       if(minutes>=realTime){
         for(let i=si;i<stops.length-1;i++){
           const a=stops[i],b=stops[i+1];
-          const t0=timeToMinutes(a.time),t1=timeToMinutes(b.time);
+          const t0=timeToMinutes(a.time)+0.75,t1=timeToMinutes(b.time)+0.25;
           if(minutes>=t0 && minutes<=t1){
             const ia=stationIndex(a.station),ib=stationIndex(b.station);
             const ratio=t1===t0?0:(minutes-t0)/(t1-t0);
@@ -1826,7 +1826,7 @@ function positionForTrain(t,minutes){
       }
       for(let i=0;i<si-1;i++){
         const a=stops[i],b=stops[i+1];
-        const t0=timeToMinutes(a.time),t1=timeToMinutes(b.time);
+        const t0=timeToMinutes(a.time)+0.75,t1=timeToMinutes(b.time)+0.25;
         if(minutes>=t0 && minutes<=t1){
           const ia=stationIndex(a.station),ib=stationIndex(b.station);
           const ratio=t1===t0?0:(minutes-t0)/(t1-t0);
@@ -1844,8 +1844,8 @@ function positionForTrain(t,minutes){
       const si=ids.indexOf(station);
       if(si<=0) continue;
       const prevStop=stops[si-1], targetStop=stops[si];
-      const prevTime=timeToMinutes(prevStop.time);
-      const realTime=timeToMinutes(targetStop.time);
+      const prevTime=timeToMinutes(prevStop.time)+0.75;
+      const realTime=timeToMinutes(targetStop.time)+0.25;
       const apparentTime=holidayUpProv[station];
       if(minutes>=prevTime && minutes<=apparentTime){
         const ia=stationIndex(prevStop.station), ib=stationIndex(station);
@@ -1858,7 +1858,7 @@ function positionForTrain(t,minutes){
       if(minutes>=realTime){
         for(let i=si;i<stops.length-1;i++){
           const a=stops[i],b=stops[i+1];
-          const t0=timeToMinutes(a.time),t1=timeToMinutes(b.time);
+          const t0=timeToMinutes(a.time)+0.75,t1=timeToMinutes(b.time)+0.25;
           if(minutes>=t0 && minutes<=t1){
             const ia=stationIndex(a.station),ib=stationIndex(b.station);
             const ratio=t1===t0?0:(minutes-t0)/(t1-t0);
@@ -1868,7 +1868,7 @@ function positionForTrain(t,minutes){
       }
       for(let i=0;i<si-1;i++){
         const a=stops[i],b=stops[i+1];
-        const t0=timeToMinutes(a.time),t1=timeToMinutes(b.time);
+        const t0=timeToMinutes(a.time)+0.75,t1=timeToMinutes(b.time)+0.25;
         if(minutes>=t0 && minutes<=t1){
           const ia=stationIndex(a.station),ib=stationIndex(b.station);
           const ratio=t1===t0?0:(minutes-t0)/(t1-t0);
@@ -1884,9 +1884,9 @@ function positionForTrain(t,minutes){
     const hi=ids.indexOf('高柳');
     const prevStop=stops[hi-1];
     const takaStop=stops[hi];
-    const ta=timeToMinutes(prevStop.time);
+    const ta=timeToMinutes(prevStop.time)+0.75;
     const apparentTd=apparentArrival;
-    const realTd=timeToMinutes(takaStop.time);
+    const realTd=timeToMinutes(takaStop.time)+0.25;
 
     // 高柳手前は推定した着時刻まで通常より速く移動。
     if(minutes>=ta && minutes<=apparentTd){
@@ -1903,7 +1903,7 @@ function positionForTrain(t,minutes){
     if(minutes>=realTd){
       for(let i=hi;i<stops.length-1;i++){
         const a=stops[i],b=stops[i+1];
-        const t0=timeToMinutes(a.time),t1=timeToMinutes(b.time);
+        const t0=timeToMinutes(a.time)+0.75,t1=timeToMinutes(b.time)+0.25;
         if(minutes>=t0 && minutes<=t1){
           const ia=stationIndex(a.station),ib=stationIndex(b.station);
           const ratio=t1===t0?0:(minutes-t0)/(t1-t0);
@@ -1915,7 +1915,7 @@ function positionForTrain(t,minutes){
     // 高柳より前の区間は通常時刻で走行。
     for(let i=0;i<hi-1;i++){
       const a=stops[i],b=stops[i+1];
-      const t0=timeToMinutes(a.time),t1=timeToMinutes(b.time);
+      const t0=timeToMinutes(a.time)+0.75,t1=timeToMinutes(b.time)+0.25;
       if(minutes>=t0 && minutes<=t1){
         const ia=stationIndex(a.station),ib=stationIndex(b.station);
         const ratio=t1===t0?0:(minutes-t0)/(t1-t0);
@@ -1925,7 +1925,7 @@ function positionForTrain(t,minutes){
   }else if(minutes>=first && minutes<=last){
     for(let i=0;i<stops.length-1;i++){
       const a=stops[i],b=stops[i+1];
-      const ta=timeToMinutes(a.time),tb=timeToMinutes(b.time);
+      const ta=timeToMinutes(a.time)+0.75,tb=timeToMinutes(b.time)+0.25;
       if(minutes>=ta && minutes<=tb){
         const ia=stationIndex(a.station),ib=stationIndex(b.station);
         const ratio=tb===ta?0:(minutes-ta)/(tb-ta);
@@ -2059,6 +2059,7 @@ function renderTrainPositions(){
         const formationRect=formationEl?.getBoundingClientRect();
         const formationHeight=(formationRect?.height/mobileZoom) || 0;
         const desiredCenterY=(rr.centerY-layerRect.top)/mobileZoom;
+        // 駅停車中は、列車画像の中心を駅ラベルの縦中央に合わせる。
         const finalTop=desiredCenterY-(noHeight+imgHeight+formationHeight)/2;
 
         el.style.top=`${finalTop}px`;
@@ -2380,7 +2381,7 @@ function updateSheetContent(){
             <span class="train-title">${getDetailDest(train.dest)}</span>
             <span class="train-number">${displayTrainNo(train)}</span>
           </div>
-          <div class="input-trigger-btn" style="background:#b71c1c;">編成を入力中</div>
+          <div class="input-trigger-btn">編成を入力中</div>
           <div class="capacity-info">所定:${prescribedFormationName(train)}</div>
         </div>
       </div>
