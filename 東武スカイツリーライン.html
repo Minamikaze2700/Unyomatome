@@ -79,7 +79,7 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
 .train-card{cursor:pointer;position:relative}.train-card.historical-readonly{cursor:default}.formation-updated-at{position:absolute;right:12px;bottom:8px;font-size:.78rem;color:#777}
 .input-trigger-btn{background:#c62828;color:#fff;padding:4px 8px;border-radius:4px;font-size:.75rem;margin-top:4px;display:inline-block}
 .formation-manual-input{display:flex;gap:8px;margin:6px 0;align-items:stretch}.formation-manual-input input{flex:1;min-width:0;border:2px solid #ccc;border-radius:8px;padding:10px;font:inherit;font-weight:700}.formation-manual-input button{border:0;border-radius:8px;background:var(--primary);color:#fff;padding:0 14px;font:inherit;font-weight:700;cursor:pointer}
-.formation-input-error{min-height:0;color:#c62828;font-size:.8rem;font-weight:700;margin:2px 0 4px}.select-box-container{position:relative;width:100%;margin:12px 0}.formation-select-row{display:flex;gap:8px;width:100%}.formation-select-row>.custom-select-trigger{flex:1;min-width:0}.formation-select-row.single{display:flex}.formation-select-row.single>.custom-select-trigger{flex:1}.formation-select-row.composite{flex-direction:row;gap:8px;align-items:flex-start}.formation-select-field{position:relative;width:calc(50% - 4px);min-width:0;z-index:1}.formation-select-field:focus-within{z-index:20}.formation-select-row.composite>.formation-select-field>.custom-select-trigger{width:100%;flex:0 0 auto}.formation-select-field>.custom-select-options{top:calc(100% + 6px);left:0;right:0}.select-box-container>.custom-select-options{top:calc(100% + 6px)}.custom-select-trigger{background:#fff;border:2px solid #ccc;border-radius:8px;padding:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:700;font-size:1.1rem;color:#1b6e27}.custom-select-options{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ccc;border-radius:8px;max-height:250px;overflow-y:auto;z-index:200;display:none;box-shadow:0 4px 10px rgba(0,0,0,.15)}.custom-select-options.open{display:block}.option-header,.option-item{display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid #f0f0f0}.option-header{background:#f0f0f0;padding-left:16px;font-weight:700;font-size:1.1rem}.option-item{padding-left:16px;min-height:60px;font-size:1.1rem}.option-item:hover,.option-header:hover{background:#e8f5e9}.option-item.initial-option{background:#e0e0e0}.option-img{width:auto;height:60px;object-fit:contain}.option-category-header{cursor:pointer!important;pointer-events:auto;background:#f0f0f0!important;}
+.formation-input-error{min-height:0;color:#c62828;font-size:.8rem;font-weight:700;margin:2px 0 4px}.select-box-container{position:relative;width:100%;margin:12px 0}.formation-select-row{display:flex;gap:8px;width:100%}.formation-select-row>.custom-select-trigger{flex:1;min-width:0}.formation-select-row.single{display:flex}.formation-select-row.single>.custom-select-trigger{flex:1}.formation-select-row.composite{flex-direction:row;gap:8px;align-items:flex-start}.formation-select-field{position:relative;width:calc(50% - 4px);min-width:0;z-index:1}.formation-select-field:focus-within{z-index:20}.formation-select-row.composite>.formation-select-field>.custom-select-trigger{width:100%;flex:0 0 auto}.formation-select-field>.custom-select-options{top:calc(100% + 6px);left:0;right:0}.select-box-container>.custom-select-options{top:calc(100% + 6px)}.custom-select-trigger{background:#fff;border:2px solid #ccc;border-radius:8px;padding:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:700;font-size:1.1rem;color:#1b6e27}.custom-select-options{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ccc;border-radius:8px;max-height:250px;overflow-y:auto;z-index:200;display:none;box-shadow:0 4px 10px rgba(0,0,0,.15)}.custom-select-options.open{display:block}.option-header,.option-item{display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid #f0f0f0}.option-header{background:#f0f0f0;padding-left:16px;font-weight:700;font-size:1.1rem}.option-item{padding-left:16px;min-height:60px;font-size:1.1rem}.option-item:hover,.option-header:hover{background:#e8f5e9}.option-item.type-option{background:#f0f0f0!important}.option-item.type-option:hover{background:#e8e8e8!important}.option-item.initial-option{background:#e0e0e0!important}.option-item.initial-option:hover{background:#d0d0d0!important}.option-img{width:auto;height:60px;object-fit:contain}.option-category-header{cursor:pointer!important;pointer-events:auto;background:#f0f0f0!important;}
 .option-subheader{background:#e8f7ff!important;padding-left:16px!important;font-size:1.15rem!important;cursor:pointer!important;pointer-events:auto;}
 .option-subheader:hover{background:#d3efff!important;}
 
@@ -239,18 +239,18 @@ function formationCarsById(id){
   return null;
 }
 function isAllowedCompositePair(carsA,carsB){
-  // 両数未指定（10000型・10030型）が含まれる場合は、形式段階では組み合わせを拒否しない。
-  // 実編成の両数が確定している場合のみ 6+2 / 4+4 / 4+2 を判定する。
-  const a=Number(carsA),b=Number(carsB);
-  if(!Number.isFinite(a)||!Number.isFinite(b))return true;
+  // 両数未指定形式（10000型・10030型）を含む場合は、未確定側を拘束しない。
+  const a=Number(carsA), b=Number(carsB);
+  if(!Number.isFinite(a) || !Number.isFinite(b)) return true;
   return (a===6&&b===2)||(a===2&&b===6)||(a===4&&b===4)||(a===4&&b===2)||(a===2&&b===4);
 }
 function allowedRearCarsForFront(cars){
   const c=Number(cars);
-  if(c===6)return new Set([2]);
-  if(c===4)return new Set([4,2]);
-  if(c===2)return new Set([6,4]);
-  return new Set([2,4,6]);
+  if(c===8) return new Set();
+  if(c===6) return new Set([2]);
+  if(c===4) return new Set([4,2]);
+  if(c===2) return new Set([6,4]);
+  return null; // 前寄りの両数未指定：後ろ寄りは両数で絞らない
 }
 function formationHasPossibleCompositePartner(cars){
   const c=Number(cars);
@@ -295,11 +295,13 @@ function formationDisplayParts(id,direction=null){
   });
 }
 function formationDisplayHTML(id,direction=null){return formationDisplayParts(id,direction).map(x=>`<span>${esc(x)}</span>`).join('');}
+function trainStoredFormationIds(t){
+  return String(t?.formation||'').split('+').map(x=>x.trim()).filter(Boolean);
+}
 function trainFormationIdsFor(t){
-  let parts=String(t?.formation||'').split('+').map(x=>x.trim()).filter(Boolean);
-  // 編成入力欄の「前寄り・後ろ寄り」は列車の向きに合わせて実車の前後順で表示する。
-  // 選択肢一覧そのものは slot=0/1 の固定ルールのまま。
-  if(String(t?.direction||'').toLowerCase()==='up' && parts.length>1) parts=parts.reverse();
+  let parts=trainStoredFormationIds(t);
+  // 実車の表示順だけは列車の向きに合わせて反転する。
+  if(String(t?.direction||'').toLowerCase()==='up' && parts.length>1) parts=parts.slice().reverse();
   return parts;
 }
 function trainImageFor(t){
@@ -1447,66 +1449,62 @@ function updateSheetContent(){
     const formationText=formationValue?formationDisplayParts(formationValue).join(' + '):'';
     content.innerHTML=`<div class="train-card${selectedDateKey===operationDateKey()?'':' historical-readonly'}" ${selectedDateKey===operationDateKey()?'onclick="switchToEditMode()"':''}><img src="${esc(trainImageFor(train))}" class="train-card-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div><span class="type-badge ${getExpressClass(train)}">${esc(limitedExpressDisplayName(train))}</span><span class="train-title">${esc(train.dest||'')} 行</span><span class="train-number">${esc(train.no)}</span></div>${formationValue?`<div class="formation-id">${esc(formationText)}</div>`:`<div class="input-trigger-btn">ここから編成を入力</div>`}<div class="capacity-info">所定:${esc(prescribedFormationName(train))}</div></div>${formatFormationUpdatedAt(train.no,currentSelectedService())?`<div class="formation-updated-at">編成入力：${esc(formatFormationUpdatedAt(train.no,currentSelectedService()))}</div>`:''}</div><div class="timetable-list">${timetableRowsHTML(train.stops)}</div><div class="sync-status" id="syncStatus"></div>`;
   }else{
-    const parts=trainFormationIdsFor(train);
+    const parts=trainStoredFormationIds(train);
     const valueFront=parts[0]||'';
     const valueRear=parts[1]||'';
+    const initialImg=DEFAULT_TRAIN_IMG[trainGroupKey(train)]||DEFAULT_TRAIN_IMG.hanzomon;
     const optionsForSlot=(slot)=>{
       const otherSelected=slot===0?valueRear:valueFront;
       const frontCars=formationCarsById(valueFront);
-      const rearCars=formationCarsById(valueRear);
-      const allowedRearCars=allowedRearCarsForFront(frontCars);
-      // 8両編成を前寄りに選択した場合、後ろ寄りは編成なし（デフォルト）のみ。
-      const rearLockedByEight=Boolean(composite && slot===1 && frontCars===8);
+      const isCompatibleCars=(cars)=>true;
+      const isDuplicateActual=(id)=>{
+        if(!id || id===INITIAL_FORMATION_SELECTION.id) return false;
+        if(String(id)===String(otherSelected)){
+          // 同じ形式名（10000型+10000型、10030型+10030型）は許可。
+          return !FORMATIONS.some(g=>g.type===String(id));
+        }
+        return false;
+      };
       const renderItem=f=>{
         const cars=Number(f.cars);
-        const duplicateActualFormation=f.id===otherSelected;
+        if(!isCompatibleCars(cars)) return '';
+        const duplicate=isDuplicateActual(f.id);
         const img=f.img||NOIMAGE_IMG;
         const safeImg=`<img src="${esc(img)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'">`;
-        let hiddenByPair=false;
-        if(composite && slot===1 && frontCars!=null && cars && !allowedRearCars.has(cars)) hiddenByPair=true;
-        if(hiddenByPair) return '';
-        return f.disabled
-          ? `<div class="option-item disabled">${safeImg}<span>${f.name}</span></div>`
-          : (duplicateActualFormation
-            ? `<div class="option-item disabled">${safeImg}<span>${f.name}</span></div>`
-            : `<div class="option-item" onclick="selectFormation('${f.id}',${slot})">${safeImg}<span>${f.name}</span></div>`);
+        if(f.disabled || duplicate) return '';
+        return `<div class="option-item" onclick="selectFormation('${f.id}',${slot})">${safeImg}<span>${f.name}</span></div>`;
       };
-      const renderVariant=(v,group,slot)=>{
+      const renderVariant=(v,group)=>{
         const vCars=formationCarsById(v.id);
-        let hidden=false;
-        if(composite && slot===1 && frontCars!=null && vCars!=null) hidden=!allowedRearCars.has(vCars);
-        if(hidden) return '';
+        if(!isCompatibleCars(vCars)) return '';
+        const duplicate=isDuplicateActual(v.id);
         const vimg=v.img||NOIMAGE_IMG;
-        const disabledDuplicate=v.id===otherSelected;
-        const clickable=!disabledDuplicate && (!composite || slot===0 || frontCars==null || vCars==null || allowedRearCars.has(vCars));
-        return `<div class="option-header option-subheader${disabledDuplicate?' disabled':''}" ${clickable?`onclick="selectFormation('${v.id}',${slot})"`:''}><img src="${esc(vimg)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${v.name}</span></div>`;
+        if(duplicate) return '';
+        return `<div class="option-header option-subheader" onclick="selectFormation('${v.id}',${slot})"><img src="${esc(vimg)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${v.name}</span></div>`;
       };
-      if(rearLockedByEight){
-        return `<div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}',${slot})"><img src="${INITIAL_FORMATION_SELECTION.img}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>`;
-      }
       const groupHtml=FORMATIONS.filter(g=>g.type!=='500系+500系'&&formationCategoryAllowedForTrain(train,g.type)).map(g=>{
-        const variantsHtml=(g.variants||[]).map(v=>renderVariant(v,g,slot)).join('');
+        const variantsHtml=(g.variants||[]).map(v=>renderVariant(v,g)).join('');
         const variantItems=(g.variants||[]).flatMap(v=>v.items||[]).map(renderItem).join('');
         const directHtml=(g.items||[]).map(renderItem).join('');
+        // 形式名・実編成とも選択可能。禁止するのは同じ実編成の重複だけ。
+        const gCars=formationCarsById(g.type);
         const gimg=g.typeImg||NOIMAGE_IMG;
-        // 形式そのものも選択可能。両数未指定形式だけでなく、各系統の形式名を直接登録できる。
-        const duplicateType=g.type===otherSelected;
-        const groupHeader = duplicateType
-          ? `<div class="option-item disabled"><img src="${esc(gimg)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${g.type}</span></div>`
-          : `<div class="option-item" onclick="selectFormation('${g.type}',${slot})"><img src="${esc(gimg)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${g.type}</span></div>`;
+        const groupHeader=`<div class="option-item type-option" onclick="selectFormation('${g.type}',${slot})"><img src="${esc(gimg)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${g.type}</span></div>`;
         return `${groupHeader}${variantsHtml}${variantItems}${directHtml}`;
       }).join('');
-      return `<div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}',${slot})"><img src="${INITIAL_FORMATION_SELECTION.img}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>${groupHtml}`;
+      return `<div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}',${slot})"><img src="${esc(initialImg)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>${groupHtml}`;
     };
-    const frontTrigger=`<div class="custom-select-trigger" onclick="formationEditSlot=0;toggleDropdown(0)"><div style="display:flex;align-items:center;gap:10px"><img src="${esc(selectionDisplayObject(valueFront).img||NOIMAGE_IMG)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'" style="width:auto;height:70px;object-fit:contain"><span>前寄り：${esc(selectionDisplayObject(valueFront).name)}</span></div>▼</div>`;
-    const rearTrigger=`<div class="custom-select-trigger" onclick="formationEditSlot=1;toggleDropdown(1)"><div style="display:flex;align-items:center;gap:10px"><img src="${esc(selectionDisplayObject(valueRear).img||NOIMAGE_IMG)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'" style="width:auto;height:70px;object-fit:contain"><span>後寄り：${esc(selectionDisplayObject(valueRear).name)}</span></div>▼</div>`;
+    const frontDisplayImg= valueFront ? (selectionDisplayObject(valueFront).img||NOIMAGE_IMG) : (DEFAULT_TRAIN_IMG[trainGroupKey(train)]||DEFAULT_TRAIN_IMG.hanzomon);
+    const frontTrigger=`<div class="custom-select-trigger" onclick="formationEditSlot=0;toggleDropdown(0)"><div style="display:flex;align-items:center;gap:10px"><img src="${esc(frontDisplayImg)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'" style="width:auto;height:70px;object-fit:contain"><span>前寄り：${esc(selectionDisplayObject(valueFront).name)}</span></div>▼</div>`;
+    const rearDisplayImg= valueRear ? (selectionDisplayObject(valueRear).img||NOIMAGE_IMG) : (DEFAULT_TRAIN_IMG[trainGroupKey(train)]||DEFAULT_TRAIN_IMG.hanzomon);
+    const rearTrigger=`<div class="custom-select-trigger" onclick="formationEditSlot=1;toggleDropdown(1)"><div style="display:flex;align-items:center;gap:10px"><img src="${esc(rearDisplayImg)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'" style="width:auto;height:70px;object-fit:contain"><span>後寄り：${esc(selectionDisplayObject(valueRear).name)}</span></div>▼</div>`;
     const inputFormationValue=parts.join('+');
     const manualComposite=composite
       ? `<div class="formation-manual-input"><input id="formationManualInput" type="text" inputmode="text" autocomplete="off" value="${esc(inputFormationValue)}" placeholder="車両番号または編成番号を入力 「+」で区切ることにより併結入力可"><button type="button" onclick="registerFormationFromInput()">登録</button></div>`
       : `<div class="formation-manual-input"><input id="formationManualInput" type="text" inputmode="text" autocomplete="off" value="${esc(valueFront)}" placeholder="車両番号または編成番号を入力"><button type="button" onclick="registerFormationFromInput()">登録</button></div>`;
     const selectorHtml=composite
       ? `<div class="select-box-container"><div class="formation-select-row composite"><div class="formation-select-field">${frontTrigger}<div class="custom-select-options" id="dropdownOptions0">${optionsForSlot(0)}</div></div><div class="formation-select-field">${rearTrigger}<div class="custom-select-options" id="dropdownOptions1">${optionsForSlot(1)}</div></div></div></div>`
-      : `<div class="select-box-container"><div class="formation-select-row single"><div class="custom-select-trigger" onclick="formationEditSlot=0;toggleDropdown(0)"><div style="display:flex;align-items:center;gap:10px"><img src="${esc(selected.img||NOIMAGE_IMG)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'" style="width:auto;height:70px;object-fit:contain"><span>${esc(selected.name)}</span></div>▼</div></div><div class="custom-select-options" id="dropdownOptions0">${optionsForSlot(0)}</div></div>`;
+      : `<div class="select-box-container"><div class="formation-select-row single"><div class="custom-select-trigger" onclick="formationEditSlot=0;toggleDropdown(0)"><div style="display:flex;align-items:center;gap:10px"><img src="${esc(selected.img||initialImg||NOIMAGE_IMG)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'" style="width:auto;height:70px;object-fit:contain"><span>${esc(selected.name)}</span></div>▼</div></div><div class="custom-select-options" id="dropdownOptions0">${optionsForSlot(0)}</div></div>`;
     content.innerHTML=`<div class="train-card"><img src="${esc(trainImageFor(train))}" class="train-card-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div><span class="type-badge ${getExpressClass(train)}">${esc(limitedExpressDisplayName(train))}</span><span class="train-title">${esc(train.dest||'')} 行</span><span class="train-number">${esc(train.no)}</span></div><div class="input-trigger-btn" style="background:#b71c1c;">編成を入力中</div><div class="capacity-info">所定:${esc(prescribedFormationName(train))}</div></div></div><div style="text-align:left;font-weight:700;margin:6px 0 4px;font-size:1.1rem;">編成入力</div>${manualComposite}<div id="formationInputError" class="formation-input-error"></div>${selectorHtml}<div class="sync-status" id="syncStatus"></div>`;
   }
 }
@@ -1537,8 +1535,6 @@ function registerFormationFromInput(){
     const ra=formationIdFromInput(pieces[0]),rb=formationIdFromInput(pieces[1]);
     if(!ra.ok||!rb.ok){if(err)err.textContent=(ra.ok?rb.error:ra.error);input?.focus();return;}
     if(ra.id===rb.id){if(err)err.textContent='2編成では同じ編成を2本選択できません。';input?.focus();return;}
-    const ca=formationCarsById(ra.id),cb=formationCarsById(rb.id);
-    if(ca==null||cb==null||!isAllowedCompositePair(ca,cb)){if(err)err.textContent='2編成の組み合わせは 6+2、4+4、4+2（前後逆可）のみ入力できます。';input?.focus();return;}
     const stored=formationStoredOrderForTrain(train,ra.id,rb.id);
     return saveCompositeFormation(stored.front,stored.rear);
   }
@@ -1553,6 +1549,11 @@ async function saveCompositeFormation(front,rear,finalize=true,keepEditing=false
   const composite=allowsCompositeFormation(train);
   const value=composite?[front,rear].filter(Boolean).join('+'):(front||'');
   await recordSelection(train,value||null);
+  // 「編成未選択」を選んだ直後に、古いスナップショットやFirebaseの旧値で
+  // 一瞬元へ戻らないよう、現在表示中の列車にも即時反映する。
+  if(currentTrainNo!=null && String(currentTrainNo)===String(train.no)){
+    currentTrainSnapshot={...train,formation:value||null,service:train.service||currentSelectedService()||trainGroupKey(train)};
+  }
   document.querySelectorAll('.custom-select-options').forEach(el=>{el.classList.remove('open');el.style.maxHeight='';});
   if(composite && (!(front&&rear) || keepEditing)){
     // 2編成入力では、既存の2編成のうち片方だけを置き替えた場合も
@@ -1575,77 +1576,48 @@ function toggleDropdown(slot=0){
 }
 async function selectFormation(id,slot=0){
   if(!selectedIsCurrentOperation())return;
-  const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService()) || currentTrainSnapshot;if(!train)return;
+  const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService())||currentTrainSnapshot;
+  if(!train)return;
   const composite=allowsCompositeFormation(train);
-  const current=trainFormationIdsFor(train);
-  const normalizedId=id===INITIAL_FORMATION_SELECTION.id?'':String(id);
-  if(slot===1 && !composite)return;
+  const current=trainStoredFormationIds(train);
+  const isInitial=(id===INITIAL_FORMATION_SELECTION.id);
+  const normalizedId=isInitial?'':String(id);
+  if(slot===1&&!composite)return;
 
-  if(composite && slot===1 && !current[0]){
-    document.querySelectorAll('.custom-select-options').forEach(el=>{el.classList.remove('open');el.style.maxHeight='';});
+  // 前寄り未選択のまま後ろ寄りを選ぶことはできない。
+  if(composite&&slot===1&&!current[0]){
     const err=document.getElementById('formationInputError');
     if(err)err.textContent='先に前寄りの編成を選択してください。';
     return;
   }
 
-  if(composite && slot===1 && current[0] && formationCarsById(current[0])===8 && normalizedId){
-    const err=document.getElementById('formationInputError');
-    if(err)err.textContent='8両編成では後ろ寄りの編成を選択できません。';
-    return;
-  }
-
-  if(composite && normalizedId && current[slot===0?1:0]===normalizedId){
-    const isFormationType=FORMATIONS.some(g=>g.type===normalizedId);
-    if(!isFormationType){
-      const err=document.getElementById('formationInputError');
-      if(err)err.textContent='2編成では同じ実編成を2本選択できません。';
-      return;
-    }
-  }
-
-  if(!composite){
-    await saveCompositeFormation(normalizedId||null,null,true,false);
-    return;
-  }
-
   const tentative=[current[0]||'',current[1]||''];
   tentative[slot]=normalizedId;
-  const front=tentative[0]||null,rear=tentative[1]||null;
-  const cf=formationCarsById(front),cr=formationCarsById(rear);
+  const front=tentative[0]||'';
+  const rear=tentative[1]||'';
 
-  // 前寄りは、実編成だけでなく10000型・10030型の両数未指定形式も常に選択可能。
-  // 8両・6両は単独編成として確定し、2/4/6両が選ばれた場合のみ後ろ寄りを待つ。
-  if(slot===0 && front && !rear){
-    if(cf!=null && ![2,4,6,8].includes(Number(cf))){
-      const err=document.getElementById('formationInputError');
-      if(err)err.textContent='地上運用の前寄りは2・4・6・8両編成、または両数未指定の形式を選択できます。';
-      return;
-    }
-    // 8両だけは単独編成として確定。
-    // 両数未指定の形式（10000型・10030型）は前寄りに選んでも
-    // 後ろ寄りとの組み合わせ入力を続行できるようにする。
-    const singleOnly=(cf===8);
-    if(singleOnly){
-      await saveCompositeFormation(front,null,true,false);
-      return;
-    }
+  // 同じ「実編成」だけ禁止。形式そのもの（10000型・10030型）は同じ形式同士も可。
+  if(front&&rear&&front===rear&&!FORMATIONS.some(g=>g.type===front)){
+    const err=document.getElementById('formationInputError');
+    if(err)err.textContent='2編成では同じ実編成を2本選択できません。';
+    return;
   }
 
-  if(front && rear){
-    if(!isAllowedCompositePair(cf,cr)){
-      const err=document.getElementById('formationInputError');
-      if(err)err.textContent='この組み合わせは使用できません。6+2、4+4、4+2（前後逆可）のみ選択できます。';
-      return;
-    }
-    if(cf!=null && cr!=null && cf===cr && !FORMATIONS.some(g=>g.type===front && g.type===rear)){
-      const err=document.getElementById('formationInputError');
-      if(err)err.textContent='同一編成を2本選択することはできません。';
-      return;
-    }
+  if(isInitial){
+    // 選択したスロットだけを明示的に空欄へ戻す。
+    // 既存のもう一方の編成はそのまま保持する。
+    const clearedValue=[front,rear].filter(Boolean).join('+')||null;
+    const svc=String(currentSelectedService()||train.service||trainGroupKey(train)||'').trim();
+    currentTrainSnapshot={...train,formation:clearedValue,service:svc};
+    await recordSelection({...train,service:svc},clearedValue);
+    currentTrainSnapshot={...currentTrainSnapshot,formation:clearedValue,service:svc};
+    isEditMode=true;
+    document.getElementById('bottomSheet')?.classList.add('editing');
+    updateSheetContent();
+    renderTrainPositions();
+    return;
   }
-
-  const stored=formationStoredOrderForTrain(train,front,rear);
-  await saveCompositeFormation(stored.front||null,stored.rear||null,!!(front&&rear),false);
+  await saveCompositeFormation(tentative[0]||null,tentative[1]||null,Boolean(tentative[0]&&tentative[1]),false);
 }
 function effectiveDetailType(train){
   // 駅時刻表から開いた場合は、選択した駅での種別をそのまま表示する。
