@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -1568,7 +1567,9 @@ function currentMinutes(){
   const value=input?.value || formatTimeNow();
   const [h,m]=String(value).split(':').map(Number);
   if(Number.isFinite(h) && Number.isFinite(m)){
-    return h<RESET_HOUR ? h*60+m+1440 : h*60+m;
+    // 任意時刻入力時は、その入力時刻の30秒時点を表示基準とする。
+    const base=h*60+m+0.5;
+    return h<RESET_HOUR ? base+1440 : base;
   }
   const d=new Date();
   const base=d.getHours()*60+d.getMinutes();
@@ -1774,12 +1775,33 @@ function apparentTakayanagiArrival(t){
   return timeToMinutes(prev.time)+typical;
 }
 
+function isStartDwellMinute(minutes,departureRaw){
+  const m=Number(minutes),d=Number(departureRaw);
+  if(!Number.isFinite(m)||!Number.isFinite(d)) return false;
+  let mm=m;
+  while(mm<d-1440) mm+=1440;
+  while(mm>=d+1440) mm-=1440;
+  // 発車時刻を hh:mm:45 とし、その2分前の hh:mm:30 から表示する。
+  const start=d-RESET_DWELL_MIN+0.5;
+  return mm>=start && mm<d+0.75;
+}
+function isEndDwellMinute(minutes,arrivalRaw){
+  const m=Number(minutes),d=Number(arrivalRaw);
+  if(!Number.isFinite(m)||!Number.isFinite(d)) return false;
+  let mm=m;
+  while(mm<d-1440) mm+=1440;
+  while(mm>=d+1440) mm-=1440;
+  // 到着時刻を hh:mm:15 とし、2分後の hh:mm:30 まで表示する。
+  return mm>=d+0.25 && mm<=d+RESET_DWELL_MIN+0.5;
+}
+
 function positionForTrain(t,minutes){
   // 列車アイコンは、時刻表の発車時刻を hh:mm:45、到着時刻を hh:mm:15 として描画する。
   const stops=t.stops||[];
   if(!stops.length) return null;
   const firstStation=stops[0].station, lastStation=stops[stops.length-1].station;
-  const first=timeToMinutes(stops[0].time)+0.75, last=timeToMinutes(stops[stops.length-1].time)+0.25;
+  const firstRaw=timeToMinutes(stops[0].time), lastRaw=timeToMinutes(stops[stops.length-1].time);
+  const first=firstRaw+0.75, last=lastRaw+0.25;
   const chainInfo=findChain(currentDay,t.no);
   const chain=chainInfo ? OPERATION_CHAINS[currentDay][chainInfo.chainIndex] : null;
   const isChainFirst=!!chain && chainInfo.entryIndex===0;
@@ -1787,8 +1809,38 @@ function positionForTrain(t,minutes){
   const next=connectionNext(t);
   const nextStart=next?timeToMinutes(next.startTime)+0.75:null;
 
-  if(isChainFirst && minutes>=first-RESET_DWELL_MIN && minutes<first){
+  // 折り返し運用でない列車は、始発駅で発車2分前から発車時刻まで、
+  // 終着駅で到着時刻から2分後まで停車表示する。
+  if(!chain){
+    if(isStartDwellMinute(minutes,firstRaw)){
+      return {pos:stationIndex(firstStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'start-dwell'};
+    }
+    if(isEndDwellMinute(minutes,lastRaw)){
+      return {pos:stationIndex(lastStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'end-dwell'};
+    }
+  }
+
+  if(isChainFirst && isStartDwellMinute(minutes,firstRaw)){
     return {pos:stationIndex(firstStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'start'};
+  }
+
+  // 駅停車中は到着(:15)から発車(:45)まで、その駅にアイコンを固定表示する。
+  // 通常の駅間補間より先に判定することで、停車30秒だけアイコンが消えることを防ぐ。
+  for(let i=1;i<stops.length;i++){
+    const stop=stops[i];
+    const arrivalRaw=timeToMinutes(stop.arrival||stop.time);
+    const departureRaw=timeToMinutes(stop.departure||stop.time);
+    if(!Number.isFinite(arrivalRaw)||!Number.isFinite(departureRaw)) continue;
+    let ar=arrivalRaw,dp=departureRaw;
+    while(ar+0.25>minutes) { ar-=1440; dp-=1440; }
+    while(dp+0.75<=minutes) { ar+=1440; dp+=1440; }
+    const arrive=ar+0.25,depart=dp+0.75;
+    if(minutes>=arrive && minutes<depart){
+      const si=stationIndex(stop.station);
+      if(si>=0){
+        return {pos:si,side:t.direction==='down'?'right':'left',visualTrain:t,mode:'station-dwell'};
+      }
+    }
   }
 
   // メイン画面専用の高柳見かけ着時刻補正。
@@ -1945,7 +1997,7 @@ function positionForTrain(t,minutes){
     return {pos:stationIndex(lastStation),side:nextSide,visualTrain:nextTrain||t,mode:'turn-wait'};
   }
 
-  if(isChainLast && minutes>=last && minutes<=last+RESET_DWELL_MIN){
+  if(isChainLast && isEndDwellMinute(minutes,lastRaw)){
     return {pos:stationIndex(lastStation),side:t.direction==='down'?'right':'left',visualTrain:t,mode:'end'};
   }
   return null;
