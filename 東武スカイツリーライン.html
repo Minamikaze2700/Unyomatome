@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -140,7 +141,7 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
 .operation-info-custom-group{font-weight:900;}
 /* 運行情報 */
 #title{padding-left:150px;padding-right:150px;}
-#operationInfoBtn{position:absolute;right:18px;top:50%;transform:translateY(-50%);appearance:none;border:0;border-radius:999px;background:#fff;color:#0055b8;padding:8px 17px;font:700 16px/1 sans-serif;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.18);white-space:nowrap;z-index:2}
+#operationInfoBtn{position:fixed;right:20px;top:11px;transform:none;appearance:none;border:0;border-radius:999px;background:#fff;color:#0055b8;padding:8px 17px;font:700 16px/1 sans-serif;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.18);white-space:nowrap;z-index:1001;display:block;visibility:visible}
 #operationInfoBtn:hover{filter:brightness(.96)}
 .operation-info-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1200;display:none}
 .operation-info-backdrop.active{display:block}
@@ -203,7 +204,7 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
 .operation-info-zone-label.delay{color:#8a7200;background:rgba(255,255,255,.92)}
 .operation-info-option-mark{display:inline-block;font-weight:900;color:inherit}.operation-info-option-name{color:#111!important;}
 .operation-info-zone.suspend .operation-info-zone-label{color:#d32f2f;background:rgba(255,255,255,.96)}
-@media(max-width:700px){#title{padding-left:70px;padding-right:120px}#operationInfoBtn{right:10px;font-size:13px;padding:7px 11px}.operation-info-grid{grid-template-columns:1fr}.operation-info-field.full{grid-column:auto}.operation-info-range{grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr)}.operation-info-card{grid-template-columns:1fr}.operation-info-card-delete{justify-self:end}}
+@media(max-width:700px){#title{padding-left:70px;padding-right:120px}#operationInfoBtn{right:20px;top:13px;font-size:13px;padding:7px 11px.operation-info-grid{grid-template-columns:1fr}.operation-info-field.full{grid-column:auto}.operation-info-range{grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr)}.operation-info-card{grid-template-columns:1fr}.operation-info-card-delete{justify-self:end}}
 
 .formation-select-row.composite{display:flex;flex-direction:row;gap:8px;} .formation-select-row.composite>.formation-select-field{flex:1;min-width:0;position:relative;}
 </style>
