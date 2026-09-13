@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -133,18 +132,89 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
   .station-timetable-destination{font-size:6.0377358cqw;line-height:1;}
 }
 .option-item.disabled{opacity:.45;cursor:not-allowed;background:#f3f3f3;}
+/* 運行情報 */
+#title{padding-left:150px;padding-right:150px;}
+#operationInfoBtn{position:absolute;right:18px;top:50%;transform:translateY(-50%);appearance:none;border:0;border-radius:999px;background:#fff;color:#0055b8;padding:8px 17px;font:700 16px/1 sans-serif;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.18);white-space:nowrap;z-index:2}
+#operationInfoBtn:hover{filter:brightness(.96)}
+.operation-info-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1200;display:none}
+.operation-info-backdrop.active{display:block}
+.operation-info-panel{position:fixed;left:50%;top:72px;transform:translateX(-50%);width:min(900px,calc(100vw - 24px));max-height:calc(100vh - 96px);overflow:auto;background:#eee;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.3);z-index:1201;display:none}
+.operation-info-panel.active{display:block}
+.operation-info-header{position:sticky;top:0;z-index:3;background:#0055b8;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;font-weight:800;border-radius:16px 16px 0 0}
+.operation-info-header button{border:0;background:transparent;color:#fff;font-size:20px;cursor:pointer}
+.operation-info-body{padding:14px}
+.operation-info-form{background:#fff;border-radius:12px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.08);margin-bottom:14px}
+.operation-info-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.operation-info-field{display:flex;flex-direction:column;gap:5px}
+.operation-info-field.full{grid-column:1/-1}
+.operation-info-field label{font-weight:800;font-size:.9rem;color:#444}
+.operation-info-field select,.operation-info-field input,.operation-info-field textarea{width:100%;border:2px solid #ccc;border-radius:8px;padding:9px;font:inherit;background:#fff;color:#111}
+.operation-info-status{display:flex;gap:8px}
+.operation-info-status label{flex:1;display:flex;align-items:center;justify-content:center;border:0;border-radius:8px;padding:10px;cursor:pointer;font-weight:800;background:#eee;color:#333;transition:background .12s,color .12s}
+.operation-info-status input{display:none}
+.operation-info-status input:checked + span{display:block;width:100%;text-align:center;border-radius:6px;padding:0;background:transparent;color:inherit}
+.operation-info-status label:has(input[value="delay"]:checked){background:#f2c94c;color:#111}
+.operation-info-status label:has(input[value="suspend"]:checked){background:#ef5350;color:#fff}
+.operation-info-card-open{min-width:0;border:0;background:transparent;padding:0;text-align:left;cursor:pointer;width:100%;color:inherit;font:inherit}
+.operation-info-range{display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr);gap:8px;align-items:end}
+.operation-info-range-arrow{height:42px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#666}
+.operation-info-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.operation-info-actions button{border:0;border-radius:8px;padding:10px 16px;font:700 1rem/1 sans-serif;cursor:pointer}
+.operation-info-add{background:#0055b8;color:#fff}.operation-info-cancel{background:#ddd;color:#222}
+.operation-info-list{display:flex;flex-direction:column;gap:10px}
+.operation-info-card{background:#fff;border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.operation-info-card-main{min-width:0}.operation-info-card-title{font-weight:900;font-size:1rem}.operation-info-card-meta{color:#555;font-size:.9rem;margin-top:4px}.operation-info-card-reason{color:#333;font-size:.9rem;margin-top:4px}
+.operation-info-card.delay{border-left:8px solid #f2c94c}.operation-info-card.suspend{border-left:8px solid #ef5350}
+.operation-info-card-delete{border:0;border-radius:7px;padding:7px 10px;background:#eee;color:#c62828;font-weight:800;cursor:pointer}
+.operation-info-empty{text-align:center;color:#666;padding:18px}
+#operationInfoLayer{position:absolute;left:0;right:0;top:0;bottom:0;z-index:0;pointer-events:none;overflow:visible}
+#operationInfoLabelLayer{position:absolute;left:0;right:0;top:0;bottom:0;z-index:10000;pointer-events:none;overflow:visible}
+.operation-info-zone{position:absolute;box-sizing:border-box;border:3px solid #f2c94c;background:repeating-linear-gradient(135deg,rgba(255,205,55,.46) 0 7px,rgba(255,205,55,.12) 7px 14px);border-radius:0;z-index:0;pointer-events:none}
+.operation-info-zone.suspend{border-color:#ef5350;background:repeating-linear-gradient(135deg,rgba(239,83,80,.40) 0 7px,rgba(239,83,80,.10) 7px 14px)}
+.operation-info-zone-label{position:absolute;right:6px;top:6px;width:100px;box-sizing:border-box;z-index:100000;background:rgba(255,255,255,.92);border-radius:5px;padding:3px 7px;font:800 12px/1 sans-serif;color:#d32f2f;box-shadow:0 1px 3px rgba(0,0,0,.14);pointer-events:auto;cursor:pointer;border:0}
+.operation-info-detail-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:20000;display:none}
+.operation-info-detail-backdrop.active{display:block}
+.operation-info-detail{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 24px));background:#fff;border-radius:14px;box-shadow:0 10px 35px rgba(0,0,0,.28);z-index:20001;display:none;overflow:hidden}
+.operation-info-detail.active{display:block}
+.operation-info-detail-header{padding:12px 16px;background:#0055b8;color:#fff;font-weight:800;display:flex;justify-content:space-between;align-items:center}
+.operation-info-detail-header button{border:0;background:transparent;color:#fff;font-size:20px;cursor:pointer}
+.operation-info-detail-body{padding:16px;line-height:1.8}
+.operation-info-detail-status{display:inline-block;padding:4px 10px;border-radius:6px;font-weight:800;margin-bottom:8px}
+.operation-info-detail-status.delay{background:#f2c94c;color:#111}
+.operation-info-detail-status.suspend{background:#ef5350;color:#fff}
+.operation-info-zone-label.delay{color:#8a7200;background:rgba(255,255,255,.92)}
+.operation-info-zone.suspend .operation-info-zone-label{color:#d32f2f;background:rgba(255,255,255,.96)}
+@media(max-width:700px){#title{padding-left:70px;padding-right:120px}#operationInfoBtn{right:10px;font-size:13px;padding:7px 11px}.operation-info-grid{grid-template-columns:1fr}.operation-info-field.full{grid-column:auto}.operation-info-range{grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr)}.operation-info-card{grid-template-columns:1fr}.operation-info-card-delete{justify-self:end}}
+
 .formation-select-row.composite{display:flex;flex-direction:row;gap:8px;} .formation-select-row.composite>.formation-select-field{flex:1;min-width:0;position:relative;}
 </style>
 </head>
 <body>
 <div id="viewportCanvas">
-<h1 id="title"><img class="title-logo" src="https://static.tobuspapp.jp/html/operation_tobupo/img/xxxhdpi/pos_icon_skytreeline.png" alt="TS"><span>東武スカイツリーライン</span></h1>
+<h1 id="title"><img class="title-logo" src="https://static.tobuspapp.jp/html/operation_tobupo/img/xxxhdpi/pos_icon_skytreeline.png" alt="TS"><span>東武スカイツリーライン</span><button id="operationInfoBtn" type="button" onclick="openOperationInfo()">運行情報</button></h1>
 <div class="control-bar"><div class="day-filter"><input id="dateInput" class="date-input" type="date"><span id="scheduleDayLabel" class="schedule-day-label">平日ダイヤ</span></div><div class="time-control"><span class="time-label">表示時刻</span><input id="timeInput" class="time-input" type="time" step="60"><button id="nowBtn" class="time-now-btn active" onclick="setNowTime()">現在時刻</button></div></div>
-<div class="line-container" id="lineContainer"><div class="moving-train-layer" id="movingTrainLayer"></div></div>
+<div class="line-container" id="lineContainer"><div id="operationInfoLayer"></div><div class="moving-train-layer" id="movingTrainLayer"></div></div>
 </div>
 <div class="overlay" id="overlay"></div>
 <div class="bottom-sheet" id="bottomSheet"><div class="sheet-header"><div class="sheet-header-left"><button id="sheetBackBtn" class="sheet-back-btn" type="button" aria-label="駅情報に戻る" onclick="sheetBack()"></button><span id="sheetHeaderTitle">駅情報</span></div><span class="close-btn" id="closeBtn">✖</span></div><div class="sheet-content" id="sheetContent"></div></div>
+<div class="operation-info-backdrop" id="operationInfoBackdrop" onclick="closeOperationInfo()"></div>
+<div class="operation-info-panel" id="operationInfoPanel" role="dialog" aria-modal="true" aria-label="運行情報">
+  <div class="operation-info-header"><span>運行情報の登録</span><button type="button" onclick="closeOperationInfo()" aria-label="閉じる">✖</button></div>
+  <div class="operation-info-body">
+    <div class="operation-info-form">
+      <div class="operation-info-grid">
+        <div class="operation-info-field full"><label>状態</label><div class="operation-info-status" id="operationInfoStatus"><label><input type="radio" name="operationStatus" value="delay" checked><span>遅延</span></label><label><input type="radio" name="operationStatus" value="suspend"><span>運転見合わせ</span></label></div></div>
+        <div class="operation-info-field full"><label>区間</label><div class="operation-info-range"><select id="operationInfoStart" aria-label="区間始点"></select><div class="operation-info-range-arrow">→</div><select id="operationInfoEnd" aria-label="区間終点"></select></div></div>
+        <div class="operation-info-field"><label for="operationInfoDelay">遅延時間</label><select id="operationInfoDelay"><option value="5">5分</option><option value="10">10分</option><option value="15">15分</option><option value="20">20分</option><option value="25">25分</option><option value="30">30分</option><option value="35">35分</option><option value="40">40分</option><option value="45">45分</option><option value="50">50分</option><option value="55">55分</option><option value="60">60分</option><option value="65">65分</option><option value="70">70分</option><option value="75">75分</option><option value="80">80分</option><option value="85">85分</option><option value="90">90分</option><option value="95">95分</option><option value="100">100分</option><option value="105">105分</option><option value="110">110分</option><option value="115">115分</option><option value="120">120分</option></select></div>
+        <div class="operation-info-field"><label for="operationInfoReason">理由</label><select id="operationInfoReason"></select></div>
+      </div>
+      <div class="operation-info-actions"><button class="operation-info-cancel" type="button" onclick="resetOperationInfoForm()">入力クリア</button><button class="operation-info-add" type="button" onclick="addOperationInfo()">運行情報を登録</button></div>
+    </div>
+    <div class="operation-info-list" id="operationInfoList"></div>
+  </div>
+</div>
 
+<div class="operation-info-detail-backdrop" id="operationInfoDetailBackdrop" onclick="hideOperationInfoDetail()"></div><div class="operation-info-detail" id="operationInfoDetail" role="dialog" aria-modal="true"><div class="operation-info-detail-header"><span>運行情報の詳細</span><button type="button" onclick="hideOperationInfoDetail()">✖</button></div><div class="operation-info-detail-body" id="operationInfoDetailBody"></div></div>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script>
@@ -624,7 +694,10 @@ function setSelectedDate(value){
   selectedDateKey=String(value);syncCurrentScheduleDay();
   const label=document.getElementById('scheduleDayLabel');if(label)label.textContent=`${currentDay}ダイヤ`;
   const input=document.getElementById('dateInput');if(input)input.value=selectedDateKey;
+  loadOperationInfo();
   renderTrainPositions();
+  renderOperationInfoZones();
+  renderOperationInfoList();
   if(currentTrainNo&&!isEditMode)updateSheetContent();
 }
 function formatTimeNow(){const d=new Date();return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
@@ -1090,10 +1163,71 @@ function buildScreenRows(){
   }
   return rows;
 }
+
+/* 運行情報 */
+const OPERATION_INFO_STORAGE_KEY='tobuskytree_operation_info_v4';
+const OPERATION_INFO_STATIONS=[...new Set(Object.values(ROUTES).flatMap(r=>r.stations.map(x=>x[0])))];
+const OPERATION_INFO_REASONS=['人身事故','車両故障・点検','信号・電気設備トラブル','線路内立入り・支障物','踏切・安全確認','天候（大雨・強風・雷・雪）','地震・災害','急病人救護','混雑・その他'];
+let operationInfoEntries=[];
+function operationInfoGraph(){
+  const g=new Map(),add=(a,b)=>{if(!a||!b)return;(g.has(a)?g.get(a):g.set(a,new Set()).get(a)).add(b);(g.has(b)?g.get(b):g.set(b,new Set()).get(b)).add(a);};
+  Object.values(ROUTES).forEach(r=>{const ss=r.stations.map(x=>x[0]);for(let i=0;i<ss.length-1;i++)add(ss[i],ss[i+1]);});
+  return g;
+}
+function operationInfoFindPath(start,end){
+  if(!start||!end||start===end)return null;
+  const g=operationInfoGraph();if(!g.has(start)||!g.has(end))return null;
+  const q=[start],prev=new Map([[start,null]]);
+  while(q.length){
+    const cur=q.shift();if(cur===end)break;
+    const nexts=[...(g.get(cur)||[])].sort((a,b)=>String(a).localeCompare(String(b),'ja'));
+    for(const n of nexts){if(prev.has(n))continue;prev.set(n,cur);q.push(n);}
+  }
+  if(!prev.has(end))return null;
+  const path=[];for(let x=end;x!=null;x=prev.get(x))path.push(x);path.reverse();
+  return path.length>=2?path:null;
+}
+function operationInfoUndirectedKey(a,b){return [String(a||''),String(b||'')].sort().join('\u0000');}
+function operationInfoPathEdges(stations){const set=new Set();for(let i=0;i<stations.length-1;i++)set.add(operationInfoUndirectedKey(stations[i],stations[i+1]));return set;}
+function normalizeOperationEntry(e){const stations=Array.isArray(e?.stations)&&e.stations.length>=2?e.stations:operationInfoFindPath(e?.start,e?.end);return stations&&stations.length>=2?{...e,start:stations[0],end:stations.at(-1),stations}:null;}
+function loadOperationInfo(){try{const all=JSON.parse(localStorage.getItem(OPERATION_INFO_STORAGE_KEY)||'{}');const raw=Array.isArray(all?.[operationDateKey()])?all[operationDateKey()]:[];operationInfoEntries=raw.map(normalizeOperationEntry).filter(Boolean);}catch(e){operationInfoEntries=[];}}
+function saveOperationInfo(){try{const all=JSON.parse(localStorage.getItem(OPERATION_INFO_STORAGE_KEY)||'{}');all[operationDateKey()]=operationInfoEntries;localStorage.setItem(OPERATION_INFO_STORAGE_KEY,JSON.stringify(all));}catch(e){}}
+function updateOperationInfoStationOptions(){const a=document.getElementById('operationInfoStart'),b=document.getElementById('operationInfoEnd');if(!a||!b)return;const html=OPERATION_INFO_STATIONS.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');const pa=a.value,pb=b.value;a.innerHTML=html;b.innerHTML=html;if(OPERATION_INFO_STATIONS.includes(pa))a.value=pa;if(OPERATION_INFO_STATIONS.includes(pb))b.value=pb;if(!a.value)a.selectedIndex=0;if(!b.value)b.selectedIndex=Math.min(1,OPERATION_INFO_STATIONS.length-1);}
+function updateOperationInfoReasonOptions(){const r=document.getElementById('operationInfoReason');if(!r)return;const prev=r.value||OPERATION_INFO_REASONS[0];r.innerHTML=OPERATION_INFO_REASONS.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');if(OPERATION_INFO_REASONS.includes(prev))r.value=prev;}
+function initOperationInfoUI(){updateOperationInfoStationOptions();updateOperationInfoReasonOptions();const delay=document.getElementById('operationInfoDelay');document.querySelectorAll('input[name="operationStatus"]').forEach(x=>{if(x.dataset.bound==='1')return;x.dataset.bound='1';x.addEventListener('change',()=>{if(delay)delay.disabled=x.value==='suspend'&&x.checked;});});const checked=document.querySelector('input[name="operationStatus"]:checked');if(checked&&delay)delay.disabled=checked.value==='suspend';renderOperationInfoList();}
+function openOperationInfo(){initOperationInfoUI();document.getElementById('operationInfoBackdrop')?.classList.add('active');document.getElementById('operationInfoPanel')?.classList.add('active');renderOperationInfoList();}
+function closeOperationInfo(){document.getElementById('operationInfoBackdrop')?.classList.remove('active');document.getElementById('operationInfoPanel')?.classList.remove('active');hideOperationInfoDetail();}
+function resetOperationInfoForm(){updateOperationInfoStationOptions();updateOperationInfoReasonOptions();const d=document.getElementById('operationInfoDelay');if(d){d.disabled=false;d.value='5';}const r=document.getElementById('operationInfoReason');if(r)r.value=OPERATION_INFO_REASONS[0];const first=document.querySelector('input[name="operationStatus"][value="delay"]');if(first){first.checked=true;first.dispatchEvent(new Event('change'));}}
+function operationInfoSubtractEdges(stations,blocked){const parts=[];let cur=[];for(let i=0;i<stations.length-1;i++){const a=stations[i],b=stations[i+1];if(blocked.has(operationInfoUndirectedKey(a,b))){if(cur.length>=2)parts.push(cur);cur=[];continue;}if(!cur.length)cur=[a];cur.push(b);}if(cur.length>=2)parts.push(cur);return parts;}
+function addOperationInfo(){const start=document.getElementById('operationInfoStart')?.value||'',end=document.getElementById('operationInfoEnd')?.value||'',status=document.querySelector('input[name="operationStatus"]:checked')?.value||'delay',reason=document.getElementById('operationInfoReason')?.value||OPERATION_INFO_REASONS[0],delay=Math.max(0,Number(document.getElementById('operationInfoDelay')?.value||0)||0),path=operationInfoFindPath(start,end);if(!path){alert('選択した2駅を結ぶ区間が見つかりません。');return;}if(status==='delay'&&(!Number.isFinite(delay)||delay<5||delay%5!==0)){alert('遅延時間は5分単位で選択してください。');return;}const newEdges=operationInfoPathEdges(path),next=[];for(const raw of operationInfoEntries){const old=normalizeOperationEntry(raw);if(!old)continue;for(const part of operationInfoSubtractEdges(old.stations,newEdges)){next.push({...old,id:`${old.id}_${Math.random().toString(36).slice(2,7)}`,start:part[0],end:part.at(-1),stations:part});}}
+  next.push({id:`${Date.now()}_${Math.random().toString(36).slice(2,8)}`,start,end,stations:path,status,delay:status==='delay'?delay:0,reason,createdAt:Date.now()});operationInfoEntries=next;saveOperationInfo();renderOperationInfoList();renderOperationInfoZones();resetOperationInfoForm();}
+function deleteOperationInfo(id){operationInfoEntries=operationInfoEntries.filter(x=>x.id!==id);saveOperationInfo();renderOperationInfoList();renderOperationInfoZones();}
+function showOperationInfoDetail(id){
+  const e=operationInfoEntries.find(x=>x.id===id);if(!e)return;
+  const body=document.getElementById('operationInfoDetailBody');if(!body)return;
+  const txt=e.status==='suspend'?'運転見合わせ':`遅延 ${Number(e.delay)||0}分`;
+  const posted=formatTimestampShort(e.createdAt);
+  body.innerHTML=`<div class="operation-info-detail-status ${e.status==='suspend'?'suspend':'delay'}">${esc(txt)}</div><div><strong>区間：</strong>${esc(`${e.start} ⇄ ${e.end}`)}</div><div><strong>理由：</strong>${esc(e.reason||OPERATION_INFO_REASONS[0])}</div><div><strong>投稿時刻：</strong>${esc(posted)}</div>`;
+  document.getElementById('operationInfoDetailBackdrop')?.classList.add('active');document.getElementById('operationInfoDetail')?.classList.add('active');
+}
+function hideOperationInfoDetail(){document.getElementById('operationInfoDetailBackdrop')?.classList.remove('active');document.getElementById('operationInfoDetail')?.classList.remove('active');}
+function renderOperationInfoList(){const box=document.getElementById('operationInfoList');if(!box)return;if(!operationInfoEntries.length){box.innerHTML='<div class="operation-info-empty">登録されている運行情報はありません。</div>';return;}box.innerHTML=operationInfoEntries.map(x=>{const txt=x.status==='suspend'?'運転見合わせ':`遅延 ${Number(x.delay)||0}分`;return `<div class="operation-info-card ${x.status==='suspend'?'suspend':'delay'}"><button type="button" class="operation-info-card-main operation-info-card-open" onclick="showOperationInfoDetail('${esc(x.id)}')"><div class="operation-info-card-title">${esc(x.start)} ⇄ ${esc(x.end)}</div><div class="operation-info-card-meta">${esc(txt)}</div><div class="operation-info-card-reason">${esc(x.reason||OPERATION_INFO_REASONS[0])}</div></button><button class="operation-info-card-delete" type="button" onclick="deleteOperationInfo('${esc(x.id)}')">削除</button></div>`;}).join('');}
+function operationInfoVisibleEdgeMap(){const rows=[...document.querySelectorAll('.station-row')],map=new Map(),byName=new Map();rows.forEach((r,i)=>{const n=stationNameKey(r.querySelector('.station-name-ja')?.textContent||'');if(!byName.has(n))byName.set(n,[]);byName.get(n).push({row:r,index:i});});for(const e0 of operationInfoEntries){const e=normalizeOperationEntry(e0);if(!e)continue;for(let i=0;i<e.stations.length-1;i++){const a=stationNameKey(e.stations[i]),b=stationNameKey(e.stations[i+1]),ar=byName.get(a)||[],br=byName.get(b)||[];for(const x of ar)for(const y of br){if(Math.abs(x.index-y.index)!==1)continue;const key=`${Math.min(x.index,y.index)}-${Math.max(x.index,y.index)}`,val={status:e.status==='suspend'?'suspend':'delay',delay:Number(e.delay)||0,entryId:e.id,createdAt:Number(e.createdAt)||0};const prev=map.get(key);if(!prev||val.createdAt>=prev.createdAt)map.set(key,val);}}}return {rows,map};}
+function renderOperationInfoZones(){const layer=document.getElementById('operationInfoLayer');if(!layer)return;layer.innerHTML='';const {rows,map}=operationInfoVisibleEdgeMap();if(rows.length<2||!map.size)return;const groups=[];for(const [key,it] of [...map.entries()].sort((a,b)=>Number(a[0].split('-')[0])-Number(b[0].split('-')[0]))){const [lo,hi]=key.split('-').map(Number),last=groups.at(-1);if(last&&lo===last.hi&&last.status===it.status){last.hi=hi;last.delay=Math.max(last.delay,it.delay);last.entryIds.add(it.entryId);}else groups.push({lo,hi,status:it.status,delay:it.delay,entryIds:new Set([it.entryId])});}
+  const lc=document.getElementById('lineContainer'),lcRect=lc?.getBoundingClientRect();if(!lc||!lcRect)return;
+  // 運行情報の長方形は常に固定幅。列車の有無や本数によって幅が変わらないようにする。
+  // 1列車分が十分収まる幅として 220px を基準にし、画面幅を超える場合だけ縮小する。
+  const fixedZoneWidth=700;
+  const labelLayer=document.getElementById('operationInfoLabelLayer');
+  if(labelLayer) labelLayer.innerHTML='';
+  for(const g of groups){const topRow=rows[g.lo],bottomRow=rows[g.hi];if(!topRow||!bottomRow)continue;let top=topRow.offsetTop,bottom=bottomRow.offsetTop+bottomRow.offsetHeight;const prev=map.get(`${g.lo-1}-${g.lo}`),next=map.get(`${g.hi}-${g.hi+1}`);if(prev&&prev.status!==g.status)top=topRow.offsetTop+topRow.offsetHeight/2+10;if(next&&next.status!==g.status)bottom=bottomRow.offsetTop+bottomRow.offsetHeight/2-10;if(bottom<=top)continue;const zone=document.createElement('div');zone.className=`operation-info-zone ${g.status==='suspend'?'suspend':''}`;zone.style.top=`${top}px`;zone.style.height=`${bottom-top}px`;zone.style.width=`${fixedZoneWidth}px`;zone.style.left=`calc(50% - ${fixedZoneWidth/2}px)`;layer.appendChild(zone);const id=[...g.entryIds][0];if(labelLayer){const label=document.createElement('button');label.type='button';label.className=`operation-info-zone-label ${g.status==='suspend'?'suspend':'delay'}`;label.textContent=g.status==='suspend'?'運転見合わせ':`遅延 ${g.delay}分`;label.style.top=`${top+6}px`;label.style.left=`calc(50% + ${fixedZoneWidth/2-6}px)`;label.style.transform='translateX(-100%)';label.onclick=e=>{e.preventDefault();e.stopPropagation();showOperationInfoDetail(id);};labelLayer.appendChild(label);}}}
+function operationInfoRerender(){renderOperationInfoZones();}
+window.addEventListener('resize',operationInfoRerender);
 function render(){
-  const lc=document.getElementById('lineContainer');lc.innerHTML='<div class="moving-train-layer" id="movingTrainLayer"></div>';
+  const lc=document.getElementById('lineContainer');lc.innerHTML='<div id="operationInfoLayer"></div><div class="moving-train-layer" id="movingTrainLayer"></div><div id="operationInfoLabelLayer"></div>';
   buildScreenRows().forEach(r=>lc.appendChild(createRow(r.st,r.routeKey,r.opt)));
   renderTrainPositions();
+  renderOperationInfoZones();
 }
 function toggleBranch(key){if(activeBranches.has(key))activeBranches.delete(key);else activeBranches.add(key);const y=scrollY;render();requestAnimationFrame(()=>scrollTo({top:y,behavior:'auto'}));}
 
@@ -1596,7 +1730,8 @@ function timetableRowsHTML(stops){
   }
   return html;
 }
-function formatFormationUpdatedAt(no,service=null){const ts=formationTimestamp(no,service);if(!ts)return '';const d=new Date(ts);return Number.isNaN(d.getTime())?'':`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
+function formatTimestampShort(ts){if(!ts)return '';const d=new Date(Number(ts));if(Number.isNaN(d.getTime()))return '';const now=new Date();const hhmm=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()&&d.getDate()===now.getDate()?hhmm:`${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${hhmm}`;}
+function formatFormationUpdatedAt(no,service=null){return formatTimestampShort(formationTimestamp(no,service));}
 function formationCategoryAllowedForTrain(t,groupType){
   // 列車データ側のserviceを最優先し、万一欠落していてもtrainGroupKeyで補完する。
   const service=String(t?.service||trainGroupKey(t)||'').trim();
@@ -2253,6 +2388,33 @@ function isPassingOvertake(t,p,minutes){
   }
   return false;
 }
+function laneForStationDwell(t,p,minutes){
+  const stops=Array.isArray(t?.stops)?t.stops:[];
+  const station=stationNameKey(p?.stationA||p?.stationB||'');
+  let idx=-1;
+  for(let i=stops.length-1;i>=0;i--){
+    if(stationNameKey(stops[i]?.station||'')===station){idx=i;break;}
+  }
+  if(idx<0) return 0;
+  // 始発駅なら次区間、終着駅なら前区間のレーンを使う。
+  // 中間駅の停車なら前区間を優先し、前後が異なる場合も停車中に
+  // レーンが瞬間移動しないよう前区間を維持する。
+  if(idx<stops.length-1){
+    const next=stops[idx+1];
+    if(next?.station){
+      const probe={stationA:stops[idx].station,stationB:next.station};
+      return laneForTrain(t,probe,minutes);
+    }
+  }
+  if(idx>0){
+    const prev=stops[idx-1];
+    if(prev?.station){
+      const probe={stationA:prev.station,stationB:stops[idx].station};
+      return laneForTrain(t,probe,minutes);
+    }
+  }
+  return 0;
+}
 function laneForTrain(t,p,minutes){
   const a=MAIN_NAMES.indexOf(p.stationA),b=MAIN_NAMES.indexOf(p.stationB);
   const k=MAIN_NAMES.indexOf('北越谷'),n=MAIN_NAMES.indexOf('北千住'),x=MAIN_NAMES.indexOf('西新井');
@@ -2407,7 +2569,10 @@ function renderTrainPositions(){
       if(terminalIndex<0)continue;
       p.pos=terminalIndex;
     }
-    const laneBase=p.terminal?0:laneForTrain(t,p,minutes);
+    // 駅停車中も直前/直後の駅間と同じレーンを維持する。
+    // これまで terminal=true のとき常に lane 0 になっていたため、
+    // 外側線の列車が駅停車時だけ内側線へ移動していた。
+    const laneBase=p.terminal?laneForStationDwell(t,p,minutes):laneForTrain(t,p,minutes);
     // 連結運用で終着した列車は着時刻の1分後まで到着側に表示し、
     // その後は次列車の進行方向側へ切り替える。operationChainPosition() が返した
     // p.side / p.visualTrain を最優先して使う。これを無視して元列車のdirectionを
@@ -2501,6 +2666,7 @@ function initStationSheetEvents(){
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
 }
 async function init(){
+  loadOperationInfo();
   initDateTimeControls();
   loadLocal();
   try{
@@ -2518,6 +2684,7 @@ async function init(){
   await maybeResetForNewOperationDay();
   render();
   renderTrainPositions();
+  initOperationInfoUI();
   setInterval(()=>{if(followNow){const input=document.getElementById('timeInput');if(input)input.value=formatTimeNow();}renderTrainPositions();},1000);
   setInterval(()=>{maybeResetForNewOperationDay();},60000);
 }
