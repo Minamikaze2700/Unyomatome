@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -1153,6 +1154,41 @@ function timetableVisualSideAtStation(train,stationName,routeKey){
   }
   if(stopIndex<0)return null;
 
+  // 渋谷は半蔵門線と田園都市線の共有駅。
+  // 半蔵門線の駅番号だけで判定すると、中央林間方面の列車も
+  // 「表参道→渋谷」の左方向として誤判定され、押上方面の時刻表に入ってしまう。
+  // 渋谷では実際の前後停車駅がどちらの路線に属するかを先に判定する。
+  if(key==='渋谷' && String(train?.service||'')==='hanzomon'){
+    const denStops=new Set(DENENTOSHI_NAMES.map(stationNameKey));
+    const hanStops=new Set(HANZOMON_NAMES.map(stationNameKey));
+
+    // 発車後に向かう駅を優先。渋谷→池尻大橋→…なら中央林間方面。
+    for(let i=stopIndex+1;i<stops.length;i++){
+      const nk=stationNameKey(stops[i]?.station||'');
+      if(denStops.has(nk)){
+        const idx=DENENTOSHI_NAMES.findIndex(x=>stationNameKey(x)===nk);
+        return idx>0?'right':'left';
+      }
+      if(hanStops.has(nk)){
+        const idx=HANZOMON_NAMES.findIndex(x=>stationNameKey(x)===nk);
+        return idx>stationIndex?'right':'left';
+      }
+    }
+
+    // 渋谷着の列車は直前駅から進行方向を判定。中央林間→…→渋谷なら左。
+    for(let i=stopIndex-1;i>=0;i--){
+      const nk=stationNameKey(stops[i]?.station||'');
+      if(denStops.has(nk)){
+        const idx=DENENTOSHI_NAMES.findIndex(x=>stationNameKey(x)===nk);
+        return idx>0?'left':'right';
+      }
+      if(hanStops.has(nk)){
+        const idx=HANZOMON_NAMES.findIndex(x=>stationNameKey(x)===nk);
+        return idx>stationIndex?'right':'left';
+      }
+    }
+  }
+
   // 路線図と同じ基準で判定する。駅番号が増える方向が右、減る方向が左。
   // 停車駅を飛ばす列車でも、現在駅より後にある次の同一路線駅を使う。
   for(let i=stopIndex+1;i<stops.length;i++){
@@ -1260,7 +1296,11 @@ function startDwellPositionSky(t,minutes){
   const departureRaw=serviceDayMinuteFromTime(stops[0]?.time);
   if(!Number.isFinite(departureRaw) || !isStartDwellMinute(minutes,departureRaw)) return null;
   const station=String(stops[0]?.station||'');
-  const ai=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(station));
+  // 始発駅の位置も、MAIN_NAMESの番号ではなく現在のDOM上の駅行を使う。
+  // 半蔵門線・田園都市線表示時は枝線の駅が途中に挿入されるため、
+  // MAIN_NAMESのindexをそのままDOMのrow indexとして使うと、
+  // 本線の始発列車が枝線側（例：二子玉川）へ飛んで表示される。
+  const ai=visualStationRowIndexForTrain(t,station);
   if(ai<0) return null;
   const dir=String(t?.direction||'').toLowerCase();
   const side=dir==='down'?'left':dir==='up'?'right':null;
@@ -1311,7 +1351,7 @@ function operationChainPosition(t,minutes){
   // それ以降、次列車の発車時刻までは追加の終点処理を行わない。
   if(next && !isChainLast && Number.isFinite(nextStart)){
     const lastStation=String(entry.dest);
-    const ai=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(lastStation));
+    const ai=visualStationRowIndexForTrain(t,lastStation);
     if(ai>=0 && minutes>arrivalTime && minutes<nextStart){
       if(minutes<arrivalTime+TURNBACK_SWITCH_MIN){
         return {
@@ -1353,7 +1393,7 @@ function operationChainPosition(t,minutes){
 
   // 野田線と同じく、連結運用の末尾列車は終着2分後まで終着駅に保持。
   if(isChainLast && isEndDwellMinute(minutes,last)){
-    const ai=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(entry.dest));
+    const ai=visualStationRowIndexForTrain(t,entry.dest);
     if(ai>=0){
       return {
         pos:ai,
@@ -1431,8 +1471,34 @@ function trainTypeAtStation(t,stationName){
   const service=String(t?.service||'');
   const n=stationNameKey(stationName);
   if(service!=='hanzomon') return String(t?.type||'');
-  // 押上から半蔵門線内の種別へ切替。渋谷までは半蔵門線側、渋谷以西は田園都市線側。
-  if(n==='押上' || HANZOMON_NAMES.includes(n) || n==='渋谷') return trainTypeBySection(t,'hanzomon');
+  // 共有駅は、列車自身の前後停車駅から実際の系統を決める。
+  // 渋谷では「池尻大橋側へ進む=田園都市線」「表参道側へ進む=半蔵門線」。
+  // 押上では「錦糸町側へ進む=半蔵門線」、それ以外は東武線側。
+  const stops=Array.isArray(t?.stops)?t.stops:[];
+  let si=-1;
+  for(let i=stops.length-1;i>=0;i--){
+    if(stationNamesEqual(stops[i]?.station,stationName)){si=i;break;}
+  }
+  const denSet=new Set(DENENTOSHI_NAMES.map(stationNameKey));
+  const hanSet=new Set(HANZOMON_NAMES.map(stationNameKey));
+  const findNextSection=()=>{
+    if(si>=0){
+      for(let i=si+1;i<stops.length;i++){
+        const nk=stationNameKey(stops[i]?.station||'');
+        if(denSet.has(nk) && nk!=='渋谷') return 'denentoshi';
+        if(hanSet.has(nk) && nk!=='押上') return 'hanzomon';
+      }
+      for(let i=si-1;i>=0;i--){
+        const nk=stationNameKey(stops[i]?.station||'');
+        if(denSet.has(nk) && nk!=='渋谷') return 'denentoshi';
+        if(hanSet.has(nk) && nk!=='押上') return 'hanzomon';
+      }
+    }
+    return null;
+  };
+  if(n==='渋谷') return trainTypeBySection(t,findNextSection()||'denentoshi');
+  if(n==='押上') return trainTypeBySection(t,findNextSection()||'hanzomon');
+  if(HANZOMON_NAMES.includes(n)) return trainTypeBySection(t,'hanzomon');
   if(DENENTOSHI_NAMES.includes(n)) return trainTypeBySection(t,'denentoshi');
   return trainTypeBySection(t,'tobu');
 }
@@ -1789,11 +1855,10 @@ function branchHiddenWindow(t){
   // 画面上、分岐線を本線へ差し込んでいる「前駅→後駅」を基準にする。
   // 後駅が通過駅でも、その列車が本線上で通過する予定時刻までを非表示区間とする。
   const candidates=[];
-  // 分岐線を画面上へ挿入している本線側の「前駅→後駅」をそのまま使う。
-  // 方向によらず、分岐線ブロックが存在する本線区間を指定する。
-  if(activeBranches.has('hibiya')) candidates.push(['北千住','牛田']);
-  // 半蔵門線直通列車は曳舟～押上で表示する。ここを非表示区間にすると、
-  // 直通列車自身のアイコンまで消えるため、半蔵門線には非表示窓を設定しない。
+  // 日比谷線は北千住～南千住の本線区間へ途中挿入する構造だが、
+  // ここで時間ベースの非表示窓を設定すると、本線列車まで一斉に消えてしまう。
+  // 位置計算側で本線駅→本線駅を直接結ぶため、日比谷線には非表示窓を設定しない。
+  // 半蔵門線直通列車も同様に、位置計算側で系統を分離する。
   if(activeBranches.has('nikko')) candidates.push(['姫宮','東武動物公園']);
 
   for(const [from,to] of candidates){
@@ -1816,7 +1881,17 @@ function branchHiddenAtTime(t,minutes){
 }
 
 function trainPosition(t,minutes){
+  const rows=[...document.querySelectorAll('.station-row')];
   const stops=t.stops||[];if(stops.length<2)return null;
+  // 地上運用・特急は東武本線専用。表示中の枝線状態や列車データの
+  // サービス値にかかわらず、本線外の駅を1駅でも含む列車は描画しない。
+  // これにより、とうきょうスカイツリー～曳舟～本線上の列車が
+  // 半蔵門線・田園都市線の駅列へ入り込むことを完全に防ぐ。
+  const mainlineOnly=(t?.service==='chijou'||t?.service==='tokkyu');
+  if(mainlineOnly && stops.some(st=>{
+    const n=stationNameKey(st?.station||'');
+    return n && n!=='着番線' && !MAIN_NAMES.some(x=>stationNameKey(x)===n);
+  })) return null;
 
   // 折り返しを伴わない列車は、始発駅で発車2分前から発車時刻まで、
   // 終着駅で到着時刻から2分後まで停車表示する。
@@ -1834,14 +1909,14 @@ function trainPosition(t,minutes){
         const firstDeparture=firstRaw+0.75;
         const lastArrival=lastRaw+0.25;
         if(isStartDwellMinute(dm,firstRaw)){
-          const ai=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(stops[0]?.station));
+          const ai=visualStationRowIndexForTrain(t,stops[0]?.station);
           if(ai>=0){
             const dir=String(t.direction||'').toLowerCase();
             return {pos:ai,stationA:stops[0].station,stationB:stops[0].station,side:dir==='down'?'left':dir==='up'?'right':null,terminal:true,stationDwell:true,mode:'start-dwell'};
           }
         }
         if(isEndDwellMinute(dm,lastRaw)){
-          const ai=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(stops.at(-1)?.station));
+          const ai=visualStationRowIndexForTrain(t,stops.at(-1)?.station);
           if(ai>=0){
             const dir=String(t.direction||'').toLowerCase();
             return {pos:ai,stationA:stops.at(-1).station,stationB:stops.at(-1).station,side:dir==='down'?'left':dir==='up'?'right':null,terminal:true,stationDwell:true,mode:'end-dwell'};
@@ -1854,9 +1929,6 @@ function trainPosition(t,minutes){
   // まず列車全体の運転時間外を除外する。
   // 区間補間の都合で、始発前・終着後の列車が路線図に残ることを防ぐ。
   if(!trainRunsAtMinute(t,minutes)) return null;
-  // 通過駅を含む列車は、通過予定時刻を補間して分岐線表示中の非表示区間を判定する。
-  // そのため「前駅→後駅」の停車駅ペアが存在しなくても、適切な時刻に表示へ復帰する。
-  if(branchHiddenAtTime(t,minutes)) return null;
   let m=minutes;
   // 各駅の停車時間も表示する。
   // 時刻表上の駅時刻を基準に、到着は hh:mm:15、発車は hh:mm:45 とする。
@@ -1871,7 +1943,7 @@ function trainPosition(t,minutes){
     const depart=sm+0.75;
     if(i>0 && m>=arrive && m<depart){
       const station=String(s.station||'');
-      const ai=MAIN_NAMES.findIndex(x=>stationNameKey(x)===stationNameKey(station));
+      const ai=visualStationRowIndexForTrain(t,station);
       if(ai>=0){
         const dir=String(t.direction||'').toLowerCase();
         return {
@@ -1886,6 +1958,11 @@ function trainPosition(t,minutes){
       }
     }
   }
+
+  // 駅停車判定を最優先にする。
+  // 分岐線表示中の非表示区間判定をここより前に実行すると、
+  // 分岐区間の直後にある駅での停車時間まで隠してしまうことがある。
+  if(branchHiddenAtTime(t,minutes)) return null;
 
   for(let i=0;i<stops.length-1;i++){
     const a=stops[i],b=stops[i+1];let rawT0=serviceDayMinuteFromTime(a.time),rawT1=serviceDayMinuteFromTime(b.time);
@@ -1918,25 +1995,68 @@ function trainPosition(t,minutes){
       // 「本線側の入口→本線側の出口」だけを使って描画する。
       const visualGap=pair.r1-pair.r0;
       let visualPos;
-      if(t.service==='chijou'||t.service==='tokkyu'){
-        if(visualGap>2){
-          // 本線駅の間に分岐線の駅が大量に挿入される区間では、
-          // DOM上の駅番号をそのまま補間すると本線列車が分岐線の駅列の上に表示される。
-          // 本線側の駅の直後／直前だけを走行表示領域として使い、中央の分岐線ブロックは飛ばす。
-          // 0.45行以内に収めることで、隣接する分岐線駅の中央位置へ入らないようにする。
-          const safeOffset=0.45;
-          if(clampedQ<0.5){
-            const q=clampedQ/0.5;
-            visualPos=pair.r0+q*safeOffset;
+      const mainlineService = (t.service==='chijou'||t.service==='tokkyu');
+      if(mainlineService){
+        // 本線列車の位置は、DOM上の行番号を単純に補間しない。
+        // 半蔵門線・田園都市線・日比谷線を開くと、本線の隣接駅の間へ
+        // 枝線の駅行が大量に挿入されるため、そのまま補間すると
+        // 「二子玉川～二子新地」など枝線の駅の位置に本線列車が出てしまう。
+        // 端点の間にある非main行を一つのブロックとして飛び越す。
+        const lo=Math.min(pair.r0,pair.r1), hi=Math.max(pair.r0,pair.r1);
+        const branchRows=[];
+        for(let ri=lo+1;ri<hi;ri++){
+          if((rows[ri]?.dataset?.routeKey||'main')!=='main') branchRows.push(ri);
+        }
+        if(branchRows.length){
+          const firstBranch=branchRows[0];
+          const lastBranch=branchRows[branchRows.length-1];
+          // 他路線の駅行が本線の駅間へ挿入されている場合は、
+          // 本線の駅から「直近の他路線駅との境界まで」の前半だけを前半時間、
+          // 「直近の他路線駅との境界から次の本線駅まで」の後半だけを後半時間に割り当てる。
+          // つまり、手前の本線駅から最初の他路線駅までの中点と、
+          // 最後の他路線駅から次の本線駅までの中点を、その駅パーツの切れ目として使う。
+          let safeStart,safeEnd;
+          if(pair.r0<pair.r1){
+            safeStart=pair.r0+(firstBranch-pair.r0)/2;
+            safeEnd=lastBranch+(pair.r1-lastBranch)/2;
           }else{
-            const q=(clampedQ-0.5)/0.5;
-            visualPos=(pair.r1-safeOffset)+(q*safeOffset);
+            safeStart=pair.r0-(pair.r0-lastBranch)/2;
+            safeEnd=firstBranch+(pair.r1-firstBranch)/2;
+          }
+          // 本線側で実際に使える2つの領域の長さに比例して時間を配分する。
+          // これにより、駅間に他路線の駅行が何本挿入されても、
+          // 「手前の本線駅 → 最初の他路線駅との境界」と
+          // 「最後の他路線駅との境界 → 次の本線駅」を正確に使い、
+          // 到着時刻には必ず次の本線駅の中心へ到達する。
+          const firstLeg=Math.abs(safeStart-pair.r0);
+          const secondLeg=Math.abs(pair.r1-safeEnd);
+          const totalLeg=firstLeg+secondLeg;
+          const split=totalLeg>0?firstLeg/totalLeg:0.5;
+          if(clampedQ<=split){
+            const q=split>0?clampedQ/split:0;
+            visualPos=pair.r0+(safeStart-pair.r0)*q;
+          }else{
+            const q=(clampedQ-split)/(1-split);
+            visualPos=safeEnd+(pair.r1-safeEnd)*q;
           }
         }else{
           visualPos=pair.r0+(pair.r1-pair.r0)*clampedQ;
         }
       }else{
         visualPos=pair.r0+(pair.r1-pair.r0)*clampedQ;
+      }
+      // 最終保険：本線列車のposが枝線行の中央へ入ることを許可しない。
+      if(mainlineService){
+        const nearest=Math.round(visualPos);
+        if((rows[nearest]?.dataset?.routeKey||'main')!=='main'){
+          let best=pair.r0,bd=Math.abs(pair.r0-visualPos);
+          for(let ri=Math.min(pair.r0,pair.r1);ri<=Math.max(pair.r0,pair.r1);ri++){
+            if((rows[ri]?.dataset?.routeKey||'main')!=='main') continue;
+            const d=Math.abs(ri-visualPos);
+            if(d<bd){bd=d;best=ri;}
+          }
+          visualPos=best;
+        }
       }
       return {pos:visualPos,a:pair.r0,b:pair.r1,stationA:a.station,stationB:b.station};
     }
@@ -1950,9 +2070,34 @@ function findVisualRowIndex(name,after=-1){
 }
 function routeKeyForTrainStation(t,name){
   const service=String(t?.service||'');
+  const n=stationNameKey(name);
+  if(service==='chijou'||service==='tokkyu') return 'main';
   if(service==='hanzomon'){
-    if(DENENTOSHI_NAMES.includes(name) && name!=='渋谷') return 'denentoshi';
-    if(HANZOMON_NAMES.includes(name) && name!=='押上') return 'hanzomon';
+    const stops=Array.isArray(t?.stops)?t.stops:[];
+    let si=-1;
+    for(let i=stops.length-1;i>=0;i--){
+      if(stationNamesEqual(stops[i]?.station,name)){si=i;break;}
+    }
+    const denSet=new Set(DENENTOSHI_NAMES.map(stationNameKey));
+    const hanSet=new Set(HANZOMON_NAMES.map(stationNameKey));
+    const sectionFromNeighbors=()=>{
+      if(si<0)return null;
+      for(let i=si+1;i<stops.length;i++){
+        const nk=stationNameKey(stops[i]?.station||'');
+        if(denSet.has(nk) && nk!=='渋谷') return 'denentoshi';
+        if(hanSet.has(nk) && nk!=='押上') return 'hanzomon';
+      }
+      for(let i=si-1;i>=0;i--){
+        const nk=stationNameKey(stops[i]?.station||'');
+        if(denSet.has(nk) && nk!=='渋谷') return 'denentoshi';
+        if(hanSet.has(nk) && nk!=='押上') return 'hanzomon';
+      }
+      return null;
+    };
+    if(n==='渋谷') return sectionFromNeighbors()||'main';
+    if(n==='押上') return sectionFromNeighbors()||'main';
+    if(DENENTOSHI_NAMES.includes(n) && n!=='渋谷') return 'denentoshi';
+    if(HANZOMON_NAMES.includes(n) && n!=='押上') return 'hanzomon';
     return 'main';
   }
   if(service==='hibiya'){
@@ -2023,6 +2168,8 @@ function segmentServiceAllowed(t,aName,bName){
 }
 function visualRouteKeysForSegment(t,aName,bName){
   const service=String(t?.service||'');
+  // 地上運用・特急は常に東武本線の駅行を使う。
+  if(service==='chijou'||service==='tokkyu') return ['main','main'];
   const a=String(aName||''), b=String(bName||'');
   const pair=[a,b].sort().join('|');
   if(service==='hibiya'){
@@ -2030,6 +2177,9 @@ function visualRouteKeysForSegment(t,aName,bName){
     if(HIBIYA_NAMES.includes(a)&&HIBIYA_NAMES.includes(b)) return ['hibiya','hibiya'];
   }
   if(service==='hanzomon'){
+    // とうきょうスカイツリー～曳舟は東武線本線の区間。
+    // この区間は半蔵門線・田園都市線の枝線DOMを絶対に使わない。
+    if(pair==='とうきょうスカイツリー|曳舟') return ['main','main'];
     if(pair==='押上|曳舟' || pair==='曳舟|押上') return ['main','hanzomon'];
     if(pair==='押上|錦糸町') return ['hanzomon','hanzomon'];
     if(a==='錦糸町'||b==='錦糸町'||(HANZOMON_NAMES.includes(a)&&HANZOMON_NAMES.includes(b))) return ['hanzomon','hanzomon'];
@@ -2181,6 +2331,11 @@ function visualStationRowIndexForTrain(t,name){
   );
   if(exact>=0)return exact;
 
+  // 本線列車（地上・特急）は、共有駅でも枝線側の同名駅へフォールバックしない。
+  // ここで枝線行を拾うと、駅停車中の本線列車アイコンが
+  // 半蔵門線・田園都市線側へ飛んで表示される。
+  if(t?.service==='chijou' || t?.service==='tokkyu') return -1;
+
   return rows.findIndex(r=>
     stationNameKey(r.querySelector('.station-name-ja')?.textContent||'')===key
   );
@@ -2241,7 +2396,10 @@ function renderTrainPositions(){
         if(!allowed) continue;
       }
       // 本線系統（地上・特急）は枝線行を絶対に走行しない。
-      if((t.service==='chijou'||t.service==='tokkyu') && pairRows.some(r=>r?.dataset?.routeKey!=='main')) continue;
+      if((t.service==='chijou'||t.service==='tokkyu') && pairRows.some(r=>(r?.dataset?.routeKey||'main')!=='main')) continue;
+      // 本線系統の駅間両端も、必ず本線駅であることを確認する。
+      if((t.service==='chijou'||t.service==='tokkyu') &&
+         (!MAIN_NAMES.some(x=>stationNamesEqual(x,p.stationA)) || !MAIN_NAMES.some(x=>stationNamesEqual(x,p.stationB)))) continue;
       if(!trainAllowedOnVisibleBranch(t,p.stationA)||!trainAllowedOnVisibleBranch(t,p.stationB))continue;
     }else{
       const terminalName=p.terminalStation||p.stationA||p.stationB;
