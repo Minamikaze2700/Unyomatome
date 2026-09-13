@@ -788,6 +788,7 @@ async function maybeResetForNewOperationDay(){
     operationInfoEntries=[];
     saveOperationInfo();
     loadOperationInfo();
+    if(firebaseReady) await saveOperationInfoToFirebase();
   }
   if(followNow && selectedDateKey!==opDate) setSelectedDate(opDate);
   if(!changed) return;
@@ -816,6 +817,7 @@ async function maybeResetForNewOperationDay(){
         if(remoteByProject[key]) remoteByProject[key].operationDate=opDate;
       }catch(e){console.warn('運用日リセット失敗',key,e);}
     }));
+    attachOperationInfoFirebaseListeners();
   }
 }
 
@@ -964,6 +966,11 @@ async function initFirebase(){
   }
   firebaseReady=connectedCount>0;
   currentOperationDate=currentOperationDate||operationDateKey();
+  if(firebaseReady){
+    // 運行情報は系統別Firebaseから読み込み、駅単位の重複を除いて統合する。
+    await loadOperationInfoFromFirebase();
+    attachOperationInfoFirebaseListeners();
+  }
   saveLocal();
   syncStatus(firebaseReady?'Firebase接続済み':'Firebase接続失敗');
   return firebaseReady;
@@ -1239,6 +1246,151 @@ function operationInfoFindPath(start,end){
 function operationInfoUndirectedKey(a,b){return [String(a||''),String(b||'')].sort().join('\u0000');}
 function operationInfoPathEdges(stations){const set=new Set();for(let i=0;i<stations.length-1;i++)set.add(operationInfoUndirectedKey(stations[i],stations[i+1]));return set;}
 function normalizeOperationEntry(e){const rawStations=Array.isArray(e?.stations)&&e.stations.length>=2?e.stations.map(operationInfoNormalizeName):operationInfoFindPath(e?.start,e?.end);const stations=rawStations;return stations&&stations.length>=2?{...e,start:stations[0],end:stations.at(-1),stations}:null;}
+let operationInfoFirebaseLoaded=false;
+let operationInfoFirebaseSyncing=false;
+let operationInfoFirebaseListeners={};
+function operationInfoFirebaseProjectForRoute(routeKey){
+  const key=String(routeKey||'');
+  // 東武線は特急Firebaseへは保存せず、地上運用Firebaseだけを使用。
+  if(key==='main'||key==='nikko')return 'chijou';
+  if(key==='hibiya')return 'hibiya';
+  if(key==='hanzomon'||key==='denentoshi')return 'hanzomon';
+  return null;
+}
+function operationInfoFirebaseProjectForStation(stationName){
+  return operationInfoFirebaseProjectForRoute(operationInfoStationRouteKey(stationName));
+}
+function operationInfoFirebaseStationKey(stationName){
+  return encodeURIComponent(operationInfoNormalizeName(stationName));
+}
+function operationInfoFirebaseFlatten(snapshotValue){
+  const result=new Map();
+  const root=snapshotValue&&typeof snapshotValue==='object'?snapshotValue:{};
+  for(const stationMap of Object.values(root)){
+    if(!stationMap||typeof stationMap!=='object')continue;
+    for(const [entryId,payload] of Object.entries(stationMap)){
+      if(!payload||typeof payload!=='object')continue;
+      const id=String(payload.id||entryId);
+      const normalized=normalizeOperationEntry(payload);
+      if(!normalized)continue;
+      const prev=result.get(id);
+      const ts=Number(payload.createdAt)||0;
+      if(!prev||ts>=Number(prev.createdAt||0))result.set(id,normalized);
+    }
+  }
+  return [...result.values()];
+}
+function operationInfoFirebasePayload(entry){
+  return {
+    id:String(entry.id),
+    start:operationInfoNormalizeName(entry.start),
+    end:operationInfoNormalizeName(entry.end),
+    stations:Array.isArray(entry.stations)?entry.stations.map(operationInfoNormalizeName):[],
+    status:entry.status==='suspend'?'suspend':'delay',
+    delay:Number(entry.delay)||0,
+    reason:String(entry.reason||OPERATION_INFO_REASONS[0]),
+    createdAt:Number(entry.createdAt)||0,
+    operationDate:operationDateKey()
+  };
+}
+function operationInfoFirebaseDesiredTree(projectKey){
+  const tree={};
+  for(const raw of operationInfoEntries){
+    const entry=normalizeOperationEntry(raw);
+    if(!entry||!Array.isArray(entry.stations)||entry.stations.length<2)continue;
+    const payload=operationInfoFirebasePayload(entry);
+    for(const station of entry.stations){
+      const project=operationInfoFirebaseProjectForStation(station);
+      if(project!==projectKey)continue;
+      const sk=operationInfoFirebaseStationKey(station);
+      if(!tree[sk])tree[sk]={};
+      tree[sk][String(entry.id)]=payload;
+    }
+  }
+  return tree;
+}
+async function saveOperationInfoToFirebase(){
+  if(!firebaseReady||operationInfoFirebaseSyncing)return;
+  operationInfoFirebaseSyncing=true;
+  try{
+    const dateKey=operationDateKey();
+    for(const [key,db] of Object.entries(firebaseDbs)){
+      // 特急Firebaseには運行情報を書き込まない。
+      if(key==='tokkyu'||!db)continue;
+      const ref=db.ref('運行情報').child(dateKey);
+      const desired=operationInfoFirebaseDesiredTree(key);
+      await ref.set(desired);
+    }
+  }catch(e){
+    console.warn('運行情報Firebase保存失敗',e);
+    syncStatus('運行情報Firebase保存失敗');
+  }finally{
+    operationInfoFirebaseSyncing=false;
+  }
+}
+async function loadOperationInfoFromFirebase(){
+  if(!firebaseReady)return false;
+  try{
+    const dateKey=operationDateKey();
+    // Firebaseにまだ当日データがない場合は、既存のローカル情報を初回同期元として残す。
+    const localBefore=[...operationInfoEntries].map(normalizeOperationEntry).filter(Boolean);
+    const merged=new Map();
+    let foundRemote=false;
+    for(const [key,db] of Object.entries(firebaseDbs)){
+      if(key==='tokkyu'||!db)continue;
+      try{
+        const snap=await db.ref('運行情報').child(dateKey).once('value');
+        if(snap.exists())foundRemote=true;
+        for(const entry of operationInfoFirebaseFlatten(snap.val())){
+          const id=String(entry.id);
+          const prev=merged.get(id);
+          if(!prev||Number(entry.createdAt||0)>=Number(prev.createdAt||0))merged.set(id,entry);
+        }
+      }catch(e){console.warn('運行情報Firebase読込失敗',key,e);}
+    }
+    if(foundRemote){
+      // Firebaseを正として、駅ごとに保存された同一運行情報をIDで重複除去して復元。
+      operationInfoEntries=[...merged.values()];
+    }else{
+      operationInfoEntries=localBefore;
+    }
+    operationInfoFirebaseLoaded=true;
+    saveOperationInfo();
+    if(!foundRemote&&operationInfoEntries.length) await saveOperationInfoToFirebase();
+    renderOperationInfoList();
+    renderOperationInfoZones();
+    return true;
+  }catch(e){
+    console.warn('運行情報Firebase統合読込失敗',e);
+    return false;
+  }
+}
+function attachOperationInfoFirebaseListeners(){
+  const dateKey=operationDateKey();
+  for(const [key,db] of Object.entries(firebaseDbs)){
+    if(key==='tokkyu'||!db)continue;
+    if(operationInfoFirebaseListeners[key]){
+      try{operationInfoFirebaseListeners[key].off();}catch(e){}
+    }
+    const ref=db.ref('運行情報').child(dateKey);
+    const handler=snap=>{
+      if(operationInfoFirebaseSyncing)return;
+      const incoming=operationInfoFirebaseFlatten(snap.val());
+      const byId=new Map(incoming.map(e=>[String(e.id),e]));
+      // 接続している各系統から受け取った情報をまとめ直す。
+      const others=operationInfoEntries.filter(e=>operationInfoFirebaseProjectForStation(e?.stations?.[0])!==key);
+      const merged=new Map();
+      [...others,...incoming].forEach(e=>{if(!e?.id)return;const id=String(e.id),prev=merged.get(id);if(!prev||Number(e.createdAt||0)>=Number(prev.createdAt||0))merged.set(id,e);});
+      operationInfoEntries=[...merged.values()];
+      operationInfoFirebaseLoaded=true;
+      saveOperationInfo();
+      renderOperationInfoList();
+      renderOperationInfoZones();
+    };
+    ref.on('value',handler);
+    operationInfoFirebaseListeners[key]=ref;
+  }
+}
 function loadOperationInfo(){try{const key=operationDateKey();const all=JSON.parse(localStorage.getItem(OPERATION_INFO_STORAGE_KEY)||'{}');const raw=Array.isArray(all?.[key])?all[key]:[];operationInfoEntries=raw.map(normalizeOperationEntry).filter(Boolean);}catch(e){operationInfoEntries=[];}}
 function saveOperationInfo(){try{const all=JSON.parse(localStorage.getItem(OPERATION_INFO_STORAGE_KEY)||'{}');all[operationDateKey()]=operationInfoEntries;localStorage.setItem(OPERATION_INFO_STORAGE_KEY,JSON.stringify(all));}catch(e){}}
 function operationInfoRouteColor(label){
@@ -1320,8 +1472,8 @@ function closeOperationInfo(){document.getElementById('operationInfoBackdrop')?.
 function resetOperationInfoForm(){updateOperationInfoStationOptions();updateOperationInfoReasonOptions();const d=document.getElementById('operationInfoDelay');if(d){d.disabled=false;d.value='5';}const r=document.getElementById('operationInfoReason');if(r)r.value=OPERATION_INFO_REASONS[0];const first=document.querySelector('input[name="operationStatus"][value="delay"]');if(first){first.checked=true;first.dispatchEvent(new Event('change'));}}
 function operationInfoSubtractEdges(stations,blocked){const parts=[];let cur=[];for(let i=0;i<stations.length-1;i++){const a=stations[i],b=stations[i+1];if(blocked.has(operationInfoUndirectedKey(a,b))){if(cur.length>=2)parts.push(cur);cur=[];continue;}if(!cur.length)cur=[a];cur.push(b);}if(cur.length>=2)parts.push(cur);return parts;}
 function addOperationInfo(){const start=operationInfoNormalizeName(document.getElementById('operationInfoStart')?.value||''),end=operationInfoNormalizeName(document.getElementById('operationInfoEnd')?.value||''),status=document.querySelector('input[name="operationStatus"]:checked')?.value||'delay',reason=document.getElementById('operationInfoReason')?.value||OPERATION_INFO_REASONS[0],delay=Math.max(0,Number(document.getElementById('operationInfoDelay')?.value||0)||0),path=operationInfoFindPath(start,end);if(!path){alert('選択した2駅を結ぶ区間が見つかりません。');return;}if(status==='delay'&&(!Number.isFinite(delay)||delay<5||delay%5!==0)){alert('遅延時間は5分単位で選択してください。');return;}const newEdges=operationInfoPathEdges(path),next=[];for(const raw of operationInfoEntries){const old=normalizeOperationEntry(raw);if(!old)continue;for(const part of operationInfoSubtractEdges(old.stations,newEdges)){next.push({...old,id:`${old.id}_${Math.random().toString(36).slice(2,7)}`,start:part[0],end:part.at(-1),stations:part});}}
-  next.push({id:`${Date.now()}_${Math.random().toString(36).slice(2,8)}`,start,end,stations:path,status,delay:status==='delay'?delay:0,reason,createdAt:Date.now()});operationInfoEntries=next;saveOperationInfo();renderOperationInfoList();renderOperationInfoZones();resetOperationInfoForm();}
-function deleteOperationInfo(id){operationInfoEntries=operationInfoEntries.filter(x=>x.id!==id);saveOperationInfo();renderOperationInfoList();renderOperationInfoZones();}
+  next.push({id:`${Date.now()}_${Math.random().toString(36).slice(2,8)}`,start,end,stations:path,status,delay:status==='delay'?delay:0,reason,createdAt:Date.now()});operationInfoEntries=next;saveOperationInfo();renderOperationInfoList();renderOperationInfoZones();resetOperationInfoForm();saveOperationInfoToFirebase();}
+function deleteOperationInfo(id){operationInfoEntries=operationInfoEntries.filter(x=>x.id!==id);saveOperationInfo();renderOperationInfoList();renderOperationInfoZones();saveOperationInfoToFirebase();}
 function showOperationInfoDetail(id){
   const e=operationInfoEntries.find(x=>x.id===id);if(!e)return;
   const body=document.getElementById('operationInfoDetailBody');if(!body)return;
