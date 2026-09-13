@@ -132,6 +132,12 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
   .station-timetable-destination{font-size:6.0377358cqw;line-height:1;}
 }
 .option-item.disabled{opacity:.45;cursor:not-allowed;background:#f3f3f3;}
+/* 運行情報：選択肢は「■だけ路線カラー、駅名は黒」 */
+.operation-info-custom-option .operation-info-option-mark,
+.operation-info-custom-trigger .operation-info-option-mark{font-weight:900;}
+.operation-info-custom-option .operation-info-option-name,
+.operation-info-custom-trigger .operation-info-option-name{color:#111;}
+.operation-info-custom-group{font-weight:900;}
 /* 運行情報 */
 #title{padding-left:150px;padding-right:150px;}
 #operationInfoBtn{position:absolute;right:18px;top:50%;transform:translateY(-50%);appearance:none;border:0;border-radius:999px;background:#fff;color:#0055b8;padding:8px 17px;font:700 16px/1 sans-serif;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.18);white-space:nowrap;z-index:2}
@@ -156,6 +162,18 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
 .operation-info-status label:has(input[value="delay"]:checked){background:#f2c94c;color:#111}
 .operation-info-status label:has(input[value="suspend"]:checked){background:#ef5350;color:#fff}
 .operation-info-card-open{min-width:0;border:0;background:transparent;padding:0;text-align:left;cursor:pointer;width:100%;color:inherit;font:inherit}
+.operation-info-custom-select{position:relative;width:100%;}
+.operation-info-custom-trigger{width:100%;min-height:42px;border:2px solid #ccc;border-radius:8px;background:#fff;padding:9px 36px 9px 11px;display:flex;align-items:center;gap:8px;font:inherit;font-weight:700;text-align:left;color:#111;cursor:pointer;position:relative;}
+.operation-info-custom-trigger:hover{background:#fafafa}
+.operation-info-option-mark{color:#111;font-weight:900;line-height:1;flex:0 0 auto}
+.operation-info-option-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.operation-info-custom-arrow{position:absolute;right:11px;color:#666;font-size:.8rem}
+.operation-info-custom-options{position:absolute;left:0;right:0;top:calc(100% + 6px);max-height:300px;overflow:auto;background:#fff;border:1px solid #ccc;border-radius:8px;box-shadow:0 5px 16px rgba(0,0,0,.18);display:none;z-index:50;padding:4px 0}
+.operation-info-custom-select.open .operation-info-custom-options{display:block}
+.operation-info-custom-group{padding:8px 12px 5px;font-weight:900;font-size:.83rem;background:#f5f5f5}
+.operation-info-custom-option{width:100%;border:0;border-bottom:1px solid #f0f0f0;background:#fff;padding:9px 12px;display:flex;align-items:center;gap:8px;text-align:left;font:inherit;cursor:pointer}
+.operation-info-custom-option:hover{background:#f1f6fb}
+.operation-info-custom-option.selected{background:#edf3f8}
 .operation-info-range{display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr);gap:8px;align-items:end}
 .operation-info-range-arrow{height:42px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#666}
 .operation-info-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
@@ -168,10 +186,10 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
 .operation-info-card-delete{border:0;border-radius:7px;padding:7px 10px;background:#eee;color:#c62828;font-weight:800;cursor:pointer}
 .operation-info-empty{text-align:center;color:#666;padding:18px}
 #operationInfoLayer{position:absolute;left:0;right:0;top:0;bottom:0;z-index:0;pointer-events:none;overflow:visible}
-#operationInfoLabelLayer{position:absolute;left:0;right:0;top:0;bottom:0;z-index:10000;pointer-events:none;overflow:visible}
+#operationInfoLabelLayer{position:absolute;left:0;right:0;top:0;bottom:0;z-index:10;pointer-events:none;overflow:visible}
 .operation-info-zone{position:absolute;box-sizing:border-box;border:3px solid #f2c94c;background:repeating-linear-gradient(135deg,rgba(255,205,55,.46) 0 7px,rgba(255,205,55,.12) 7px 14px);border-radius:0;z-index:0;pointer-events:none}
 .operation-info-zone.suspend{border-color:#ef5350;background:repeating-linear-gradient(135deg,rgba(239,83,80,.40) 0 7px,rgba(239,83,80,.10) 7px 14px)}
-.operation-info-zone-label{position:absolute;right:6px;top:6px;width:100px;box-sizing:border-box;z-index:100000;background:rgba(255,255,255,.92);border-radius:5px;padding:3px 7px;font:800 12px/1 sans-serif;color:#d32f2f;box-shadow:0 1px 3px rgba(0,0,0,.14);pointer-events:auto;cursor:pointer;border:0}
+.operation-info-zone-label{position:absolute;right:100px;top:6px;width:100px;box-sizing:border-box;z-index:11;background:rgba(255,255,255,.92);border-radius:5px;padding:3px 7px;font:800 12px/1 sans-serif;color:#d32f2f;box-shadow:0 1px 3px rgba(0,0,0,.14);pointer-events:auto;cursor:pointer;border:0}
 .operation-info-detail-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:20000;display:none}
 .operation-info-detail-backdrop.active{display:block}
 .operation-info-detail{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 24px));background:#fff;border-radius:14px;box-shadow:0 10px 35px rgba(0,0,0,.28);z-index:20001;display:none;overflow:hidden}
@@ -183,6 +201,7 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
 .operation-info-detail-status.delay{background:#f2c94c;color:#111}
 .operation-info-detail-status.suspend{background:#ef5350;color:#fff}
 .operation-info-zone-label.delay{color:#8a7200;background:rgba(255,255,255,.92)}
+.operation-info-option-mark{display:inline-block;font-weight:900;color:inherit}.operation-info-option-name{color:#111!important;}
 .operation-info-zone.suspend .operation-info-zone-label{color:#d32f2f;background:rgba(255,255,255,.96)}
 @media(max-width:700px){#title{padding-left:70px;padding-right:120px}#operationInfoBtn{right:10px;font-size:13px;padding:7px 11px}.operation-info-grid{grid-template-columns:1fr}.operation-info-field.full{grid-column:auto}.operation-info-range{grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr)}.operation-info-card{grid-template-columns:1fr}.operation-info-card-delete{justify-self:end}}
 
@@ -759,17 +778,26 @@ function initDateTimeControls(){
 
 async function maybeResetForNewOperationDay(){
   const opDate=operationDateKey();
-  // 野田線と同じく、現在時刻モードでは3:00を境に表示日付を新しい運用日に切り替える。
-  if(followNow && selectedDateKey!==opDate) setSelectedDate(opDate);
+  const changed=currentOperationDate && currentOperationDate!==opDate;
+
+  // 3:00を境に運用日を切り替える。運行情報は「当日分のみ」表示し、
+  // 3:00になった時点で旧運用日の運行情報を即座にリセットする。
   if(!currentOperationDate) currentOperationDate=opDate;
-  if(currentOperationDate===opDate) return;
+  if(changed){
+    currentOperationDate=opDate;
+    operationInfoEntries=[];
+    saveOperationInfo();
+    loadOperationInfo();
+  }
+  if(followNow && selectedDateKey!==opDate) setSelectedDate(opDate);
+  if(!changed) return;
 
   // 新しい運用日に切り替わったら、当日の編成入力状態を初期化する。
   registrationState={平日:{},休日:{}};
   formationUpdatedAt={平日:{},休日:{}};
-  currentOperationDate=opDate;
   saveLocal();
   renderTrainPositions();
+  renderOperationInfoZones();
   if(currentTrainNo&&!isEditMode)updateSheetContent();
 
   // Firebase側も各系統ごとに同じ運用日を記録し、旧当日データを新日に持ち越さない。
@@ -1166,21 +1194,42 @@ function buildScreenRows(){
 
 /* 運行情報 */
 const OPERATION_INFO_STORAGE_KEY='tobuskytree_operation_info_v4';
-const OPERATION_INFO_STATIONS=[...new Set(Object.values(ROUTES).flatMap(r=>r.stations.map(x=>x[0])))];
+function operationInfoNormalizeName(name){
+  return String(name??'').normalize('NFKC').replace(/\u3000/g,' ').trim();
+}
 const OPERATION_INFO_REASONS=['人身事故','車両故障・点検','信号・電気設備トラブル','線路内立入り・支障物','踏切・安全確認','天候（大雨・強風・雷・雪）','地震・災害','急病人救護','混雑・その他'];
+const OPERATION_INFO_LINE_GROUPS=[
+  // 境界駅は「東武動物公園・北千住→スカイツリーライン」「押上→半蔵門線」「渋谷→田園都市線」に統一。
+  {label:'伊勢崎線',stations:ROUTES.main.stations.slice(0,10)},
+  {label:'日光線',stations:ROUTES.nikko.stations.slice(0,-1)},
+  {label:'スカイツリーライン',stations:ROUTES.main.stations.slice(10)},
+  {label:'日比谷線',stations:ROUTES.hibiya.stations.slice(1)},
+  {label:'半蔵門線',stations:ROUTES.hanzomon.stations.slice(0,-1)},
+  {label:'田園都市線',stations:ROUTES.denentoshi.stations}
+];
+const OPERATION_INFO_STATIONS=[...new Set(OPERATION_INFO_LINE_GROUPS.flatMap(g=>g.stations.map(x=>operationInfoNormalizeName(x[0]))) )];
 let operationInfoEntries=[];
 function operationInfoGraph(){
-  const g=new Map(),add=(a,b)=>{if(!a||!b)return;(g.has(a)?g.get(a):g.set(a,new Set()).get(a)).add(b);(g.has(b)?g.get(b):g.set(b,new Set()).get(b)).add(a);};
-  Object.values(ROUTES).forEach(r=>{const ss=r.stations.map(x=>x[0]);for(let i=0;i<ss.length-1;i++)add(ss[i],ss[i+1]);});
+  const g=new Map(),add=(a,b)=>{a=operationInfoNormalizeName(a);b=operationInfoNormalizeName(b);if(!a||!b||a===b)return;(g.has(a)?g.get(a):g.set(a,new Set()).get(a)).add(b);(g.has(b)?g.get(b):g.set(b,new Set()).get(b)).add(a);};
+  // 各路線の隣接駅
+  OPERATION_INFO_LINE_GROUPS.forEach(group=>{const ss=group.stations.map(x=>operationInfoNormalizeName(x[0]));for(let i=0;i<ss.length-1;i++)add(ss[i],ss[i+1]);});
+  // 路線境界を明示。選択肢上は境界駅を片側の路線だけに所属させるが、
+  // 区間検索では実際の線路網として連続させる。
+  add('和戸','東武動物公園');
+  add('杉戸高野台','東武動物公園');
+  add('北千住','南千住');
+  add('曳舟','押上');
+  add('表参道','渋谷');
   return g;
 }
 function operationInfoFindPath(start,end){
+  start=operationInfoNormalizeName(start);end=operationInfoNormalizeName(end);
   if(!start||!end||start===end)return null;
   const g=operationInfoGraph();if(!g.has(start)||!g.has(end))return null;
   const q=[start],prev=new Map([[start,null]]);
   while(q.length){
     const cur=q.shift();if(cur===end)break;
-    const nexts=[...(g.get(cur)||[])].sort((a,b)=>String(a).localeCompare(String(b),'ja'));
+    const nexts=[...(g.get(cur)||[])].sort((a,b)=>OPERATION_INFO_STATIONS.indexOf(a)-OPERATION_INFO_STATIONS.indexOf(b));
     for(const n of nexts){if(prev.has(n))continue;prev.set(n,cur);q.push(n);}
   }
   if(!prev.has(end))return null;
@@ -1189,17 +1238,88 @@ function operationInfoFindPath(start,end){
 }
 function operationInfoUndirectedKey(a,b){return [String(a||''),String(b||'')].sort().join('\u0000');}
 function operationInfoPathEdges(stations){const set=new Set();for(let i=0;i<stations.length-1;i++)set.add(operationInfoUndirectedKey(stations[i],stations[i+1]));return set;}
-function normalizeOperationEntry(e){const stations=Array.isArray(e?.stations)&&e.stations.length>=2?e.stations:operationInfoFindPath(e?.start,e?.end);return stations&&stations.length>=2?{...e,start:stations[0],end:stations.at(-1),stations}:null;}
-function loadOperationInfo(){try{const all=JSON.parse(localStorage.getItem(OPERATION_INFO_STORAGE_KEY)||'{}');const raw=Array.isArray(all?.[operationDateKey()])?all[operationDateKey()]:[];operationInfoEntries=raw.map(normalizeOperationEntry).filter(Boolean);}catch(e){operationInfoEntries=[];}}
+function normalizeOperationEntry(e){const rawStations=Array.isArray(e?.stations)&&e.stations.length>=2?e.stations.map(operationInfoNormalizeName):operationInfoFindPath(e?.start,e?.end);const stations=rawStations;return stations&&stations.length>=2?{...e,start:stations[0],end:stations.at(-1),stations}:null;}
+function loadOperationInfo(){try{const key=operationDateKey();const all=JSON.parse(localStorage.getItem(OPERATION_INFO_STORAGE_KEY)||'{}');const raw=Array.isArray(all?.[key])?all[key]:[];operationInfoEntries=raw.map(normalizeOperationEntry).filter(Boolean);}catch(e){operationInfoEntries=[];}}
 function saveOperationInfo(){try{const all=JSON.parse(localStorage.getItem(OPERATION_INFO_STORAGE_KEY)||'{}');all[operationDateKey()]=operationInfoEntries;localStorage.setItem(OPERATION_INFO_STORAGE_KEY,JSON.stringify(all));}catch(e){}}
-function updateOperationInfoStationOptions(){const a=document.getElementById('operationInfoStart'),b=document.getElementById('operationInfoEnd');if(!a||!b)return;const html=OPERATION_INFO_STATIONS.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');const pa=a.value,pb=b.value;a.innerHTML=html;b.innerHTML=html;if(OPERATION_INFO_STATIONS.includes(pa))a.value=pa;if(OPERATION_INFO_STATIONS.includes(pb))b.value=pb;if(!a.value)a.selectedIndex=0;if(!b.value)b.selectedIndex=Math.min(1,OPERATION_INFO_STATIONS.length-1);}
+function operationInfoRouteColor(label){
+  const map={
+    '伊勢崎線':COLORS.isesaki,
+    '日光線':COLORS.nikko,
+    'スカイツリーライン':COLORS.sky,
+    '日比谷線':COLORS.hibiya,
+    '半蔵門線':COLORS.hanzomon,
+    '田園都市線':COLORS.denentoshi
+  };
+  return map[label]||'#333';
+}
+function operationInfoStationGroups(){
+  return OPERATION_INFO_LINE_GROUPS.map(group=>({
+    label:group.label,
+    color:operationInfoRouteColor(group.label),
+    stations:group.stations.map(x=>operationInfoNormalizeName(x[0]))
+  }));
+}
+function operationInfoEnsureCustomSelect(select){
+  if(!select)return null;
+  let wrap=select.nextElementSibling;
+  if(!wrap||!wrap.classList.contains('operation-info-custom-select')){
+    wrap=document.createElement('div');
+    wrap.className='operation-info-custom-select';
+    select.insertAdjacentElement('afterend',wrap);
+  }
+  select.style.display='none';
+  return wrap;
+}
+function operationInfoCloseCustomSelect(except){
+  document.querySelectorAll('.operation-info-custom-select.open').forEach(x=>{if(x!==except)x.classList.remove('open');});
+}
+function operationInfoBuildCustomSelect(select){
+  const wrap=operationInfoEnsureCustomSelect(select); if(!wrap)return;
+  const groups=operationInfoStationGroups();
+  const current=operationInfoNormalizeName(select.value);
+  const currentMeta=groups.flatMap(g=>g.stations.map(st=>({station:st,color:g.color,label:g.label}))).find(x=>x.station===current)||null;
+  wrap.innerHTML='';
+  const trigger=document.createElement('button');
+  trigger.type='button'; trigger.className='operation-info-custom-trigger';
+  trigger.setAttribute('aria-haspopup','listbox');
+  trigger.innerHTML=`<span class="operation-info-option-mark" style="color:${esc(currentMeta?.color||'#333')}">■</span><span class="operation-info-option-name">${esc(current||'駅を選択')}</span><span class="operation-info-custom-arrow">▼</span>`;
+  trigger.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const open=!wrap.classList.contains('open');operationInfoCloseCustomSelect(wrap);wrap.classList.toggle('open',open);});
+  wrap.appendChild(trigger);
+  const menu=document.createElement('div'); menu.className='operation-info-custom-options'; menu.setAttribute('role','listbox');
+  groups.forEach(group=>{
+    const header=document.createElement('div'); header.className='operation-info-custom-group'; header.style.color=group.color; header.textContent=group.label; menu.appendChild(header);
+    group.stations.forEach(st=>{
+      const opt=document.createElement('button'); opt.type='button'; opt.className='operation-info-custom-option'; opt.dataset.value=st; opt.setAttribute('role','option');
+      opt.innerHTML=`<span class="operation-info-option-mark" style="color:${esc(group.color)}">■</span><span class="operation-info-option-name">${esc(st)}</span>`;
+      if(st===current)opt.classList.add('selected');
+      opt.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();select.value=st;select.dispatchEvent(new Event('change',{bubbles:true}));operationInfoBuildCustomSelect(select);operationInfoCloseCustomSelect();});
+      menu.appendChild(opt);
+    });
+  });
+  wrap.appendChild(menu);
+}
+function updateOperationInfoStationOptions(){
+  const a=document.getElementById('operationInfoStart'),b=document.getElementById('operationInfoEnd');
+  if(!a||!b)return;
+  const groups=operationInfoStationGroups();
+  const html=groups.map(group=>`<optgroup label="${esc(group.label)}">${group.stations.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('')}</optgroup>`).join('');
+  const pa=operationInfoNormalizeName(a.value),pb=operationInfoNormalizeName(b.value);
+  a.innerHTML=html; b.innerHTML=html;
+  if(OPERATION_INFO_STATIONS.includes(pa))a.value=pa;
+  if(OPERATION_INFO_STATIONS.includes(pb))b.value=pb;
+  if(!a.value)a.selectedIndex=0;
+  if(!b.value)b.selectedIndex=Math.min(1,OPERATION_INFO_STATIONS.length-1);
+  operationInfoBuildCustomSelect(a);
+  operationInfoBuildCustomSelect(b);
+}
+document.addEventListener('click',e=>{if(!e.target.closest('.operation-info-custom-select'))operationInfoCloseCustomSelect();});
 function updateOperationInfoReasonOptions(){const r=document.getElementById('operationInfoReason');if(!r)return;const prev=r.value||OPERATION_INFO_REASONS[0];r.innerHTML=OPERATION_INFO_REASONS.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');if(OPERATION_INFO_REASONS.includes(prev))r.value=prev;}
 function initOperationInfoUI(){updateOperationInfoStationOptions();updateOperationInfoReasonOptions();const delay=document.getElementById('operationInfoDelay');document.querySelectorAll('input[name="operationStatus"]').forEach(x=>{if(x.dataset.bound==='1')return;x.dataset.bound='1';x.addEventListener('change',()=>{if(delay)delay.disabled=x.value==='suspend'&&x.checked;});});const checked=document.querySelector('input[name="operationStatus"]:checked');if(checked&&delay)delay.disabled=checked.value==='suspend';renderOperationInfoList();}
 function openOperationInfo(){initOperationInfoUI();document.getElementById('operationInfoBackdrop')?.classList.add('active');document.getElementById('operationInfoPanel')?.classList.add('active');renderOperationInfoList();}
 function closeOperationInfo(){document.getElementById('operationInfoBackdrop')?.classList.remove('active');document.getElementById('operationInfoPanel')?.classList.remove('active');hideOperationInfoDetail();}
 function resetOperationInfoForm(){updateOperationInfoStationOptions();updateOperationInfoReasonOptions();const d=document.getElementById('operationInfoDelay');if(d){d.disabled=false;d.value='5';}const r=document.getElementById('operationInfoReason');if(r)r.value=OPERATION_INFO_REASONS[0];const first=document.querySelector('input[name="operationStatus"][value="delay"]');if(first){first.checked=true;first.dispatchEvent(new Event('change'));}}
 function operationInfoSubtractEdges(stations,blocked){const parts=[];let cur=[];for(let i=0;i<stations.length-1;i++){const a=stations[i],b=stations[i+1];if(blocked.has(operationInfoUndirectedKey(a,b))){if(cur.length>=2)parts.push(cur);cur=[];continue;}if(!cur.length)cur=[a];cur.push(b);}if(cur.length>=2)parts.push(cur);return parts;}
-function addOperationInfo(){const start=document.getElementById('operationInfoStart')?.value||'',end=document.getElementById('operationInfoEnd')?.value||'',status=document.querySelector('input[name="operationStatus"]:checked')?.value||'delay',reason=document.getElementById('operationInfoReason')?.value||OPERATION_INFO_REASONS[0],delay=Math.max(0,Number(document.getElementById('operationInfoDelay')?.value||0)||0),path=operationInfoFindPath(start,end);if(!path){alert('選択した2駅を結ぶ区間が見つかりません。');return;}if(status==='delay'&&(!Number.isFinite(delay)||delay<5||delay%5!==0)){alert('遅延時間は5分単位で選択してください。');return;}const newEdges=operationInfoPathEdges(path),next=[];for(const raw of operationInfoEntries){const old=normalizeOperationEntry(raw);if(!old)continue;for(const part of operationInfoSubtractEdges(old.stations,newEdges)){next.push({...old,id:`${old.id}_${Math.random().toString(36).slice(2,7)}`,start:part[0],end:part.at(-1),stations:part});}}
+function addOperationInfo(){const start=operationInfoNormalizeName(document.getElementById('operationInfoStart')?.value||''),end=operationInfoNormalizeName(document.getElementById('operationInfoEnd')?.value||''),status=document.querySelector('input[name="operationStatus"]:checked')?.value||'delay',reason=document.getElementById('operationInfoReason')?.value||OPERATION_INFO_REASONS[0],delay=Math.max(0,Number(document.getElementById('operationInfoDelay')?.value||0)||0),path=operationInfoFindPath(start,end);if(!path){alert('選択した2駅を結ぶ区間が見つかりません。');return;}if(status==='delay'&&(!Number.isFinite(delay)||delay<5||delay%5!==0)){alert('遅延時間は5分単位で選択してください。');return;}const newEdges=operationInfoPathEdges(path),next=[];for(const raw of operationInfoEntries){const old=normalizeOperationEntry(raw);if(!old)continue;for(const part of operationInfoSubtractEdges(old.stations,newEdges)){next.push({...old,id:`${old.id}_${Math.random().toString(36).slice(2,7)}`,start:part[0],end:part.at(-1),stations:part});}}
   next.push({id:`${Date.now()}_${Math.random().toString(36).slice(2,8)}`,start,end,stations:path,status,delay:status==='delay'?delay:0,reason,createdAt:Date.now()});operationInfoEntries=next;saveOperationInfo();renderOperationInfoList();renderOperationInfoZones();resetOperationInfoForm();}
 function deleteOperationInfo(id){operationInfoEntries=operationInfoEntries.filter(x=>x.id!==id);saveOperationInfo();renderOperationInfoList();renderOperationInfoZones();}
 function showOperationInfoDetail(id){
@@ -1208,19 +1328,276 @@ function showOperationInfoDetail(id){
   const txt=e.status==='suspend'?'運転見合わせ':`遅延 ${Number(e.delay)||0}分`;
   const posted=formatTimestampShort(e.createdAt);
   body.innerHTML=`<div class="operation-info-detail-status ${e.status==='suspend'?'suspend':'delay'}">${esc(txt)}</div><div><strong>区間：</strong>${esc(`${e.start} ⇄ ${e.end}`)}</div><div><strong>理由：</strong>${esc(e.reason||OPERATION_INFO_REASONS[0])}</div><div><strong>投稿時刻：</strong>${esc(posted)}</div>`;
+  // 詳細表示は登録ダイアログより前面に出すが、地図上のラベルはその下に残す。
   document.getElementById('operationInfoDetailBackdrop')?.classList.add('active');document.getElementById('operationInfoDetail')?.classList.add('active');
 }
 function hideOperationInfoDetail(){document.getElementById('operationInfoDetailBackdrop')?.classList.remove('active');document.getElementById('operationInfoDetail')?.classList.remove('active');}
 function renderOperationInfoList(){const box=document.getElementById('operationInfoList');if(!box)return;if(!operationInfoEntries.length){box.innerHTML='<div class="operation-info-empty">登録されている運行情報はありません。</div>';return;}box.innerHTML=operationInfoEntries.map(x=>{const txt=x.status==='suspend'?'運転見合わせ':`遅延 ${Number(x.delay)||0}分`;return `<div class="operation-info-card ${x.status==='suspend'?'suspend':'delay'}"><button type="button" class="operation-info-card-main operation-info-card-open" onclick="showOperationInfoDetail('${esc(x.id)}')"><div class="operation-info-card-title">${esc(x.start)} ⇄ ${esc(x.end)}</div><div class="operation-info-card-meta">${esc(txt)}</div><div class="operation-info-card-reason">${esc(x.reason||OPERATION_INFO_REASONS[0])}</div></button><button class="operation-info-card-delete" type="button" onclick="deleteOperationInfo('${esc(x.id)}')">削除</button></div>`;}).join('');}
-function operationInfoVisibleEdgeMap(){const rows=[...document.querySelectorAll('.station-row')],map=new Map(),byName=new Map();rows.forEach((r,i)=>{const n=stationNameKey(r.querySelector('.station-name-ja')?.textContent||'');if(!byName.has(n))byName.set(n,[]);byName.get(n).push({row:r,index:i});});for(const e0 of operationInfoEntries){const e=normalizeOperationEntry(e0);if(!e)continue;for(let i=0;i<e.stations.length-1;i++){const a=stationNameKey(e.stations[i]),b=stationNameKey(e.stations[i+1]),ar=byName.get(a)||[],br=byName.get(b)||[];for(const x of ar)for(const y of br){if(Math.abs(x.index-y.index)!==1)continue;const key=`${Math.min(x.index,y.index)}-${Math.max(x.index,y.index)}`,val={status:e.status==='suspend'?'suspend':'delay',delay:Number(e.delay)||0,entryId:e.id,createdAt:Number(e.createdAt)||0};const prev=map.get(key);if(!prev||val.createdAt>=prev.createdAt)map.set(key,val);}}}return {rows,map};}
-function renderOperationInfoZones(){const layer=document.getElementById('operationInfoLayer');if(!layer)return;layer.innerHTML='';const {rows,map}=operationInfoVisibleEdgeMap();if(rows.length<2||!map.size)return;const groups=[];for(const [key,it] of [...map.entries()].sort((a,b)=>Number(a[0].split('-')[0])-Number(b[0].split('-')[0]))){const [lo,hi]=key.split('-').map(Number),last=groups.at(-1);if(last&&lo===last.hi&&last.status===it.status){last.hi=hi;last.delay=Math.max(last.delay,it.delay);last.entryIds.add(it.entryId);}else groups.push({lo,hi,status:it.status,delay:it.delay,entryIds:new Set([it.entryId])});}
-  const lc=document.getElementById('lineContainer'),lcRect=lc?.getBoundingClientRect();if(!lc||!lcRect)return;
-  // 運行情報の長方形は常に固定幅。列車の有無や本数によって幅が変わらないようにする。
-  // 1列車分が十分収まる幅として 220px を基準にし、画面幅を超える場合だけ縮小する。
-  const fixedZoneWidth=700;
+function operationInfoStationRouteKey(stationName){
+  const n=operationInfoNormalizeName(stationName);
+  // 境界駅の所属は選択肢と完全に一致させる。
+  // 特に渋谷は田園都市線のみ、押上は半蔵門線のみ。
+  const explicit={
+    '東武動物公園':'main',
+    '北千住':'main',
+    '押上':'hanzomon',
+    '渋谷':'denentoshi'
+  };
+  if(explicit[n])return explicit[n];
+  const group=OPERATION_INFO_LINE_GROUPS.find(g=>g.stations.some(x=>operationInfoNormalizeName(x[0])===n));
+  if(!group)return null;
+  return ({'伊勢崎線':'main','日光線':'nikko','スカイツリーライン':'main','日比谷線':'hibiya','半蔵門線':'hanzomon','田園都市線':'denentoshi'})[group.label]||null;
+}
+function operationInfoVisibleSegments(){
+  const rows=[...document.querySelectorAll('.station-row')];
+  const byRouteName=new Map();
+  const byName=new Map();
+  rows.forEach((r,index)=>{
+    const name=operationInfoNormalizeName(r.querySelector('.station-name-ja')?.textContent||'');
+    const routeKey=r.dataset.routeKey||'';
+    if(!name)return;
+    const item={row:r,index};
+    const key=`${routeKey}\\u0000${name}`;
+    if(!byRouteName.has(key))byRouteName.set(key,[]);
+    byRouteName.get(key).push(item);
+    if(!byName.has(name))byName.set(name,[]);
+    byName.get(name).push(item);
+  });
+
+  const boundaryNames=new Set(['東武動物公園','北千住','押上','渋谷']);
+  const rawSegments=[];
+  for(const raw of operationInfoEntries){
+    const e=normalizeOperationEntry(raw);
+    if(!e||!Array.isArray(e.stations)||e.stations.length<2)continue;
+    for(let i=0;i<e.stations.length-1;i++){
+      const a=operationInfoNormalizeName(e.stations[i]);
+      const b=operationInfoNormalizeName(e.stations[i+1]);
+      const routeA=operationInfoStationRouteKey(a);
+      const routeB=operationInfoStationRouteKey(b);
+      if(!routeA||!routeB)continue;
+
+      const getRows=(name,route)=>{
+        const exact=byRouteName.get(`${route}\\u0000${name}`)||[];
+        if(exact.length)return exact;
+        return boundaryNames.has(name)?(byName.get(name)||[]):[];
+      };
+      const ar=getRows(a,routeA),br=getRows(b,routeB);
+      if(!ar.length||!br.length)continue;
+
+      // 同一路線ならその路線の行同士だけを使う。
+      // 境界駅だけはDOM側のrouteKeyと選択肢上の所属路線が異なるため名前でフォールバック。
+      let best=null;
+      for(const x of ar)for(const y of br){
+        if(x.index===y.index)continue;
+        const lo=Math.min(x.index,y.index),hi=Math.max(x.index,y.index);
+        const dist=hi-lo;
+        // 境界駅では「より近い同一駅行」を優先して、二重描画の原因になる遠い行を選ばない。
+        if(!best||dist<best.distance)best={a:x,b:y,lo,hi,distance:dist};
+      }
+      if(!best)continue;
+
+      rawSegments.push({
+        lo:best.lo,hi:best.hi,rowA:best.a,rowB:best.b,
+        routeA,routeB,status:e.status==='suspend'?'suspend':'delay',
+        delay:Number(e.delay)||0,entryId:e.id,createdAt:Number(e.createdAt)||0,
+        stationA:a,stationB:b
+      });
+    }
+  }
+
+  // 同じ登録情報の同じ駅間は1回だけ描画。
+  const picked=new Map();
+  for(const seg of rawSegments){
+    const edgeKey=operationInfoUndirectedKey(seg.stationA,seg.stationB);
+    const key=`${seg.entryId}\\u0000${edgeKey}`;
+    const prev=picked.get(key);
+    if(!prev||seg.createdAt>=prev.createdAt)picked.set(key,seg);
+  }
+  return {rows,segments:[...picked.values()]};
+}
+
+function renderOperationInfoZones(){
+  const layer=document.getElementById('operationInfoLayer');
+  if(!layer)return;
+  layer.innerHTML='';
   const labelLayer=document.getElementById('operationInfoLabelLayer');
-  if(labelLayer) labelLayer.innerHTML='';
-  for(const g of groups){const topRow=rows[g.lo],bottomRow=rows[g.hi];if(!topRow||!bottomRow)continue;let top=topRow.offsetTop,bottom=bottomRow.offsetTop+bottomRow.offsetHeight;const prev=map.get(`${g.lo-1}-${g.lo}`),next=map.get(`${g.hi}-${g.hi+1}`);if(prev&&prev.status!==g.status)top=topRow.offsetTop+topRow.offsetHeight/2+10;if(next&&next.status!==g.status)bottom=bottomRow.offsetTop+bottomRow.offsetHeight/2-10;if(bottom<=top)continue;const zone=document.createElement('div');zone.className=`operation-info-zone ${g.status==='suspend'?'suspend':''}`;zone.style.top=`${top}px`;zone.style.height=`${bottom-top}px`;zone.style.width=`${fixedZoneWidth}px`;zone.style.left=`calc(50% - ${fixedZoneWidth/2}px)`;layer.appendChild(zone);const id=[...g.entryIds][0];if(labelLayer){const label=document.createElement('button');label.type='button';label.className=`operation-info-zone-label ${g.status==='suspend'?'suspend':'delay'}`;label.textContent=g.status==='suspend'?'運転見合わせ':`遅延 ${g.delay}分`;label.style.top=`${top+6}px`;label.style.left=`calc(50% + ${fixedZoneWidth/2-6}px)`;label.style.transform='translateX(-100%)';label.onclick=e=>{e.preventDefault();e.stopPropagation();showOperationInfoDetail(id);};labelLayer.appendChild(label);}}}
+  if(labelLayer)labelLayer.innerHTML='';
+  const {rows,segments}=operationInfoVisibleSegments();
+  if(rows.length<2||!segments.length)return;
+
+  const fixedZoneWidth=700;
+  const pieces=[];
+  const boundaryNames=new Set(['東武動物公園','北千住','押上','渋谷']);
+
+  // 駅間を「路線ごとの実区間」として扱う。
+  // これにより、日比谷線→北千住→牛田～浅草のような区間でも、
+  // 日比谷線側は北千住まで、スカイツリーライン側は北千住から先だけになる。
+  for(const seg of segments){
+    const lo=Math.min(seg.rowA.index,seg.rowB.index),hi=Math.max(seg.rowA.index,seg.rowB.index);
+    if(seg.routeA===seg.routeB){
+      // DOMへ他路線が途中挿入されている場合は、同一路線の連続部分だけに分割。
+      let runStart=lo;
+      for(let i=lo+1;i<=hi;i++){
+        const route=rows[i]?.dataset?.routeKey||'';
+        if(route!==seg.routeA){
+          if(i-1>=runStart)pieces.push({...seg,lo:runStart,hi:i-1});
+          runStart=i+1;
+        }
+      }
+      if(runStart<=hi)pieces.push({...seg,lo:runStart,hi});
+    }else{
+      // 路線境界は境界駅を共有するため、境界駅をまたぐ区間も連続した四角として扱う。
+      pieces.push({...seg,lo,hi});
+    }
+  }
+
+  // 同じ状態で連続・重複する区間だけを順番に統合する。
+  // 途中に別状態の区間がある場合は、それをまたいで統合しない。
+  const groups=[];
+  const orderedPieces=[...pieces]
+    .filter(p=>p.lo!==p.hi)
+    .sort((a,b)=>a.lo-b.lo||a.hi-b.hi);
+  for(const p of orderedPieces){
+    const last=groups[groups.length-1];
+    if(last && last.status===p.status && p.lo<=last.hi+1){
+      last.lo=Math.min(last.lo,p.lo);
+      last.hi=Math.max(last.hi,p.hi);
+      last.delay=Math.max(last.delay,p.delay);
+      last.entryIds.add(p.entryId);
+      last.stationStart=rows[last.lo]?.querySelector('.station-name-ja')?.textContent||last.stationStart;
+      last.stationEnd=rows[last.hi]?.querySelector('.station-name-ja')?.textContent||last.stationEnd;
+      if(last.routeA!==p.routeA) last.routeA=p.routeA;
+      if(last.routeB!==p.routeB) last.routeB=p.routeB;
+    }else{
+      groups.push({
+        lo:p.lo,hi:p.hi,status:p.status,delay:p.delay,
+        routeA:p.routeA,routeB:p.routeB,
+        entryIds:new Set([p.entryId]),
+        stationStart:p.stationA,stationEnd:p.stationB
+      });
+    }
+  }
+
+  const labeledEntries=new Set();
+  for(let gi=0;gi<groups.length;gi++){
+    const g=groups[gi];
+    const topRow=rows[g.lo],bottomRow=rows[g.hi];
+    if(!topRow||!bottomRow)continue;
+
+    // 路線境界駅と、その一つ上の駅だけを囲む四角は表示しない
+    // （境界駅そのものを含む2駅だけの区間を削除）
+    const boundaryStationNames=new Set(['東武動物公園','北千住','押上','渋谷']);
+    if(g.hi-g.lo===1){
+      const topName=operationInfoNormalizeName(topRow.querySelector('.station-name-ja')?.textContent||'');
+      const bottomName=operationInfoNormalizeName(bottomRow.querySelector('.station-name-ja')?.textContent||'');
+      if(boundaryStationNames.has(topName)||boundaryStationNames.has(bottomName))continue;
+    }
+
+    // 長方形の上下端は駅行の外側。
+    // 運行状態が駅で切り替わる場合は、その駅の中心から上下10pxずつ離して合計20px。
+    // 駅と駅の間で切り替わる場合は、現在の行境界から上下10pxずつ離して合計20px。
+    // それ以外の部分は従来どおり駅行の外側いっぱいまで表示する。
+    let top=topRow.offsetTop;
+    let bottom=bottomRow.offsetTop+bottomRow.offsetHeight;
+
+    const prev=groups[gi-1],next=groups[gi+1];
+
+    // 上端側：前の四角との状態切替位置を判定。
+    if(prev && prev.status!==g.status){
+      if(prev.hi===g.lo){
+        // 同じ駅で状態が切り替わる場合は「駅行の中心」ではなく、
+        // 実際の駅名標（station-badge）の中心を基準に上下10pxずつ空ける。
+        const boundaryRow=rows[g.lo];
+        if(boundaryRow){
+          const badge=boundaryRow.querySelector('.station-badge');
+          const layerRect=layer.getBoundingClientRect();
+          if(badge){
+            const badgeRect=badge.getBoundingClientRect();
+            const center=badgeRect.top-layerRect.top+badgeRect.height/2;
+            top=center+10;
+          }else{
+            const rowRect=boundaryRow.getBoundingClientRect();
+            const center=rowRect.top-layerRect.top+rowRect.height/2;
+            top=center+10;
+          }
+        }
+      }else if(prev.hi+1===g.lo){
+        // 駅と駅の間で切り替わる → 現在の行境界から10px空ける。
+        const upperRow=rows[prev.hi];
+        const lowerRow=rows[g.lo];
+        if(upperRow && lowerRow){
+          const boundary=Math.max(
+            upperRow.offsetTop+upperRow.offsetHeight,
+            lowerRow.offsetTop
+          );
+          top=boundary+10;
+        }
+      }
+    }
+
+    // 下端側：次の四角との状態切替位置を判定。
+    if(next && next.status!==g.status){
+      if(next.lo===g.hi){
+        // 同じ駅で状態が切り替わる場合は「駅行の中心」ではなく、
+        // 実際の駅名標（station-badge）の中心を基準に上下10pxずつ空ける。
+        const boundaryRow=rows[g.hi];
+        if(boundaryRow){
+          const badge=boundaryRow.querySelector('.station-badge');
+          const layerRect=layer.getBoundingClientRect();
+          if(badge){
+            const badgeRect=badge.getBoundingClientRect();
+            const center=badgeRect.top-layerRect.top+badgeRect.height/2;
+            bottom=center-10;
+          }else{
+            const rowRect=boundaryRow.getBoundingClientRect();
+            const center=rowRect.top-layerRect.top+rowRect.height/2;
+            bottom=center-10;
+          }
+        }
+      }else if(next.lo===g.hi+1){
+        // 駅と駅の間で切り替わる → 現在の行境界から10px空ける。
+        const upperRow=rows[g.hi];
+        const lowerRow=rows[next.lo];
+        if(upperRow && lowerRow){
+          const boundary=Math.min(
+            upperRow.offsetTop+upperRow.offsetHeight,
+            lowerRow.offsetTop
+          );
+          bottom=boundary-10;
+        }
+      }
+    }
+
+    if(bottom<=top)continue;
+
+    const zone=document.createElement('div');
+    zone.className=`operation-info-zone ${g.status==='suspend'?'suspend':''}`;
+    zone.style.top=`${top}px`;
+    zone.style.height=`${bottom-top}px`;
+    zone.style.width=`${fixedZoneWidth}px`;
+    zone.style.left=`calc(50% - ${fixedZoneWidth/2}px)`;
+    layer.appendChild(zone);
+
+    const id=[...g.entryIds][0];
+    if(labelLayer&&id&&!labeledEntries.has(id)){
+      labeledEntries.add(id);
+      const label=document.createElement('button');
+      label.type='button';
+      label.className=`operation-info-zone-label ${g.status==='suspend'?'suspend':'delay'}`;
+      label.textContent=g.status==='suspend'?'運転見合わせ':`遅延 ${g.delay}分`;
+      label.title='運行情報の詳細を表示';
+      label.setAttribute('aria-label','運行情報の詳細を表示');
+      // ラベルの縦位置は駅名標を基準にせず、運行情報の四角そのものを基準にする。
+      // 四角の上端から現在の位置（6px）をそのまま維持する。
+      label.style.top=`${top+36}px`;
+      label.style.left=`calc(50% + ${fixedZoneWidth/2-100}px)`;
+      label.style.right='auto';
+      label.style.transform='translateX(-100%)';
+      label.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();showOperationInfoDetail(id);});
+      labelLayer.appendChild(label);
+    }
+  }
+}
 function operationInfoRerender(){renderOperationInfoZones();}
 window.addEventListener('resize',operationInfoRerender);
 function render(){
@@ -2686,7 +3063,7 @@ async function init(){
   renderTrainPositions();
   initOperationInfoUI();
   setInterval(()=>{if(followNow){const input=document.getElementById('timeInput');if(input)input.value=formatTimeNow();}renderTrainPositions();},1000);
-  setInterval(()=>{maybeResetForNewOperationDay();},60000);
+  setInterval(()=>{maybeResetForNewOperationDay();},1000);
 }
 init();
 </script>
