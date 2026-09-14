@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -225,7 +224,7 @@ body{font-family:sans-serif;background:var(--bg);color:var(--text);overflow-x:hi
       <div class="operation-info-grid">
         <div class="operation-info-field full"><label>状態</label><div class="operation-info-status" id="operationInfoStatus"><label><input type="radio" name="operationStatus" value="delay" checked><span>遅延</span></label><label><input type="radio" name="operationStatus" value="suspend"><span>運転見合わせ</span></label></div></div>
         <div class="operation-info-field full"><label>区間</label><div class="operation-info-range"><select id="operationInfoStart" aria-label="区間始点"></select><div class="operation-info-range-arrow">→</div><select id="operationInfoEnd" aria-label="区間終点"></select></div></div>
-        <div class="operation-info-field"><label for="operationInfoDelay">遅延時間</label><select id="operationInfoDelay"><option value="5">5分</option><option value="10">10分</option><option value="15">15分</option><option value="20">20分</option><option value="25">25分</option><option value="30">30分</option><option value="35">35分</option><option value="40">40分</option><option value="45">45分</option><option value="50">50分</option><option value="55">55分</option><option value="60">60分</option><option value="65">65分</option><option value="70">70分</option><option value="75">75分</option><option value="80">80分</option><option value="85">85分</option><option value="90">90分</option><option value="95">95分</option><option value="100">100分</option><option value="105">105分</option><option value="110">110分</option><option value="115">115分</option><option value="120">120分</option></select></div>
+        <div class="operation-info-field"><label for="operationInfoDelay">遅延時間</label><select id="operationInfoDelay"><option value="unknown">遅延時間不明</option><option value="5">5分</option><option value="10">10分</option><option value="15">15分</option><option value="20">20分</option><option value="25">25分</option><option value="30">30分</option><option value="35">35分</option><option value="40">40分</option><option value="45">45分</option><option value="50">50分</option><option value="55">55分</option><option value="60">60分</option><option value="65">65分</option><option value="70">70分</option><option value="75">75分</option><option value="80">80分</option><option value="85">85分</option><option value="90">90分</option><option value="95">95分</option><option value="100">100分</option><option value="105">105分</option><option value="110">110分</option><option value="115">115分</option><option value="120">120分</option></select></div>
         <div class="operation-info-field"><label for="operationInfoReason">理由</label><select id="operationInfoReason"></select></div>
       </div>
       <div class="operation-info-actions"><button class="operation-info-cancel" type="button" onclick="resetOperationInfoForm()">入力クリア</button><button class="operation-info-add" type="button" onclick="addOperationInfo()">運行情報を登録</button></div>
@@ -1246,7 +1245,7 @@ function operationInfoFindPath(start,end){
 }
 function operationInfoUndirectedKey(a,b){return [String(a||''),String(b||'')].sort().join('\u0000');}
 function operationInfoPathEdges(stations){const set=new Set();for(let i=0;i<stations.length-1;i++)set.add(operationInfoUndirectedKey(stations[i],stations[i+1]));return set;}
-function normalizeOperationEntry(e){const rawStations=Array.isArray(e?.stations)&&e.stations.length>=2?e.stations.map(operationInfoNormalizeName):operationInfoFindPath(e?.start,e?.end);const stations=rawStations;return stations&&stations.length>=2?{...e,start:stations[0],end:stations.at(-1),stations}:null;}
+function normalizeOperationEntry(e){const rawStations=Array.isArray(e?.stations)&&e.stations.length>=2?e.stations.map(operationInfoNormalizeName):operationInfoFindPath(e?.start,e?.end);const stations=rawStations;return stations&&stations.length>=2?{...e,start:stations[0],end:stations.at(-1),stations,delay:e?.status==='suspend'?'unknown':operationInfoDelayValue(e?.delay)}:null;}
 let operationInfoFirebaseLoaded=false;
 let operationInfoFirebaseSyncing=false;
 let operationInfoFirebaseListeners={};
@@ -1281,6 +1280,15 @@ function operationInfoFirebaseFlatten(snapshotValue){
   }
   return [...result.values()];
 }
+function operationInfoDelayValue(value){
+  if(value===null||value===undefined||String(value)==='') return 'unknown';
+  const n=Number(value);
+  return Number.isFinite(n)&&n>0 ? n : 'unknown';
+}
+function operationInfoDelayText(value){
+  const d=operationInfoDelayValue(value);
+  return d==='unknown'?'遅延時間不明':`遅延 ${d}分`;
+}
 function operationInfoFirebasePayload(entry){
   return {
     id:String(entry.id),
@@ -1288,7 +1296,7 @@ function operationInfoFirebasePayload(entry){
     end:operationInfoNormalizeName(entry.end),
     stations:Array.isArray(entry.stations)?entry.stations.map(operationInfoNormalizeName):[],
     status:entry.status==='suspend'?'suspend':'delay',
-    delay:Number(entry.delay)||0,
+    delay:operationInfoDelayValue(entry.delay),
     reason:String(entry.reason||OPERATION_INFO_REASONS[0]),
     createdAt:Number(entry.createdAt)||0,
     operationDate:operationDateKey()
@@ -1470,22 +1478,22 @@ function updateOperationInfoReasonOptions(){const r=document.getElementById('ope
 function initOperationInfoUI(){updateOperationInfoStationOptions();updateOperationInfoReasonOptions();const delay=document.getElementById('operationInfoDelay');document.querySelectorAll('input[name="operationStatus"]').forEach(x=>{if(x.dataset.bound==='1')return;x.dataset.bound='1';x.addEventListener('change',()=>{if(delay)delay.disabled=x.value==='suspend'&&x.checked;});});const checked=document.querySelector('input[name="operationStatus"]:checked');if(checked&&delay)delay.disabled=checked.value==='suspend';renderOperationInfoList();}
 function openOperationInfo(){initOperationInfoUI();document.getElementById('operationInfoBackdrop')?.classList.add('active');document.getElementById('operationInfoPanel')?.classList.add('active');renderOperationInfoList();}
 function closeOperationInfo(){document.getElementById('operationInfoBackdrop')?.classList.remove('active');document.getElementById('operationInfoPanel')?.classList.remove('active');hideOperationInfoDetail();}
-function resetOperationInfoForm(){updateOperationInfoStationOptions();updateOperationInfoReasonOptions();const d=document.getElementById('operationInfoDelay');if(d){d.disabled=false;d.value='5';}const r=document.getElementById('operationInfoReason');if(r)r.value=OPERATION_INFO_REASONS[0];const first=document.querySelector('input[name="operationStatus"][value="delay"]');if(first){first.checked=true;first.dispatchEvent(new Event('change'));}}
+function resetOperationInfoForm(){updateOperationInfoStationOptions();updateOperationInfoReasonOptions();const d=document.getElementById('operationInfoDelay');if(d){d.disabled=false;d.value='unknown';}const r=document.getElementById('operationInfoReason');if(r)r.value=OPERATION_INFO_REASONS[0];const first=document.querySelector('input[name="operationStatus"][value="delay"]');if(first){first.checked=true;first.dispatchEvent(new Event('change'));}}
 function operationInfoSubtractEdges(stations,blocked){const parts=[];let cur=[];for(let i=0;i<stations.length-1;i++){const a=stations[i],b=stations[i+1];if(blocked.has(operationInfoUndirectedKey(a,b))){if(cur.length>=2)parts.push(cur);cur=[];continue;}if(!cur.length)cur=[a];cur.push(b);}if(cur.length>=2)parts.push(cur);return parts;}
-function addOperationInfo(){const start=operationInfoNormalizeName(document.getElementById('operationInfoStart')?.value||''),end=operationInfoNormalizeName(document.getElementById('operationInfoEnd')?.value||''),status=document.querySelector('input[name="operationStatus"]:checked')?.value||'delay',reason=document.getElementById('operationInfoReason')?.value||OPERATION_INFO_REASONS[0],delay=Math.max(0,Number(document.getElementById('operationInfoDelay')?.value||0)||0),path=operationInfoFindPath(start,end);if(!path){alert('選択した2駅を結ぶ区間が見つかりません。');return;}if(status==='delay'&&(!Number.isFinite(delay)||delay<5||delay%5!==0)){alert('遅延時間は5分単位で選択してください。');return;}const newEdges=operationInfoPathEdges(path),next=[];for(const raw of operationInfoEntries){const old=normalizeOperationEntry(raw);if(!old)continue;for(const part of operationInfoSubtractEdges(old.stations,newEdges)){next.push({...old,id:`${old.id}_${Math.random().toString(36).slice(2,7)}`,start:part[0],end:part.at(-1),stations:part});}}
-  next.push({id:`${Date.now()}_${Math.random().toString(36).slice(2,8)}`,start,end,stations:path,status,delay:status==='delay'?delay:0,reason,createdAt:Date.now()});operationInfoEntries=next;saveOperationInfo();renderOperationInfoList();renderOperationInfoZones();resetOperationInfoForm();saveOperationInfoToFirebase();}
+function addOperationInfo(){const start=operationInfoNormalizeName(document.getElementById('operationInfoStart')?.value||''),end=operationInfoNormalizeName(document.getElementById('operationInfoEnd')?.value||''),status=document.querySelector('input[name="operationStatus"]:checked')?.value||'delay',reason=document.getElementById('operationInfoReason')?.value||OPERATION_INFO_REASONS[0],delay=(document.getElementById('operationInfoDelay')?.value==='unknown'?'unknown':Number(document.getElementById('operationInfoDelay')?.value||0)||0),path=operationInfoFindPath(start,end);if(!path){alert('選択した2駅を結ぶ区間が見つかりません。');return;}if(status==='delay'&&delay!=='unknown'&&(!Number.isFinite(delay)||delay<5||delay%5!==0)){alert('遅延時間は5分単位で選択してください。');return;}const newEdges=operationInfoPathEdges(path),next=[];for(const raw of operationInfoEntries){const old=normalizeOperationEntry(raw);if(!old)continue;for(const part of operationInfoSubtractEdges(old.stations,newEdges)){next.push({...old,id:`${old.id}_${Math.random().toString(36).slice(2,7)}`,start:part[0],end:part.at(-1),stations:part});}}
+  next.push({id:`${Date.now()}_${Math.random().toString(36).slice(2,8)}`,start,end,stations:path,status,delay:status==='delay'?delay:'unknown',reason,createdAt:Date.now()});operationInfoEntries=next;saveOperationInfo();renderOperationInfoList();renderOperationInfoZones();resetOperationInfoForm();saveOperationInfoToFirebase();}
 function deleteOperationInfo(id){operationInfoEntries=operationInfoEntries.filter(x=>x.id!==id);saveOperationInfo();renderOperationInfoList();renderOperationInfoZones();saveOperationInfoToFirebase();}
 function showOperationInfoDetail(id){
   const e=operationInfoEntries.find(x=>x.id===id);if(!e)return;
   const body=document.getElementById('operationInfoDetailBody');if(!body)return;
-  const txt=e.status==='suspend'?'運転見合わせ':`遅延 ${Number(e.delay)||0}分`;
+  const txt=e.status==='suspend'?'運転見合わせ':operationInfoDelayText(e.delay);
   const posted=formatTimestampShort(e.createdAt);
   body.innerHTML=`<div class="operation-info-detail-status ${e.status==='suspend'?'suspend':'delay'}">${esc(txt)}</div><div><strong>区間：</strong>${esc(`${e.start} ⇄ ${e.end}`)}</div><div><strong>理由：</strong>${esc(e.reason||OPERATION_INFO_REASONS[0])}</div><div><strong>投稿時刻：</strong>${esc(posted)}</div>`;
   // 詳細表示は登録ダイアログより前面に出すが、地図上のラベルはその下に残す。
   document.getElementById('operationInfoDetailBackdrop')?.classList.add('active');document.getElementById('operationInfoDetail')?.classList.add('active');
 }
 function hideOperationInfoDetail(){document.getElementById('operationInfoDetailBackdrop')?.classList.remove('active');document.getElementById('operationInfoDetail')?.classList.remove('active');}
-function renderOperationInfoList(){const box=document.getElementById('operationInfoList');if(!box)return;if(!operationInfoEntries.length){box.innerHTML='<div class="operation-info-empty">登録されている運行情報はありません。</div>';return;}box.innerHTML=operationInfoEntries.map(x=>{const txt=x.status==='suspend'?'運転見合わせ':`遅延 ${Number(x.delay)||0}分`;return `<div class="operation-info-card ${x.status==='suspend'?'suspend':'delay'}"><button type="button" class="operation-info-card-main operation-info-card-open" onclick="showOperationInfoDetail('${esc(x.id)}')"><div class="operation-info-card-title">${esc(x.start)} ⇄ ${esc(x.end)}</div><div class="operation-info-card-meta">${esc(txt)}</div><div class="operation-info-card-reason">${esc(x.reason||OPERATION_INFO_REASONS[0])}</div></button><button class="operation-info-card-delete" type="button" onclick="deleteOperationInfo('${esc(x.id)}')">削除</button></div>`;}).join('');}
+function renderOperationInfoList(){const box=document.getElementById('operationInfoList');if(!box)return;if(!operationInfoEntries.length){box.innerHTML='<div class="operation-info-empty">登録されている運行情報はありません。</div>';return;}box.innerHTML=operationInfoEntries.map(x=>{const txt=x.status==='suspend'?'運転見合わせ':operationInfoDelayText(x.delay);return `<div class="operation-info-card ${x.status==='suspend'?'suspend':'delay'}"><button type="button" class="operation-info-card-main operation-info-card-open" onclick="showOperationInfoDetail('${esc(x.id)}')"><div class="operation-info-card-title">${esc(x.start)} ⇄ ${esc(x.end)}</div><div class="operation-info-card-meta">${esc(txt)}</div><div class="operation-info-card-reason">${esc(x.reason||OPERATION_INFO_REASONS[0])}</div></button><button class="operation-info-card-delete" type="button" onclick="deleteOperationInfo('${esc(x.id)}')">削除</button></div>`;}).join('');}
 function operationInfoStationRouteKey(stationName){
   const n=operationInfoNormalizeName(stationName);
   // 境界駅の所属は選択肢と完全に一致させる。
@@ -1552,7 +1560,7 @@ function operationInfoVisibleSegments(){
       rawSegments.push({
         lo:best.lo,hi:best.hi,rowA:best.a,rowB:best.b,
         routeA,routeB,status:e.status==='suspend'?'suspend':'delay',
-        delay:Number(e.delay)||0,entryId:e.id,createdAt:Number(e.createdAt)||0,
+        delay:operationInfoDelayValue(e.delay),entryId:e.id,createdAt:Number(e.createdAt)||0,
         stationA:a,stationB:b
       });
     }
@@ -1615,7 +1623,7 @@ function renderOperationInfoZones(){
     if(last && last.status===p.status && p.lo<=last.hi+1){
       last.lo=Math.min(last.lo,p.lo);
       last.hi=Math.max(last.hi,p.hi);
-      last.delay=Math.max(last.delay,p.delay);
+      last.delay=(last.delay==='unknown'?p.delay:(p.delay==='unknown'?last.delay:Math.max(Number(last.delay),Number(p.delay))));
       last.entryIds.add(p.entryId);
       last.stationStart=rows[last.lo]?.querySelector('.station-name-ja')?.textContent||last.stationStart;
       last.stationEnd=rows[last.hi]?.querySelector('.station-name-ja')?.textContent||last.stationEnd;
@@ -1737,7 +1745,7 @@ function renderOperationInfoZones(){
       const label=document.createElement('button');
       label.type='button';
       label.className=`operation-info-zone-label ${g.status==='suspend'?'suspend':'delay'}`;
-      label.textContent=g.status==='suspend'?'運転見合わせ':`遅延 ${g.delay}分`;
+      label.textContent=g.status==='suspend'?'運転見合わせ':operationInfoDelayText(g.delay);
       label.title='運行情報の詳細を表示';
       label.setAttribute('aria-label','運行情報の詳細を表示');
       // ラベルの縦位置は駅名標を基準にせず、運行情報の四角そのものを基準にする。
@@ -2305,8 +2313,14 @@ function updateSheetContent(){
       const isDuplicateActual=(id)=>{
         if(!id || id===INITIAL_FORMATION_SELECTION.id) return false;
         if(String(id)===String(otherSelected)){
-          // 同じ形式名（10000型+10000型、10030型+10030型）は許可。
-          return !FORMATIONS.some(g=>g.type===String(id));
+          // 水色背景の形態差（variants）は、2列車の前後で同じ選択肢を許可。
+          const isVariant=FORMATIONS.some(g=>(g.variants||[]).some(v=>String(v.id)===String(id)));
+          if(isVariant) return false;
+          // 形式名そのものも同じ形式を併結可能とする。
+          const isType=FORMATIONS.some(g=>String(g.type)===String(id));
+          if(isType) return false;
+          // 実編成は従来どおり同じ編成の重複を禁止。
+          return true;
         }
         return false;
       };
@@ -2379,7 +2393,11 @@ function registerFormationFromInput(){
     if(pieces.length!==2){if(err)err.textContent='2編成の場合は「前寄+後ろ寄」の2編成で入力してください。';input?.focus();return;}
     const ra=formationIdFromInput(pieces[0],train),rb=formationIdFromInput(pieces[1],train);
     if(!ra.ok||!rb.ok){if(err)err.textContent=(ra.ok?rb.error:ra.error);input?.focus();return;}
-    if(ra.id===rb.id){if(err)err.textContent='2編成では同じ編成を2本選択できません。';input?.focus();return;}
+    if(ra.id===rb.id){
+      const sameIsVariant=FORMATIONS.some(g=>(g.variants||[]).some(v=>String(v.id)===String(ra.id)));
+      const sameIsType=FORMATIONS.some(g=>String(g.type)===String(ra.id));
+      if(!sameIsVariant&&!sameIsType){if(err)err.textContent='2編成では同じ編成を2本選択できません。';input?.focus();return;}
+    }
     const stored=formationStoredOrderForTrain(train,ra.id,rb.id);
     return saveCompositeFormation(stored.front,stored.rear);
   }
@@ -2449,8 +2467,11 @@ async function selectFormation(id,slot=0){
   const front=tentative[0]||'';
   const rear=tentative[1]||'';
 
-  // 同じ「実編成」だけ禁止。形式そのもの（10000型・10030型）は同じ形式同士も可。
-  if(front&&rear&&front===rear&&!FORMATIONS.some(g=>g.type===front)){
+  // 同じ「実編成」だけ禁止。
+  // ただし、水色背景の「形態差」（variants）と形式名は前後で同じ選択肢を許可する。
+  const sameIsVariant=front&&rear&&front===rear && FORMATIONS.some(g=>(g.variants||[]).some(v=>String(v.id)===String(front)));
+  const sameIsType=front&&rear&&front===rear && FORMATIONS.some(g=>String(g.type)===String(front));
+  if(front&&rear&&front===rear&&!sameIsVariant&&!sameIsType){
     const err=document.getElementById('formationInputError');
     if(err)err.textContent='2編成では同じ実編成を2本選択できません。';
     return;
