@@ -1,1 +1,656 @@
-[]
+[
+  {
+    "no": "56S",
+    "operationNo": "56S",
+    "trainNumbers": {
+      "tobu": "556S",
+      "hibiya": "A556S"
+    },
+    "type": "各停",
+    "typeByRoute": {
+      "chijou": "",
+      "hibiya": "各停"
+    },
+    "direction": "down",
+    "dest": "中目黒",
+    "stops": [
+      {
+        "station": "八丁堀",
+        "arrival": null,
+        "departure": "05:00",
+        "time": "05:00"
+      },
+      {
+        "station": "築地",
+        "arrival": null,
+        "departure": "05:02",
+        "time": "05:02"
+      },
+      {
+        "station": "東銀座",
+        "arrival": null,
+        "departure": "05:04",
+        "time": "05:04"
+      },
+      {
+        "station": "銀座",
+        "arrival": null,
+        "departure": "05:06",
+        "time": "05:06"
+      },
+      {
+        "station": "日比谷",
+        "arrival": null,
+        "departure": "05:07",
+        "time": "05:07"
+      },
+      {
+        "station": "霞ケ関",
+        "arrival": null,
+        "departure": "05:10",
+        "time": "05:10"
+      },
+      {
+        "station": "虎ノ門ヒルズ",
+        "arrival": null,
+        "departure": "05:11",
+        "time": "05:11"
+      },
+      {
+        "station": "神谷町",
+        "arrival": null,
+        "departure": "05:13",
+        "time": "05:13"
+      },
+      {
+        "station": "六本木",
+        "arrival": null,
+        "departure": "05:16",
+        "time": "05:16"
+      },
+      {
+        "station": "広尾",
+        "arrival": null,
+        "departure": "05:19",
+        "time": "05:19"
+      },
+      {
+        "station": "恵比寿",
+        "arrival": null,
+        "departure": "05:22",
+        "time": "05:22"
+      },
+      {
+        "station": "中目黒",
+        "arrival": "05:24",
+        "departure": null,
+        "time": "05:24"
+      }
+    ],
+    "days": [
+      "平日"
+    ]
+  },
+  {
+    "no": "60S",
+    "operationNo": "60S",
+    "trainNumbers": {
+      "tobu": "560S",
+      "hibiya": "A560S"
+    },
+    "type": "各停",
+    "typeByRoute": {
+      "chijou": "",
+      "hibiya": "各停"
+    },
+    "direction": "down",
+    "dest": "中目黒",
+    "stops": [
+      {
+        "station": "広尾",
+        "arrival": null,
+        "departure": "05:33",
+        "time": "05:33"
+      },
+      {
+        "station": "恵比寿",
+        "arrival": null,
+        "departure": "05:36",
+        "time": "05:36"
+      },
+      {
+        "station": "中目黒",
+        "arrival": "05:38",
+        "departure": null,
+        "time": "05:38"
+      }
+    ],
+    "days": [
+      "平日"
+    ]
+  },
+  {
+    "no": "50S",
+    "operationNo": "50S",
+    "trainNumbers": {
+      "tobu": "550S",
+      "hibiya": "A550S"
+    },
+    "type": "各停",
+    "typeByRoute": {
+      "chijou": "",
+      "hibiya": "各停"
+    },
+    "direction": "down",
+    "dest": "中目黒",
+    "stops": [
+      {
+        "station": "北千住",
+        "arrival": null,
+        "departure": "05:00",
+        "time": "05:00"
+      },
+      {
+        "station": "南千住",
+        "arrival": null,
+        "departure": "05:03",
+        "time": "05:03"
+      },
+      {
+        "station": "三ノ輪",
+        "arrival": null,
+        "departure": "05:05",
+        "time": "05:05"
+      },
+      {
+        "station": "入谷",
+        "arrival": null,
+        "departure": "05:07",
+        "time": "05:07"
+      },
+      {
+        "station": "上野",
+        "arrival": null,
+        "departure": "05:09",
+        "time": "05:09"
+      },
+      {
+        "station": "仲御徒町",
+        "arrival": null,
+        "departure": "05:10",
+        "time": "05:10"
+      },
+      {
+        "station": "秋葉原",
+        "arrival": null,
+        "departure": "05:12",
+        "time": "05:12"
+      },
+      {
+        "station": "小伝馬町",
+        "arrival": null,
+        "departure": "05:14",
+        "time": "05:14"
+      },
+      {
+        "station": "人形町",
+        "arrival": null,
+        "departure": "05:16",
+        "time": "05:16"
+      },
+      {
+        "station": "茅場町",
+        "arrival": null,
+        "departure": "05:18",
+        "time": "05:18"
+      },
+      {
+        "station": "八丁堀",
+        "arrival": null,
+        "departure": "05:20",
+        "time": "05:20"
+      },
+      {
+        "station": "築地",
+        "arrival": null,
+        "departure": "05:22",
+        "time": "05:22"
+      },
+      {
+        "station": "東銀座",
+        "arrival": null,
+        "departure": "05:24",
+        "time": "05:24"
+      },
+      {
+        "station": "銀座",
+        "arrival": null,
+        "departure": "05:26",
+        "time": "05:26"
+      },
+      {
+        "station": "日比谷",
+        "arrival": null,
+        "departure": "05:27",
+        "time": "05:27"
+      },
+      {
+        "station": "霞ケ関",
+        "arrival": null,
+        "departure": "05:30",
+        "time": "05:30"
+      },
+      {
+        "station": "虎ノ門ヒルズ",
+        "arrival": null,
+        "departure": "05:31",
+        "time": "05:31"
+      },
+      {
+        "station": "神谷町",
+        "arrival": null,
+        "departure": "05:33",
+        "time": "05:33"
+      },
+      {
+        "station": "六本木",
+        "arrival": null,
+        "departure": "05:36",
+        "time": "05:36"
+      },
+      {
+        "station": "広尾",
+        "arrival": null,
+        "departure": "05:39",
+        "time": "05:39"
+      },
+      {
+        "station": "恵比寿",
+        "arrival": null,
+        "departure": "05:42",
+        "time": "05:42"
+      },
+      {
+        "station": "中目黒",
+        "arrival": "05:45",
+        "departure": null,
+        "time": "05:45"
+      }
+    ],
+    "days": [
+      "平日"
+    ]
+  },
+  {
+    "no": "62S",
+    "operationNo": "62S",
+    "trainNumbers": {
+      "tobu": "562S",
+      "hibiya": "A562S"
+    },
+    "type": "各停",
+    "typeByRoute": {
+      "chijou": "",
+      "hibiya": "各停"
+    },
+    "direction": "down",
+    "dest": "中目黒",
+    "stops": [
+      {
+        "station": "広尾",
+        "arrival": null,
+        "departure": "05:48",
+        "time": "05:48"
+      },
+      {
+        "station": "恵比寿",
+        "arrival": null,
+        "departure": "05:51",
+        "time": "05:51"
+      },
+      {
+        "station": "中目黒",
+        "arrival": "05:53",
+        "departure": null,
+        "time": "05:53"
+      }
+    ],
+    "days": [
+      "平日"
+    ]
+  },
+  {
+    "no": "34S",
+    "operationNo": "34S",
+    "trainNumbers": {
+      "tobu": "534S",
+      "hibiya": "A534S"
+    },
+    "type": "各停",
+    "typeByRoute": {
+      "chijou": "",
+      "hibiya": "各停"
+    },
+    "direction": "down",
+    "dest": "中目黒",
+    "stops": [
+      {
+        "station": "北千住",
+        "arrival": null,
+        "departure": "05:12",
+        "time": "05:12"
+      },
+      {
+        "station": "南千住",
+        "arrival": null,
+        "departure": "05:15",
+        "time": "05:15"
+      },
+      {
+        "station": "三ノ輪",
+        "arrival": null,
+        "departure": "05:17",
+        "time": "05:17"
+      },
+      {
+        "station": "入谷",
+        "arrival": null,
+        "departure": "05:19",
+        "time": "05:19"
+      },
+      {
+        "station": "上野",
+        "arrival": null,
+        "departure": "05:21",
+        "time": "05:21"
+      },
+      {
+        "station": "仲御徒町",
+        "arrival": null,
+        "departure": "05:22",
+        "time": "05:22"
+      },
+      {
+        "station": "秋葉原",
+        "arrival": null,
+        "departure": "05:24",
+        "time": "05:24"
+      },
+      {
+        "station": "小伝馬町",
+        "arrival": null,
+        "departure": "05:26",
+        "time": "05:26"
+      },
+      {
+        "station": "人形町",
+        "arrival": null,
+        "departure": "05:28",
+        "time": "05:28"
+      },
+      {
+        "station": "茅場町",
+        "arrival": null,
+        "departure": "05:30",
+        "time": "05:30"
+      },
+      {
+        "station": "八丁堀",
+        "arrival": null,
+        "departure": "05:32",
+        "time": "05:32"
+      },
+      {
+        "station": "築地",
+        "arrival": null,
+        "departure": "05:34",
+        "time": "05:34"
+      },
+      {
+        "station": "東銀座",
+        "arrival": null,
+        "departure": "05:36",
+        "time": "05:36"
+      },
+      {
+        "station": "銀座",
+        "arrival": null,
+        "departure": "05:38",
+        "time": "05:38"
+      },
+      {
+        "station": "日比谷",
+        "arrival": null,
+        "departure": "05:39",
+        "time": "05:39"
+      },
+      {
+        "station": "霞ケ関",
+        "arrival": null,
+        "departure": "05:42",
+        "time": "05:42"
+      },
+      {
+        "station": "虎ノ門ヒルズ",
+        "arrival": null,
+        "departure": "05:43",
+        "time": "05:43"
+      },
+      {
+        "station": "神谷町",
+        "arrival": null,
+        "departure": "05:45",
+        "time": "05:45"
+      },
+      {
+        "station": "六本木",
+        "arrival": null,
+        "departure": "05:48",
+        "time": "05:48"
+      },
+      {
+        "station": "広尾",
+        "arrival": null,
+        "departure": "05:51",
+        "time": "05:51"
+      },
+      {
+        "station": "恵比寿",
+        "arrival": null,
+        "departure": "05:54",
+        "time": "05:54"
+      },
+      {
+        "station": "中目黒",
+        "arrival": "05:57",
+        "departure": null,
+        "time": "05:57"
+      }
+    ],
+    "days": [
+      "平日"
+    ]
+  },
+  {
+    "no": "01T",
+    "operationNo": "01T",
+    "trainNumbers": {
+      "tobu": "501T",
+      "hibiya": "A501T"
+    },
+    "type": "各停",
+    "typeByRoute": {
+      "chijou": "",
+      "hibiya": "各停"
+    },
+    "direction": "down",
+    "dest": "中目黒",
+    "stops": [
+      {
+        "station": "竹ノ塚",
+        "arrival": null,
+        "departure": "05:08",
+        "time": "05:08"
+      },
+      {
+        "station": "西新井",
+        "arrival": null,
+        "departure": "05:11",
+        "time": "05:11"
+      },
+      {
+        "station": "梅島",
+        "arrival": null,
+        "departure": "05:13",
+        "time": "05:13"
+      },
+      {
+        "station": "五反野",
+        "arrival": null,
+        "departure": "05:15",
+        "time": "05:15"
+      },
+      {
+        "station": "小菅",
+        "arrival": null,
+        "departure": "05:17",
+        "time": "05:17"
+      },
+      {
+        "station": "北千住",
+        "arrival": "05:19",
+        "departure": "05:19",
+        "time": "05:19"
+      },
+      {
+        "station": "南千住",
+        "arrival": null,
+        "departure": "05:22",
+        "time": "05:22"
+      },
+      {
+        "station": "三ノ輪",
+        "arrival": null,
+        "departure": "05:25",
+        "time": "05:25"
+      },
+      {
+        "station": "入谷",
+        "arrival": null,
+        "departure": "05:27",
+        "time": "05:27"
+      },
+      {
+        "station": "上野",
+        "arrival": null,
+        "departure": "05:29",
+        "time": "05:29"
+      },
+      {
+        "station": "仲御徒町",
+        "arrival": null,
+        "departure": "05:30",
+        "time": "05:30"
+      },
+      {
+        "station": "秋葉原",
+        "arrival": null,
+        "departure": "05:32",
+        "time": "05:32"
+      },
+      {
+        "station": "小伝馬町",
+        "arrival": null,
+        "departure": "05:34",
+        "time": "05:34"
+      },
+      {
+        "station": "人形町",
+        "arrival": null,
+        "departure": "05:36",
+        "time": "05:36"
+      },
+      {
+        "station": "茅場町",
+        "arrival": null,
+        "departure": "05:38",
+        "time": "05:38"
+      },
+      {
+        "station": "八丁堀",
+        "arrival": null,
+        "departure": "05:39",
+        "time": "05:39"
+      },
+      {
+        "station": "築地",
+        "arrival": null,
+        "departure": "05:42",
+        "time": "05:42"
+      },
+      {
+        "station": "東銀座",
+        "arrival": null,
+        "departure": "05:43",
+        "time": "05:43"
+      },
+      {
+        "station": "銀座",
+        "arrival": null,
+        "departure": "05:45",
+        "time": "05:45"
+      },
+      {
+        "station": "日比谷",
+        "arrival": null,
+        "departure": "05:47",
+        "time": "05:47"
+      },
+      {
+        "station": "霞ケ関",
+        "arrival": null,
+        "departure": "05:50",
+        "time": "05:50"
+      },
+      {
+        "station": "虎ノ門ヒルズ",
+        "arrival": null,
+        "departure": "05:51",
+        "time": "05:51"
+      },
+      {
+        "station": "神谷町",
+        "arrival": null,
+        "departure": "05:53",
+        "time": "05:53"
+      },
+      {
+        "station": "六本木",
+        "arrival": null,
+        "departure": "05:55",
+        "time": "05:55"
+      },
+      {
+        "station": "広尾",
+        "arrival": null,
+        "departure": "05:56",
+        "time": "05:56"
+      },
+      {
+        "station": "恵比寿",
+        "arrival": null,
+        "departure": "05:59",
+        "time": "05:59"
+      },
+      {
+        "station": "中目黒",
+        "arrival": "06:02",
+        "departure": null,
+        "time": "06:02"
+      }
+    ],
+    "days": [
+      "平日"
+    ]
+  }
+]
