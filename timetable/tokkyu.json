@@ -42,8 +42,7 @@
       "休日"
     ],
     "defaultCars": 6,
-    "formationSpec": "500系+500系",
-    "splitLiberty": true
+    "formationSpec": "500系"
   },
   {
     "no": "1004",
@@ -201,8 +200,7 @@
       "休日"
     ],
     "defaultCars": 6,
-    "formationSpec": "500系+500系",
-    "splitLiberty": true
+    "formationSpec": "500系"
   },
   {
     "no": "1110",
@@ -415,8 +413,9 @@
       "休日"
     ],
     "defaultCars": 3,
-    "formationSpec": "500系",
-    "couplesWith": "1014"
+    "formationSpec": "500系+500系",
+    "couplesWith": "1014",
+    "splitLiberty": true
   },
   {
     "no": "1014",
@@ -479,6 +478,7 @@
       "休日"
     ],
     "defaultCars": 3,
-    "formationSpec": "500系"
+    "formationSpec": "500系+500系",
+    "splitLiberty": true
   }
 ]
