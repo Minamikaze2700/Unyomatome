@@ -149,7 +149,10 @@
       "休日"
     ],
     "defaultCars": 3,
-    "formationSpec": "500系"
+    "formationSpec": "500系",
+    "passageTimes": {
+      "南栗橋": "06:06"
+    }
   },
   {
     "no": "1008",
@@ -200,7 +203,10 @@
       "休日"
     ],
     "defaultCars": 6,
-    "formationSpec": "500系"
+    "formationSpec": "500系",
+    "passageTimes": {
+      "南栗橋": "06:39"
+    }
   },
   {
     "no": "1110",
@@ -287,7 +293,10 @@
       "休日"
     ],
     "defaultCars": 6,
-    "formationSpec": "100系"
+    "formationSpec": "100系",
+    "passageTimes": {
+      "南栗橋": "07:57"
+    }
   },
   {
     "no": "1012",
@@ -362,7 +371,10 @@
       "休日"
     ],
     "defaultCars": 6,
-    "formationSpec": "100系"
+    "formationSpec": "100系",
+    "passageTimes": {
+      "南栗橋": "08:42"
+    }
   },
   {
     "no": "1114",
@@ -479,9 +491,6 @@
     ],
     "defaultCars": 3,
     "formationSpec": "500系+500系",
-    "splitLiberty": true,
-    "passageTimes": {
-      "南栗橋": "10:02"
-    }
+    "splitLiberty": true
   }
 ]
