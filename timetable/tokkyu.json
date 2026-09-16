@@ -476,7 +476,8 @@
     "formationSpec": "500系+500系",
     "couplesWith": "1014",
     "splitLiberty": true,
-    "splitStation": "下今市"
+    "splitStation": "下今市",
+    "coupledOrder": 2
   },
   {
     "no": "1014",
@@ -553,6 +554,7 @@
     "defaultCars": 3,
     "formationSpec": "500系+500系",
     "splitLiberty": true,
-    "splitStation": "下今市"
+    "splitStation": "下今市",
+    "coupledOrder": 1
   }
 ]
