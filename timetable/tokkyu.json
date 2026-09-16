@@ -369,7 +369,7 @@
     "limitedName": "リバティきぬ114号",
     "type": "特急",
     "direction": "up",
-    "dest": "下今市",
+    "dest": "浅草",
     "stops": [
       {
         "station": "新藤原",
@@ -404,8 +404,38 @@
       {
         "station": "下今市",
         "arrival": "09:01",
+        "departure": "09:05",
+        "time": "09:05"
+      },
+      {
+        "station": "南栗橋",
+        "arrival": null,
         "departure": null,
-        "time": "09:01"
+        "time": "10:00"
+      },
+      {
+        "station": "春日部",
+        "arrival": "10:11",
+        "departure": null,
+        "time": "10:11"
+      },
+      {
+        "station": "北千住",
+        "arrival": null,
+        "departure": null,
+        "time": "10:32"
+      },
+      {
+        "station": "とうきょうスカイツリー",
+        "arrival": null,
+        "departure": null,
+        "time": "10:40"
+      },
+      {
+        "station": "浅草",
+        "arrival": "10:45",
+        "departure": null,
+        "time": "10:45"
       }
     ],
     "days": [
