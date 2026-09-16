@@ -1,1 +1,484 @@
-[]
+[
+  {
+    "no": "1002",
+    "limitedName": "スカイツリーライナー2号",
+    "type": "特急",
+    "direction": "up",
+    "dest": "浅草",
+    "stops": [
+      {
+        "station": "春日部",
+        "arrival": "05:35",
+        "departure": null,
+        "time": "05:35"
+      },
+      {
+        "station": "北千住",
+        "arrival": null,
+        "departure": null,
+        "time": "05:56"
+      },
+      {
+        "station": "曳舟",
+        "arrival": null,
+        "departure": null,
+        "time": "06:03"
+      },
+      {
+        "station": "とうきょうスカイツリー",
+        "arrival": null,
+        "departure": null,
+        "time": "06:07"
+      },
+      {
+        "station": "浅草",
+        "arrival": "06:10",
+        "departure": null,
+        "time": "06:10"
+      }
+    ],
+    "days": [
+      "平日",
+      "休日"
+    ],
+    "defaultCars": 6,
+    "formationSpec": "500系+500系",
+    "splitLiberty": true
+  },
+  {
+    "no": "1004",
+    "limitedName": "スカイツリーライナー4号",
+    "type": "特急",
+    "direction": "up",
+    "dest": "浅草",
+    "stops": [
+      {
+        "station": "春日部",
+        "arrival": "06:07",
+        "departure": null,
+        "time": "06:07"
+      },
+      {
+        "station": "北千住",
+        "arrival": null,
+        "departure": null,
+        "time": "06:28"
+      },
+      {
+        "station": "曳舟",
+        "arrival": null,
+        "departure": null,
+        "time": "06:34"
+      },
+      {
+        "station": "とうきょうスカイツリー",
+        "arrival": null,
+        "departure": null,
+        "time": "06:37"
+      },
+      {
+        "station": "浅草",
+        "arrival": "06:42",
+        "departure": null,
+        "time": "06:42"
+      }
+    ],
+    "days": [
+      "土休日"
+    ],
+    "defaultCars": 3,
+    "formationSpec": "500系"
+  },
+  {
+    "no": "1206",
+    "limitedName": "リバティけごん206号",
+    "type": "特急",
+    "direction": "up",
+    "dest": "浅草",
+    "stops": [
+      {
+        "station": "新栃木",
+        "arrival": null,
+        "departure": null,
+        "time": "05:39"
+      },
+      {
+        "station": "栃木",
+        "arrival": "05:42",
+        "departure": "05:43",
+        "time": "05:43"
+      },
+      {
+        "station": "南栗橋",
+        "arrival": "06:06",
+        "departure": "06:07",
+        "time": "06:07"
+      },
+      {
+        "station": "春日部",
+        "arrival": "06:21",
+        "departure": null,
+        "time": "06:21"
+      },
+      {
+        "station": "北千住",
+        "arrival": null,
+        "departure": null,
+        "time": "06:47"
+      },
+      {
+        "station": "曳舟",
+        "arrival": null,
+        "departure": null,
+        "time": "06:55"
+      },
+      {
+        "station": "とうきょうスカイツリー",
+        "arrival": null,
+        "departure": null,
+        "time": "06:58"
+      },
+      {
+        "station": "浅草",
+        "arrival": "07:03",
+        "departure": null,
+        "time": "07:03"
+      }
+    ],
+    "days": [
+      "平日",
+      "休日"
+    ],
+    "defaultCars": 3,
+    "formationSpec": "500系"
+  },
+  {
+    "no": "1008",
+    "limitedName": "リバティけごん8号",
+    "type": "特急",
+    "direction": "up",
+    "dest": "浅草",
+    "stops": [
+      {
+        "station": "南栗橋",
+        "arrival": null,
+        "departure": "06:39",
+        "time": "06:39"
+      },
+      {
+        "station": "春日部",
+        "arrival": "06:56",
+        "departure": null,
+        "time": "06:56"
+      },
+      {
+        "station": "北千住",
+        "arrival": null,
+        "departure": null,
+        "time": "07:24"
+      },
+      {
+        "station": "曳舟",
+        "arrival": null,
+        "departure": null,
+        "time": "07:32"
+      },
+      {
+        "station": "とうきょうスカイツリー",
+        "arrival": null,
+        "departure": null,
+        "time": "07:36"
+      },
+      {
+        "station": "浅草",
+        "arrival": "07:43",
+        "departure": null,
+        "time": "07:43"
+      }
+    ],
+    "days": [
+      "平日",
+      "休日"
+    ],
+    "defaultCars": 6,
+    "formationSpec": "500系+500系",
+    "splitLiberty": true
+  },
+  {
+    "no": "1110",
+    "limitedName": "きぬ110号",
+    "type": "特急",
+    "direction": "up",
+    "dest": "浅草",
+    "stops": [
+      {
+        "station": "鬼怒川温泉",
+        "arrival": null,
+        "departure": "06:41",
+        "time": "06:41"
+      },
+      {
+        "station": "東武ワールドスクウェア",
+        "arrival": null,
+        "departure": null,
+        "time": "06:44"
+      },
+      {
+        "station": "新高徳",
+        "arrival": null,
+        "departure": null,
+        "time": "06:49"
+      },
+      {
+        "station": "下今市",
+        "arrival": "07:01",
+        "departure": "07:02",
+        "time": "07:02"
+      },
+      {
+        "station": "新鹿沼",
+        "arrival": null,
+        "departure": null,
+        "time": "07:18"
+      },
+      {
+        "station": "栃木",
+        "arrival": "07:33",
+        "departure": "07:33",
+        "time": "07:33"
+      },
+      {
+        "station": "南栗橋",
+        "arrival": "07:57",
+        "departure": "07:58",
+        "time": "07:58"
+      },
+      {
+        "station": "春日部",
+        "arrival": "08:10",
+        "departure": null,
+        "time": "08:10"
+      },
+      {
+        "station": "北千住",
+        "arrival": null,
+        "departure": null,
+        "time": "08:36"
+      },
+      {
+        "station": "曳舟",
+        "arrival": null,
+        "departure": null,
+        "time": "08:43"
+      },
+      {
+        "station": "とうきょうスカイツリー",
+        "arrival": null,
+        "departure": null,
+        "time": "08:45"
+      },
+      {
+        "station": "浅草",
+        "arrival": "08:49",
+        "departure": null,
+        "time": "08:49"
+      }
+    ],
+    "days": [
+      "平日",
+      "休日"
+    ],
+    "defaultCars": 6,
+    "formationSpec": "100系"
+  },
+  {
+    "no": "1012",
+    "limitedName": "けごん12号",
+    "type": "特急",
+    "direction": "up",
+    "dest": "浅草",
+    "stops": [
+      {
+        "station": "東武日光",
+        "arrival": null,
+        "departure": "07:37",
+        "time": "07:37"
+      },
+      {
+        "station": "下今市",
+        "arrival": "07:44",
+        "departure": "07:45",
+        "time": "07:45"
+      },
+      {
+        "station": "新鹿沼",
+        "arrival": null,
+        "departure": null,
+        "time": "08:01"
+      },
+      {
+        "station": "栃木",
+        "arrival": "08:16",
+        "departure": "08:16",
+        "time": "08:16"
+      },
+      {
+        "station": "南栗橋",
+        "arrival": "08:42",
+        "departure": "08:42",
+        "time": "08:42"
+      },
+      {
+        "station": "春日部",
+        "arrival": "08:54",
+        "departure": null,
+        "time": "08:54"
+      },
+      {
+        "station": "北千住",
+        "arrival": null,
+        "departure": null,
+        "time": "09:19"
+      },
+      {
+        "station": "曳舟",
+        "arrival": null,
+        "departure": null,
+        "time": "09:26"
+      },
+      {
+        "station": "とうきょうスカイツリー",
+        "arrival": null,
+        "departure": null,
+        "time": "09:29"
+      },
+      {
+        "station": "浅草",
+        "arrival": "09:33",
+        "departure": null,
+        "time": "09:33"
+      }
+    ],
+    "days": [
+      "平日",
+      "休日"
+    ],
+    "defaultCars": 6,
+    "formationSpec": "100系"
+  },
+  {
+    "no": "1114",
+    "limitedName": "リバティきぬ114号",
+    "type": "特急",
+    "direction": "up",
+    "dest": "下今市",
+    "stops": [
+      {
+        "station": "新藤原",
+        "arrival": null,
+        "departure": "08:29",
+        "time": "08:29"
+      },
+      {
+        "station": "鬼怒川公園",
+        "arrival": null,
+        "departure": null,
+        "time": "08:34"
+      },
+      {
+        "station": "鬼怒川温泉",
+        "arrival": "08:37",
+        "departure": "08:39",
+        "time": "08:39"
+      },
+      {
+        "station": "東武ワールドスクウェア",
+        "arrival": null,
+        "departure": null,
+        "time": "08:42"
+      },
+      {
+        "station": "新高徳",
+        "arrival": null,
+        "departure": null,
+        "time": "08:48"
+      },
+      {
+        "station": "下今市",
+        "arrival": "09:01",
+        "departure": null,
+        "time": "09:01"
+      }
+    ],
+    "days": [
+      "平日",
+      "休日"
+    ],
+    "defaultCars": 3,
+    "formationSpec": "500系",
+    "couplesWith": "1014"
+  },
+  {
+    "no": "1014",
+    "limitedName": "リバティけごん14号",
+    "type": "特急",
+    "direction": "up",
+    "dest": "浅草",
+    "stops": [
+      {
+        "station": "東武日光",
+        "arrival": null,
+        "departure": "08:50",
+        "time": "08:50"
+      },
+      {
+        "station": "下今市",
+        "arrival": "08:57",
+        "departure": "09:05",
+        "time": "09:05"
+      },
+      {
+        "station": "新鹿沼",
+        "arrival": null,
+        "departure": null,
+        "time": "09:21"
+      },
+      {
+        "station": "栃木",
+        "arrival": "09:36",
+        "departure": "09:37",
+        "time": "09:37"
+      },
+      {
+        "station": "春日部",
+        "arrival": "10:11",
+        "departure": null,
+        "time": "10:11"
+      },
+      {
+        "station": "北千住",
+        "arrival": null,
+        "departure": null,
+        "time": "10:32"
+      },
+      {
+        "station": "とうきょうスカイツリー",
+        "arrival": null,
+        "departure": null,
+        "time": "10:40"
+      },
+      {
+        "station": "浅草",
+        "arrival": "10:45",
+        "departure": null,
+        "time": "10:45"
+      }
+    ],
+    "days": [
+      "平日",
+      "休日"
+    ],
+    "defaultCars": 3,
+    "formationSpec": "500系"
+  }
+]
