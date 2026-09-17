@@ -94,7 +94,7 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Noto Sans JP",sans-serif;back
 .formation-input-error{min-height:0;color:#c62828;font-size:.8rem;font-weight:700;margin:2px 0 4px}.select-box-container{position:relative;width:100%;margin:12px 0}.formation-select-row{display:flex;gap:8px;width:100%}.formation-select-row>.custom-select-trigger{flex:1;min-width:0}.formation-select-row.single{display:flex}.formation-select-row.single>.custom-select-trigger{flex:1}.formation-select-row.composite{flex-direction:row;gap:8px;align-items:flex-start}.formation-select-field{position:relative;width:calc(50% - 4px);min-width:0;z-index:1}.formation-select-field:focus-within{z-index:20}.formation-select-row.composite>.formation-select-field>.custom-select-trigger{width:100%;flex:0 0 auto}.formation-select-field>.custom-select-options{top:calc(100% + 6px);left:0;right:0}.select-box-container>.custom-select-options{top:calc(100% + 6px)}.custom-select-trigger{background:#fff;border:2px solid #ccc;border-radius:8px;padding:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:700;font-size:1.1rem;color:#1b6e27}.custom-select-options{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ccc;border-radius:8px;max-height:250px;overflow-y:auto;z-index:200;display:none;box-shadow:0 4px 10px rgba(0,0,0,.15)}.custom-select-options.open{display:block}.option-header,.option-item{display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid #f0f0f0}.option-header{background:#f0f0f0;padding-left:16px;font-weight:700;font-size:1.1rem}.option-item{padding-left:16px;min-height:60px;font-size:1.1rem}.option-item:hover,.option-header:hover{background:#e8f5e9}.option-item.type-option{background:#f0f0f0!important}.option-item.type-option:hover{background:#e8e8e8!important}.option-item.initial-option{background:#e0e0e0!important}.option-item.initial-option:hover{background:#d0d0d0!important}.option-img{width:auto;height:60px;object-fit:contain}.option-category-header{cursor:pointer!important;pointer-events:auto;background:#f0f0f0!important;}
 .option-subheader{background:#e8f7ff!important;padding-left:16px!important;font-size:1.15rem!important;cursor:pointer!important;pointer-events:auto;}
 .option-subheader:hover{background:#d3efff!important;}
-.option-subitem{padding-left:16px!important;}.sync-status{font-size:.78rem;color:#666;margin:4px 0 0}
+.option-subitem{padding-left:16px!important;}
 /* 和戸下側：伊勢崎線の赤から透明へフェード。駅間の下半分を必ず描画する。 */
 .station-row.wado-nikko-insert::before{
 content:'';
@@ -884,7 +884,6 @@ const form=getStoredFormation(key,scopedService||base?.service||'chijou');
 return {...base,formation:form};
 }
 function formationTimestamp(no,service=null){return getFormationTimestamp(no,service||currentSelectedService());}
-function syncStatus(text){document.querySelectorAll('#syncStatus').forEach(e=>e.textContent='共有同期：'+text);}
 
 function firebaseRefForTrain(train){
 const key=trainGroupKey(train),db=firebaseDbs[key];
@@ -892,7 +891,7 @@ return db?db.ref('運用'):null;
 }
 async function initFirebase(){
 loadLocal();
-if(!window.firebase?.initializeApp){syncStatus('Firebaseライブラリ未接続');return false;}
+if(!window.firebase?.initializeApp)return false;
 let connectedCount=0;
 for(const [key,info] of Object.entries(FIREBASE_PROJECTS)){
 try{
@@ -909,7 +908,6 @@ snap=await ref.once('value');
 }catch(err){
 console.error(info.label+' Firebase読込失敗',err);
 delete firebaseDbs[key];
-syncStatus(info.label+' Firebase接続失敗（他系統は継続）');
 continue;
 }
 
@@ -926,7 +924,6 @@ snap=await ref.once('value');
 }catch(err){
 console.error(info.label+' Firebase初期データ作成失敗',err);
 delete firebaseDbs[key];
-syncStatus(info.label+' Firebase初期化失敗（他系統は継続）');
 continue;
 }
 }
@@ -972,10 +969,8 @@ formationUpdatedAt[day][trainStateKey(no,key)]=val;
 saveLocal();
 renderTrainPositions();
 if(currentTrainNo&&!isEditMode) updateSheetContent();
-syncStatus('Firebase同期済み');
 },err=>{
 console.error(info.label+' Firebase監視失敗',err);
-syncStatus(info.label+' Firebase監視失敗（他系統は継続）');
 });
 connectedCount++;
 }catch(e){
@@ -990,7 +985,6 @@ await loadOperationInfoFromFirebase();
 attachOperationInfoFirebaseListeners();
 }
 saveLocal();
-syncStatus(firebaseReady?'Firebase接続済み':'Firebase接続失敗');
 return firebaseReady;
 }
 function formationLinkedTrainNos(day,trainNo,service=null){
@@ -1079,13 +1073,10 @@ tsUpdates[no]=updates[no]?formationUpdatedAt[day][stateKey]:null;
 });
 await db.ref('運用').child('formationUpdatedAtByDay').child(day).update(tsUpdates);
 }
-syncStatus('Firebase同期済み');
 }catch(e){
 console.error('編成連結同期失敗',e);
-syncStatus('Firebase書込失敗（ローカル保存済み）');
 }
 }else{
-syncStatus('ローカル保存済み');
 }
 return Object.keys(changes);
 }
@@ -1335,7 +1326,6 @@ await ref.set(desired);
 }
 }catch(e){
 console.warn('運行情報Firebase保存失敗',e);
-syncStatus('運行情報Firebase保存失敗');
 }finally{
 operationInfoFirebaseSyncing=false;
 }
@@ -2379,7 +2369,7 @@ const composite=allowsCompositeFormation(train);
 const content=document.getElementById('sheetContent');
 if(!isEditMode){
 const formationText=formationValue?formationDisplayParts(formationValue).join(' + '):'';
-content.innerHTML=`<div class="train-card${selectedIsCurrentOperation()?'':' historical-readonly'}" ${selectedIsCurrentOperation()?'onclick="switchToEditMode()"':''}><img src="${esc(trainImageFor(train))}" class="train-card-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div>${prescribedFormationName(train)==='500系+500系'?compositeTrainSummaryHTML(train):`${typeBadgeHTMLForTrain(train)}<span class="train-title">${esc(compositeDestinationText(train))} 行</span>`}<span class="train-number">${esc(sheetTrainNo)}</span></div>${formationValue?`<div class="formation-id">${esc(formationText)}</div>`:`<div class="input-trigger-btn">ここから編成を入力</div>`}<div class="capacity-info">所定:${esc(prescribedFormationName(train))}</div></div>${formationValue && formatFormationUpdatedAt(train.no,currentSelectedService())?`<div class="formation-updated-at">編成入力：${esc(formatFormationUpdatedAt(train.no,currentSelectedService()))}</div>`:''}</div>${prescribedFormationName(train)==='500系+500系'?compositeBranchTimetablesHTML(train):`<div class="timetable-list">${timetableRowsHTML(displayStopsForTrain(train))}</div>`}<div class="sync-status" id="syncStatus"></div>`;
+content.innerHTML=`<div class="train-card${selectedIsCurrentOperation()?'':' historical-readonly'}" ${selectedIsCurrentOperation()?'onclick="switchToEditMode()"':''}><img src="${esc(trainImageFor(train))}" class="train-card-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div>${prescribedFormationName(train)==='500系+500系'?compositeTrainSummaryHTML(train):`${typeBadgeHTMLForTrain(train)}<span class="train-title">${esc(compositeDestinationText(train))} 行</span>`}<span class="train-number">${esc(sheetTrainNo)}</span></div>${formationValue?`<div class="formation-id">${esc(formationText)}</div>`:`<div class="input-trigger-btn">ここから編成を入力</div>`}<div class="capacity-info">所定:${esc(prescribedFormationName(train))}</div></div>${formationValue && formatFormationUpdatedAt(train.no,currentSelectedService())?`<div class="formation-updated-at">編成入力：${esc(formatFormationUpdatedAt(train.no,currentSelectedService()))}</div>`:''}</div>${prescribedFormationName(train)==='500系+500系'?compositeBranchTimetablesHTML(train):`<div class="timetable-list">${timetableRowsHTML(displayStopsForTrain(train))}</div>`}`;
 }else{
 const parts=trainStoredFormationIds(train);
 const valueFront=parts[0]||'';
@@ -2442,7 +2432,7 @@ const manualComposite=composite
 const selectorHtml=composite
 ? `<div class="select-box-container"><div class="formation-select-row composite"><div class="formation-select-field">${frontTrigger}<div class="custom-select-options" id="dropdownOptions0">${optionsForSlot(0)}</div></div><div class="formation-select-field">${rearTrigger}<div class="custom-select-options" id="dropdownOptions1">${optionsForSlot(1)}</div></div></div></div>`
 : `<div class="select-box-container"><div class="formation-select-row single"><div class="custom-select-trigger" onclick="formationEditSlot=0;toggleDropdown(0)"><div style="display:flex;align-items:center;gap:10px"><img src="${esc(selected.img||initialImg||NOIMAGE_IMG)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'" style="width:auto;height:70px;object-fit:contain"><span>${esc(selected.name)}</span></div>▼</div></div><div class="custom-select-options" id="dropdownOptions0">${optionsForSlot(0)}</div></div>`;
-content.innerHTML=`<div class="train-card"><img src="${esc(trainImageFor(train))}" class="train-card-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div>${prescribedFormationName(train)==='500系+500系'?compositeTrainSummaryHTML(train):`${typeBadgeHTMLForTrain(train)}<span class="train-title">${esc(compositeDestinationText(train))} 行</span>`}<span class="train-number">${esc(sheetTrainNo)}</span></div><div class="input-trigger-btn" style="background:#b71c1c;">編成を入力中</div><div class="capacity-info">所定:${esc(prescribedFormationName(train))}</div></div></div><div style="text-align:left;font-weight:700;margin:6px 0 4px;font-size:1.1rem;">編成入力</div>${manualComposite}<div id="formationInputError" class="formation-input-error"></div>${selectorHtml}<div class="sync-status" id="syncStatus"></div>`;
+content.innerHTML=`<div class="train-card"><img src="${esc(trainImageFor(train))}" class="train-card-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div>${prescribedFormationName(train)==='500系+500系'?compositeTrainSummaryHTML(train):`${typeBadgeHTMLForTrain(train)}<span class="train-title">${esc(compositeDestinationText(train))} 行</span>`}<span class="train-number">${esc(sheetTrainNo)}</span></div><div class="input-trigger-btn" style="background:#b71c1c;">編成を入力中</div><div class="capacity-info">所定:${esc(prescribedFormationName(train))}</div></div></div><div style="text-align:left;font-weight:700;margin:6px 0 4px;font-size:1.1rem;">編成入力</div>${manualComposite}<div id="formationInputError" class="formation-input-error"></div>${selectorHtml}`;
 }
 }
 function switchToEditMode(){
