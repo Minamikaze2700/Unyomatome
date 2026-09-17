@@ -454,6 +454,17 @@ return String(t?.formation||'').split('+').map(x=>x.trim()).filter(Boolean);
 function trainFormationIdsFor(t){
 return trainStoredFormationIds(t);
 }
+// 地上運用は終点で折り返した次運用から前寄り・後寄りを反転する。
+// 編成そのものの保存順は変更せず、表示時だけ反転する。
+function displayTrainAfterGroundTurnback(t){
+if(!t||String(t?.service||'')!=='chijou') return t;
+const info=chainEntryForTrain(currentDay,t?.no);
+if(!info?.chain||!Number.isFinite(info.entryIndex)||info.entryIndex<1) return t;
+if(info.entryIndex%2===0) return t;
+const parts=trainStoredFormationIds(t);
+if(parts.length<2) return t;
+return {...t,formation:parts.slice().reverse().join('+'),groundTurnbackFormationSwapped:true};
+}
 function trainImageFor(t){
 const parts=trainFormationIdsFor(t);
 if(!parts.length){
@@ -3075,7 +3086,7 @@ const departureTime=Number.isFinite(nextStart)?nextStart+0.75:NaN;
 if(Number.isFinite(arrivalTime) && Number.isFinite(departureTime) && minutes>=arrivalTime+TURNBACK_SWITCH_MIN && minutes<departureTime){
 const nt=trainFromChainEntry(next, base?.service || '');
 if(nt){
-suppressedTurnbackKeys.add(`${String(nt.no||'')}|${String(nt.direction||'')}`);
+suppressedTurnbackKeys.add(`${String(nt.service||base.service||'')}|${String(nt.no||'')}|${String(nt.direction||'')}`);
 }
 }
 }
@@ -3085,6 +3096,8 @@ if(!base || !Array.isArray(base.days) || !base.days.includes(currentDay)) contin
 const no=String(base.no||'');
 const signature=`${String(base.service||'')}|${no}|${String(base.direction||'')}`;
 if(!no || seen.has(signature)) continue;
+// 地上運用の折返し待機中は、次運用列車を通常描画すると元列車の表示と二重になるため抑止する。
+if(base.service==='chijou' && suppressedTurnbackKeys.has(signature)) continue;
 seen.add(signature);
 visible.push(liveTrain(no,base.direction,base.service)||base);
 }
@@ -3130,7 +3143,8 @@ side=dir==='down' ? 'left' : dir==='up' ? 'right' : null;
 }
 }
 if(!side) continue;
-const displayTrain=p.visualTrain||libertyDisplay||t;
+const rawDisplayTrain=p.visualTrain||libertyDisplay||t;
+const displayTrain=displayTrainAfterGroundTurnback(rawDisplayTrain);
 occupied[side].push({
 t:displayTrain,
 pos:p.pos,
