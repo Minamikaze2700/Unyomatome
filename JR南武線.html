@@ -466,6 +466,28 @@ button,input,select,textarea{font-family:inherit}
 #title > span:first-child{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap;}
 .control-bar{position:fixed;top:58px;left:0;right:0;width:100vw;max-width:none;z-index:999;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;}
 #lineContainer{margin-top:calc(58px + var(--control-bar-height, 69px));}
+/* スマホではh1とcontrol-barも元ファイルと同じ960px基準で縮小表示する。
+   画面中央を基準に縮小することで、文字サイズ・入力欄・ボタンの位置関係を維持する。 */
+@media(max-width:959.98px){
+  #title{
+    width:960px;
+    max-width:none;
+    left:50%;
+    right:auto;
+    top:0;
+    transform:translateX(-50%) scale(calc(100vw / 960px));
+    transform-origin:top center;
+  }
+  .control-bar{
+    width:960px;
+    max-width:none;
+    left:50%;
+    right:auto;
+    top:calc(58px * (100vw / 960px));
+    transform:translateX(-50%) scale(calc(100vw / 960px));
+    transform-origin:top center;
+  }
+}
 
 /* JR南武線用デザイン */
 body{font-family:Helvetica,"Helvetica Neue","Noto Sans JP",Arial,sans-serif;}
@@ -2363,6 +2385,7 @@ function normalizeOperationEntry(e){
 function operationInfoDateKey(){return String(selectedDateKey||operationDateKey());}
 function loadOperationInfo(){try{const all=JSON.parse(localStorage.getItem(OPERATION_INFO_STORAGE_KEY)||'{}');operationInfoEntries=(Array.isArray(all?.[operationInfoDateKey()])?all[operationInfoDateKey()]:[]).map(normalizeOperationEntry).filter(Boolean);}catch(e){operationInfoEntries=[];}}
 function saveOperationInfo(){try{const all=JSON.parse(localStorage.getItem(OPERATION_INFO_STORAGE_KEY)||'{}');all[operationInfoDateKey()]=operationInfoEntries;localStorage.setItem(OPERATION_INFO_STORAGE_KEY,JSON.stringify(all));}catch(e){}}
+function formatTimestampShort(ts){if(!ts)return '';const d=new Date(Number(ts));if(Number.isNaN(d.getTime()))return '';const now=new Date();const hhmm=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()&&d.getDate()===now.getDate()?hhmm:`${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${hhmm}`;}
 function operationInfoFirebasePayload(entry){return{id:String(entry.id),start:operationInfoNormalizeName(entry.start),end:operationInfoNormalizeName(entry.end),stations:Array.isArray(entry.stations)?entry.stations.map(operationInfoNormalizeName):[],status:entry.status==='suspend'?'suspend':'delay',delay:operationInfoDelayValue(entry.delay),reason:String(entry.reason||OPERATION_INFO_REASONS[0]),createdAt:Number(entry.createdAt)||Date.now(),operationDate:operationInfoDateKey()};}
 function operationInfoFirebaseFlatten(v){const root=v&&typeof v==='object'?v:{};return Object.entries(root).map(([id,p])=>normalizeOperationEntry({...p,id:String(p?.id||id)})).filter(Boolean);}
 async function saveOperationInfoToFirebase(){
@@ -2430,7 +2453,7 @@ function addOperationInfo(){
   operationInfoEntries=next.map(normalizeOperationEntry).filter(Boolean);saveOperationInfo();renderOperationInfoList();renderOperationInfoZones();resetOperationInfoForm();saveOperationInfoToFirebase();
 }
 function deleteOperationInfo(id){operationInfoEntries=operationInfoEntries.filter(x=>String(x.id)!==String(id));saveOperationInfo();renderOperationInfoList();renderOperationInfoZones();saveOperationInfoToFirebase();}
-function showOperationInfoDetail(id){const e=operationInfoEntries.find(x=>String(x.id)===String(id));if(!e)return;const body=document.getElementById('operationInfoDetailBody');if(!body)return;const txt=e.status==='suspend'?'運転見合わせ':operationInfoDelayText(e.delay);const posted=e.createdAt?new Date(Number(e.createdAt)).toLocaleString('ja-JP',{hour12:false}):'';body.innerHTML=`<div class="operation-info-detail-status ${e.status==='suspend'?'suspend':'delay'}">${esc(txt)}</div><div><strong>区間：</strong>${esc(`${e.start} ⇄ ${e.end}`)}</div><div><strong>理由：</strong>${esc(e.reason||OPERATION_INFO_REASONS[0])}</div><div><strong>投稿時刻：</strong>${esc(posted)}</div>`;document.getElementById('operationInfoDetailBackdrop')?.classList.add('active');document.getElementById('operationInfoDetail')?.classList.add('active');}
+function showOperationInfoDetail(id){const e=operationInfoEntries.find(x=>String(x.id)===String(id));if(!e)return;const body=document.getElementById('operationInfoDetailBody');if(!body)return;const txt=e.status==='suspend'?'運転見合わせ':operationInfoDelayText(e.delay);const posted=formatTimestampShort(e.createdAt);body.innerHTML=`<div class="operation-info-detail-status ${e.status==='suspend'?'suspend':'delay'}">${esc(txt)}</div><div><strong>区間：</strong>${esc(`${e.start} ⇄ ${e.end}`)}</div><div><strong>理由：</strong>${esc(e.reason||OPERATION_INFO_REASONS[0])}</div><div><strong>投稿時刻：</strong>${esc(posted)}</div>`;document.getElementById('operationInfoDetailBackdrop')?.classList.add('active');document.getElementById('operationInfoDetail')?.classList.add('active');}
 function hideOperationInfoDetail(){document.getElementById('operationInfoDetailBackdrop')?.classList.remove('active');document.getElementById('operationInfoDetail')?.classList.remove('active');}
 function renderOperationInfoList(){const box=document.getElementById('operationInfoList');if(!box)return;if(!operationInfoEntries.length){box.innerHTML='<div class="operation-info-empty">登録されている運行情報はありません。</div>';return;}box.innerHTML=operationInfoEntries.map(x=>{const txt=x.status==='suspend'?'運転見合わせ':operationInfoDelayText(x.delay);return `<div class="operation-info-card ${x.status==='suspend'?'suspend':'delay'}"><button type="button" class="operation-info-card-main" onclick="showOperationInfoDetail('${esc(x.id)}')"><div class="operation-info-card-title">${esc(x.start)} ⇄ ${esc(x.end)}</div><div class="operation-info-card-meta">${esc(txt)}</div><div class="operation-info-card-reason">${esc(x.reason||OPERATION_INFO_REASONS[0])}</div></button><button class="operation-info-card-delete" type="button" onclick="deleteOperationInfo('${esc(x.id)}')">削除</button></div>`;}).join('');}
 function renderOperationInfoZones(){
@@ -2456,10 +2479,18 @@ window.addEventListener('resize',renderOperationInfoZones);
     const bar=document.querySelector('.control-bar');
     const line=document.getElementById('lineContainer');
     if(!bar||!line)return;
-    const titleH=Math.ceil(title?.getBoundingClientRect().height||58);
-    const barH=Math.ceil(bar.getBoundingClientRect().height||0);
-    line.style.marginTop=`${titleH+barH}px`;
-    document.documentElement.style.setProperty('--control-bar-height',`${barH}px`);
+
+    // スマホでは #title / .control-bar が960px基準でscaleされ、
+    // #viewportCanvas 側も同じ比率でzoomされるため、路線図側の余白は
+    // 「表示後の高さ」ではなく「zoom前の高さ」を設定する。
+    const scale=(window.innerWidth<=959.98) ? (window.innerWidth/960) : 1;
+    const titleRect=title?.getBoundingClientRect();
+    const barRect=bar.getBoundingClientRect();
+    const titleH=(titleRect?.height || (58*scale))/scale;
+    const barH=(barRect.height || 0)/scale;
+
+    line.style.marginTop=`${Math.ceil(titleH+barH)}px`;
+    document.documentElement.style.setProperty('--control-bar-height',`${Math.ceil(barH)}px`);
   }
   window.addEventListener('load',syncControlBarLayout);
   window.addEventListener('resize',syncControlBarLayout);
