@@ -906,19 +906,23 @@ function refreshAllTrainDataCache(){
     if(currentDay!=='休日') TRAIN_DATA_CACHE.set(ckey,cached);
   }
 }
+function getStoredFormation(no){
+  const key=String(no??'');
+  const state=registrationState||{};
+  if(Object.prototype.hasOwnProperty.call(state,key)) return state[key]||null;
+  const canonical=key.replace(/A$/i,'');
+  if(canonical!==key && Object.prototype.hasOwnProperty.call(state,canonical)) return state[canonical]||null;
+  for(const [k,v] of Object.entries(state)){
+    if(String(k).replace(/A$/i,'')===canonical) return v||null;
+  }
+  return null;
+}
 function liveTrain(no,direction=null){
   const key=String(no??'');
   const dir=String(direction||'');
-  if(dir){
-    const cached=LIVE_TRAIN_CACHE.get(trainCacheKey(currentDay,key,dir));
-    if(cached) return cached;
-    const base=baseTrainForDay(key,dir,currentDay);
-    if(base) return base;
-  }
-  const cached=LIVE_TRAIN_CACHE.get(trainCacheKey(currentDay,key,''));
-  if(cached) return cached;
-  if(currentDay==='休日') return baseTrainForDay(key,null,currentDay);
-  return TRAIN_DATA_CACHE.get(trainCacheKey(currentDay,key,''))||baseTrainForDay(key,null,currentDay)||TRAIN_INDEX[key]||null;
+  const base=baseTrainForDay(key,dir||null,currentDay) || baseTrainForDay(key,null,currentDay);
+  if(!base) return null;
+  return {...base,formation:getStoredFormation(key)};
 }
 function trainForCurrentDay(trainNo,direction=null){return liveTrain(String(trainNo??''),direction)||baseTrainForDay(String(trainNo??''),direction,currentDay);}
 function refreshVisibleUI(){
