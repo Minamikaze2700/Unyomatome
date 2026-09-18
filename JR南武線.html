@@ -906,23 +906,19 @@ function refreshAllTrainDataCache(){
     if(currentDay!=='休日') TRAIN_DATA_CACHE.set(ckey,cached);
   }
 }
-function getStoredFormation(no){
-  const key=String(no??'');
-  const state=registrationState||{};
-  if(Object.prototype.hasOwnProperty.call(state,key)) return state[key]||null;
-  const canonical=key.replace(/A$/i,'');
-  if(canonical!==key && Object.prototype.hasOwnProperty.call(state,canonical)) return state[canonical]||null;
-  for(const [k,v] of Object.entries(state)){
-    if(String(k).replace(/A$/i,'')===canonical) return v||null;
-  }
-  return null;
-}
 function liveTrain(no,direction=null){
   const key=String(no??'');
   const dir=String(direction||'');
-  const base=baseTrainForDay(key,dir||null,currentDay) || baseTrainForDay(key,null,currentDay);
-  if(!base) return null;
-  return {...base,formation:getStoredFormation(key)};
+  if(dir){
+    const cached=LIVE_TRAIN_CACHE.get(trainCacheKey(currentDay,key,dir));
+    if(cached) return cached;
+    const base=baseTrainForDay(key,dir,currentDay);
+    if(base) return base;
+  }
+  const cached=LIVE_TRAIN_CACHE.get(trainCacheKey(currentDay,key,''));
+  if(cached) return cached;
+  if(currentDay==='休日') return baseTrainForDay(key,null,currentDay);
+  return TRAIN_DATA_CACHE.get(trainCacheKey(currentDay,key,''))||baseTrainForDay(key,null,currentDay)||TRAIN_INDEX[key]||null;
 }
 function trainForCurrentDay(trainNo,direction=null){return liveTrain(String(trainNo??''),direction)||baseTrainForDay(String(trainNo??''),direction,currentDay);}
 function refreshVisibleUI(){
@@ -934,29 +930,63 @@ function refreshVisibleUI(){
 
 function subscribeAllOperationState(){
   if(!firebaseReady) return;
-  const ref=firebaseOperationRef();
-  if(!ref) return;
-  if(firebaseDayListenerCallback){try{ref.off('value',firebaseDayListenerCallback);}catch(e){}}
+  const operationRef=firebaseOperationRef();
+  if(!operationRef) return;
+
+  // Firebase Realtime Databaseの「stateByDay」を直接監視する。
+  // /運用 全体を監視してからローカル状態を再構成する方式では、
+  // 別タブの更新時に一時的な古い状態を拾う可能性があるため、
+  // 編成状態そのものをRealtimeで購読する。
+  try{
+    if(firebaseDayListenerCallback){
+      operationRef.child('stateByDay').off('value',firebaseDayListenerCallback);
+    }
+  }catch(e){}
+
   firebaseDayListenerDay='__ALL__';
   firebaseDayListenerCallback=(snap)=>{
     const all=snap.val();
     if(!all || typeof all!=='object') return;
-    remoteRoot.stateByDay={
-      平日:Object.prototype.hasOwnProperty.call(all,'平日')?cloneState(all.平日||{}):cloneState(remoteRoot.stateByDay?.平日||{}),
-      休日:Object.prototype.hasOwnProperty.call(all,'休日')?cloneState(all.休日||{}):cloneState(remoteRoot.stateByDay?.休日||{})
+
+    const nextStateByDay={
+      平日:cloneState(Object.prototype.hasOwnProperty.call(all,'平日') ? (all.平日||{}) : (remoteRoot.stateByDay?.平日||{})),
+      休日:cloneState(Object.prototype.hasOwnProperty.call(all,'休日') ? (all.休日||{}) : (remoteRoot.stateByDay?.休日||{}))
     };
-    if(isEditMode){syncStatus('編成入力中：更新を一時停止');return;}
-    registrationState=isHistoricalSelectedDate(selectedDateKey)?historicalStateForDate(selectedDateKey):cloneState(remoteRoot.stateByDay[currentDay]||{});
+
+    remoteRoot.stateByDay=nextStateByDay;
+    registrationState=isHistoricalSelectedDate(selectedDateKey)
+      ? historicalStateForDate(selectedDateKey)
+      : cloneState(remoteRoot.stateByDay[currentDay]||{});
+
+    if(isEditMode){
+      // 入力中でもFirebase側の最新状態は保持しておき、編集終了後にそのまま表示できるようにする。
+      syncStatus('編成入力中：Firebase最新状態を受信');
+      return;
+    }
+
     applyRegistrationState();
     saveLocalState();
-    refreshVisibleUI();
-    syncStatus('Firebase同期済み');
+    refreshAllTrainDataCache();
+    renderLine();
+    renderTrainPositions();
+    if(currentTrainNo) updateSheetContent();
+    syncStatus('Firebaseリアルタイム同期済み');
   };
-  ref.on('value',firebaseDayListenerCallback,err=>{
-    console.warn('Firebase運用読込失敗（権限/接続を確認してください）',err);
-    firebaseReady=false;
-    syncStatus('Firebase権限/接続エラー（ローカル動作）');
+
+  operationRef.child('stateByDay').on('value',firebaseDayListenerCallback,err=>{
+    console.warn('Firebase編成状態読込失敗（権限/接続を確認してください）',err);
+    syncStatus('Firebase編成状態の接続エラー');
   });
+
+  // 運用日の変更も別タブからリアルタイム反映する。
+  try{
+    operationRef.child('operationDate').on('value',snap=>{
+      const value=snap.val();
+      if(!value) return;
+      remoteRoot.operationDate=String(value);
+      currentOperationDate=String(value);
+    },err=>console.warn('Firebase運用日読込失敗',err));
+  }catch(e){}
 }
 
 function prefetchTrainImages(){
@@ -972,12 +1002,15 @@ async function preloadFirebaseState(){
   if(!firebaseReady||!firebaseDb) return false;
   try{
     const operationRef=firebaseOperationRef(), historyRef=firebaseHistoryRef();
-    const [stateSnap,timestampSnap,historySnap]=await Promise.all([
-      operationRef.child('stateByDay').once('value'),
+    const [operationSnap,timestampSnap,historySnap]=await Promise.all([
+      operationRef.once('value'),
       operationRef.child('formationUpdatedAtByDay').once('value'),
       historyRef.once('value')
     ]);
-    const all=stateSnap.val()||{};
+    const root=operationSnap.val()||{};
+    remoteRoot.operationDate=root.operationDate||remoteRoot.operationDate||null;
+    currentOperationDate=remoteRoot.operationDate||currentOperationDate||operationDateKey();
+    const all=root.stateByDay||{};
     remoteRoot.stateByDay={
       平日:cloneState(all.平日||{}),
       休日:cloneState(all.休日||{})
@@ -1091,7 +1124,6 @@ async function syncRegistrationToRemote(changes={}){
     applyRegistrationState();
     saveLocalState();
     refreshAllTrainDataCache();
-    broadcastState();
     syncStatus('Firebase同期済み');
     return true;
   }catch(e){
@@ -1219,12 +1251,21 @@ async function maybeResetForNewOperationDay(remoteCheck=false){
           console.warn('履歴追加競合または失敗',e);
         }
       }
-      currentOperationDate=opDate;
-      remoteRoot.operationDate=opDate;
-      remoteRoot.stateByDay={平日:{},休日:{}};
-      registrationState={};
+      // transaction完了後のFirebase最新状態をそのまま画面へ反映する。
+      // 日付が変わっていない場合は、既存のstateByDayを空に戻さない。
+      const latestSnap=await firebaseOperationRef().once('value');
+      const latestRoot=latestSnap.val()||{};
+      remoteRoot.operationDate=latestRoot.operationDate||opDate;
+      currentOperationDate=remoteRoot.operationDate;
+      const latestStateByDay=latestRoot.stateByDay||{};
+      remoteRoot.stateByDay={
+        平日:cloneState(latestStateByDay.平日||{}),
+        休日:cloneState(latestStateByDay.休日||{})
+      };
+      registrationState=isHistoricalSelectedDate(selectedDateKey)?historicalStateForDate(selectedDateKey):cloneState(remoteRoot.stateByDay[currentDay]||{});
       applyRegistrationState();
       saveLocalState();
+      refreshAllTrainDataCache();
       renderLine();
     }catch(e){ console.error('remote reset failed',e); }
   }else{
@@ -1253,40 +1294,12 @@ function historyToJsonl(){
 }
 
 function initSharedState(){
+  // 南武線の共有状態はFirebase Realtime Databaseを唯一の共有元とする。
+  // BroadcastChannel / storageイベントで別タブの古いローカル状態を
+  // 受信して再適用すると、最新のFirebase状態がデフォルトへ戻る競合が
+  // 発生するため、タブ間の共有はFirebaseのリアルタイム監視に任せる。
   loadLocalState();
-  // 起動時にFirebase側の未初期化/空状態でローカルの編成情報を
-  // 上書きしないため、ローカル状態を起動時の基準として保持する。
   window.__localStateLoadedAtStartup = true;
-
-  if('BroadcastChannel' in window){
-    channel=new BroadcastChannel(CHANNEL_NAME);
-    channel.onmessage=e=>{
-      if(!e.data||e.data.source!=='train-app'||!e.data.root) return;
-      const changed=hydrateFromRoot(e.data.root);
-      if(!changed) return;
-      saveLocalState();
-      refreshAllTrainDataCache();
-      if(isEditMode){
-        syncStatus('編成入力中：更新を一時停止');
-        return;
-      }
-      renderLine();
-      if(currentTrainNo) updateSheetContent();
-    };
-  }
-  window.addEventListener('storage',e=>{
-    if(e.key!==STORAGE_KEY || !e.newValue) return;
-    try{
-      const obj=JSON.parse(e.newValue);
-      const nextRoot={...remoteRoot,operationDate:obj.operationDate||remoteRoot.operationDate,stateByDay:obj.stateByDay||remoteRoot.stateByDay,history:obj.history||remoteRoot.history};
-      const changed=hydrateFromRoot(nextRoot);
-      if(!changed) return;
-      refreshAllTrainDataCache();
-      if(isEditMode) return;
-      renderLine();
-      if(currentTrainNo) updateSheetContent();
-    }catch(err){ console.warn('storage sync failed',err); }
-  });
 }
 function syncCurrentScheduleDay(){
   // 選択日付を唯一の基準にして、平日／土休日の状態を常に同期する。
@@ -1546,9 +1559,15 @@ function prescribedFormationName(t){
   return '普通共通';
 }
 function imageForTrain(t){
-  const f=selectionDisplayObject(t.formation);
+  // 表示時はFirebaseから同期したregistrationStateを登録情報の基準にする。
+  // Firebaseにその列車のキーがある場合は、列車オブジェクト側の古い値へ戻さない。
+  const no=String(t?.no??'');
+  const hasStored=Object.prototype.hasOwnProperty.call(registrationState||{},no);
+  const registeredId=hasStored ? (registrationState[no]||null) : (stateForTrain(registrationState,no)||null);
+  const f=selectionDisplayObject(registeredId);
   return f?.img||NAMBU_TRAIN_IMG;
 }
+
 function stationIndex(name){
   return STATIONS.findIndex(s=>s.nameJa===name);
 }
