@@ -314,20 +314,16 @@ html,body{
 <script>
 'use strict';
 
-/*
- * 地域 → 鉄道会社 → 路線
- *
- * 東海：岐阜県・三重県を含む
- * 近畿：三重県を除く
- *
- * 現在登録している路線：
- *   長野電鉄 長野線
- *   東武鉄道 東武野田線
- */
 const REGION_DATA = {
   '北海道': [],
   '東北': [],
   '関東': [
+    {
+      company: 'JR東日本',
+      routes: [
+        { name: '南武線', fullName: 'JR南武線' }
+      ]
+    },
     {
       company: '東武鉄道',
       routes: [
@@ -345,7 +341,7 @@ const REGION_DATA = {
       ]
     },
     {
-      company: '東急',
+      company: '東急電鉄',
       routes: [
         { name: '田園都市線', upcoming: true }
       ]
