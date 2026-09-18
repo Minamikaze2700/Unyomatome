@@ -1742,6 +1742,8 @@ labelLayer.appendChild(label);
 }
 function operationInfoRerender(){renderOperationInfoZones();}
 window.addEventListener('resize',operationInfoRerender);
+window.addEventListener('scroll',scheduleViewportTrainRender,{passive:true});
+window.addEventListener('resize',scheduleViewportTrainRender,{passive:true});
 function render(){
 const lc=document.getElementById('lineContainer');lc.innerHTML='<div id="operationInfoLayer"></div><div class="moving-train-layer" id="movingTrainLayer"></div><div id="operationInfoLabelLayer"></div>';
 buildScreenRows().forEach(r=>lc.appendChild(createRow(r.st,r.routeKey,r.opt)));
@@ -3066,6 +3068,27 @@ stationNameKey(r.querySelector('.station-name-ja')?.textContent||'')===key
 );
 }
 
+
+function trainPositionViewportVisible(p,rows,viewportTop,viewportBottom){
+if(!p||!Number.isFinite(Number(p.pos))||!rows.length)return false;
+const q=Math.max(0,Math.min(rows.length-1,Number(p.pos)));
+const i0=Math.floor(q),i1=Math.min(rows.length-1,Math.ceil(q)),f=q-i0;
+const r0=rows[i0]?.getBoundingClientRect(),r1=rows[i1]?.getBoundingClientRect();
+if(!r0||!r1)return false;
+const y=r0.top+r0.height/2+(r1.top+r1.height/2-(r0.top+r0.height/2))*f;
+const iconHalfHeight=48;
+return y+iconHalfHeight>=viewportTop&&y-iconHalfHeight<=viewportBottom;
+}
+function scheduleViewportTrainRender(){
+if(scheduleViewportTrainRender.pending)return;
+scheduleViewportTrainRender.pending=true;
+requestAnimationFrame(()=>{
+scheduleViewportTrainRender.pending=false;
+renderTrainPositions();
+});
+}
+scheduleViewportTrainRender.pending=false;
+
 function renderTrainPositions(){
 const layer=document.getElementById('movingTrainLayer');if(!layer)return;layer.innerHTML='';
 const rows=[...document.querySelectorAll('.station-row')];if(!rows.length)return;
@@ -3091,6 +3114,8 @@ suppressedTurnbackKeys.add(`${String(nt.service||base.service||'')}|${String(nt.
 }
 }
 
+const viewportTop=0,viewportBottom=window.innerHeight||document.documentElement.clientHeight||0;
+const visiblePositions=new Map();
 for(const base of TRAINS){
 if(!base || !Array.isArray(base.days) || !base.days.includes(currentDay)) continue;
 const no=String(base.no||'');
@@ -3098,13 +3123,20 @@ const signature=`${String(base.service||'')}|${no}|${String(base.direction||'')}
 if(!no || seen.has(signature)) continue;
 // 地上運用の折返し待機中は、次運用列車を通常描画すると元列車の表示と二重になるため抑止する。
 if(base.service==='chijou' && suppressedTurnbackKeys.has(signature)) continue;
+// 画面外の列車は詳細データを組み立てず、アイコン描画対象から除外する。
+const prePosition=operationChainPosition(base,minutes);
+if(!prePosition||(!prePosition.stationA&&!prePosition.stationB)||!trainPositionViewportVisible(prePosition,rows,viewportTop,viewportBottom)) continue;
 seen.add(signature);
-visible.push(liveTrain(no,base.direction,base.service)||base);
+const hydrated=liveTrain(no,base.direction,base.service)||base;
+visible.push(hydrated);
+visiblePositions.set(signature,prePosition);
 }
 const occupied={left:[],right:[]};
 for(const t of visible){
 if(!serviceTopologyValid(t)) continue;
-const p=operationChainPosition(t,minutes);if(!p||(!p.stationA&&!p.stationB))continue;
+const signature=`${String(t.service||'')}|${String(t.no||'')}|${String(t.direction||'')}`;
+const p=visiblePositions.get(signature)||operationChainPosition(t,minutes);
+if(!p||(!p.stationA&&!p.stationB))continue;
 
 const libertyShared=libertySharedAtNames(t,p.stationA,p.stationB,p.terminalStation||p.stationA||'');
 const libertyPair=libertyShared?pairedTrainFor(t):null;
