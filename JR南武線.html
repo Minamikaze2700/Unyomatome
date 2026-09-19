@@ -2479,20 +2479,209 @@ function deleteOperationInfo(id){operationInfoEntries=operationInfoEntries.filte
 function showOperationInfoDetail(id){const e=operationInfoEntries.find(x=>String(x.id)===String(id));if(!e)return;const body=document.getElementById('operationInfoDetailBody');if(!body)return;const txt=e.status==='suspend'?'運転見合わせ':operationInfoDelayText(e.delay);const posted=formatTimestampShort(e.createdAt);body.innerHTML=`<div class="operation-info-detail-status ${e.status==='suspend'?'suspend':'delay'}">${esc(txt)}</div><div><strong>区間：</strong>${esc(`${e.start} ⇄ ${e.end}`)}</div><div><strong>理由：</strong>${esc(e.reason||OPERATION_INFO_REASONS[0])}</div><div><strong>投稿時刻：</strong>${esc(posted)}</div>`;document.getElementById('operationInfoDetailBackdrop')?.classList.add('active');document.getElementById('operationInfoDetail')?.classList.add('active');}
 function hideOperationInfoDetail(){document.getElementById('operationInfoDetailBackdrop')?.classList.remove('active');document.getElementById('operationInfoDetail')?.classList.remove('active');}
 function renderOperationInfoList(){const box=document.getElementById('operationInfoList');if(!box)return;if(!operationInfoEntries.length){box.innerHTML='<div class="operation-info-empty">登録されている運行情報はありません。</div>';return;}box.innerHTML=operationInfoEntries.map(x=>{const txt=x.status==='suspend'?'運転見合わせ':operationInfoDelayText(x.delay);return `<div class="operation-info-card ${x.status==='suspend'?'suspend':'delay'}"><button type="button" class="operation-info-card-main" onclick="showOperationInfoDetail('${esc(x.id)}')"><div class="operation-info-card-title">${esc(x.start)} ⇄ ${esc(x.end)}</div><div class="operation-info-card-meta">${esc(txt)}</div><div class="operation-info-card-reason">${esc(x.reason||OPERATION_INFO_REASONS[0])}</div></button><button class="operation-info-card-delete" type="button" onclick="deleteOperationInfo('${esc(x.id)}')">削除</button></div>`;}).join('');}
+function operationInfoVisibleSegments(){
+  const rows=[...document.querySelectorAll('.station-row')];
+  const byRouteName=new Map();
+  const byName=new Map();
+  rows.forEach((r,index)=>{
+    const name=operationInfoNormalizeName(r.querySelector('.station-name-ja')?.textContent||'');
+    const routeKey='nambu';
+    if(!name)return;
+    const item={row:r,index};
+    const key=`${routeKey}\u0000${name}`;
+    if(!byRouteName.has(key))byRouteName.set(key,[]);
+    byRouteName.get(key).push(item);
+    if(!byName.has(name))byName.set(name,[]);
+    byName.get(name).push(item);
+  });
+
+  const boundaryNames=new Set();
+  const rawSegments=[];
+  for(const raw of operationInfoEntries){
+    const e=normalizeOperationEntry(raw);
+    if(!e||!Array.isArray(e.stations)||e.stations.length<2)continue;
+    for(let i=0;i<e.stations.length-1;i++){
+      const a=operationInfoNormalizeName(e.stations[i]);
+      const b=operationInfoNormalizeName(e.stations[i+1]);
+      const routeA='nambu';
+      const routeB='nambu';
+      const getRows=(name,route)=>{
+        const exact=byRouteName.get(`${route}\u0000${name}`)||[];
+        if(exact.length)return exact;
+        return boundaryNames.has(name)?(byName.get(name)||[]):[];
+      };
+      const ar=getRows(a,routeA),br=getRows(b,routeB);
+      if(!ar.length||!br.length)continue;
+
+      let best=null;
+      for(const x of ar)for(const y of br){
+        if(x.index===y.index)continue;
+        const lo=Math.min(x.index,y.index),hi=Math.max(x.index,y.index);
+        const dist=hi-lo;
+        if(!best||dist<best.distance)best={a:x,b:y,lo,hi,distance:dist};
+      }
+      if(!best)continue;
+
+      rawSegments.push({
+        lo:best.lo,hi:best.hi,rowA:best.a,rowB:best.b,
+        routeA,routeB,status:e.status==='suspend'?'suspend':'delay',
+        delay:operationInfoDelayValue(e.delay),entryId:e.id,createdAt:Number(e.createdAt)||0,
+        stationA:a,stationB:b
+      });
+    }
+  }
+
+  const picked=new Map();
+  for(const seg of rawSegments){
+    const edgeKey=operationInfoUndirectedKey(seg.stationA,seg.stationB);
+    const key=`${seg.entryId}\u0000${edgeKey}`;
+    const prev=picked.get(key);
+    if(!prev||seg.createdAt>=prev.createdAt)picked.set(key,seg);
+  }
+  return {rows,segments:[...picked.values()]};
+}
+
 function renderOperationInfoZones(){
-  const layer=document.getElementById('operationInfoLayer'); if(!layer)return; layer.innerHTML='';
-  const labels=document.getElementById('operationInfoLabelLayer'); if(labels)labels.innerHTML='';
-  const rows=[...document.querySelectorAll('.station-row')]; if(rows.length<2||!operationInfoEntries.length)return;
-  const rowMap=new Map(rows.map((r,i)=>[operationInfoNormalizeName(r.querySelector('.station-name-ja')?.textContent||''),{row:r,index:i}]));
+  const layer=document.getElementById('operationInfoLayer');
+  if(!layer)return;
+  layer.innerHTML='';
+  const labelLayer=document.getElementById('operationInfoLabelLayer');
+  if(labelLayer)labelLayer.innerHTML='';
+  const {rows,segments}=operationInfoVisibleSegments();
+  if(rows.length<2||!segments.length)return;
+
   const fixedZoneWidth=700;
-  for(const e of operationInfoEntries.map(normalizeOperationEntry).filter(Boolean)){
-    const a=rowMap.get(e.start), b=rowMap.get(e.end); if(!a||!b||a.index===b.index)continue;
-    const lo=Math.min(a.index,b.index), hi=Math.max(a.index,b.index); const topRow=rows[lo], bottomRow=rows[hi]; if(!topRow||!bottomRow)continue;
-    const top=topRow.offsetTop, bottom=bottomRow.offsetTop+bottomRow.offsetHeight; if(bottom<=top)continue;
-    const zone=document.createElement('div'); zone.className=`operation-info-zone ${e.status==='suspend'?'suspend':''}`; zone.style.top=`${top}px`;zone.style.height=`${bottom-top}px`;zone.style.width=`${fixedZoneWidth}px`;zone.style.left=`calc(50% - ${fixedZoneWidth/2}px)`;layer.appendChild(zone);
-    if(labels){const label=document.createElement('button');label.type='button';label.className=`operation-info-zone-label ${e.status==='suspend'?'suspend':'delay'}`;label.textContent=e.status==='suspend'?'運転見合わせ':operationInfoDelayText(e.delay);label.style.top=`${top+30}px`;label.style.left=`calc(50% + ${fixedZoneWidth/2-100}px)`;label.style.transform='translateX(-100%)';label.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();showOperationInfoDetail(e.id);});labels.appendChild(label);}
+  const pieces=[];
+  const boundaryNames=new Set();
+
+  for(const seg of segments){
+    const lo=Math.min(seg.rowA.index,seg.rowB.index),hi=Math.max(seg.rowA.index,seg.rowB.index);
+    if(seg.routeA===seg.routeB){
+      let runStart=lo;
+      for(let i=lo+1;i<=hi;i++){
+        const route='nambu';
+        if(route!==seg.routeA){
+          if(i-1>=runStart)pieces.push({...seg,lo:runStart,hi:i-1});
+          runStart=i+1;
+        }
+      }
+      if(runStart<=hi)pieces.push({...seg,lo:runStart,hi});
+    }else{
+      pieces.push({...seg,lo,hi});
+    }
+  }
+
+  const groups=[];
+  const orderedPieces=[...pieces]
+    .filter(p=>p.lo!==p.hi)
+    .sort((a,b)=>a.lo-b.lo||a.hi-b.hi);
+  for(const p of orderedPieces){
+    const last=groups[groups.length-1];
+    // 同じ状態でも「端の駅を共有する区間」だけを統合する。
+    // A-B と B-C は B を共有するので1つに連続させるが、
+    // A-B と C-D は B-C が空いているため別グループのままにする。
+    if(last && last.status===p.status && p.lo<=last.hi){
+      last.lo=Math.min(last.lo,p.lo);
+      last.hi=Math.max(last.hi,p.hi);
+      last.delay=(last.delay==='unknown'?p.delay:(p.delay==='unknown'?last.delay:Math.max(Number(last.delay),Number(p.delay))));
+      last.entryIds.add(p.entryId);
+      last.stationStart=rows[last.lo]?.querySelector('.station-name-ja')?.textContent||last.stationStart;
+      last.stationEnd=rows[last.hi]?.querySelector('.station-name-ja')?.textContent||last.stationEnd;
+      if(last.routeA!==p.routeA) last.routeA=p.routeA;
+      if(last.routeB!==p.routeB) last.routeB=p.routeB;
+    }else{
+      groups.push({
+        lo:p.lo,hi:p.hi,status:p.status,delay:p.delay,
+        routeA:p.routeA,routeB:p.routeB,
+        entryIds:new Set([p.entryId]),
+        stationStart:p.stationA,stationEnd:p.stationB
+      });
+    }
+  }
+
+  const labeledEntries=new Set();
+  for(let gi=0;gi<groups.length;gi++){
+    const g=groups[gi];
+    const topRow=rows[g.lo],bottomRow=rows[g.hi];
+    if(!topRow||!bottomRow)continue;
+
+    if(g.hi-g.lo===1){
+      const topName=operationInfoNormalizeName(topRow.querySelector('.station-name-ja')?.textContent||'');
+      const bottomName=operationInfoNormalizeName(bottomRow.querySelector('.station-name-ja')?.textContent||'');
+      if(boundaryNames.has(topName)||boundaryNames.has(bottomName))continue;
+    }
+
+    let top=topRow.offsetTop;
+    let bottom=bottomRow.offsetTop+bottomRow.offsetHeight;
+
+    const prev=groups[gi-1],next=groups[gi+1];
+
+    // ここでは「zoom前のレイアウト座標」を使う。
+    // スマホ表示では #viewportCanvas 全体が zoom されるため、
+    // getBoundingClientRect() の縮小後座標をそのまま zone.style.top に使うと
+    // PCとスマホで位置が変わってしまう。station-row の offsetTop/offsetHeight は
+    // zoom前の座標なので、zone の top/height と同じ座標系で計算する。
+    const stationCenterY=(row)=>row ? row.offsetTop + row.offsetHeight/2 : null;
+
+    // 前後の長方形が「同じ駅を境界に共有」する場合は、その駅の中心を境界にして
+    // 上下10pxずつ離す。状態が同じでも別登録として残っている場合はここで処理する。
+    if(prev){
+      if(prev.hi===g.lo){
+        const boundaryRow=rows[g.lo];
+        const center=stationCenterY(boundaryRow);
+        if(center!=null) top=center+10;
+      }else if(prev.hi+1===g.lo){
+        // A-B と C-D のように B と C が隣駅で間に未設定区間がある場合は、
+        // B と C の駅中心の中間地点を境界にして上下10pxずつ離す。
+        const upperCenter=stationCenterY(rows[prev.hi]);
+        const lowerCenter=stationCenterY(rows[g.lo]);
+        if(upperCenter!=null&&lowerCenter!=null) top=(upperCenter+lowerCenter)/2+10;
+      }
+    }
+
+    if(next){
+      if(next.lo===g.hi){
+        const boundaryRow=rows[g.hi];
+        const center=stationCenterY(boundaryRow);
+        if(center!=null) bottom=center-10;
+      }else if(next.lo===g.hi+1){
+        // A-B と C-D のように B と C が隣駅で間に未設定区間がある場合は、
+        // B と C の駅中心の中間地点を境界にして上下10pxずつ離す。
+        const upperCenter=stationCenterY(rows[g.hi]);
+        const lowerCenter=stationCenterY(rows[next.lo]);
+        if(upperCenter!=null&&lowerCenter!=null) bottom=(upperCenter+lowerCenter)/2-10;
+      }
+    }
+
+    if(bottom<=top)continue;
+
+    const zone=document.createElement('div');
+    zone.className=`operation-info-zone ${g.status==='suspend'?'suspend':''}`;
+    zone.style.top=`${top}px`;
+    zone.style.height=`${bottom-top}px`;
+    zone.style.width=`${fixedZoneWidth}px`;
+    zone.style.left=`calc(50% - ${fixedZoneWidth/2}px)`;
+    layer.appendChild(zone);
+
+    const id=[...g.entryIds][0];
+    if(labelLayer&&id&&!labeledEntries.has(id)){
+      labeledEntries.add(id);
+      const label=document.createElement('button');
+      label.type='button';
+      label.className=`operation-info-zone-label ${g.status==='suspend'?'suspend':'delay'}`;
+      label.textContent=g.status==='suspend'?'運転見合わせ':operationInfoDelayText(g.delay);
+      label.title='運行情報の詳細を表示';
+      label.setAttribute('aria-label','運行情報の詳細を表示');
+      label.style.top=`${top+36}px`;
+      label.style.left=`calc(50% + ${fixedZoneWidth/2-100}px)`;
+      label.style.right='auto';
+      label.style.transform='translateX(-100%)';
+      label.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();showOperationInfoDetail(id);});
+      labelLayer.appendChild(label);
+    }
   }
 }
+
 window.addEventListener('resize',renderOperationInfoZones);
 
 
