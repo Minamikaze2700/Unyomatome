@@ -400,15 +400,22 @@ button,input,select,textarea{font-family:inherit}
 .formation-manual-input button{border:0;border-radius:8px;background:var(--primary);color:#fff;padding:0 14px;font:inherit;font-weight:700;cursor:pointer;white-space:nowrap;}
 .formation-manual-input button:hover{background:var(--primary-dark);}
 .formation-input-error{min-height:0;color:#c62828;font-size:.8rem;font-weight:700;margin:2px 0 4px;}
+.option-item.disabled{opacity:.45;cursor:not-allowed;background:#f3f3f3;}
 .timetable-list{background:#fff;border-radius:8px;padding:12px 20px}
 .timetable-item{display:flex;align-items:center;padding:8px 0;position:relative;height:56px;min-height:56px;box-sizing:border-box}
+/* 停車駅案内：路線カラーで区間を表示
+   京浜東北・根岸線：#00a3d9
+   横浜線：#7fbe3f
+   各駅の丸はその駅が属する側の色、丸と丸の間の線は実際の区間の色。 */
+:root{--keihin-route:#00a3d9;--yokohama-route:#7fbe3f;}
 .timetable-item::before{
   content:'';position:absolute;left:7px;top:0;bottom:0;width:4px;
-  background:var(--primary);z-index:1;
+  background:linear-gradient(to bottom,var(--route-line-top,var(--keihin-route)) 0 50%,var(--route-line-bottom,var(--keihin-route)) 50% 100%);
+  z-index:1;
 }
 .timetable-item:first-child::before{top:50%}
 .timetable-item:last-child::before{bottom:50%}
-.time-dot{width:18px;height:18px;background:var(--primary);border-radius:50%;z-index:2;margin-right:16px}
+.time-dot{width:18px;height:18px;background:var(--station-route-color,var(--keihin-route));border-radius:50%;z-index:2;margin-right:16px}
 .time-text{width:58px;font-weight:700;display:flex;flex-direction:column;justify-content:center;line-height:1.05;gap:0;height:40px;flex:none}.time-text span{display:block;height:20px;line-height:20px;white-space:nowrap}.time-text.two-line span:first-child{font-size:1rem}.time-text.two-line span:last-child{font-size:1rem}
 .station-text{font-weight:700;font-size:1.05rem;line-height:1.2;display:flex;align-items:center;min-height:40px}
 .select-box-container{position:relative;width:100%;margin:12px 0}
@@ -520,7 +527,7 @@ body{font-family:Helvetica,"Helvetica Neue","Noto Sans JP",Arial,sans-serif;}
 .operation-info-status{display:flex;gap:8px}.operation-info-status label{flex:1;display:flex;align-items:center;justify-content:center;border:0;border-radius:8px;padding:10px;cursor:pointer;font-weight:800;background:#eee;color:#333;transition:background .12s,color .12s}.operation-info-status input{display:none}.operation-info-status label:has(input[value="delay"]:checked){background:#f2c94c;color:#111}.operation-info-status label:has(input[value="suspend"]:checked){background:#ef5350;color:#fff}
 .operation-info-range{display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr);gap:8px;align-items:end}.operation-info-range-arrow{height:42px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#666}.operation-info-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}.operation-info-actions button{border:0;border-radius:8px;padding:10px 16px;font:700 1rem/1 inherit;cursor:pointer}.operation-info-add{background:#c8a600;color:#111}.operation-info-cancel{background:#ddd;color:#222}
 .operation-info-list{display:flex;flex-direction:column;gap:10px}.operation-info-card{background:#fff;border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.08)}.operation-info-card-main{min-width:0;border:0;background:transparent;padding:0;text-align:left;cursor:pointer;width:100%;color:inherit;font:inherit}.operation-info-card-title{font-weight:900;font-size:1rem}.operation-info-card-meta{color:#555;font-size:.9rem;margin-top:4px}.operation-info-card-reason{color:#333;font-size:.9rem;margin-top:4px}.operation-info-card.delay{border-left:8px solid #f2c94c}.operation-info-card.suspend{border-left:8px solid #ef5350}.operation-info-card-delete{border:0;border-radius:7px;padding:7px 10px;background:#eee;color:#c62828;font-weight:800;cursor:pointer}.operation-info-empty{text-align:center;color:#666;padding:18px}
-.operation-info-layer{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:visible}.operation-info-label-layer{position:absolute;inset:0;z-index:10;pointer-events:none;overflow:visible}.operation-info-zone{position:absolute;box-sizing:border-box;border:3px solid #f2c94c;background:repeating-linear-gradient(135deg,rgba(255,205,55,.42) 0 7px,rgba(255,205,55,.10) 7px 14px);pointer-events:none}.operation-info-zone.suspend{border-color:#ef5350;background:repeating-linear-gradient(135deg,rgba(239,83,80,.40) 0 7px,rgba(239,83,80,.10) 7px 14px)}.operation-info-zone-label{position:absolute;width:100px;box-sizing:border-box;background:rgba(255,255,255,.94);border-radius:5px;padding:3px 7px;font:800 12px/1.2 inherit;color:#8a7200;box-shadow:0 1px 3px rgba(0,0,0,.14);pointer-events:auto;cursor:pointer;border:0}.operation-info-zone-label.suspend{color:#d32f2f}.operation-info-detail-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:20000;display:none}.operation-info-detail-backdrop.active{display:block}.operation-info-detail{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 24px));background:#fff;border-radius:14px;box-shadow:0 10px 35px rgba(0,0,0,.28);z-index:20001;display:none;overflow:hidden}.operation-info-detail.active{display:block}.operation-info-detail-header{padding:12px 16px;background:#c8a600;color:#111;font-weight:800;display:flex;justify-content:space-between;align-items:center}.operation-info-detail-header button{border:0;background:transparent;color:#111;font-size:20px;cursor:pointer}.operation-info-detail-body{padding:16px;line-height:1.8}.operation-info-detail-status{display:inline-block;padding:4px 10px;border-radius:6px;font-weight:800;margin-bottom:8px}.operation-info-detail-status.delay{background:#f2c94c;color:#111}.operation-info-detail-status.suspend{background:#ef5350;color:#fff}
+.operation-info-layer{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:visible}.operation-info-label-layer{position:absolute;inset:0;z-index:10;pointer-events:none;overflow:visible}.operation-info-zone{position:absolute;box-sizing:border-box;border:3px solid #f2c94c;background:repeating-linear-gradient(135deg,rgba(255,205,55,.42) 0 7px,rgba(255,205,55,.10) 7px 14px);pointer-events:none}.operation-info-zone.suspend{border-color:#ef5350;background:repeating-linear-gradient(135deg,rgba(239,83,80,.40) 0 7px,rgba(239,83,80,.10) 7px 14px)}.operation-info-zone-label{position:absolute;width:100px;box-sizing:border-box;background:rgba(255,255,255,.94);border-radius:5px;padding:3px 7px;font:800 12px/1.2 inherit;color:#8a7200;box-shadow:0 1px 3px rgba(0,0,0,.14);pointer-events:auto;cursor:pointer;border:0}.operation-info-zone-label.suspend{color:#d32f2f}.operation-info-detail-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:20000;display:none}.operation-info-detail-backdrop.active{display:block}.operation-info-detail{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 24px));background:#fff;border-radius:14px;box-shadow:0 10px 35px rgba(0,0,0,.28);z-index:20001;display:none;overflow:hidden}.operation-info-detail.active{display:block}.operation-info-detail-header{padding:12px 16px;background:#9e9e9e;color:#fff;font-weight:800;display:flex;justify-content:space-between;align-items:center}.operation-info-detail-header button{border:0;background:transparent;color:#fff;font-size:20px;cursor:pointer}.operation-info-detail-body{padding:16px;line-height:1.8}.operation-info-detail-status{display:inline-block;padding:4px 10px;border-radius:6px;font-weight:800;margin-bottom:8px}.operation-info-detail-status.delay{background:#f2c94c;color:#111}.operation-info-detail-status.suspend{background:#ef5350;color:#fff}
 @media(max-width:700px){#title{padding-left:0;padding-right:0}.operation-info-panel{top:62px}.operation-info-grid{grid-template-columns:1fr}.operation-info-field.full{grid-column:auto}.operation-info-range{grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr)}.operation-info-card{grid-template-columns:1fr}.operation-info-card-delete{justify-self:end}}
 
 /* 駅ラベル：東武野田線と同じ基本デザイン */
@@ -570,8 +577,8 @@ body{font-family:Helvetica,"Helvetica Neue","Noto Sans JP",Arial,sans-serif;}
 #operationInfoBtn{color:#007ea8;}
 .station-badge{background:#00a3d9;}
 .rail-line{background:#00a3d9;}
-.train-label.keihin-local,.station-timetable-type.keihin-local,.type-badge.keihin-local{background:#87CEEB;color:#111;}
-.train-label.yokohama-local,.station-timetable-type.yokohama-local,.type-badge.yokohama-local{background:#9ACD32;color:#111;}
+.train-label.keihin-local,.station-timetable-type.keihin-local,.type-badge.keihin-local{background:#00a3d9;color:#111;}
+.train-label.yokohama-local,.station-timetable-type.yokohama-local,.type-badge.yokohama-local{background:#7fbe3f;color:#111;}
 .train-label.express,.station-timetable-type.express,.type-badge.express{background:#e83e8c;color:#fff;}
 </style>
 </head>
@@ -634,8 +641,17 @@ body{font-family:Helvetica,"Helvetica Neue","Noto Sans JP",Arial,sans-serif;}
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics-compat.js"></script>
 <script>
-/* Firebase設定：この路線は初期状態ではローカル保存のみ */
-window.JRELINE_FIREBASE_CONFIG = {};
+/* Firebase設定：京浜東北・根岸線 */
+window.JRELINE_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDxkaJ-DpyroT18R0CoDmaKoFfXlqyIvyw",
+  authDomain: "unyomatome-jrekeihintohoku.firebaseapp.com",
+  databaseURL: "https://unyomatome-jrekeihintohoku-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "unyomatome-jrekeihintohoku",
+  storageBucket: "unyomatome-jrekeihintohoku.firebasestorage.app",
+  messagingSenderId: "128792041735",
+  appId: "1:128792041735:web:bc3cc6117799cf93c90da2",
+  measurementId: "G-75PWDN6QLQ"
+};
 </script>
 <script>
 /* 京浜東北・根岸線 */
@@ -643,7 +659,7 @@ const STATIONS = [{"id":"st1","nameJa":"大宮","nameEn":"Omiya"},{"id":"st2","n
 const KEIHIN_TOHOKU_TRAIN_IMG = 'https://minamikaze2700.github.io/Unyomatome/images/Keihin-Tohoku_noimage.png';
 const YOKOHAMA_TRAIN_IMG = 'https://minamikaze2700.github.io/Unyomatome/images/Yokohama_noimage.png';
 const LINE_TRAIN_IMG = KEIHIN_TOHOKU_TRAIN_IMG;
-const FORMATIONS = [{"type":"E233系1000番台","typeImg":"https://minamikaze2700.github.io/Unyomatome/images/JK_101.png","items":[{"id":"101F","name":"101","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_101.png","cars":10},{"id":"102F","name":"102","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_102.png","cars":10},{"id":"104F","name":"104","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_104.png","cars":10},{"id":"105F","name":"105","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_105.png","cars":10},{"id":"106F","name":"106","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_106.png","cars":10},{"id":"107F","name":"107","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_107.png","cars":10},{"id":"108F","name":"108","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_108.png","cars":10},{"id":"109F","name":"109","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_109.png","cars":10},{"id":"110F","name":"110","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_110.png","cars":10},{"id":"111F","name":"111","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_111.png","cars":10},{"id":"112F","name":"112","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_112.png","cars":10},{"id":"113F","name":"113","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_113.png","cars":10},{"id":"114F","name":"114","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_114.png","cars":10},{"id":"115F","name":"115","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_115.png","cars":10},{"id":"116F","name":"116","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_116.png","cars":10},{"id":"117F","name":"117","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_117.png","cars":10},{"id":"118F","name":"118","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_118.png","cars":10},{"id":"119F","name":"119","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_119.png","cars":10},{"id":"120F","name":"120","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_120.png","cars":10},{"id":"121F","name":"121","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_121.png","cars":10},{"id":"122F","name":"122","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_122.png","cars":10},{"id":"123F","name":"123","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_123.png","cars":10},{"id":"124F","name":"124","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_124.png","cars":10},{"id":"125F","name":"125","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_125.png","cars":10},{"id":"126F","name":"126","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_126.png","cars":10},{"id":"127F","name":"127","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_127.png","cars":10},{"id":"128F","name":"128","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_128.png","cars":10},{"id":"129F","name":"129","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_129.png","cars":10},{"id":"130F","name":"130","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_130.png","cars":10},{"id":"131F","name":"131","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_131.png","cars":10},{"id":"132F","name":"132","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_132.png","cars":10},{"id":"133F","name":"133","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_133.png","cars":10},{"id":"134F","name":"134","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_134.png","cars":10},{"id":"135F","name":"135","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_135.png","cars":10},{"id":"136F","name":"136","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_136.png","cars":10},{"id":"137F","name":"137","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_137.png","cars":10},{"id":"138F","name":"138","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_138.png","cars":10},{"id":"139F","name":"139","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_139.png","cars":10},{"id":"140F","name":"140","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_140.png","cars":10},{"id":"141F","name":"141","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_141.png","cars":10},{"id":"142F","name":"142","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_142.png","cars":10},{"id":"143F","name":"143","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_143.png","cars":10},{"id":"144F","name":"144","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_144.png","cars":10},{"id":"145F","name":"145","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_145.png","cars":10},{"id":"146F","name":"146","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_146.png","cars":10},{"id":"147F","name":"147","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_147.png","cars":10},{"id":"148F","name":"148","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_148.png","cars":10},{"id":"149F","name":"149","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_149.png","cars":10},{"id":"150F","name":"150","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_150.png","cars":10},{"id":"151F","name":"151","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_151.png","cars":10},{"id":"152F","name":"152","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_152.png","cars":10},{"id":"153F","name":"153","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_153.png","cars":10},{"id":"154F","name":"154","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_154.png","cars":10},{"id":"155F","name":"155","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_155.png","cars":10},{"id":"156F","name":"156","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_156.png","cars":10},{"id":"157F","name":"157","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_157.png","cars":10},{"id":"158F","name":"158","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_158.png","cars":10},{"id":"159F","name":"159","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_159.png","cars":10},{"id":"160F","name":"160","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_160.png","cars":10},{"id":"161F","name":"161","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_161.png","cars":10},{"id":"162F","name":"162","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_162.png","cars":10},{"id":"163F","name":"163","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_163.png","cars":10},{"id":"164F","name":"164","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_164.png","cars":10},{"id":"165F","name":"165","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_165.png","cars":10},{"id":"166F","name":"166","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_166.png","cars":10},{"id":"167F","name":"167","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_167.png","cars":10},{"id":"168F","name":"168","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_168.png","cars":10},{"id":"169F","name":"169","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_169.png","cars":10},{"id":"170F","name":"170","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_170.png","cars":10},{"id":"171F","name":"171","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_171.png","cars":10},{"id":"172F","name":"172","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_172.png","cars":10},{"id":"173F","name":"173","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_173.png","cars":10},{"id":"174F","name":"174","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_174.png","cars":10},{"id":"175F","name":"175","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_175.png","cars":10},{"id":"176F","name":"176","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_176.png","cars":10},{"id":"177F","name":"177","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_177.png","cars":10},{"id":"178F","name":"178","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_178.png","cars":10},{"id":"179F","name":"179","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_179.png","cars":10},{"id":"180F","name":"180","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_180.png","cars":10},{"id":"181F","name":"181","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_181.png","cars":10},{"id":"182F","name":"182","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_182.png","cars":10},{"id":"183F","name":"183","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_183.png","cars":10}]},{"type":"E233系6000番台","typeImg":"https://minamikaze2700.github.io/Unyomatome/images/JH_H001.png","items":[{"id":"H001F","name":"H001","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H001.png","cars":8},{"id":"H002F","name":"H002","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H002.png","cars":8},{"id":"H003F","name":"H003","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H003.png","cars":8},{"id":"H004F","name":"H004","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H004.png","cars":8},{"id":"H005F","name":"H005","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H005.png","cars":8},{"id":"H006F","name":"H006","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H006.png","cars":8},{"id":"H007F","name":"H007","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H007.png","cars":8},{"id":"H008F","name":"H008","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H008.png","cars":8},{"id":"H009F","name":"H009","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H009.png","cars":8},{"id":"H010F","name":"H010","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H010.png","cars":8},{"id":"H011F","name":"H011","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H011.png","cars":8},{"id":"H012F","name":"H012","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H012.png","cars":8},{"id":"H013F","name":"H013","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H013.png","cars":8},{"id":"H014F","name":"H014","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H014.png","cars":8},{"id":"H015F","name":"H015","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H015.png","cars":8},{"id":"H016F","name":"H016","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H016.png","cars":8},{"id":"H017F","name":"H017","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H017.png","cars":8},{"id":"H018F","name":"H018","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H018.png","cars":8},{"id":"H019F","name":"H019","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H019.png","cars":8},{"id":"H020F","name":"H020","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H020.png","cars":8},{"id":"H021F","name":"H021","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H021.png","cars":8},{"id":"H022F","name":"H022","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H022.png","cars":8},{"id":"H023F","name":"H023","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H023.png","cars":8},{"id":"H024F","name":"H024","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H024.png","cars":8},{"id":"H025F","name":"H025","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H025.png","cars":8},{"id":"H026F","name":"H026","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H026.png","cars":8},{"id":"H027F","name":"H027","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H027.png","cars":8},{"id":"H028F","name":"H028","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H028.png","cars":8}]}];
+const FORMATIONS = [{"type":"E233系1000番台","typeImg":"https://minamikaze2700.github.io/Unyomatome/images/JK_101.png","items":[{"id":"101F","name":"101","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_101.png","cars":10,"disabled":true},{"id":"102F","name":"102","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_102.png","cars":10},{"id":"104F","name":"104","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_104.png","cars":10},{"id":"105F","name":"105","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_105.png","cars":10},{"id":"106F","name":"106","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_106.png","cars":10},{"id":"107F","name":"107","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_107.png","cars":10},{"id":"108F","name":"108","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_108.png","cars":10},{"id":"109F","name":"109","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_109.png","cars":10},{"id":"110F","name":"110","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_110.png","cars":10},{"id":"111F","name":"111","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_111.png","cars":10},{"id":"112F","name":"112","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_112.png","cars":10},{"id":"113F","name":"113","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_113.png","cars":10},{"id":"114F","name":"114","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_114.png","cars":10},{"id":"115F","name":"115","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_115.png","cars":10},{"id":"116F","name":"116","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_116.png","cars":10},{"id":"117F","name":"117","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_117.png","cars":10},{"id":"118F","name":"118","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_118.png","cars":10},{"id":"119F","name":"119","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_119.png","cars":10},{"id":"120F","name":"120","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_120.png","cars":10},{"id":"121F","name":"121","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_121.png","cars":10},{"id":"122F","name":"122","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_122.png","cars":10},{"id":"123F","name":"123","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_123.png","cars":10},{"id":"124F","name":"124","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_124.png","cars":10},{"id":"125F","name":"125","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_125.png","cars":10},{"id":"126F","name":"126","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_126.png","cars":10},{"id":"127F","name":"127","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_127.png","cars":10},{"id":"128F","name":"128","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_128.png","cars":10},{"id":"129F","name":"129","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_129.png","cars":10},{"id":"130F","name":"130","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_130.png","cars":10},{"id":"131F","name":"131","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_131.png","cars":10},{"id":"132F","name":"132","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_132.png","cars":10},{"id":"133F","name":"133","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_133.png","cars":10},{"id":"134F","name":"134","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_134.png","cars":10},{"id":"135F","name":"135","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_135.png","cars":10},{"id":"136F","name":"136","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_136.png","cars":10},{"id":"137F","name":"137","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_137.png","cars":10},{"id":"138F","name":"138","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_138.png","cars":10},{"id":"139F","name":"139","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_139.png","cars":10},{"id":"140F","name":"140","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_140.png","cars":10},{"id":"141F","name":"141","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_141.png","cars":10},{"id":"142F","name":"142","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_142.png","cars":10},{"id":"143F","name":"143","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_143.png","cars":10},{"id":"144F","name":"144","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_144.png","cars":10},{"id":"145F","name":"145","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_145.png","cars":10},{"id":"146F","name":"146","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_146.png","cars":10},{"id":"147F","name":"147","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_147.png","cars":10},{"id":"148F","name":"148","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_148.png","cars":10},{"id":"149F","name":"149","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_149.png","cars":10},{"id":"150F","name":"150","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_150.png","cars":10},{"id":"151F","name":"151","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_151.png","cars":10},{"id":"152F","name":"152","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_152.png","cars":10},{"id":"153F","name":"153","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_153.png","cars":10},{"id":"154F","name":"154","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_154.png","cars":10},{"id":"155F","name":"155","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_155.png","cars":10},{"id":"156F","name":"156","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_156.png","cars":10},{"id":"157F","name":"157","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_157.png","cars":10},{"id":"158F","name":"158","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_158.png","cars":10},{"id":"159F","name":"159","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_159.png","cars":10},{"id":"160F","name":"160","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_160.png","cars":10},{"id":"161F","name":"161","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_161.png","cars":10},{"id":"162F","name":"162","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_162.png","cars":10},{"id":"163F","name":"163","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_163.png","cars":10},{"id":"164F","name":"164","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_164.png","cars":10},{"id":"165F","name":"165","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_165.png","cars":10},{"id":"166F","name":"166","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_166.png","cars":10},{"id":"167F","name":"167","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_167.png","cars":10},{"id":"168F","name":"168","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_168.png","cars":10},{"id":"169F","name":"169","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_169.png","cars":10},{"id":"170F","name":"170","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_170.png","cars":10},{"id":"171F","name":"171","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_171.png","cars":10},{"id":"172F","name":"172","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_172.png","cars":10},{"id":"173F","name":"173","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_173.png","cars":10},{"id":"174F","name":"174","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_174.png","cars":10},{"id":"175F","name":"175","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_175.png","cars":10},{"id":"176F","name":"176","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_176.png","cars":10},{"id":"178F","name":"178","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_178.png","cars":10},{"id":"179F","name":"179","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_179.png","cars":10},{"id":"180F","name":"180","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_180.png","cars":10},{"id":"181F","name":"181","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_181.png","cars":10},{"id":"182F","name":"182","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_182.png","cars":10},{"id":"183F","name":"183","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_183.png","cars":10}]}];
 const VEHICLE_TO_FORMATION = {};
 const INITIAL_FORMATION_SELECTION = {id:"__INITIAL__",name:"編成未選択",img:LINE_TRAIN_IMG,kind:"placeholder"};
 const UNAVAILABLE_FORMATIONS = new Set(['101F']);
@@ -747,7 +763,36 @@ function buildTimetableRows(stops){
   return rows;
 }
 function timetableRowsHTML(stops){
-  return buildTimetableRows(stops).map(row=>{
+  const rows=buildTimetableRows(stops);
+  const names=rows.map(r=>String(r.station||''));
+  const hachiIndex=names.indexOf('八王子');
+  const higashiIndex=names.indexOf('東神奈川');
+  const hasYokohamaSection=hachiIndex>=0 && higashiIndex>=0;
+  const lo=Math.min(hachiIndex,higashiIndex);
+  const hi=Math.max(hachiIndex,higashiIndex);
+
+  // 駅の丸：東神奈川～八王子を横浜線色、それ以外を京浜東北・根岸線色。
+  const stationColor=(index)=>{
+    return hasYokohamaSection && index>=lo && index<=hi
+      ? 'var(--yokohama-route)'
+      : 'var(--keihin-route)';
+  };
+
+  // 丸と丸の間の線：横浜～東神奈川は常に京浜東北・根岸線色。
+  // 東神奈川～八王子の区間は横浜線色。それ以外も京浜東北・根岸線色。
+  const segmentColor=(aIndex,bIndex)=>{
+    if(aIndex<0 || bIndex<0 || !hasYokohamaSection) return 'var(--keihin-route)';
+    const a=names[aIndex], b=names[bIndex];
+    if((a==='横浜' && b==='東神奈川') || (a==='東神奈川' && b==='横浜')){
+      return 'var(--keihin-route)';
+    }
+    if(aIndex>=lo && aIndex<=hi && bIndex>=lo && bIndex<=hi){
+      return 'var(--yokohama-route)';
+    }
+    return 'var(--keihin-route)';
+  };
+
+  return rows.map((row,index)=>{
     // 同一駅に時刻が2つある場合、時刻表の1つ目を到着、2つ目を発車として2段表示。
     // 駅ごとの行の高さは常に56pxのままにする。
     const hasTwoTimes=row.times.length>=2;
@@ -755,7 +800,10 @@ function timetableRowsHTML(stops){
     // 到着時刻と発車時刻が同一なら1つにまとめる。
     const times=(rawTimes.length>=2 && rawTimes[0]===rawTimes[1]) ? [rawTimes[0]] : rawTimes;
     const twoLine=times.length>=2;
-    return `<div class="timetable-item"><div class="time-dot"></div><div class="time-text${twoLine?' two-line':''}">${times.map((t,i)=>`<span>${t}</span>`).join('')}</div><div class="station-text">${row.station}</div></div>`;
+    const prevColor=segmentColor(index-1,index);
+    const nextColor=segmentColor(index,index+1);
+    const dotColor=stationColor(index);
+    return `<div class="timetable-item" style="--route-line-top:${prevColor};--route-line-bottom:${nextColor};--station-route-color:${dotColor}"><div class="time-dot"></div><div class="time-text${twoLine?' two-line':''}">${times.map((t,i)=>`<span>${t}</span>`).join('')}</div><div class="station-text">${row.station}</div></div>`;
   }).join('');
 }
 let TIMETABLE_HTML_CACHE = new Map();
@@ -1502,7 +1550,7 @@ function formationIdFromInput(value){
     for(const item of (group.items||[])){
       const candidates=[item.id,item.name];
       if(candidates.some(c=>normalizeFormationInput(c)===target)){
-        if(UNAVAILABLE_FORMATIONS.has(String(item.id))) return {ok:false,error:`編成「${item.name||item.id}」は入力できません。`};
+        if(item.disabled || UNAVAILABLE_FORMATIONS.has(String(item.id))) return {ok:false,error:`編成「${item.name||item.id}」は入力できません。`};
         return {ok:true,id:item.id};
       }
     }
@@ -1625,7 +1673,7 @@ function initTimeControl(){
   input.value=formatTimeNow();
   input.addEventListener('input',setManualTime);
 }
-function displayType(type){ return String(type||''); }
+function displayType(type){ return getDetailType(type); }
 function getDetailDest(dest){ return String(dest||''); }
 function getMainLabelClass(type){ return String(type||'')==='回送' ? 'deadhead' : ''; }
 function trainVisualKind(t){
@@ -1635,8 +1683,10 @@ function expressClassForTrain(t){
   const type=String(t?.type||'');
   if(type==='回送') return 'deadhead';
   if(type==='快速') return 'express';
-  const dest=String(t?.dest||'');
-  return (dest==='八王子'||dest==='橋本') ? 'yokohama-local' : 'keihin-local';
+  const lineKind=String(t?.lineKind||'');
+  if(lineKind==='yokohama') return 'yokohama-local';
+  if(lineKind==='keihin') return 'keihin-local';
+  return Number(t?.cars)===8 ? 'yokohama-local' : 'keihin-local';
 }
 function getExpressClass(train){
   return expressClassForTrain(train);
@@ -2215,16 +2265,20 @@ function updateSheetContent(){
                 <img src="${variant.img}" class="option-img"><span>${variant.name}</span>
               </div>
             `).join('')}
-            ${(group.variants||[]).flatMap(variant=>variant.items||[]).map(item=>`
-              <div class="option-item option-subitem ${UNAVAILABLE_FORMATIONS.has(String(item.id))?'option-disabled':''}" ${UNAVAILABLE_FORMATIONS.has(String(item.id))?'aria-disabled="true"':''} onclick="selectFormation('${item.id}')">
+            ${(group.variants||[]).flatMap(variant=>variant.items||[]).map(item=>{
+              const disabled=!!item.disabled || UNAVAILABLE_FORMATIONS.has(String(item.id));
+              return `
+              <div class="option-item option-subitem${disabled?' disabled':''}" ${disabled?'aria-disabled="true" title="選択できません"':'onclick="selectFormation(\''+item.id+'\')"'}>
                 <img src="${item.img}" class="option-img"><span>${item.name}</span>
-              </div>
-            `).join('')}
-            ${(group.items||[]).map(item=>`
-              <div class="option-item ${UNAVAILABLE_FORMATIONS.has(String(item.id))?'option-disabled':''}" ${UNAVAILABLE_FORMATIONS.has(String(item.id))?'aria-disabled="true"':''} onclick="selectFormation('${item.id}')">
+              </div>`;
+            }).join('')}
+            ${(group.items||[]).map(item=>{
+              const disabled=!!item.disabled || UNAVAILABLE_FORMATIONS.has(String(item.id));
+              return `
+              <div class="option-item${disabled?' disabled':''}" ${disabled?'aria-disabled="true" title="選択できません"':'onclick="selectFormation(\''+item.id+'\')"'}>
                 <img src="${item.img}" class="option-img"><span>${item.name}</span>
-              </div>
-            `).join('')}
+              </div>`;
+            }).join('')}
           `).join('')}
         </div>
       </div>
@@ -2284,7 +2338,8 @@ function toggleDropdown(){
 let selectionSyncInProgress=false;
 let pendingFormationTimestamps={平日:{},休日:{}};
 async function selectFormation(formId){
-  if(UNAVAILABLE_FORMATIONS.has(String(formId))) {
+  const formation=formationById(formId);
+  if(formation?.disabled || UNAVAILABLE_FORMATIONS.has(String(formId))) {
     syncStatus('この編成は入力できません');
     return;
   }
