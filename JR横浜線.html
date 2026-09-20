@@ -421,8 +421,8 @@ button,input,select,textarea{font-family:inherit}
   background:linear-gradient(to bottom,var(--route-line-top,var(--keihin-route)) 0 50%,var(--route-line-bottom,var(--keihin-route)) 50% 100%);
   z-index:1;
 }
-.timetable-item:first-child::before{top:50%}
-.timetable-item:last-child::before{bottom:50%}
+.timetable-item:first-child::before{top:50%;background:var(--route-line-bottom,var(--keihin-route));}
+.timetable-item:last-child::before{bottom:50%;background:var(--route-line-top,var(--keihin-route));}
 .time-dot{width:18px;height:18px;background:var(--station-route-color,var(--keihin-route));border-radius:50%;z-index:2;margin-right:16px}
 .time-text{width:58px;font-weight:700;display:flex;flex-direction:column;justify-content:center;line-height:1.05;gap:0;height:40px;flex:none}.time-text span{display:block;height:20px;line-height:20px;white-space:nowrap}.time-text.two-line span:first-child{font-size:1rem}.time-text.two-line span:last-child{font-size:1rem}
 .station-text{font-weight:700;font-size:1.05rem;line-height:1.2;display:flex;align-items:center;min-height:40px}
@@ -585,9 +585,17 @@ body{font-family:Helvetica,"Helvetica Neue","Noto Sans JP",Arial,sans-serif;}
 :root{--primary:#7fbe3f;--primary-dark:#5f8e2e;}
 #title{background:#7fbe3f;border-bottom-color:#dbeac5;}
 #operationInfoBtn{color:#5f8e2e;}
-.station-badge{background:#7fbe3f;}
-.rail-line{background:linear-gradient(to bottom,#7fbe3f 0 61.2903%,#00a3d9 61.2903% 100%);}
-.station-badge.keihin-shared{background:#00a3d9;}
+/* 駅名標は、その駅から次の駅までの区間カラー。終点のみ前駅との区間カラー。 */
+.station-badge{background:var(--station-color,var(--yokohama-route)) !important;}
+.rail-line{display:none !important;}
+/* 駅間ごとに路線カラーを固定。線は各駅の中心から次駅の中心までだけ描画し、起終点を突き抜けない。 */
+.station-row::before{content:'';position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:12px;background:linear-gradient(to bottom,var(--line-top,var(--yokohama-route)) 0 50%,var(--line-bottom,var(--yokohama-route)) 50% 100%);z-index:1;pointer-events:none;}
+.station-row:first-child::before{top:50%;}
+.station-row:last-child::before{bottom:50%;}
+.station-row.endpoint-start::before{top:50%;}
+.station-row.endpoint-end::before{bottom:50%;}
+.station-row.endpoint-start.endpoint-end::before{top:50%;bottom:auto;}
+.station-badge.keihin-shared{background:#00a3d9 !important;}
 .train-label.keihin-local,.station-timetable-type.keihin-local,.type-badge.keihin-local{background:#00a3d9;color:#111;}
 .train-label.yokohama-local,.station-timetable-type.yokohama-local,.type-badge.yokohama-local{background:#7fbe3f;color:#111;}
 .train-label.express,.station-timetable-type.express,.type-badge.express{background:#e83e8c;color:#fff;}
@@ -683,7 +691,7 @@ const STATIONS = [{"id":"st1","nameJa":"八王子","nameEn":"Hachioji"},{"id":"s
 const KEIHIN_TOHOKU_TRAIN_IMG = 'https://minamikaze2700.github.io/Unyomatome/images/Keihin-Tohoku_noimage.png';
 const YOKOHAMA_TRAIN_IMG = 'https://minamikaze2700.github.io/Unyomatome/images/Yokohama_noimage.png';
 const LINE_TRAIN_IMG = YOKOHAMA_TRAIN_IMG;
-const FORMATIONS = [{"type":"E233系6000番台","typeImg":"https://minamikaze2700.github.io/Unyomatome/images/E233_Yokohama.png","items":[{"id":"H001F","name":"H001","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H001.png","cars":8},{"id":"H002F","name":"H002","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H002.png","cars":8},{"id":"H003F","name":"H003","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H003.png","cars":8},{"id":"H004F","name":"H004","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H004.png","cars":8},{"id":"H005F","name":"H005","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H005.png","cars":8},{"id":"H006F","name":"H006","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H006.png","cars":8},{"id":"H007F","name":"H007","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H007.png","cars":8},{"id":"H008F","name":"H008","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H008.png","cars":8},{"id":"H009F","name":"H009","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H009.png","cars":8},{"id":"H010F","name":"H010","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H010.png","cars":8},{"id":"H011F","name":"H011","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H011.png","cars":8},{"id":"H012F","name":"H012","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H012.png","cars":8},{"id":"H013F","name":"H013","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H013.png","cars":8},{"id":"H014F","name":"H014","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H014.png","cars":8},{"id":"H015F","name":"H015","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H015.png","cars":8},{"id":"H016F","name":"H016","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H016.png","cars":8},{"id":"H017F","name":"H017","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H017.png","cars":8},{"id":"H018F","name":"H018","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H018.png","cars":8},{"id":"H019F","name":"H019","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H019.png","cars":8},{"id":"H020F","name":"H020","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H020.png","cars":8},{"id":"H021F","name":"H021","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H021.png","cars":8},{"id":"H022F","name":"H022","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H022.png","cars":8},{"id":"H023F","name":"H023","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H023.png","cars":8},{"id":"H024F","name":"H024","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H024.png","cars":8},{"id":"H025F","name":"H025","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H025.png","cars":8},{"id":"H026F","name":"H026","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H026.png","cars":8},{"id":"H027F","name":"H027","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H027.png","cars":8},{"id":"H028F","name":"H028","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H028.png","cars":8}]},{"type":"E233系1000番台","typeImg":"https://minamikaze2700.github.io/Unyomatome/images/E233_Keihin-Tohoku.png","items":[{"id":"101F","name":"101","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_101.png","cars":10,"disabled":true},{"id":"102F","name":"102","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_102.png","cars":10},{"id":"104F","name":"104","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_104.png","cars":10},{"id":"105F","name":"105","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_105.png","cars":10},{"id":"106F","name":"106","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_106.png","cars":10},{"id":"107F","name":"107","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_107.png","cars":10},{"id":"108F","name":"108","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_108.png","cars":10},{"id":"109F","name":"109","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_109.png","cars":10},{"id":"110F","name":"110","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_110.png","cars":10},{"id":"111F","name":"111","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_111.png","cars":10},{"id":"112F","name":"112","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_112.png","cars":10},{"id":"113F","name":"113","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_113.png","cars":10},{"id":"114F","name":"114","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_114.png","cars":10},{"id":"115F","name":"115","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_115.png","cars":10},{"id":"116F","name":"116","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_116.png","cars":10},{"id":"117F","name":"117","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_117.png","cars":10},{"id":"118F","name":"118","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_118.png","cars":10},{"id":"119F","name":"119","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_119.png","cars":10},{"id":"120F","name":"120","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_120.png","cars":10},{"id":"121F","name":"121","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_121.png","cars":10},{"id":"122F","name":"122","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_122.png","cars":10},{"id":"123F","name":"123","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_123.png","cars":10},{"id":"124F","name":"124","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_124.png","cars":10},{"id":"125F","name":"125","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_125.png","cars":10},{"id":"126F","name":"126","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_126.png","cars":10},{"id":"127F","name":"127","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_127.png","cars":10},{"id":"128F","name":"128","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_128.png","cars":10},{"id":"129F","name":"129","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_129.png","cars":10},{"id":"130F","name":"130","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_130.png","cars":10},{"id":"131F","name":"131","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_131.png","cars":10},{"id":"132F","name":"132","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_132.png","cars":10},{"id":"133F","name":"133","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_133.png","cars":10},{"id":"134F","name":"134","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_134.png","cars":10},{"id":"135F","name":"135","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_135.png","cars":10},{"id":"136F","name":"136","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_136.png","cars":10},{"id":"137F","name":"137","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_137.png","cars":10},{"id":"138F","name":"138","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_138.png","cars":10},{"id":"139F","name":"139","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_139.png","cars":10},{"id":"140F","name":"140","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_140.png","cars":10},{"id":"141F","name":"141","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_141.png","cars":10},{"id":"142F","name":"142","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_142.png","cars":10},{"id":"143F","name":"143","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_143.png","cars":10},{"id":"144F","name":"144","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_144.png","cars":10},{"id":"145F","name":"145","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_145.png","cars":10},{"id":"146F","name":"146","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_146.png","cars":10},{"id":"147F","name":"147","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_147.png","cars":10},{"id":"148F","name":"148","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_148.png","cars":10},{"id":"149F","name":"149","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_149.png","cars":10},{"id":"150F","name":"150","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_150.png","cars":10},{"id":"151F","name":"151","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_151.png","cars":10},{"id":"152F","name":"152","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_152.png","cars":10},{"id":"153F","name":"153","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_153.png","cars":10},{"id":"154F","name":"154","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_154.png","cars":10},{"id":"155F","name":"155","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_155.png","cars":10},{"id":"156F","name":"156","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_156.png","cars":10},{"id":"157F","name":"157","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_157.png","cars":10},{"id":"158F","name":"158","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_158.png","cars":10},{"id":"159F","name":"159","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_159.png","cars":10},{"id":"160F","name":"160","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_160.png","cars":10},{"id":"161F","name":"161","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_161.png","cars":10},{"id":"162F","name":"162","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_162.png","cars":10},{"id":"163F","name":"163","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_163.png","cars":10},{"id":"164F","name":"164","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_164.png","cars":10},{"id":"165F","name":"165","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_165.png","cars":10},{"id":"166F","name":"166","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_166.png","cars":10},{"id":"167F","name":"167","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_167.png","cars":10},{"id":"168F","name":"168","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_168.png","cars":10},{"id":"169F","name":"169","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_169.png","cars":10},{"id":"170F","name":"170","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_170.png","cars":10},{"id":"171F","name":"171","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_171.png","cars":10},{"id":"172F","name":"172","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_172.png","cars":10},{"id":"173F","name":"173","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_173.png","cars":10},{"id":"174F","name":"174","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_174.png","cars":10},{"id":"175F","name":"175","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_175.png","cars":10},{"id":"176F","name":"176","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_176.png","cars":10},{"id":"178F","name":"178","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_178.png","cars":10},{"id":"179F","name":"179","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_179.png","cars":10},{"id":"180F","name":"180","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_180.png","cars":10},{"id":"181F","name":"181","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_181.png","cars":10},{"id":"182F","name":"182","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_182.png","cars":10},{"id":"183F","name":"183","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_183.png","cars":10}]}]; VEHICLE_TO_FORMATION = {};
+const FORMATIONS = [{"type":"E233系1000番台","typeImg":"https://minamikaze2700.github.io/Unyomatome/images/E233_Keihin-Tohoku.png","items":[{"id":"101F","name":"101","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_101.png","cars":10,"disabled":true},{"id":"102F","name":"102","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_102.png","cars":10},{"id":"104F","name":"104","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_104.png","cars":10},{"id":"105F","name":"105","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_105.png","cars":10},{"id":"106F","name":"106","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_106.png","cars":10},{"id":"107F","name":"107","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_107.png","cars":10},{"id":"108F","name":"108","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_108.png","cars":10},{"id":"109F","name":"109","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_109.png","cars":10},{"id":"110F","name":"110","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_110.png","cars":10},{"id":"111F","name":"111","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_111.png","cars":10},{"id":"112F","name":"112","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_112.png","cars":10},{"id":"113F","name":"113","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_113.png","cars":10},{"id":"114F","name":"114","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_114.png","cars":10},{"id":"115F","name":"115","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_115.png","cars":10},{"id":"116F","name":"116","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_116.png","cars":10},{"id":"117F","name":"117","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_117.png","cars":10},{"id":"118F","name":"118","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_118.png","cars":10},{"id":"119F","name":"119","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_119.png","cars":10},{"id":"120F","name":"120","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_120.png","cars":10},{"id":"121F","name":"121","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_121.png","cars":10},{"id":"122F","name":"122","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_122.png","cars":10},{"id":"123F","name":"123","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_123.png","cars":10},{"id":"124F","name":"124","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_124.png","cars":10},{"id":"125F","name":"125","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_125.png","cars":10},{"id":"126F","name":"126","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_126.png","cars":10},{"id":"127F","name":"127","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_127.png","cars":10},{"id":"128F","name":"128","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_128.png","cars":10},{"id":"129F","name":"129","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_129.png","cars":10},{"id":"130F","name":"130","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_130.png","cars":10},{"id":"131F","name":"131","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_131.png","cars":10},{"id":"132F","name":"132","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_132.png","cars":10},{"id":"133F","name":"133","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_133.png","cars":10},{"id":"134F","name":"134","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_134.png","cars":10},{"id":"135F","name":"135","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_135.png","cars":10},{"id":"136F","name":"136","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_136.png","cars":10},{"id":"137F","name":"137","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_137.png","cars":10},{"id":"138F","name":"138","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_138.png","cars":10},{"id":"139F","name":"139","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_139.png","cars":10},{"id":"140F","name":"140","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_140.png","cars":10},{"id":"141F","name":"141","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_141.png","cars":10},{"id":"142F","name":"142","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_142.png","cars":10},{"id":"143F","name":"143","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_143.png","cars":10},{"id":"144F","name":"144","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_144.png","cars":10},{"id":"145F","name":"145","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_145.png","cars":10},{"id":"146F","name":"146","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_146.png","cars":10},{"id":"147F","name":"147","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_147.png","cars":10},{"id":"148F","name":"148","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_148.png","cars":10},{"id":"149F","name":"149","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_149.png","cars":10},{"id":"150F","name":"150","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_150.png","cars":10},{"id":"151F","name":"151","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_151.png","cars":10},{"id":"152F","name":"152","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_152.png","cars":10},{"id":"153F","name":"153","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_153.png","cars":10},{"id":"154F","name":"154","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_154.png","cars":10},{"id":"155F","name":"155","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_155.png","cars":10},{"id":"156F","name":"156","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_156.png","cars":10},{"id":"157F","name":"157","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_157.png","cars":10},{"id":"158F","name":"158","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_158.png","cars":10},{"id":"159F","name":"159","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_159.png","cars":10},{"id":"160F","name":"160","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_160.png","cars":10},{"id":"161F","name":"161","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_161.png","cars":10},{"id":"162F","name":"162","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_162.png","cars":10},{"id":"163F","name":"163","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_163.png","cars":10},{"id":"164F","name":"164","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_164.png","cars":10},{"id":"165F","name":"165","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_165.png","cars":10},{"id":"166F","name":"166","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_166.png","cars":10},{"id":"167F","name":"167","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_167.png","cars":10},{"id":"168F","name":"168","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_168.png","cars":10},{"id":"169F","name":"169","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_169.png","cars":10},{"id":"170F","name":"170","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_170.png","cars":10},{"id":"171F","name":"171","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_171.png","cars":10},{"id":"172F","name":"172","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_172.png","cars":10},{"id":"173F","name":"173","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_173.png","cars":10},{"id":"174F","name":"174","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_174.png","cars":10},{"id":"175F","name":"175","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_175.png","cars":10},{"id":"176F","name":"176","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_176.png","cars":10},{"id":"178F","name":"178","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_178.png","cars":10},{"id":"179F","name":"179","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_179.png","cars":10},{"id":"180F","name":"180","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_180.png","cars":10},{"id":"181F","name":"181","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_181.png","cars":10},{"id":"182F","name":"182","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_182.png","cars":10},{"id":"183F","name":"183","img":"https://minamikaze2700.github.io/Unyomatome/images/JK_183.png","cars":10}]},{"type":"E233系6000番台","typeImg":"https://minamikaze2700.github.io/Unyomatome/images/E233_Yokohama.png","items":[{"id":"H001F","name":"H001","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H001.png","cars":8},{"id":"H002F","name":"H002","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H002.png","cars":8},{"id":"H003F","name":"H003","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H003.png","cars":8},{"id":"H004F","name":"H004","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H004.png","cars":8},{"id":"H005F","name":"H005","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H005.png","cars":8},{"id":"H006F","name":"H006","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H006.png","cars":8},{"id":"H007F","name":"H007","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H007.png","cars":8},{"id":"H008F","name":"H008","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H008.png","cars":8},{"id":"H009F","name":"H009","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H009.png","cars":8},{"id":"H010F","name":"H010","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H010.png","cars":8},{"id":"H011F","name":"H011","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H011.png","cars":8},{"id":"H012F","name":"H012","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H012.png","cars":8},{"id":"H013F","name":"H013","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H013.png","cars":8},{"id":"H014F","name":"H014","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H014.png","cars":8},{"id":"H015F","name":"H015","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H015.png","cars":8},{"id":"H016F","name":"H016","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H016.png","cars":8},{"id":"H017F","name":"H017","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H017.png","cars":8},{"id":"H018F","name":"H018","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H018.png","cars":8},{"id":"H019F","name":"H019","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H019.png","cars":8},{"id":"H020F","name":"H020","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H020.png","cars":8},{"id":"H021F","name":"H021","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H021.png","cars":8},{"id":"H022F","name":"H022","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H022.png","cars":8},{"id":"H023F","name":"H023","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H023.png","cars":8},{"id":"H024F","name":"H024","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H024.png","cars":8},{"id":"H025F","name":"H025","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H025.png","cars":8},{"id":"H026F","name":"H026","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H026.png","cars":8},{"id":"H027F","name":"H027","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H027.png","cars":8},{"id":"H028F","name":"H028","img":"https://minamikaze2700.github.io/Unyomatome/images/JH_H028.png","cars":8}]}]; VEHICLE_TO_FORMATION = {};
 const INITIAL_FORMATION_SELECTION = {id:"__INITIAL__",name:"編成未選択",img:LINE_TRAIN_IMG,kind:"placeholder"};
 const UNAVAILABLE_FORMATIONS = new Set();
 const TYPE_SELECTIONS = FORMATIONS.map(group=>({id:group.type,name:group.type,img:group.typeImg,kind:'type',type:group.type}));
@@ -740,7 +748,7 @@ async function loadLineTrainData(){
   HOLIDAY_TRAINS=combined.filter(t=>Array.isArray(t.days)&&t.days.includes('休日'));
   TRAIN_INDEX=Object.fromEntries(TRAINS.map(t=>[String(t.no),t]));
   HOLIDAY_TRAIN_INDEX=Object.fromEntries(HOLIDAY_TRAINS.map(t=>[String(t.no),t]));
-  TIMETABLE_HTML_CACHE=new Map([...TRAINS,...HOLIDAY_TRAINS].map(t=>[String(t.days||'')+':'+String(t.no),timetableRowsHTML(t.stops)]));
+  TIMETABLE_HTML_CACHE=new Map([...TRAINS,...HOLIDAY_TRAINS].map(t=>[String(t.days||'')+':'+String(t.no),timetableRowsHTML(t.stops,t)]));
 }
 let HOLIDAY_UP_TRAINS=[];
 let HOLIDAY_TRAINS=[];
@@ -812,52 +820,32 @@ function buildTimetableRows(stops){
   }
   return rows;
 }
-function timetableRowsHTML(stops){
+function timetableRowsHTML(stops,trainContext=null){
   const rows=buildTimetableRows(stops);
-  const names=rows.map(r=>String(r.station||''));
-  const hachiIndex=names.indexOf('八王子');
-  const higashiIndex=names.indexOf('東神奈川');
-  const hasYokohamaSection=hachiIndex>=0 && higashiIndex>=0;
-  const lo=Math.min(hachiIndex,higashiIndex);
-  const hi=Math.max(hachiIndex,higashiIndex);
+  if(!rows.length) return '';
 
-  // 駅の丸：八王子～東神奈川の区間を横浜線色、東神奈川以南を京浜東北・根岸線色。
-  const stationColor=(index)=>{
-    return hasYokohamaSection && index>=lo && index<hi
-      ? 'var(--yokohama-route)'
-      : 'var(--keihin-route)';
-  };
-
-  // 丸と丸の間の線：横浜～東神奈川は常に京浜東北・根岸線色。
-  // 東神奈川～八王子の区間は横浜線色。それ以外も京浜東北・根岸線色。
+  // 停車駅案内の色は「その駅から次の駅へ進む区間」の路線カラーを基本とする。
+  // 東神奈川のような接続駅でも、実際の列車の次区間を見て色を決める。
+  const stationColor=index=>routeColorForStopIndex(rows,index,trainContext);
   const segmentColor=(aIndex,bIndex)=>{
-    if(aIndex<0 || bIndex<0 || !hasYokohamaSection) return 'var(--keihin-route)';
-    const a=names[aIndex], b=names[bIndex];
-    if((a==='横浜' && b==='東神奈川') || (a==='東神奈川' && b==='横浜')){
-      return 'var(--keihin-route)';
-    }
-    if(aIndex>=lo && aIndex<=hi && bIndex>=lo && bIndex<=hi){
-      return 'var(--yokohama-route)';
-    }
-    return 'var(--keihin-route)';
+    if(aIndex<0 || bIndex<0 || aIndex>=rows.length || bIndex>=rows.length) return routeColorForTrainFallback(trainContext);
+    return routeColorForStopSegment(rows[aIndex]?.station,rows[bIndex]?.station,trainContext);
   };
 
   return rows.map((row,index)=>{
-    // 同一駅に時刻が2つある場合、時刻表の1つ目を到着、2つ目を発車として2段表示。
-    // 駅ごとの行の高さは常に56pxのままにする。
     const hasTwoTimes=row.times.length>=2;
     const rawTimes=hasTwoTimes ? row.times.slice(0,2) : row.times.slice(0,1);
-    // 到着時刻と発車時刻が同一なら1つにまとめる。
     const times=(rawTimes.length>=2 && rawTimes[0]===rawTimes[1]) ? [rawTimes[0]] : rawTimes;
     const twoLine=times.length>=2;
     const prevColor=segmentColor(index-1,index);
     const nextColor=segmentColor(index,index+1);
     const dotColor=stationColor(index);
-    return `<div class="timetable-item" style="--route-line-top:${prevColor};--route-line-bottom:${nextColor};--station-route-color:${dotColor}"><div class="time-dot"></div><div class="time-text${twoLine?' two-line':''}">${times.map((t,i)=>`<span>${t}</span>`).join('')}</div><div class="station-text">${row.station}</div></div>`;
+    return `<div class="timetable-item" style="--route-line-top:${prevColor};--route-line-bottom:${nextColor};--station-route-color:${dotColor}"><div class="time-dot"></div><div class="time-text${twoLine?' two-line':''}">${times.map(t=>`<span>${t}</span>`).join('')}</div><div class="station-text">${row.station}</div></div>`;
   }).join('');
 }
+
 let TIMETABLE_HTML_CACHE = new Map();
-function timetableHTMLForCurrentDay(t){ return timetableRowsHTML((t||{}).stops||[]); }
+function timetableHTMLForCurrentDay(t){ return timetableRowsHTML((t||{}).stops||[],t||null); }
 
 
 function todayKey(d=new Date()){
@@ -1596,10 +1584,13 @@ function formationIdFromInput(value){
   if(!raw) return {ok:false,error:'編成番号を入力してください。'};
   const normalizeFormationInput=x=>String(x??'').toUpperCase().replace(/[Ｆ]/g,'F').replace(/[　 _-]+/g,'').replace(/^JK/,'').replace(/^JH/,'').replace(/F$/,'');
   const target=normalizeFormationInput(raw.replace(/番台$/,''));
+  const train=liveTrain(currentTrainNo) || currentTrainSnapshot || trainForCurrentDay(currentTrainNo);
+  const allowedFamily=allowedFormationFamily(train);
   for(const group of FORMATIONS){
     for(const item of (group.items||[])){
       const candidates=[item.id,item.name];
       if(candidates.some(c=>normalizeFormationInput(c)===target)){
+        if(formationFamily(item)!==allowedFamily) return {ok:false,error:allowedFamily==='yokohama'?'この列車は横浜線系統の編成のみ入力できます。':'この列車は京浜東北線系統の編成のみ入力できます。'};
         if(item.disabled || UNAVAILABLE_FORMATIONS.has(String(item.id))) return {ok:false,error:`編成「${item.name||item.id}」は入力できません。`};
         return {ok:true,id:item.id};
       }
@@ -1607,6 +1598,33 @@ function formationIdFromInput(value){
   }
   return {ok:false,error:'一致する編成が見つかりません。例：101 / H001'};
 }
+function formationFamily(groupOrItem){
+  const type=String(groupOrItem?.type||'').trim();
+  if(type.includes('6000')) return 'yokohama';
+  if(type.includes('1000')) return 'keihin';
+  return null;
+}
+function allowedFormationFamily(train){
+  const kind=String(train?.lineKind||'').toLowerCase();
+  if(kind==='yokohama') return 'yokohama';
+  if(kind==='keihin') return 'keihin';
+  return Number(train?.cars)===8 ? 'yokohama' : 'keihin';
+}
+function formationAllowedForTrain(train,id){
+  if(!id || id===INITIAL_FORMATION_SELECTION.id) return true;
+  const item=formationById(id);
+  return !!item && formationFamily(item)===allowedFormationFamily(train);
+}
+function formationsForTrain(train){
+  const family=allowedFormationFamily(train);
+  return FORMATIONS.filter(group=>formationFamily(group)===family);
+}
+function selectionDisplayObjectForTrain(train,id){
+  if(!id || id===INITIAL_FORMATION_SELECTION.id) return INITIAL_FORMATION_SELECTION;
+  if(!formationAllowedForTrain(train,id)) return INITIAL_FORMATION_SELECTION;
+  return selectionDisplayObject(id);
+}
+
 function selectionDisplayObject(id){
   if(!id || id===INITIAL_FORMATION_SELECTION.id) return INITIAL_FORMATION_SELECTION;
   const known=formationById(id);
@@ -1641,7 +1659,8 @@ function prescribedFormationName(t){
   return Number(t?.cars)===8 ? '普通8両' : '普通10両';
 }
 function defaultTrainImage(t){
-  return Number(t?.cars)===8 ? YOKOHAMA_TRAIN_IMG : KEIHIN_TOHOKU_TRAIN_IMG;
+  if(String(t?.lineKind||'')==='yokohama') return YOKOHAMA_TRAIN_IMG;
+  return KEIHIN_TOHOKU_TRAIN_IMG;
 }
 function imageForTrain(t){
   // 表示時はFirebaseから同期したregistrationStateを登録情報の基準にする。
@@ -1650,13 +1669,66 @@ function imageForTrain(t){
   const hasStored=Object.prototype.hasOwnProperty.call(registrationState||{},no);
   const registeredId=hasStored ? (registrationState[no]||null) : (stateForTrain(registrationState,no)||null);
   const hasFormation=!!(registeredId&&registeredId!==INITIAL_FORMATION_SELECTION.id&&formationById(registeredId));
-  const f=selectionDisplayObject(registeredId);
+  const f=selectionDisplayObjectForTrain(t,registeredId);
   return hasFormation ? f.img : defaultTrainImage(t);
 }
 
 function stationIndex(name){
   return STATIONS.findIndex(s=>s.nameJa===name);
 }
+
+function routeColorBetweenStations(aName,bName){
+  const a=String(aName||''), b=String(bName||'');
+  if(!a || !b || a===b) return null;
+  const yokohamaRoute=['八王子','片倉','八王子みなみ野','相原','橋本','相模原','矢部','淵野辺','古淵','町田','成瀬','長津田','十日市場','中山','鴨居','小机','新横浜','菊名','大口','東神奈川'];
+  const keihinRoute=['大宮','さいたま新都心','与野','北浦和','浦和','南浦和','蕨','西川口','川口','赤羽','東十条','王子','上中里','田端','西日暮里','日暮里','鶯谷','上野','御徒町','秋葉原','神田','東京','有楽町','新橋','浜松町','田町','高輪ゲートウェイ','品川','大井町','大森','蒲田','川崎','鶴見','新子安','東神奈川','横浜','桜木町','関内','石川町','山手','根岸','磯子','新杉田','洋光台','港南台','本郷台','大船'];
+  const ySet=new Set(yokohamaRoute), kSet=new Set(keihinRoute);
+  const aY=ySet.has(a), bY=ySet.has(b), aK=kSet.has(a), bK=kSet.has(b);
+
+  // 通常の同一路線区間。
+  if(aY && bY && !(aK || bK)) return 'var(--yokohama-route)';
+  if(aK && bK && !(aY || bY)) return 'var(--keihin-route)';
+
+  // 東神奈川などの共有駅を含む区間は、共有駅ではない側の駅で路線を確定する。
+  if(a==='東神奈川' && bY && !bK) return 'var(--yokohama-route)';
+  if(b==='東神奈川' && aY && !aK) return 'var(--yokohama-route)';
+  if(a==='東神奈川' && bK && !bY) return 'var(--keihin-route)';
+  if(b==='東神奈川' && aK && !aY) return 'var(--keihin-route)';
+
+  // 停車駅を飛ばして路線境界をまたぐ列車でも、端側の駅の近くが
+  // 別路線色になるのを防ぐため、相手側の固有路線カラーを優先する。
+  if(bY && !bK) return 'var(--yokohama-route)';
+  if(bK && !bY) return 'var(--keihin-route)';
+  if(aY && !aK) return 'var(--yokohama-route)';
+  if(aK && !aY) return 'var(--keihin-route)';
+  return null;
+}
+function routeColorForStopIndex(rows,index,trainContext=null){
+  const current=String(rows[index]?.station||'');
+  const next=index<rows.length-1 ? String(rows[index+1]?.station||'') : '';
+  const prev=index>0 ? String(rows[index-1]?.station||'') : '';
+  // 駅ラベルの丸は、まず「次駅まで」の実在区間色を使用する。
+  const nextColor=routeColorBetweenStations(current,next);
+  if(nextColor) return nextColor;
+  // 終着駅など次駅がない場合は、直前の実在区間色を使用する。
+  const prevColor=routeColorBetweenStations(prev,current);
+  if(prevColor) return prevColor;
+
+  // 東神奈川のような共有駅で両側情報が取れない場合だけ列車系統にフォールバック。
+  const kind=String(trainContext?.lineKind||'').toLowerCase();
+  if(current==='東神奈川') return kind==='yokohama' ? 'var(--yokohama-route)' : 'var(--keihin-route)';
+  if(kind==='yokohama') return 'var(--yokohama-route)';
+  if(kind==='keihin') return 'var(--keihin-route)';
+  return null;
+}
+function routeColorForStopSegment(aName,bName,trainContext=null){
+  return routeColorBetweenStations(aName,bName) || routeColorForTrainFallback(trainContext);
+}
+function routeColorForTrainFallback(trainContext=null){
+  const kind=String(trainContext?.lineKind||'').toLowerCase();
+  return kind==='yokohama' ? 'var(--yokohama-route)' : 'var(--keihin-route)';
+}
+
 function formatTimeNow(){
   const d=new Date();
   return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
@@ -1749,11 +1821,26 @@ function renderLine(){
   const container=document.getElementById('lineContainer');
   container.innerHTML='<div class="operation-info-layer" id="operationInfoLayer"></div><div class="rail-line"></div><div class="moving-train-layer" id="movingTrainLayer"></div><div class="operation-info-label-layer" id="operationInfoLabelLayer"></div>';
 
-  STATIONS.forEach(st=>{
+  const higashiIndex=STATIONS.findIndex(x=>x.nameJa==='東神奈川');
+  const routeColorForSegment=(a,b)=>Math.max(a,b)<=higashiIndex?'var(--yokohama-route)':'var(--keihin-route)';
+  const routeColorForStationIndex=(index)=>{
+    if(index<STATIONS.length-1) return routeColorForSegment(index,index+1);
+    return index>0 ? routeColorForSegment(index-1,index) : 'var(--yokohama-route)';
+  };
+
+  STATIONS.forEach((st,index)=>{
     const row=document.createElement('div');
     row.className='station-row';
+    if(index===0) row.classList.add('endpoint-start');
+    if(index===STATIONS.length-1) row.classList.add('endpoint-end');
+    const prevColor=index>0 ? routeColorForSegment(index-1,index) : routeColorForStationIndex(index);
+    const nextColor=index<STATIONS.length-1 ? routeColorForSegment(index,index+1) : routeColorForStationIndex(index);
+    row.style.setProperty('--line-top',prevColor);
+    row.style.setProperty('--line-bottom',nextColor);
+
     const badge=document.createElement('div');
-    badge.className='station-badge'+(STATIONS.findIndex(x=>x.nameJa===st.nameJa)>=STATIONS.findIndex(x=>x.nameJa==='東神奈川')?' keihin-shared':'');
+    badge.className='station-badge';
+    badge.style.setProperty('--station-color',routeColorForStationIndex(index));
     badge.innerHTML=`
       <div class="station-name-ja">${st.nameJa}</div>
       <div class="station-name-en">${st.nameEn}</div>
@@ -1778,11 +1865,7 @@ function renderLine(){
       let ls='0';
       if(len<=2){ls='.9em';}
       else if(len===3){ls='.3em';}
-      else if(len===4){ls='.0em';}
-      else if(len===5){ls='.0em';}
-      else if(len===6){ls='.0em';}
-      else if(len===7){ls='.0em';}
-      else {ls='0';}
+      else if(len>=4){ls='.0em';}
       ja.style.letterSpacing=ls;
       ja.style.paddingLeft=ls;
     }
@@ -1896,7 +1979,9 @@ function positionForTrain(t,minutes){
 function trainLabelText(t){ return `<span>${getShortType(t.type,t.no)} ${getShortDest(t.dest)}</span>`; }
 function trainPositionViewportVisible(p,rows,viewportTop,viewportBottom){
   if(!p||!Number.isFinite(Number(p.pos))||!rows.length) return false;
-  const q=Math.max(0,Math.min(rows.length-1,Number(p.pos)));
+  // ページ外の駅を先頭・末尾へクランプして表示しない。
+  if(Number(p.pos)<0 || Number(p.pos)>rows.length-1) return false;
+  const q=Number(p.pos);
   const i0=Math.floor(q),i1=Math.min(rows.length-1,Math.ceil(q)),f=q-i0;
   const r0=rows[i0]?.getBoundingClientRect(),r1=rows[i1]?.getBoundingClientRect();
   if(!r0||!r1) return false;
@@ -2059,24 +2144,24 @@ function openStationSheet(stationId){
   sheet.classList.add('active');
 }
 function stationInfoRouteColor(index){
-  // 東神奈川～八王子：横浜線、東神奈川～横浜～大船：京浜東北・根岸線
   const higashi=STATIONS.findIndex(st=>st.nameJa==='東神奈川');
-  if(index>=0 && index<higashi) return 'var(--yokohama-route)';
-  return 'var(--keihin-route)';
+  return index>=higashi ? 'var(--keihin-route)' : 'var(--yokohama-route)';
 }
 function stationInfoSegmentColor(aIndex,bIndex){
-  if(aIndex<0 || bIndex<0) return 'var(--keihin-route)';
-  const a=STATIONS[aIndex]?.nameJa||'', b=STATIONS[bIndex]?.nameJa||'';
-  if((a==='東神奈川' && b==='横浜') || (a==='横浜' && b==='東神奈川') ||
-     (a==='横浜' && b==='桜木町') || (a==='桜木町' && b==='横浜')){
-    return 'var(--keihin-route)';
-  }
   const higashi=STATIONS.findIndex(st=>st.nameJa==='東神奈川');
-  const hachioji=STATIONS.findIndex(st=>st.nameJa==='八王子');
-  if(aIndex>=hachioji && bIndex<=higashi || bIndex>=hachioji && aIndex<=higashi){
-    return 'var(--yokohama-route)';
+  // 起終点では存在しない側を固定色にせず、実在する隣接区間の色を使う。
+  if(aIndex<0){
+    if(bIndex>=0 && bIndex<STATIONS.length-1) return stationInfoSegmentColor(bIndex,bIndex+1);
+    return bIndex<=higashi ? 'var(--yokohama-route)' : 'var(--keihin-route)';
   }
-  return 'var(--keihin-route)';
+  if(bIndex<0){
+    if(aIndex>0) return stationInfoSegmentColor(aIndex-1,aIndex);
+    return aIndex<=higashi ? 'var(--yokohama-route)' : 'var(--keihin-route)';
+  }
+  const aName=STATIONS[aIndex]?.nameJa||'';
+  const bName=STATIONS[bIndex]?.nameJa||'';
+  return routeColorBetweenStations(aName,bName)
+    || (Math.max(aIndex,bIndex)<=higashi ? 'var(--yokohama-route)' : 'var(--keihin-route)');
 }
 function getStationDirectionLabels(stationName){
   const index=STATIONS.findIndex(st=>st.nameJa===String(stationName||''));
@@ -2195,7 +2280,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
   const escapeJs=value=>String(value).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
 
   const stationTimetableFormationParts=(train)=>{
-    const obj=selectionDisplayObject(train?.formation);
+    const obj=selectionDisplayObjectForTrain(train,train?.formation);
     if(!obj || obj.id===INITIAL_FORMATION_SELECTION.id) return ['—'];
     const type=String(obj.type||'').trim();
     const name=String(obj.name||'').trim();
@@ -2232,7 +2317,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
 
     const rows=data.entries.map((item,index)=>{
       const train=item.train;
-      const selectedForm=selectionDisplayObject(train.formation);
+      const selectedForm=selectionDisplayObjectForTrain(train,train.formation);
       const imgSrc=(train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id)?selectedForm.img:defaultTrainImage(train);
       const destination=`${getDetailDest(train.dest)} 行`;
       const isNext=index===nextIndex;
@@ -2298,7 +2383,7 @@ function updateSheetContent(){
   const train=currentTrainSnapshot || trainForCurrentDay(currentTrainNo);
   if(!train) return;
   const formObj=formationById(train.formation);
-  const selectedForm=selectionDisplayObject(train.formation);
+  const selectedForm=selectionDisplayObjectForTrain(train,train.formation);
   const content=document.getElementById('sheetContent');
   const imgSrc=(train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id)?selectedForm.img:defaultTrainImage(train);
 
@@ -2324,7 +2409,7 @@ function updateSheetContent(){
       </div>
     `;
   }else{
-    const selectedForm=selectionDisplayObject(train.formation);
+    const selectedForm=selectionDisplayObjectForTrain(train,train.formation);
     content.innerHTML=`
       <div class="train-card">
         <img src="${(train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id)?selectedForm.img:defaultTrainImage(train)}" class="train-card-img">
@@ -2353,7 +2438,7 @@ function updateSheetContent(){
         </div>
         <div class="custom-select-options" id="dropdownOptions">
           <div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}')"><img src="${INITIAL_FORMATION_SELECTION.img}" class="option-img"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>
-          ${FORMATIONS.map(group=>`
+          ${formationsForTrain(train).map(group=>`
             <div class="option-header option-category-header" onclick="selectFormation('${group.type}')">
               <img src="${group.typeImg}" class="option-img"><span>${group.type}</span>
             </div>
@@ -2367,11 +2452,13 @@ function updateSheetContent(){
                 <img src="${item.img}" class="option-img"><span>${item.name}</span>
               </div>
             `).join('')}
-            ${(group.items||[]).filter(item=>!item.disabled && !UNAVAILABLE_FORMATIONS.has(String(item.id))).map(item=>`
-              <div class="option-item" onclick="selectFormation('${item.id}')">
+            ${(group.items||[]).map(item=>{
+              const disabled=!!item.disabled || UNAVAILABLE_FORMATIONS.has(String(item.id));
+              const action=disabled?'aria-disabled="true" title="選択できません"':`onclick="selectFormation('${item.id}')"`;
+              return `<div class="option-item${disabled?' disabled':''}" ${action}>
                 <img src="${item.img}" class="option-img"><span>${item.name}</span>
-              </div>
-            `).join('')}
+              </div>`;
+            }).join('')}
           `).join('')}
         </div>
       </div>
@@ -2434,6 +2521,11 @@ async function selectFormation(formId){
   const formation=formationById(formId);
   if(formation?.disabled || UNAVAILABLE_FORMATIONS.has(String(formId))) {
     syncStatus('この編成は入力できません');
+    return;
+  }
+  const currentSelectableTrain=liveTrain(currentTrainNo) || currentTrainSnapshot || trainForCurrentDay(currentTrainNo);
+  if(!formationAllowedForTrain(currentSelectableTrain,formId)){
+    syncStatus(allowedFormationFamily(currentSelectableTrain)==='yokohama' ? 'この列車は横浜線系統の編成のみ登録できます' : 'この列車は京浜東北線系統の編成のみ登録できます');
     return;
   }
   if(isHistoricalSelectedDate(selectedDateKey)) return;
