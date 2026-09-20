@@ -668,6 +668,29 @@ window.JRELINE_FIREBASE_CONFIG = {
 };
 </script>
 <script>
+const JRE_KEIHIN_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDxkaJ-DpyroT18R0CoDmaKoFfXlqyIvyw",
+  authDomain: "unyomatome-jrekeihintohoku.firebaseapp.com",
+  databaseURL: "https://unyomatome-jrekeihintohoku-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "unyomatome-jrekeihintohoku",
+  storageBucket: "unyomatome-jrekeihintohoku.firebasestorage.app",
+  messagingSenderId: "128792041735",
+  appId: "1:128792041735:web:bc3cc6117799cf93c90da2",
+  measurementId: "G-75PWDN6QLQ"
+};
+const JRE_YOKOHAMA_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyC5toEC4FkLI61Z4Zyn9DxS8X-Xbb3_ezU",
+  authDomain: "unyomatome-jreyokohama.firebaseapp.com",
+  databaseURL: "https://unyomatome-jreyokohama-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "unyomatome-jreyokohama",
+  storageBucket: "unyomatome-jreyokohama.firebasestorage.app",
+  messagingSenderId: "565731751427",
+  appId: "1:565731751427:web:dbe57196abe0a4a62ec036",
+  measurementId: "G-71SXLJZEV0"
+};
+
+</script>
+<script>
 /* 京浜東北・根岸線 */
 const STATIONS = [{"id":"st1","nameJa":"大宮","nameEn":"Omiya"},{"id":"st2","nameJa":"さいたま新都心","nameEn":"Saitama-Shintoshin"},{"id":"st3","nameJa":"与野","nameEn":"Yono"},{"id":"st4","nameJa":"北浦和","nameEn":"Kita-Urawa"},{"id":"st5","nameJa":"浦和","nameEn":"Urawa"},{"id":"st6","nameJa":"南浦和","nameEn":"Minami-Urawa"},{"id":"st7","nameJa":"蕨","nameEn":"Warabi"},{"id":"st8","nameJa":"西川口","nameEn":"Nishi-Kawaguchi"},{"id":"st9","nameJa":"川口","nameEn":"Kawaguchi"},{"id":"st10","nameJa":"赤羽","nameEn":"Akabane"},{"id":"st11","nameJa":"東十条","nameEn":"Higashi-Jujo"},{"id":"st12","nameJa":"王子","nameEn":"Oji"},{"id":"st13","nameJa":"上中里","nameEn":"Kami-Nakazato"},{"id":"st14","nameJa":"田端","nameEn":"Tabata"},{"id":"st15","nameJa":"西日暮里","nameEn":"Nishi-Nippori"},{"id":"st16","nameJa":"日暮里","nameEn":"Nippori"},{"id":"st17","nameJa":"鶯谷","nameEn":"Uguisudani"},{"id":"st18","nameJa":"上野","nameEn":"Ueno"},{"id":"st19","nameJa":"御徒町","nameEn":"Okachimachi"},{"id":"st20","nameJa":"秋葉原","nameEn":"Akihabara"},{"id":"st21","nameJa":"神田","nameEn":"Kanda"},{"id":"st22","nameJa":"東京","nameEn":"Tokyo"},{"id":"st23","nameJa":"有楽町","nameEn":"Yurakucho"},{"id":"st24","nameJa":"新橋","nameEn":"Shimbashi"},{"id":"st25","nameJa":"浜松町","nameEn":"Hamamatsucho"},{"id":"st26","nameJa":"田町","nameEn":"Tamachi"},{"id":"st27","nameJa":"高輪ゲートウェイ","nameEn":"Takanawa Gateway"},{"id":"st28","nameJa":"品川","nameEn":"Shinagawa"},{"id":"st29","nameJa":"大井町","nameEn":"Oimachi"},{"id":"st30","nameJa":"大森","nameEn":"Omori"},{"id":"st31","nameJa":"蒲田","nameEn":"Kamata"},{"id":"st32","nameJa":"川崎","nameEn":"Kawasaki"},{"id":"st33","nameJa":"鶴見","nameEn":"Tsurumi"},{"id":"st34","nameJa":"新子安","nameEn":"Shin-Koyasu"},{"id":"st35","nameJa":"東神奈川","nameEn":"Higashi-Kanagawa"},{"id":"st36","nameJa":"横浜","nameEn":"Yokohama"},{"id":"st37","nameJa":"桜木町","nameEn":"Sakuragicho"},{"id":"st38","nameJa":"関内","nameEn":"Kannai"},{"id":"st39","nameJa":"石川町","nameEn":"Ishikawacho"},{"id":"st40","nameJa":"山手","nameEn":"Yamate"},{"id":"st41","nameJa":"根岸","nameEn":"Negishi"},{"id":"st42","nameJa":"磯子","nameEn":"Isogo"},{"id":"st43","nameJa":"新杉田","nameEn":"Shin-Sugita"},{"id":"st44","nameJa":"洋光台","nameEn":"Yokodai"},{"id":"st45","nameJa":"港南台","nameEn":"Konandai"},{"id":"st46","nameJa":"本郷台","nameEn":"Hongodai"},{"id":"st47","nameJa":"大船","nameEn":"Ofuna"}];
 const KEIHIN_TOHOKU_TRAIN_IMG = 'https://minamikaze2700.github.io/Unyomatome/images/Keihin-Tohoku_noimage.png';
@@ -703,7 +726,7 @@ const VEHICLE_TO_FORMATION = (() => {
 })();
 
 const INITIAL_FORMATION_SELECTION = {id:"__INITIAL__",name:"編成未選択",img:LINE_TRAIN_IMG,kind:"placeholder"};
-const UNAVAILABLE_FORMATIONS = new Set(['101F']);
+const UNAVAILABLE_FORMATIONS = new Set(['101']);
 const TYPE_SELECTIONS = FORMATIONS.map(group=>({id:group.type,name:group.type,img:group.typeImg,kind:'type',type:group.type}));
 let TRAINS = [];
 const JRE_LINE_TRAIN_DATA_URL = 'https://minamikaze2700.github.io/Unyomatome/timetable/JRKeihinTohoku.json';
@@ -741,7 +764,8 @@ async function loadLineTrainData(){
   // 横浜線JSONからは、京浜東北・根岸線区間へ直通する列車だけを追加。
   // 表示時には京浜東北・根岸線側に存在する駅だけが位置計算の対象になる。
   const throughYokohamaTrains=normalizeList(yokoList,8)
-    .filter(t=>t.lineKind==='yokohama' && t.through===true && (t.stops||[]).some(s=>String(s.station||'')==='東神奈川'));
+    .map(t=>({...t,lineKind:'yokohama'}))
+    .filter(t=>t.through===true && (t.stops||[]).some(s=>String(s.station||'')==='東神奈川'));
 
   const combined=[...keihinTrains,...throughYokohamaTrains];
   const seen=new Set();
@@ -790,6 +814,15 @@ let registrationState={};
 let operationHistory=[];
 let currentOperationDate=null;
 let remoteRoot={version:0,operationDate:null,stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}},history:{}};
+// 編成データは列車のJSON由来系統ごとに別Firebaseへ保存する。
+const PRIMARY_FORMATION_FAMILY='keihin';
+let formationRemoteByFamily={
+  keihin:{stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}}},
+  yokohama:{stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}}}
+};
+const formationFirebaseApps={};
+const formationFirebaseDbs={};
+let formationFirebaseReady=false;
 let pendingFormationState={};
 let channel=null;
 let firebaseReady=false;
@@ -916,6 +949,14 @@ function saveLocalState(){
       operationDate:currentOperationDate,
       stateByDay:remoteRoot.stateByDay,
       formationUpdatedAtByDay:remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}},
+      formationStateByFamily:{
+        keihin:formationRemoteByFamily.keihin.stateByDay,
+        yokohama:formationRemoteByFamily.yokohama.stateByDay
+      },
+      formationUpdatedAtByFamily:{
+        keihin:formationRemoteByFamily.keihin.formationUpdatedAtByDay,
+        yokohama:formationRemoteByFamily.yokohama.formationUpdatedAtByDay
+      },
       pendingFormationTimestamps:pendingFormationTimestamps||{平日:{},休日:{}},
       history:remoteRoot.history,
       updatedAt:new Date().toISOString()
@@ -931,6 +972,35 @@ function loadLocalState(){
     remoteRoot.stateByDay=obj.stateByDay||{平日:{},休日:{}};
     remoteRoot.formationUpdatedAtByDay=obj.formationUpdatedAtByDay||{平日:{},休日:{}};
     pendingFormationTimestamps=obj.pendingFormationTimestamps||{平日:{},休日:{}};
+    const savedFamilies=obj.formationStateByFamily||null;
+    if(savedFamilies&&typeof savedFamilies==='object'){
+      for(const family of ['keihin','yokohama']){
+        const src=savedFamilies[family]||{};
+        formationRemoteByFamily[family].stateByDay={
+          平日:normalizeFormationState(src.平日||src.stateByDay?.平日||{},family),
+          休日:normalizeFormationState(src.休日||src.stateByDay?.休日||{},family)
+        };
+        const savedTs=src.formationUpdatedAtByDay || obj.formationUpdatedAtByFamily?.[family] || {};
+        formationRemoteByFamily[family].formationUpdatedAtByDay={
+          平日:cloneState(savedTs.平日||{}),
+          休日:cloneState(savedTs.休日||{})
+        };
+      }
+    }else{
+      // 旧localStorageからの移行。旧stateByDayは系統混在の可能性があるため、
+      // 現在の列車JSONのlineKindで正しい系統DBへ振り分ける。
+      for(const day of ['平日','休日']){
+        const legacy=obj.stateByDay?.[day]||{};
+        for(const [no,value] of Object.entries(legacy)){
+          const train=[...TRAINS,...HOLIDAY_TRAINS].find(t=>String(t.no||'')===String(no));
+          if(!train) continue;
+          const family=formationFamilyForTrain(train);
+          const normalized=normalizeStoredFormationId(value);
+          if(normalized) formationRemoteByFamily[family].stateByDay[day][String(no)]=normalized;
+        }
+      }
+    }
+    mergeFormationRemoteIntoLegacyState();
     remoteRoot.history=obj.history||{};
     currentOperationDate=remoteRoot.operationDate;
     operationHistory=historyEntries();
@@ -940,21 +1010,34 @@ function loadLocalState(){
     applyRegistrationState();
   }catch(e){ console.warn('local load failed',e); }
 }
-function reconcilePendingFormationState(remoteDayState){
-  const remoteState=remoteDayState&&typeof remoteDayState==='object'?remoteDayState:{};
-  // Firebaseを共有状態の正とし、他タブからの更新を受信したら
-  // ローカルの一時的なpending値を必ず最新状態へ追従させる。
-  // 特に「編成未選択」はFirebase上でキー自体が消えるため、
-  // 単純なtruthy判定だけでは古い編成が残ってしまう。
-  for(const key of Object.keys(pendingFormationState)){
-    const remoteValue=Object.prototype.hasOwnProperty.call(remoteState,key)
-      ? (remoteState[key]||null)
-      : null;
-    if(String(pendingFormationState[key]||'')===String(remoteValue||'')) delete pendingFormationState[key];
-    else pendingFormationState[key]=remoteValue;
-  }
+function reconcilePendingFormationState(){
+  // 編成状態はFirebaseの各系統DBを正とする。旧pending状態は表示へ介入させない。
+  pendingFormationState={};
 }
-
+function registeredFormationForTrain(train){
+  if(!train) return null;
+  const family=allowedFormationFamily(train);
+  const state=formationRemoteByFamily[family]?.stateByDay?.[currentDay]||{};
+  return normalizeStoredFormationId(stateForTrain(state,String(train.no||'')));
+}
+function mergeFormationRemoteIntoLegacyState(){
+  const merged={};
+  for(const family of ['keihin','yokohama']){
+    const state=formationRemoteByFamily[family]?.stateByDay?.[currentDay]||{};
+    for(const [no,value] of Object.entries(state)){
+      merged[String(no)]=normalizeStoredFormationId(value)||null;
+    }
+  }
+  remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
+  remoteRoot.stateByDay[currentDay]=merged;
+  remoteRoot.formationUpdatedAtByDay=remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}};
+  const mergedTs={};
+  for(const family of ['keihin','yokohama']){
+    const ts=formationRemoteByFamily[family]?.formationUpdatedAtByDay?.[currentDay]||{};
+    Object.assign(mergedTs,ts);
+  }
+  remoteRoot.formationUpdatedAtByDay[currentDay]=mergedTs;
+}
 function applyRegistrationState(){
   const seen=new Set();
   [...TRAINS,...HOLIDAY_TRAINS].forEach(t=>{
@@ -962,13 +1045,10 @@ function applyRegistrationState(){
     const signature=`${key}|${String(t.direction||'')}`;
     if(seen.has(signature)) return;
     seen.add(signature);
-    if(Object.prototype.hasOwnProperty.call(pendingFormationState,key)){
-      t.formation=pendingFormationState[key]||null;
-    }else{
-      t.formation=stateForTrain(registrationState,key)||null;
-    }
+    t.formation=registeredFormationForTrain(t)||null;
   });
 }
+
 function broadcastState(){
   if(!channel) return;
   // 送信はローカルで変更を確定した側だけが行う。
@@ -996,11 +1076,79 @@ function hydrateFromRoot(data){
 }
 function firebaseDatabase(){
   if(firebaseDb) return firebaseDb;
+  const db=formationFirebaseDbs[PRIMARY_FORMATION_FAMILY];
+  if(db) return db;
   if(window.firebase?.apps?.length) return firebase.database();
   return null;
 }
+function firebaseDatabaseForFamily(family){
+  const key=family==='yokohama'?'yokohama':'keihin';
+  return formationFirebaseDbs[key]||null;
+}
 function firebaseOperationRef(){ const db=firebaseDatabase(); return db?db.ref('運用'):null; }
 function firebaseHistoryRef(){ const db=firebaseDatabase(); return db?db.ref('履歴'):null; }
+function formationOperationRef(family){ const db=firebaseDatabaseForFamily(family); return db?db.ref('運用'):null; }
+function formationFamilyForTrain(train){ return allowedFormationFamily(train); }
+function formationFirebaseConfigForFamily(family){
+  return family==='yokohama'?JRE_YOKOHAMA_FIREBASE_CONFIG:JRE_KEIHIN_FIREBASE_CONFIG;
+}
+function normalizeStoredFormationId(value){
+  if(value===null||value===undefined||String(value)==='') return null;
+  const raw=String(value).trim();
+  const obj=formationById(raw) || formationById(raw.replace(/F$/i,''));
+  if(obj?.id) return String(obj.id).replace(/F$/i,'');
+  return raw.replace(/F$/i,'');
+}
+function trainBelongsToFamily(no,family){
+  const key=String(no||'');
+  if(!key) return false;
+  return [...TRAINS,...HOLIDAY_TRAINS].some(t=>String(t.no||'')===key && formationFamilyForTrain(t)===family);
+}
+function normalizeFormationState(raw,family){
+  const out={};
+  const src=raw&&typeof raw==='object'?raw:{};
+  for(const [no,value] of Object.entries(src)){
+    if(!trainBelongsToFamily(no,family)) continue;
+    const normalized=normalizeStoredFormationId(value);
+    if(normalized) out[String(no)]=normalized;
+  }
+  return out;
+}
+function normalizeFormationTimestampState(raw,family){
+  const out={};
+  const src=raw&&typeof raw==='object'?raw:{};
+  for(const [no,value] of Object.entries(src)){
+    if(!trainBelongsToFamily(no,family)) continue;
+    if(value!==null&&value!==undefined&&String(value)!=='') out[String(no)]=value;
+  }
+  return out;
+}
+async function loadFormationFamilyFromFirebase(family){
+  const ref=formationOperationRef(family);
+  if(!ref) return false;
+  const [stateSnap,tsSnap]=await Promise.all([
+    ref.child('stateByDay').once('value'),
+    ref.child('formationUpdatedAtByDay').once('value')
+  ]);
+  const stateRaw=stateSnap.val()||{}, tsRaw=tsSnap.val()||{};
+  formationRemoteByFamily[family].stateByDay={
+    平日:normalizeFormationState(stateRaw.平日||{},family),
+    休日:normalizeFormationState(stateRaw.休日||{},family)
+  };
+  formationRemoteByFamily[family].formationUpdatedAtByDay={
+    平日:normalizeFormationTimestampState(tsRaw.平日||{},family),
+    休日:normalizeFormationTimestampState(tsRaw.休日||{},family)
+  };
+  return true;
+}
+async function preloadAllFormationFamilies(){
+  const results=await Promise.allSettled(['keihin','yokohama'].map(loadFormationFamilyFromFirebase));
+  formationFirebaseReady=results.some(r=>r.status==='fulfilled'&&r.value===true);
+  mergeFormationRemoteIntoLegacyState();
+  registrationState=isHistoricalSelectedDate(selectedDateKey)?historicalStateForDate(selectedDateKey):cloneState(remoteRoot.stateByDay[currentDay]||{});
+  applyRegistrationState();
+  return formationFirebaseReady;
+}
 
 const LIVE_TRAIN_CACHE = new Map();
 function liveTrainCacheKey(trainNo){ return `${currentDay}:${String(trainNo)}`; }
@@ -1013,10 +1161,7 @@ function refreshAllTrainDataCache(){
     const direction=String(t.direction||'');
     const cached={...t, stops:(t.stops||[]).map(s=>({...s}))};
     cached.defaultCars=prescribedFormationName(cached);
-    const effectiveFormation=Object.prototype.hasOwnProperty.call(pendingFormationState,key)
-      ? pendingFormationState[key]
-      : registrationState[key];
-    cached.formation=effectiveFormation||null;
+    cached.formation=registeredFormationForTrain(t)||null;
     const ckey=trainCacheKey(currentDay,key,direction);
     LIVE_TRAIN_CACHE.set(ckey,cached);
     if(currentDay!=='休日') TRAIN_DATA_CACHE.set(ckey,cached);
@@ -1045,65 +1190,54 @@ function refreshVisibleUI(){
 }
 
 function subscribeAllOperationState(){
-  if(!firebaseReady) return;
+  if(!formationFirebaseReady) return;
+  for(const family of ['keihin','yokohama']){
+    const ref=formationOperationRef(family);
+    if(!ref) continue;
+    ref.child('stateByDay').on('value',snap=>{
+      const all=snap.val()||{};
+      formationRemoteByFamily[family].stateByDay={
+        平日:normalizeFormationState(all.平日||{},family),
+        休日:normalizeFormationState(all.休日||{},family)
+      };
+      if(!isHistoricalSelectedDate(selectedDateKey)){
+        mergeFormationRemoteIntoLegacyState();
+        registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
+      }
+      applyRegistrationState();
+      saveLocalState();
+      refreshAllTrainDataCache();
+      if(!isEditMode){
+        renderLine();
+        renderTrainPositions();
+        if(currentTrainNo) updateSheetContent();
+      }
+      syncStatus('Firebaseリアルタイム同期済み');
+    },err=>console.warn(`Firebase編成状態読込失敗（${family}）`,err));
+
+    ref.child('formationUpdatedAtByDay').on('value',snap=>{
+      const all=snap.val()||{};
+      formationRemoteByFamily[family].formationUpdatedAtByDay={
+        平日:normalizeFormationTimestampState(all.平日||{},family),
+        休日:normalizeFormationTimestampState(all.休日||{},family)
+      };
+      mergeFormationRemoteIntoLegacyState();
+      saveLocalState();
+      if(currentTrainNo&&!isEditMode) updateSheetContent();
+    },err=>console.warn(`Firebase編成入力時刻読込失敗（${family}）`,err));
+  }
+
+  // 運用日だけはページの主系統DBを監視する（運行情報・日付管理用）。
   const operationRef=firebaseOperationRef();
-  if(!operationRef) return;
-
-  // Firebase Realtime Databaseの「stateByDay」を直接監視する。
-  // /運用 全体を監視してからローカル状態を再構成する方式では、
-  // 別タブの更新時に一時的な古い状態を拾う可能性があるため、
-  // 編成状態そのものをRealtimeで購読する。
-  try{
-    if(firebaseDayListenerCallback){
-      operationRef.child('stateByDay').off('value',firebaseDayListenerCallback);
-    }
-  }catch(e){}
-
-  firebaseDayListenerDay='__ALL__';
-  firebaseDayListenerCallback=(snap)=>{
-    const all=snap.val();
-    if(!all || typeof all!=='object') return;
-
-    const nextStateByDay={
-      平日:cloneState(Object.prototype.hasOwnProperty.call(all,'平日') ? (all.平日||{}) : (remoteRoot.stateByDay?.平日||{})),
-      休日:cloneState(Object.prototype.hasOwnProperty.call(all,'休日') ? (all.休日||{}) : (remoteRoot.stateByDay?.休日||{}))
-    };
-
-    remoteRoot.stateByDay=nextStateByDay;
-    registrationState=isHistoricalSelectedDate(selectedDateKey)
-      ? historicalStateForDate(selectedDateKey)
-      : cloneState(remoteRoot.stateByDay[currentDay]||{});
-    reconcilePendingFormationState(remoteRoot.stateByDay[currentDay]||{});
-
-    if(isEditMode){
-      // 入力中でもFirebase側の最新状態は保持しておき、編集終了後にそのまま表示できるようにする。
-      syncStatus('編成入力中：Firebase最新状態を受信');
-      return;
-    }
-
-    applyRegistrationState();
-    saveLocalState();
-    refreshAllTrainDataCache();
-    renderLine();
-    renderTrainPositions();
-    if(currentTrainNo) updateSheetContent();
-    syncStatus('Firebaseリアルタイム同期済み');
-  };
-
-  operationRef.child('stateByDay').on('value',firebaseDayListenerCallback,err=>{
-    console.warn('Firebase編成状態読込失敗（権限/接続を確認してください）',err);
-    syncStatus('Firebase編成状態の接続エラー');
-  });
-
-  // 運用日の変更も別タブからリアルタイム反映する。
-  try{
+  if(operationRef){
     operationRef.child('operationDate').on('value',snap=>{
       const value=snap.val();
       if(!value) return;
       remoteRoot.operationDate=String(value);
       currentOperationDate=String(value);
+      saveLocalState();
     },err=>console.warn('Firebase運用日読込失敗',err));
-  }catch(e){}
+  }
 }
 
 function prefetchTrainImages(){
@@ -1116,39 +1250,27 @@ function prefetchTrainImages(){
 }
 
 async function preloadFirebaseState(){
-  if(!firebaseReady||!firebaseDb) return false;
+  if(!firebaseReady||!firebaseDb){return false;}
   try{
     const operationRef=firebaseOperationRef(), historyRef=firebaseHistoryRef();
-    const [operationSnap,timestampSnap,historySnap]=await Promise.all([
-      operationRef.once('value'),
-      operationRef.child('formationUpdatedAtByDay').once('value'),
-      historyRef.once('value')
+    const [operationSnap,historySnap]=await Promise.all([
+      operationRef?.once('value'),
+      historyRef?.once('value')
     ]);
-    const root=operationSnap.val()||{};
+    const root=operationSnap?.val()||{};
     remoteRoot.operationDate=root.operationDate||remoteRoot.operationDate||null;
     currentOperationDate=remoteRoot.operationDate||currentOperationDate||operationDateKey();
-    const all=root.stateByDay||{};
-    remoteRoot.stateByDay={
-      平日:cloneState(all.平日||{}),
-      休日:cloneState(all.休日||{})
-    };
-    const ts=timestampSnap.val()||{};
-    remoteRoot.formationUpdatedAtByDay={
-      平日:cloneState(ts.平日||{}),
-      休日:cloneState(ts.休日||{})
-    };
-    const historyRaw=historySnap.val()||{};
+    const historyRaw=historySnap?.val()||{};
     remoteRoot.history=historyRaw?.履歴||historyRaw?.history||historyRaw;
+    await preloadAllFormationFamilies();
     registrationState=isHistoricalSelectedDate(selectedDateKey)?historicalStateForDate(selectedDateKey):cloneState(remoteRoot.stateByDay[currentDay]||{});
-    reconcilePendingFormationState(remoteRoot.stateByDay[currentDay]||{});
-    operationHistory=historyEntries();
     applyRegistrationState();
+    operationHistory=historyEntries();
     saveLocalState();
     refreshVisibleUI();
     return true;
   }catch(e){
     console.warn('Firebase初期データ取得失敗',e);
-    firebaseReady=false;
     return false;
   }
 }
@@ -1162,14 +1284,20 @@ async function initFirebase(){
   loadLocalState();
   if(!FIREBASE_ENABLED||!window.firebase?.initializeApp) return false;
   try{
-    firebaseApp=firebase.apps.find(a=>a.name===FIREBASE_APP_NAME);
-    if(!firebaseApp) firebaseApp=firebase.initializeApp(FIREBASE_CONFIG,FIREBASE_APP_NAME);
-    firebaseDb=firebase.database(firebaseApp);
+    const configs={keihin:JRE_KEIHIN_FIREBASE_CONFIG,yokohama:JRE_YOKOHAMA_FIREBASE_CONFIG};
+    for(const family of ['keihin','yokohama']){
+      const appName=family==='keihin'?'jreKeihinTohoku':'jreYokohama';
+      const cfg=configs[family];
+      let app=firebase.apps.find(a=>a.name===appName);
+      if(!app) app=firebase.initializeApp(cfg,appName);
+      formationFirebaseApps[family]=app;
+      formationFirebaseDbs[family]=firebase.database(app);
+    }
+    firebaseApp=formationFirebaseApps[PRIMARY_FORMATION_FAMILY];
+    firebaseDb=formationFirebaseDbs[PRIMARY_FORMATION_FAMILY];
     firebaseReady=true;
     syncStatus('Firebase接続中');
 
-    // スカイツリーライン版と同じ方式：名前付きアプリでFirebaseを初期化し、
-    // Realtime Databaseの /運用 を最初に読み込んでから監視を開始する。
     const preloadOk=await preloadFirebaseState();
     if(!preloadOk){
       firebaseReady=false;
@@ -1179,20 +1307,10 @@ async function initFirebase(){
       return false;
     }
 
-    // 運行情報もスカイツリーライン版と同じく、初期読込→リアルタイム監視を行う。
     await loadOperationInfoFromFirebase();
     attachOperationInfoFirebaseListener();
-
     subscribeAllOperationState();
-    const operationRef=firebaseOperationRef();
-    if(operationRef){
-      operationRef.child('formationUpdatedAtByDay').on('value',snap=>{
-        const raw=snap.val()||{};
-        remoteRoot.formationUpdatedAtByDay={平日:cloneState(raw.平日||{}),休日:cloneState(raw.休日||{})};
-        saveLocalState();
-        if(currentTrainNo&&!isEditMode) updateSheetContent();
-      },err=>console.warn('Firebase編成入力時刻読込失敗',err));
-    }
+
     const historyRef=firebaseHistoryRef();
     if(historyRef){
       historyRef.on('value',snap=>{
@@ -1219,31 +1337,34 @@ async function initFirebase(){
   }
 }
 
-async function syncRegistrationToRemote(changes={}){
-  if(!firebaseReady||!firebaseDb){syncStatus('Firebase未接続');return false;}
+async function syncRegistrationToRemote(changes={},family='keihin'){
+  const db=firebaseDatabaseForFamily(family);
+  if(!db){syncStatus('Firebase未接続');return false;}
   const entries=Object.entries(changes||{});
   if(!entries.length){syncStatus('Firebase同期済み');return true;}
   try{
-    const dayRef=firebaseOperationRef().child('stateByDay').child(currentDay);
+    const dayRef=db.ref('運用').child('stateByDay').child(currentDay);
     const updates={};
-    entries.forEach(([no,formId])=>{updates[String(no)]=(formId&&formId!==INITIAL_FORMATION_SELECTION.id)?String(formId):null;});
+    entries.forEach(([no,formId])=>{
+      const canonical=normalizeStoredFormationId(formId);
+      updates[String(no)]=canonical||null;
+    });
     await dayRef.update(updates);
     const committed=await dayRef.once('value');
-    registrationState=cloneState(committed.val()||{});
-    remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
-    remoteRoot.stateByDay[currentDay]=cloneState(registrationState);
-    const timestampRef=firebaseOperationRef().child('formationUpdatedAtByDay').child(currentDay);
+    formationRemoteByFamily[family].stateByDay[currentDay]=normalizeFormationState(committed.val()||{},family);
+
+    const timestampRef=db.ref('運用').child('formationUpdatedAtByDay').child(currentDay);
     const timestampUpdates={};
-    entries.forEach(([no,formId])=>{const key=String(no);timestampUpdates[key]=formId&&formId!==INITIAL_FORMATION_SELECTION.id?(pendingFormationTimestamps[currentDay]?.[key]||new Date().toISOString()):null;});
+    entries.forEach(([no,formId])=>{
+      const key=String(no);
+      timestampUpdates[key]=formId&&formId!==INITIAL_FORMATION_SELECTION.id?(new Date().toISOString()):null;
+    });
     await timestampRef.update(timestampUpdates);
     const tsSnap=await timestampRef.once('value');
-    remoteRoot.formationUpdatedAtByDay=remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}};
-    remoteRoot.formationUpdatedAtByDay[currentDay]=cloneState(tsSnap.val()||{});
-    for(const key of entries.map(([no])=>String(no))){
-      const remoteValue=Object.prototype.hasOwnProperty.call(registrationState,key)?(registrationState[key]||null):null;
-      if(String(pendingFormationState[key]||'')===String(remoteValue||'')) delete pendingFormationState[key];
-      else pendingFormationState[key]=remoteValue;
-    }
+    formationRemoteByFamily[family].formationUpdatedAtByDay[currentDay]=normalizeFormationTimestampState(tsSnap.val()||{},family);
+
+    mergeFormationRemoteIntoLegacyState();
+    registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
     applyRegistrationState();
     saveLocalState();
     refreshAllTrainDataCache();
@@ -1276,6 +1397,7 @@ function formationLinkedTrainNos(day,trainNo,direction=null){
 
 async function recordSelection(train,formId){
   if(isNonCurrentSelectedDate(selectedDateKey)) return [];
+  const family=formationFamilyForTrain(train);
   const linkedTrainNos=formationLinkedTrainNos(currentDay,train.no);
   const assigned=[];
   const changes={};
@@ -1287,37 +1409,35 @@ async function recordSelection(train,formId){
       : Object.keys(dayIndex).find(k=>k.replace(/A$/i,'')===String(requested).replace(/A$/i,'')) || null;
     if(!actual || assigned.includes(actual)) return;
 
-    const value=(formId && formId!==INITIAL_FORMATION_SELECTION.id) ? String(formId) : null;
+    const value=(formId && formId!==INITIAL_FORMATION_SELECTION.id) ? normalizeStoredFormationId(formId) : null;
+    if(value) formationRemoteByFamily[family].stateByDay[currentDay][actual]=value;
+    else delete formationRemoteByFamily[family].stateByDay[currentDay][actual];
     if(value) registrationState[actual]=value;
     else delete registrationState[actual];
     assigned.push(actual);
     changes[actual]=value;
-
-    pendingFormationState[actual]=value;
-    pendingFormationTimestamps[currentDay]=pendingFormationTimestamps[currentDay]||{};
-    if(value) pendingFormationTimestamps[currentDay][actual]=new Date().toISOString();
-    else delete pendingFormationTimestamps[currentDay][actual];
   });
 
   applyRegistrationState();
   refreshAllTrainDataCache();
   saveLocalState();
 
-  const ok=await syncRegistrationToRemote(changes);
+  const ok=await syncRegistrationToRemote(changes,family);
   if(!ok){
     saveLocalState();
     syncStatus('同期失敗（再試行待ち）');
   }
   return assigned;
 }
-function snapshotForCurrentRegistrations(day, state, dateKey){
+function snapshotForCurrentRegistrations(day, state, dateKey, familyFilter=null){
   const source=day==='休日'?HOLIDAY_TRAINS:TRAINS;
   const operations=[];
   source.forEach(t=>{
     const no=String(t?.no||'');
+    if(familyFilter && formationFamilyForTrain(t)!==familyFilter) return;
     const formation=stateForTrain(state,no);
     if(!no||!formation) return;
-    operations.push({operationId:`${day}-${no}`,day,firstTrainNo:no,trainNumbers:[no],formationId:String(formation)});
+    operations.push({operationId:`${day}-${no}`,day,firstTrainNo:no,trainNumbers:[no],formationId:normalizeStoredFormationId(formation)});
   });
   return {date:dateKey,id:`${dateKey}_reset`,resetAt:resetTimeForDate(dateKey),operations,loggedAt:new Date().toISOString()};
 }
@@ -1325,7 +1445,7 @@ function snapshotForCurrentRegistrations(day, state, dateKey){
 function snapshotFromStateRoot(oldRoot,dateKey){
   const days=[];
   for(const day of ['平日','休日']){
-    const snap=snapshotForCurrentRegistrations(day,oldRoot.stateByDay?.[day]||{},dateKey);
+    const snap=snapshotForCurrentRegistrations(day,oldRoot.stateByDay?.[day]||{},dateKey,PRIMARY_FORMATION_FAMILY);
     if(snap.operations.length) days.push(snap);
   }
   return {id:dateKey,date:dateKey,resetAt:resetTimeForDate(dateKey),days,loggedAt:new Date().toISOString()};
@@ -1571,7 +1691,7 @@ function historicalStateForDate(dateKey){
     const form=op?.formationId;
     (Array.isArray(op?.trainNumbers)?op.trainNumbers:[]).forEach(no=>{
       if(!form) return;
-      state[resolveKey(no)]=String(form);
+      state[resolveKey(no)]=normalizeStoredFormationId(form) || null;
     });
   });
   return state;
@@ -1612,13 +1732,14 @@ function initDateControl(){
 function formationById(id){
   if(!id || id===INITIAL_FORMATION_SELECTION.id) return null;
   const key=String(id);
+  const keyWithF=/F$/i.test(key)?key:key+'F';
   for(const group of FORMATIONS){
     if(group.type===key) return {id:group.type,name:group.type,img:group.typeImg,kind:'type',type:group.type};
-    const direct=(group.items||[]).find(i=>String(i.id)===key || String(i.name)===key);
+    const direct=(group.items||[]).find(i=>String(i.id)===key || String(i.id)===keyWithF || String(i.name)===key || String(i.name)===key.replace(/F$/i,''));
     if(direct) return {...direct,type:group.type};
     for(const variant of (group.variants||[])){
       if(variant.id===key) return {...variant,kind:'variant',type:group.type};
-      const found=(variant.items||[]).find(i=>String(i.id)===key || String(i.name)===key);
+      const found=(variant.items||[]).find(i=>String(i.id)===key || String(i.id)===keyWithF || String(i.name)===key || String(i.name)===key.replace(/F$/i,''));
       if(found) return {...found,type:group.type};
     }
   }
@@ -1629,7 +1750,7 @@ function formationIdFromInput(value){
   const v=raw.replace(/[Ｆ]/g,'F').replace(/[　 ]+/g,'');
   if(!v) return {ok:false,error:'車両番号または編成番号を入力してください。'};
 
-  const train=liveTrain(currentTrainNo) || currentTrainSnapshot || trainForCurrentDay(currentTrainNo);
+  const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction||null) || currentTrainSnapshot || trainForCurrentDay(currentTrainNo,currentTrainSnapshot?.direction||null);
   const allowedFamily=allowedFormationFamily(train);
   const candidates=[
     v,
@@ -1642,10 +1763,10 @@ function formationIdFromInput(value){
     if(formationFamily(exact)!==allowedFamily){
       return {ok:false,error:allowedFamily==='yokohama'?'この列車は横浜線系統の編成のみ入力できます。':'この列車は京浜東北線系統の編成のみ入力できます。'};
     }
-    if(exact.disabled || UNAVAILABLE_FORMATIONS.has(String(exact.id))) {
+    if(exact.disabled || UNAVAILABLE_FORMATIONS.has(normalizeStoredFormationId(exact.id))) {
       return {ok:false,error:`編成「${exact.name||exact.id}」は入力できません。`};
     }
-    return {ok:true,id:exact.id};
+    return {ok:true,id:normalizeStoredFormationId(exact.id)};
   }
 
   // 車両番号から編成番号を特定する。
@@ -1658,10 +1779,10 @@ function formationIdFromInput(value){
       if(formationFamily(exact)!==allowedFamily){
         return {ok:false,error:allowedFamily==='yokohama'?'この列車は横浜線系統の編成のみ入力できます。':'この列車は京浜東北線系統の編成のみ入力できます。'};
       }
-      if(exact.disabled || UNAVAILABLE_FORMATIONS.has(String(exact.id))) {
+      if(exact.disabled || UNAVAILABLE_FORMATIONS.has(normalizeStoredFormationId(exact.id))) {
         return {ok:false,error:`編成「${exact.name||exact.id}」は入力できません。`};
       }
-      return {ok:true,id:exact.id};
+      return {ok:true,id:normalizeStoredFormationId(exact.id)};
     }
   }
 
@@ -1731,9 +1852,7 @@ function defaultTrainImage(t){
 function imageForTrain(t){
   // 表示時はFirebaseから同期したregistrationStateを登録情報の基準にする。
   // Firebaseにその列車のキーがある場合は、列車オブジェクト側の古い値へ戻さない。
-  const no=String(t?.no??'');
-  const hasStored=Object.prototype.hasOwnProperty.call(registrationState||{},no);
-  const registeredId=hasStored ? (registrationState[no]||null) : (stateForTrain(registrationState,no)||null);
+  const registeredId=registeredFormationForTrain(t);
   const hasFormation=!!(registeredId&&registeredId!==INITIAL_FORMATION_SELECTION.id&&formationById(registeredId));
   const f=selectionDisplayObjectForTrain(t,registeredId);
   return hasFormation ? f.img : defaultTrainImage(t);
@@ -2389,11 +2508,14 @@ function stationTimetableHTML(station, selectedDirection='up'){
 function formatFormationUpdatedAt(trainNo){
   const key=String(trainNo);
   // 編成未入力の列車には入力時刻を絶対に表示しない。
-  const formation = Object.prototype.hasOwnProperty.call(pendingFormationState,key)
-    ? pendingFormationState[key]
-    : registrationState[key];
+  const direction=currentTrainSnapshot?.direction||null;
+  const train=(currentTrainSnapshot&&String(currentTrainSnapshot.no||'')===key)
+    ? currentTrainSnapshot
+    : trainForCurrentDay(key,direction);
+  const formation = registeredFormationForTrain(train);
   if(!formation || formation===INITIAL_FORMATION_SELECTION.id) return '';
-  const ts=remoteRoot.formationUpdatedAtByDay?.[currentDay]?.[key] || pendingFormationTimestamps?.[currentDay]?.[key];
+  const family=train?formationFamilyForTrain(train):PRIMARY_FORMATION_FAMILY;
+  const ts=formationRemoteByFamily[family]?.formationUpdatedAtByDay?.[currentDay]?.[key] || remoteRoot.formationUpdatedAtByDay?.[currentDay]?.[key] || pendingFormationTimestamps?.[currentDay]?.[key];
   if(!ts) return '';
   const d=new Date(ts);
   if(Number.isNaN(d.getTime())) return '';
@@ -2523,7 +2645,7 @@ async function registerFormationFromInput(){
     input?.focus();
     return;
   }
-  if(UNAVAILABLE_FORMATIONS.has(String(result.id))){
+  if(UNAVAILABLE_FORMATIONS.has(normalizeStoredFormationId(result.id))){
     if(errorEl) errorEl.textContent='この編成は入力できません。';
     input?.focus();
     return;
@@ -2551,7 +2673,7 @@ let selectionSyncInProgress=false;
 let pendingFormationTimestamps={平日:{},休日:{}};
 async function selectFormation(formId){
   const formation=formationById(formId);
-  if(formation?.disabled || UNAVAILABLE_FORMATIONS.has(String(formId))) {
+  if(formation?.disabled || UNAVAILABLE_FORMATIONS.has(normalizeStoredFormationId(formId))) {
     syncStatus('この編成は入力できません');
     return;
   }
@@ -2561,7 +2683,7 @@ async function selectFormation(formId){
     return;
   }
   if(isHistoricalSelectedDate(selectedDateKey)) return;
-  const train=liveTrain(currentTrainNo);
+  const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction||null);
   if(!train || selectionSyncInProgress) return;
   const normalizedId=String(formId ?? INITIAL_FORMATION_SELECTION.id);
   const dropdown=document.getElementById('dropdownOptions');
@@ -2577,7 +2699,7 @@ async function selectFormation(formId){
     refreshAllTrainDataCache();
     // 編成入力直後は、列車情報が古いスナップショットを参照しないよう
     // 最新の列車データを現在のスナップショットにも反映する。
-    currentTrainSnapshot = liveTrain(train.no) || trainForCurrentDay(train.no) || train;
+    currentTrainSnapshot = liveTrain(train.no,train.direction||null) || trainForCurrentDay(train.no,train.direction||null) || train;
     updateSheetContent();
     renderTrainPositions();
   }catch(e){
