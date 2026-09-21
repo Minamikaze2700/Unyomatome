@@ -820,8 +820,21 @@ const FIREBASE_ENABLED=!!(window.firebase && FIREBASE_CONFIG.apiKey && FIREBASE_
 const FIREBASE_APP_NAME='jreYokohama';
 let firebaseApp=null;
 let firebaseDb=null;
-const OPERATION_CHAINS={平日:[],休日:[]};
+const OPERATION_CHAINS = {"平日":[],"休日":[[{"no":"401A","type":"普通","start":"南浦和","startTime":"04:30","dest":"大船","endTime":"06:18"},{"no":"600A","type":"普通","start":"大船","startTime":"06:24","dest":"大宮","endTime":"08:29"},{"no":"801A","type":"普通","start":"大宮","startTime":"08:33","dest":"大船","endTime":"10:36"},{"no":"1000A","type":"快速","start":"大船","startTime":"10:42","dest":"大宮","endTime":"12:38"},{"no":"1201A","type":"快速","start":"大宮","startTime":"12:49","dest":"大船","endTime":"14:45"},{"no":"1400A","type":"普通","start":"大船","startTime":"14:51","dest":"大宮","endTime":"16:52"},{"no":"1601A","type":"普通","start":"大宮","startTime":"16:59","dest":"大船","endTime":"19:00"}],[{"no":"403A","type":"普通","start":"南浦和","startTime":"04:49","dest":"大船","endTime":"06:38"},{"no":"602A","type":"普通","start":"大船","startTime":"06:46","dest":"大宮","endTime":"08:49"},{"no":"803A","type":"普通","start":"大宮","startTime":"08:53","dest":"大船","endTime":"10:56"}],[{"no":"411B","type":"普通","start":"大宮","startTime":"04:28","dest":"大船","endTime":"06:28"},{"no":"610B","type":"普通","start":"大船","startTime":"06:35","dest":"大宮","endTime":"08:39"},{"no":"811B","type":"普通","start":"大宮","startTime":"08:43","dest":"大船","endTime":"10:45"},{"no":"1010B","type":"快速","start":"大船","startTime":"10:51","dest":"大宮","endTime":"12:48"},{"no":"1211B","type":"快速","start":"大宮","startTime":"12:59","dest":"大船","endTime":"14:55"}],[{"no":"413B","type":"普通","start":"大宮","startTime":"04:47","dest":"大船","endTime":"06:48"},{"no":"612B","type":"普通","start":"大船","startTime":"06:54","dest":"大宮","endTime":"08:59"}],[{"no":"416B","type":"普通","start":"磯子","startTime":"04:20","dest":"大宮","endTime":"06:05"},{"no":"617B","type":"普通","start":"大宮","startTime":"06:11","dest":"大船","endTime":"08:11"},{"no":"816B","type":"普通","start":"大船","startTime":"08:17","dest":"南浦和","endTime":"10:07"},{"no":"1017B","type":"快速","start":"南浦和","startTime":"10:21","dest":"大船","endTime":"12:05"},{"no":"1216B","type":"快速","start":"大船","startTime":"12:11","dest":"大宮","endTime":"14:08"},{"no":"1417B","type":"快速","start":"大宮","startTime":"14:19","dest":"大船","endTime":"16:14"},{"no":"1616B","type":"普通","start":"大船","startTime":"16:23","dest":"大宮","endTime":"18:27"},{"no":"1817B","type":"普通","start":"大宮","startTime":"18:34","dest":"桜木町","endTime":"20:07"},{"no":"2016B","type":"普通","start":"桜木町","startTime":"20:15","dest":"大宮","endTime":"21:49"},{"no":"2217B","type":"普通","start":"大宮","startTime":"22:02","dest":"桜木町","endTime":"23:36"}],[{"no":"418B","type":"普通","start":"磯子","startTime":"04:30","dest":"大宮","endTime":"06:15"},{"no":"619B","type":"普通","start":"大宮","startTime":"06:21","dest":"大船","endTime":"08:21"},{"no":"818B","type":"普通","start":"大船","startTime":"08:27","dest":"大宮","endTime":"10:29"},{"no":"1019B","type":"快速","start":"大宮","startTime":"10:38","dest":"大船","endTime":"12:35"},{"no":"1218B","type":"快速","start":"大船","startTime":"12:41","dest":"大宮","endTime":"14:38"},{"no":"1419B","type":"快速","start":"大宮","startTime":"14:48","dest":"大船","endTime":"16:46"},{"no":"1618B","type":"普通","start":"大船","startTime":"16:53","dest":"大宮","endTime":"18:57"}],[{"no":"420B","type":"普通","start":"磯子","startTime":"04:41","dest":"大宮","endTime":"06:26"},{"no":"621B","type":"普通","start":"大宮","startTime":"06:32","dest":"大船","endTime":"08:34"},{"no":"820B","type":"普通","start":"大船","startTime":"08:43","dest":"大宮","endTime":"10:49"},{"no":"1021B","type":"快速","start":"大宮","startTime":"10:58","dest":"大船","endTime":"12:55"}],[{"no":"446K","type":"普通","start":"八王子","startTime":"04:53","dest":"桜木町","endTime":"05:56"},{"no":"647K","type":"普通","start":"桜木町","startTime":"06:03","dest":"八王子","endTime":"07:06"}],[{"no":"450B","type":"普通","start":"大船","startTime":"04:43","dest":"大宮","endTime":"06:45"},{"no":"651B","type":"普通","start":"大宮","startTime":"06:51","dest":"大船","endTime":"08:55"}],[{"no":"463A","type":"普通","start":"東十条","startTime":"04:32","dest":"大船","endTime":"06:06"},{"no":"662A","type":"普通","start":"大船","startTime":"06:12","dest":"大宮","endTime":"08:14"},{"no":"863A","type":"普通","start":"大宮","startTime":"08:18","dest":"蒲田","endTime":"09:31"}],[{"no":"505A","type":"普通","start":"大宮","startTime":"05:27","dest":"大船","endTime":"07:30"},{"no":"704A","type":"普通","start":"大船","startTime":"07:42","dest":"南浦和","endTime":"09:32"}],[{"no":"507A","type":"普通","start":"南浦和","startTime":"05:11","dest":"大船","endTime":"07:01"},{"no":"706A","type":"普通","start":"大船","startTime":"07:07","dest":"大宮","endTime":"09:09"},{"no":"907A","type":"普通","start":"大宮","startTime":"09:13","dest":"大船","endTime":"11:15"},{"no":"1106A","type":"快速","start":"大船","startTime":"11:21","dest":"大宮","endTime":"13:18"},{"no":"1307A","type":"快速","start":"大宮","startTime":"13:29","dest":"大船","endTime":"15:25"},{"no":"1506A","type":"普通","start":"大船","startTime":"15:34","dest":"南浦和","endTime":"17:26"},{"no":"1707A","type":"普通","start":"南浦和","startTime":"17:36","dest":"大船","endTime":"19:25"},{"no":"1906A","type":"普通","start":"大船","startTime":"19:31","dest":"南浦和","endTime":"21:21"},{"no":"2107A","type":"普通","start":"南浦和","startTime":"21:34","dest":"大船","endTime":"23:23"},{"no":"2306A","type":"普通","start":"大船","startTime":"23:29","dest":"上野","endTime":"00:51"}],[{"no":"509A","type":"普通","start":"南浦和","startTime":"05:33","dest":"大船","endTime":"07:22"},{"no":"708A","type":"普通","start":"大船","startTime":"07:28","dest":"大宮","endTime":"09:29"},{"no":"909A","type":"普通","start":"大宮","startTime":"09:33","dest":"大船","endTime":"11:34"},{"no":"1108A","type":"快速","start":"大船","startTime":"11:41","dest":"大宮","endTime":"13:38"},{"no":"1309A","type":"快速","start":"大宮","startTime":"13:49","dest":"大船","endTime":"15:45"},{"no":"1508A","type":"普通","start":"大船","startTime":"15:55","dest":"大宮","endTime":"17:57"}],[{"no":"511A","type":"普通","start":"南浦和","startTime":"05:49","dest":"大船","endTime":"07:38"},{"no":"710A","type":"普通","start":"大船","startTime":"07:47","dest":"大宮","endTime":"09:49"},{"no":"911A","type":"快速","start":"大宮","startTime":"09:54","dest":"蒲田","endTime":"11:01"},{"no":"1110A","type":"快速","start":"蒲田","startTime":"11:06","dest":"南浦和","endTime":"12:01"}],[{"no":"515B","type":"普通","start":"大宮","startTime":"05:59","dest":"磯子","endTime":"07:44"},{"no":"714B","type":"普通","start":"磯子","startTime":"07:54","dest":"大宮","endTime":"09:39"},{"no":"915B","type":"快速","start":"大宮","startTime":"09:44","dest":"蒲田","endTime":"10:54"}],[{"no":"522B","type":"普通","start":"磯子","startTime":"05:14","dest":"大宮","endTime":"07:00"},{"no":"723B","type":"普通","start":"大宮","startTime":"07:08","dest":"鶴見","endTime":"08:29"}],[{"no":"524B","type":"普通","start":"磯子","startTime":"05:39","dest":"大宮","endTime":"07:24"},{"no":"725B","type":"普通","start":"大宮","startTime":"07:27","dest":"蒲田","endTime":"08:40"}],[{"no":"526B","type":"普通","start":"磯子","startTime":"05:57","dest":"大宮","endTime":"07:44"},{"no":"727B","type":"普通","start":"大宮","startTime":"07:47","dest":"鶴見","endTime":"09:09"},{"no":"926B","type":"普通","start":"鶴見","startTime":"09:23","dest":"南浦和","endTime":"10:32"}],[{"no":"535K","type":"普通","start":"東神奈川","startTime":"05:57","dest":"八王子","endTime":"06:55"},{"no":"734K","type":"普通","start":"八王子","startTime":"07:02","dest":"東神奈川","endTime":"07:59"}],[{"no":"540B","type":"普通","start":"大船","startTime":"05:45","dest":"大宮","endTime":"07:49"},{"no":"741B","type":"普通","start":"大宮","startTime":"07:53","dest":"大船","endTime":"09:54"}],[{"no":"542K","type":"普通","start":"八王子","startTime":"05:55","dest":"桜木町","endTime":"06:58"},{"no":"743K","type":"普通","start":"桜木町","startTime":"07:12","dest":"八王子","endTime":"08:15"}],[{"no":"555B","type":"普通","start":"大宮","startTime":"05:16","dest":"大船","endTime":"07:16"},{"no":"754B","type":"普通","start":"大船","startTime":"07:22","dest":"大宮","endTime":"09:24"},{"no":"955B","type":"普通","start":"大宮","startTime":"09:27","dest":"磯子","endTime":"11:13"},{"no":"1154B","type":"快速","start":"磯子","startTime":"11:23","dest":"南浦和","endTime":"12:51"}],[{"no":"556B","type":"普通","start":"大船","startTime":"05:12","dest":"大宮","endTime":"07:13"},{"no":"757B","type":"普通","start":"大宮","startTime":"07:17","dest":"大船","endTime":"09:25"},{"no":"956B","type":"快速","start":"大船","startTime":"09:31","dest":"大宮","endTime":"11:28"},{"no":"1157B","type":"快速","start":"大宮","startTime":"11:39","dest":"大船","endTime":"13:35"},{"no":"1356B","type":"快速","start":"大船","startTime":"13:41","dest":"大宮","endTime":"15:38"},{"no":"1557B","type":"普通","start":"大宮","startTime":"15:49","dest":"磯子","endTime":"17:35"},{"no":"1756B","type":"普通","start":"磯子","startTime":"17:47","dest":"大宮","endTime":"19:32"},{"no":"1957B","type":"普通","start":"大宮","startTime":"19:41","dest":"磯子","endTime":"21:27"},{"no":"2156B","type":"普通","start":"磯子","startTime":"21:41","dest":"大宮","endTime":"23:26"},{"no":"2357B","type":"普通","start":"大宮","startTime":"23:38","dest":"蒲田","endTime":"00:56"}],[{"no":"561C","type":"普通","start":"大宮","startTime":"05:45","dest":"大船","endTime":"07:46"},{"no":"760C","type":"普通","start":"大船","startTime":"07:52","dest":"南浦和","endTime":"09:42"}],[{"no":"562C","type":"普通","start":"大船","startTime":"05:32","dest":"大宮","endTime":"07:34"},{"no":"763C","type":"普通","start":"大宮","startTime":"07:37","dest":"大船","endTime":"09:41"},{"no":"962C","type":"快速","start":"大船","startTime":"09:51","dest":"大宮","endTime":"11:48"},{"no":"1163C","type":"快速","start":"大宮","startTime":"11:59","dest":"大船","endTime":"13:55"}],[{"no":"565A","type":"普通","start":"東十条","startTime":"05:34","dest":"磯子","endTime":"06:52"},{"no":"764A","type":"普通","start":"磯子","startTime":"07:07","dest":"大宮","endTime":"08:54"}],[{"no":"568C","type":"普通","start":"蒲田","startTime":"05:55","dest":"大宮","endTime":"07:07"},{"no":"769C","type":"普通","start":"大宮","startTime":"07:13","dest":"大船","endTime":"09:14"},{"no":"968C","type":"快速","start":"大船","startTime":"09:20","dest":"大宮","endTime":"11:18"},{"no":"1169C","type":"快速","start":"大宮","startTime":"11:29","dest":"大船","endTime":"13:25"},{"no":"1368C","type":"快速","start":"大船","startTime":"13:31","dest":"大宮","endTime":"15:28"},{"no":"1569C","type":"普通","start":"大宮","startTime":"15:39","dest":"大船","endTime":"17:39"},{"no":"1768C","type":"普通","start":"大船","startTime":"17:45","dest":"南浦和","endTime":"19:36"}],[{"no":"613A","type":"普通","start":"南浦和","startTime":"06:16","dest":"大船","endTime":"08:05"},{"no":"812A","type":"普通","start":"大船","startTime":"08:11","dest":"大宮","endTime":"10:14"},{"no":"1013A","type":"快速","start":"大宮","startTime":"10:19","dest":"大船","endTime":"12:15"},{"no":"1212A","type":"快速","start":"大船","startTime":"12:21","dest":"大宮","endTime":"14:18"},{"no":"1413A","type":"快速","start":"大宮","startTime":"14:29","dest":"大船","endTime":"16:25"},{"no":"1612A","type":"普通","start":"大船","startTime":"16:31","dest":"大宮","endTime":"18:32"},{"no":"1813A","type":"普通","start":"大宮","startTime":"18:39","dest":"大船","endTime":"20:40"},{"no":"2012A","type":"普通","start":"大船","startTime":"20:49","dest":"大宮","endTime":"22:50"}],[{"no":"615A","type":"普通","start":"南浦和","startTime":"06:38","dest":"大船","endTime":"08:26"},{"no":"814A","type":"普通","start":"大船","startTime":"08:32","dest":"南浦和","endTime":"10:22"},{"no":"1015A","type":"快速","start":"南浦和","startTime":"10:36","dest":"蒲田","endTime":"11:31"}],[{"no":"617A","type":"普通","start":"南浦和","startTime":"06:50","dest":"大船","endTime":"08:41"},{"no":"816A","type":"普通","start":"大船","startTime":"08:50","dest":"南浦和","endTime":"10:43"},{"no":"1017A","type":"快速","start":"南浦和","startTime":"10:56","dest":"蒲田","endTime":"11:51"},{"no":"1216A","type":"快速","start":"蒲田","startTime":"12:06","dest":"南浦和","endTime":"13:01"}],[{"no":"626K","type":"普通","start":"八王子","startTime":"06:37","dest":"磯子","endTime":"07:52"},{"no":"827K","type":"普通","start":"磯子","startTime":"08:22","dest":"八王子","endTime":"09:40"}],[{"no":"630B","type":"普通","start":"磯子","startTime":"06:24","dest":"大宮","endTime":"08:09"},{"no":"831B","type":"普通","start":"大宮","startTime":"08:13","dest":"磯子","endTime":"09:58"},{"no":"1030B","type":"快速","start":"磯子","startTime":"10:23","dest":"南浦和","endTime":"11:51"}],[{"no":"632B","type":"普通","start":"磯子","startTime":"06:35","dest":"大宮","endTime":"08:20"},{"no":"833B","type":"普通","start":"大宮","startTime":"08:24","dest":"大船","endTime":"10:25"},{"no":"1032B","type":"快速","start":"大船","startTime":"10:31","dest":"大宮","endTime":"12:28"},{"no":"1233B","type":"快速","start":"大宮","startTime":"12:39","dest":"大船","endTime":"14:35"},{"no":"1432B","type":"普通","start":"大船","startTime":"14:41","dest":"南浦和","endTime":"16:31"},{"no":"1633B","type":"普通","start":"南浦和","startTime":"16:46","dest":"鶴見","endTime":"17:54"},{"no":"1832B","type":"普通","start":"鶴見","startTime":"18:07","dest":"南浦和","endTime":"19:16"}],[{"no":"632K","type":"普通","start":"八王子","startTime":"06:54","dest":"桜木町","endTime":"07:57"},{"no":"833K","type":"普通","start":"桜木町","startTime":"08:03","dest":"八王子","endTime":"09:10"}],[{"no":"634B","type":"普通","start":"磯子","startTime":"06:48","dest":"大宮","endTime":"08:34"},{"no":"835B","type":"普通","start":"大宮","startTime":"08:37","dest":"磯子","endTime":"10:24"},{"no":"1034B","type":"快速","start":"磯子","startTime":"10:43","dest":"南浦和","endTime":"12:11"},{"no":"1235B","type":"快速","start":"南浦和","startTime":"12:16","dest":"蒲田","endTime":"13:11"}],[{"no":"636B","type":"普通","start":"磯子","startTime":"06:58","dest":"大宮","endTime":"08:44"},{"no":"837B","type":"普通","start":"大宮","startTime":"08:47","dest":"磯子","endTime":"10:33"}],[{"no":"637K","type":"普通","start":"東神奈川","startTime":"06:55","dest":"八王子","endTime":"07:54"},{"no":"836K","type":"普通","start":"八王子","startTime":"08:00","dest":"桜木町","endTime":"09:03"}],[{"no":"639K","type":"普通","start":"中山","startTime":"06:33","dest":"橋本","endTime":"06:59"},{"no":"838K","type":"普通","start":"橋本","startTime":"08:54","dest":"東神奈川","endTime":"09:38"}],[{"no":"665C","type":"普通","start":"大宮","startTime":"06:58","dest":"磯子","endTime":"08:43"},{"no":"864C","type":"普通","start":"磯子","startTime":"08:53","dest":"大宮","endTime":"10:40"},{"no":"1065C","type":"快速","start":"大宮","startTime":"10:48","dest":"大船","endTime":"12:45"},{"no":"1264C","type":"快速","start":"大船","startTime":"12:51","dest":"大宮","endTime":"14:48"},{"no":"1465C","type":"普通","start":"大宮","startTime":"14:59","dest":"蒲田","endTime":"16:12"},{"no":"1664C","type":"普通","start":"蒲田","startTime":"16:20","dest":"大宮","endTime":"17:32"}],[{"no":"667A","type":"普通","start":"赤羽","startTime":"06:16","dest":"大船","endTime":"07:54"},{"no":"866A","type":"普通","start":"大船","startTime":"08:02","dest":"南浦和","endTime":"09:52"},{"no":"1067A","type":"快速","start":"南浦和","startTime":"10:11","dest":"大船","endTime":"11:55"},{"no":"1266A","type":"快速","start":"大船","startTime":"12:01","dest":"大宮","endTime":"13:58"},{"no":"1467A","type":"快速","start":"大宮","startTime":"14:09","dest":"大船","endTime":"16:05"},{"no":"1666A","type":"普通","start":"大船","startTime":"16:14","dest":"大宮","endTime":"18:17"},{"no":"1867A","type":"普通","start":"大宮","startTime":"18:24","dest":"大船","endTime":"20:25"},{"no":"2066A","type":"普通","start":"大船","startTime":"20:34","dest":"大宮","endTime":"22:39"},{"no":"2267A","type":"普通","start":"大宮","startTime":"22:50","dest":"大船","endTime":"00:57"}],[{"no":"669A","type":"普通","start":"南浦和","startTime":"06:27","dest":"大船","endTime":"08:16"},{"no":"868A","type":"普通","start":"大船","startTime":"08:21","dest":"大宮","endTime":"10:24"},{"no":"1069A","type":"快速","start":"大宮","startTime":"10:28","dest":"大船","endTime":"12:25"},{"no":"1268A","type":"快速","start":"大船","startTime":"12:31","dest":"大宮","endTime":"14:28"},{"no":"1469A","type":"快速","start":"大宮","startTime":"14:39","dest":"大船","endTime":"16:35"},{"no":"1668A","type":"普通","start":"大船","startTime":"16:41","dest":"南浦和","endTime":"18:31"}],[{"no":"676C","type":"普通","start":"蒲田","startTime":"06:52","dest":"大宮","endTime":"08:04"},{"no":"877C","type":"普通","start":"大宮","startTime":"08:07","dest":"大船","endTime":"10:10"},{"no":"1076C","type":"快速","start":"大船","startTime":"10:21","dest":"大宮","endTime":"12:18"},{"no":"1277C","type":"快速","start":"大宮","startTime":"12:29","dest":"大船","endTime":"14:25"},{"no":"1476C","type":"普通","start":"大船","startTime":"14:31","dest":"南浦和","endTime":"16:21"},{"no":"1677C","type":"普通","start":"南浦和","startTime":"16:36","dest":"大船","endTime":"18:24"},{"no":"1876C","type":"普通","start":"大船","startTime":"18:30","dest":"大宮","endTime":"20:33"},{"no":"2077C","type":"普通","start":"大宮","startTime":"20:39","dest":"大船","endTime":"22:42"},{"no":"2276C","type":"普通","start":"大船","startTime":"22:57","dest":"南浦和","endTime":"00:51"}],[{"no":"719A","type":"普通","start":"南浦和","startTime":"07:15","dest":"大船","endTime":"09:04"},{"no":"918A","type":"普通","start":"大船","startTime":"09:11","dest":"南浦和","endTime":"11:03"},{"no":"1119A","type":"快速","start":"南浦和","startTime":"11:16","dest":"蒲田","endTime":"12:11"}],[{"no":"738K","type":"普通","start":"橋本","startTime":"07:10","dest":"東神奈川","endTime":"07:54"},{"no":"939K","type":"普通","start":"東神奈川","startTime":"09:47","dest":"八王子","endTime":"10:44"}],[{"no":"742B","type":"普通","start":"大船","startTime":"07:02","dest":"大宮","endTime":"09:04"},{"no":"943B","type":"普通","start":"大宮","startTime":"09:07","dest":"磯子","endTime":"10:53"},{"no":"1142B","type":"快速","start":"磯子","startTime":"11:03","dest":"南浦和","endTime":"12:31"}],[{"no":"744B","type":"普通","start":"大船","startTime":"07:12","dest":"大宮","endTime":"09:14"},{"no":"945B","type":"普通","start":"大宮","startTime":"09:17","dest":"蒲田","endTime":"10:30"}],[{"no":"746B","type":"普通","start":"大船","startTime":"07:32","dest":"大宮","endTime":"09:34"},{"no":"947B","type":"普通","start":"大宮","startTime":"09:37","dest":"磯子","endTime":"11:23"},{"no":"1146B","type":"快速","start":"磯子","startTime":"11:43","dest":"南浦和","endTime":"13:11"},{"no":"1347B","type":"快速","start":"南浦和","startTime":"13:16","dest":"蒲田","endTime":"14:11"}],[{"no":"758B","type":"普通","start":"桜木町","startTime":"07:45","dest":"大宮","endTime":"09:19"},{"no":"959B","type":"普通","start":"大宮","startTime":"09:23","dest":"大船","endTime":"11:25"},{"no":"1158B","type":"快速","start":"大船","startTime":"11:31","dest":"大宮","endTime":"13:28"},{"no":"1359B","type":"快速","start":"大宮","startTime":"13:39","dest":"大船","endTime":"15:36"},{"no":"1558B","type":"普通","start":"大船","startTime":"15:46","dest":"大宮","endTime":"17:48"},{"no":"1759B","type":"普通","start":"大宮","startTime":"17:54","dest":"大船","endTime":"19:55"}],[{"no":"771C","type":"普通","start":"大宮","startTime":"07:23","dest":"磯子","endTime":"09:13"},{"no":"970C","type":"普通","start":"磯子","startTime":"09:25","dest":"大宮","endTime":"11:10"},{"no":"1171C","type":"快速","start":"大宮","startTime":"11:19","dest":"大船","endTime":"13:15"},{"no":"1370C","type":"快速","start":"大船","startTime":"13:21","dest":"大宮","endTime":"15:18"},{"no":"1571C","type":"普通","start":"大宮","startTime":"15:29","dest":"蒲田","endTime":"16:41"}],[{"no":"773C","type":"普通","start":"大宮","startTime":"07:33","dest":"大船","endTime":"09:35"},{"no":"972C","type":"快速","start":"大船","startTime":"09:41","dest":"大宮","endTime":"11:38"},{"no":"1173C","type":"快速","start":"大宮","startTime":"11:49","dest":"大船","endTime":"13:45"},{"no":"1372C","type":"快速","start":"大船","startTime":"13:51","dest":"大宮","endTime":"15:48"},{"no":"1573C","type":"普通","start":"大宮","startTime":"15:59","dest":"磯子","endTime":"17:44"},{"no":"1772C","type":"普通","start":"磯子","startTime":"17:54","dest":"大宮","endTime":"19:43"},{"no":"1973C","type":"普通","start":"大宮","startTime":"19:51","dest":"磯子","endTime":"21:38"},{"no":"2172C","type":"普通","start":"磯子","startTime":"21:53","dest":"大宮","endTime":"23:40"},{"no":"2373C","type":"普通","start":"大宮","startTime":"23:57","dest":"赤羽","endTime":"00:24"}],[{"no":"775C","type":"普通","start":"大宮","startTime":"07:43","dest":"磯子","endTime":"09:32"},{"no":"974C","type":"快速","start":"磯子","startTime":"09:42","dest":"南浦和","endTime":"11:11"}],[{"no":"820K","type":"普通","start":"八王子","startTime":"08:48","dest":"東神奈川","endTime":"09:51"},{"no":"1021K","type":"普通","start":"東神奈川","startTime":"10:00","dest":"八王子","endTime":"11:02"}],[{"no":"822B","type":"普通","start":"鶴見","startTime":"08:48","dest":"大宮","endTime":"10:09"},{"no":"1023B","type":"快速","start":"大宮","startTime":"10:14","dest":"磯子","endTime":"11:53"},{"no":"1222B","type":"快速","start":"磯子","startTime":"12:03","dest":"南浦和","endTime":"13:31"}],[{"no":"847K","type":"普通","start":"磯子","startTime":"08:40","dest":"八王子","endTime":"09:55"},{"no":"1046K","type":"普通","start":"八王子","startTime":"10:01","dest":"東神奈川","endTime":"11:02"}],[{"no":"861A","type":"普通","start":"大宮","startTime":"08:03","dest":"磯子","endTime":"09:48"},{"no":"1060A","type":"快速","start":"磯子","startTime":"10:02","dest":"南浦和","endTime":"11:31"}],[{"no":"913B","type":"普通","start":"大宮","startTime":"09:03","dest":"大船","endTime":"11:05"},{"no":"1112B","type":"快速","start":"大船","startTime":"11:11","dest":"大宮","endTime":"13:08"},{"no":"1313B","type":"快速","start":"大宮","startTime":"13:19","dest":"大船","endTime":"15:15"},{"no":"1512B","type":"普通","start":"大船","startTime":"15:25","dest":"大宮","endTime":"17:27"},{"no":"1713B","type":"普通","start":"大宮","startTime":"17:34","dest":"大船","endTime":"19:35"},{"no":"1912B","type":"普通","start":"大船","startTime":"19:41","dest":"南浦和","endTime":"21:31"},{"no":"2113B","type":"普通","start":"南浦和","startTime":"21:47","dest":"大船","endTime":"23:36"},{"no":"2312B","type":"普通","start":"大船","startTime":"23:48","dest":"蒲田","endTime":"00:39"}],[{"no":"950B","type":"普通","start":"大船","startTime":"09:02","dest":"南浦和","endTime":"10:53"},{"no":"1151B","type":"快速","start":"南浦和","startTime":"11:06","dest":"磯子","endTime":"12:33"}],[{"no":"1021A","type":"快速","start":"南浦和","startTime":"10:46","dest":"磯子","endTime":"12:13"},{"no":"1220A","type":"快速","start":"磯子","startTime":"12:23","dest":"南浦和","endTime":"13:51"}],[{"no":"1028B","type":"快速","start":"大船","startTime":"10:11","dest":"大宮","endTime":"12:08"},{"no":"1229B","type":"快速","start":"大宮","startTime":"12:19","dest":"大船","endTime":"14:15"},{"no":"1428B","type":"快速","start":"大船","startTime":"14:21","dest":"大宮","endTime":"16:18"},{"no":"1629B","type":"普通","start":"大宮","startTime":"16:28","dest":"大船","endTime":"18:30"},{"no":"1828B","type":"普通","start":"大船","startTime":"18:37","dest":"大宮","endTime":"20:39"},{"no":"2029B","type":"普通","start":"大宮","startTime":"20:46","dest":"磯子","endTime":"22:32"}],[{"no":"1040B","type":"快速","start":"大船","startTime":"10:01","dest":"大宮","endTime":"11:58"},{"no":"1241B","type":"快速","start":"大宮","startTime":"12:09","dest":"大船","endTime":"14:05"},{"no":"1440B","type":"快速","start":"大船","startTime":"14:11","dest":"大宮","endTime":"16:08"},{"no":"1641B","type":"普通","start":"大宮","startTime":"16:19","dest":"磯子","endTime":"18:04"},{"no":"1840B","type":"普通","start":"磯子","startTime":"18:22","dest":"南浦和","endTime":"19:56"}],[{"no":"1102A","type":"快速","start":"大船","startTime":"11:02","dest":"大宮","endTime":"12:58"},{"no":"1303A","type":"快速","start":"大宮","startTime":"13:09","dest":"大船","endTime":"15:05"},{"no":"1502A","type":"普通","start":"大船","startTime":"15:15","dest":"南浦和","endTime":"17:06"},{"no":"1703A","type":"普通","start":"南浦和","startTime":"17:16","dest":"鶴見","endTime":"18:24"}],[{"no":"1131B","type":"快速","start":"南浦和","startTime":"11:56","dest":"蒲田","endTime":"12:51"},{"no":"1330B","type":"快速","start":"蒲田","startTime":"13:06","dest":"南浦和","endTime":"14:01"}],[{"no":"1160C","type":"快速","start":"大船","startTime":"11:51","dest":"大宮","endTime":"13:48"},{"no":"1361C","type":"快速","start":"大宮","startTime":"13:59","dest":"大船","endTime":"15:55"}],[{"no":"1171A","type":"快速","start":"大宮","startTime":"11:09","dest":"大船","endTime":"13:05"},{"no":"1370A","type":"快速","start":"大船","startTime":"13:11","dest":"大宮","endTime":"15:08"},{"no":"1571A","type":"普通","start":"大宮","startTime":"15:19","dest":"磯子","endTime":"17:04"},{"no":"1770A","type":"普通","start":"磯子","startTime":"17:16","dest":"大宮","endTime":"19:03"},{"no":"1971A","type":"普通","start":"大宮","startTime":"19:09","dest":"大船","endTime":"21:11"},{"no":"2170A","type":"普通","start":"大船","startTime":"21:17","dest":"大宮","endTime":"23:19"},{"no":"2371A","type":"普通","start":"大宮","startTime":"23:29","dest":"蒲田","endTime":"00:46"}],[{"no":"1181C","type":"快速","start":"南浦和","startTime":"11:26","dest":"磯子","endTime":"12:53"},{"no":"1380C","type":"快速","start":"磯子","startTime":"13:03","dest":"南浦和","endTime":"14:31"}],[{"no":"1183C","type":"快速","start":"南浦和","startTime":"11:46","dest":"磯子","endTime":"13:13"},{"no":"1382C","type":"快速","start":"磯子","startTime":"13:23","dest":"南浦和","endTime":"14:51"}],[{"no":"1215A","type":"快速","start":"南浦和","startTime":"12:46","dest":"磯子","endTime":"14:13"},{"no":"1414A","type":"快速","start":"磯子","startTime":"14:23","dest":"南浦和","endTime":"15:51"}],[{"no":"1249B","type":"快速","start":"南浦和","startTime":"12:26","dest":"磯子","endTime":"13:53"},{"no":"1448B","type":"快速","start":"磯子","startTime":"14:03","dest":"南浦和","endTime":"15:31"}],[{"no":"1250B","type":"快速","start":"磯子","startTime":"12:43","dest":"南浦和","endTime":"14:11"},{"no":"1451B","type":"快速","start":"南浦和","startTime":"14:16","dest":"磯子","endTime":"15:43"}],[{"no":"1255B","type":"快速","start":"南浦和","startTime":"12:56","dest":"蒲田","endTime":"13:51"},{"no":"1454B","type":"快速","start":"蒲田","startTime":"14:06","dest":"南浦和","endTime":"15:01"}],[{"no":"1310A","type":"快速","start":"磯子","startTime":"13:43","dest":"南浦和","endTime":"15:11"},{"no":"1511A","type":"普通","start":"南浦和","startTime":"15:16","dest":"大船","endTime":"17:05"},{"no":"1710A","type":"普通","start":"大船","startTime":"17:11","dest":"大宮","endTime":"19:13"},{"no":"1911A","type":"普通","start":"大宮","startTime":"19:19","dest":"大船","endTime":"21:22"},{"no":"2110A","type":"普通","start":"大船","startTime":"21:32","dest":"大宮","endTime":"23:34"},{"no":"2311A","type":"普通","start":"大宮","startTime":"23:43","dest":"赤羽","endTime":"00:08"}],[{"no":"1319A","type":"快速","start":"南浦和","startTime":"13:25","dest":"磯子","endTime":"14:53"},{"no":"1518A","type":"普通","start":"磯子","startTime":"15:03","dest":"大宮","endTime":"16:48"}],[{"no":"1320B","type":"快速","start":"大船","startTime":"13:01","dest":"大宮","endTime":"14:58"},{"no":"1521B","type":"普通","start":"大宮","startTime":"15:09","dest":"磯子","endTime":"16:54"},{"no":"1720B","type":"普通","start":"磯子","startTime":"17:06","dest":"南浦和","endTime":"18:41"}],[{"no":"1321A","type":"快速","start":"南浦和","startTime":"13:56","dest":"磯子","endTime":"15:23"},{"no":"1520A","type":"普通","start":"磯子","startTime":"15:36","dest":"大宮","endTime":"17:22"},{"no":"1721A","type":"普通","start":"大宮","startTime":"17:29","dest":"桜木町","endTime":"19:02"},{"no":"1920A","type":"普通","start":"桜木町","startTime":"19:09","dest":"南浦和","endTime":"20:31"}],[{"no":"1361A","type":"快速","start":"南浦和","startTime":"13:46","dest":"磯子","endTime":"15:15"},{"no":"1560A","type":"普通","start":"磯子","startTime":"15:27","dest":"大宮","endTime":"17:12"},{"no":"1761A","type":"普通","start":"大宮","startTime":"17:19","dest":"鶴見","endTime":"18:39"}],[{"no":"1416A","type":"快速","start":"磯子","startTime":"14:43","dest":"大宮","endTime":"16:26"},{"no":"1617A","type":"普通","start":"大宮","startTime":"16:39","dest":"大船","endTime":"18:40"},{"no":"1816A","type":"普通","start":"大船","startTime":"18:46","dest":"大宮","endTime":"20:48"},{"no":"2017A","type":"普通","start":"大宮","startTime":"20:54","dest":"大船","endTime":"22:55"}],[{"no":"1435B","type":"快速","start":"南浦和","startTime":"14:26","dest":"磯子","endTime":"15:54"},{"no":"1634B","type":"普通","start":"磯子","startTime":"16:07","dest":"南浦和","endTime":"17:41"}],[{"no":"1436B","type":"快速","start":"磯子","startTime":"14:34","dest":"南浦和","endTime":"16:02"},{"no":"1637B","type":"普通","start":"南浦和","startTime":"16:06","dest":"大船","endTime":"17:55"},{"no":"1836B","type":"普通","start":"大船","startTime":"18:01","dest":"大宮","endTime":"20:02"},{"no":"2037B","type":"普通","start":"大宮","startTime":"20:10","dest":"大船","endTime":"22:12"},{"no":"2236B","type":"普通","start":"大船","startTime":"22:22","dest":"大宮","endTime":"00:23"}],[{"no":"1443B","type":"快速","start":"南浦和","startTime":"14:46","dest":"磯子","endTime":"16:13"},{"no":"1642B","type":"普通","start":"磯子","startTime":"16:27","dest":"大宮","endTime":"18:12"},{"no":"1843B","type":"普通","start":"大宮","startTime":"18:19","dest":"磯子","endTime":"20:04"},{"no":"2042B","type":"普通","start":"磯子","startTime":"20:14","dest":"大宮","endTime":"22:00"},{"no":"2243B","type":"普通","start":"大宮","startTime":"22:14","dest":"磯子","endTime":"00:01"}],[{"no":"1462C","type":"快速","start":"大船","startTime":"14:01","dest":"大宮","endTime":"15:58"},{"no":"1663C","type":"普通","start":"大宮","startTime":"16:09","dest":"蒲田","endTime":"17:21"}],[{"no":"1483C","type":"快速","start":"南浦和","startTime":"14:56","dest":"磯子","endTime":"16:23"},{"no":"1682C","type":"普通","start":"磯子","startTime":"16:35","dest":"大宮","endTime":"18:23"},{"no":"1883C","type":"普通","start":"大宮","startTime":"18:29","dest":"大船","endTime":"20:33"},{"no":"2082C","type":"普通","start":"大船","startTime":"20:42","dest":"南浦和","endTime":"22:32"},{"no":"2283C","type":"普通","start":"南浦和","startTime":"22:50","dest":"磯子","endTime":"00:23"}],[{"no":"1510B","type":"普通","start":"大船","startTime":"15:05","dest":"大宮","endTime":"17:07"},{"no":"1711B","type":"普通","start":"大宮","startTime":"17:14","dest":"大船","endTime":"19:16"},{"no":"1910B","type":"普通","start":"大船","startTime":"19:22","dest":"南浦和","endTime":"21:12"},{"no":"2111B","type":"普通","start":"南浦和","startTime":"21:23","dest":"磯子","endTime":"22:56"}],[{"no":"1512K","type":"普通","start":"八王子","startTime":"15:01","dest":"東神奈川","endTime":"16:01"},{"no":"1713K","type":"普通","start":"東神奈川","startTime":"17:55","dest":"八王子","endTime":"18:51"}],[{"no":"1515A","type":"普通","start":"南浦和","startTime":"15:56","dest":"大船","endTime":"17:47"},{"no":"1714A","type":"普通","start":"大船","startTime":"17:51","dest":"大宮","endTime":"19:52"},{"no":"1915A","type":"普通","start":"大宮","startTime":"19:59","dest":"大船","endTime":"22:00"}],[{"no":"1523B","type":"普通","start":"南浦和","startTime":"15:46","dest":"磯子","endTime":"17:19"},{"no":"1722B","type":"普通","start":"磯子","startTime":"17:31","dest":"大宮","endTime":"19:19"},{"no":"1923B","type":"普通","start":"大宮","startTime":"19:29","dest":"桜木町","endTime":"21:02"}],[{"no":"1538B","type":"普通","start":"磯子","startTime":"15:15","dest":"大宮","endTime":"17:02"},{"no":"1739B","type":"普通","start":"大宮","startTime":"17:08","dest":"大船","endTime":"19:09"},{"no":"1938B","type":"普通","start":"大船","startTime":"19:16","dest":"大宮","endTime":"21:18"},{"no":"2139B","type":"普通","start":"大宮","startTime":"21:28","dest":"桜木町","endTime":"23:02"},{"no":"2338B","type":"普通","start":"桜木町","startTime":"23:09","dest":"南浦和","endTime":"00:31"}],[{"no":"1547B","type":"普通","start":"南浦和","startTime":"15:26","dest":"大船","endTime":"17:15"},{"no":"1746B","type":"普通","start":"大船","startTime":"17:22","dest":"大宮","endTime":"19:24"},{"no":"1947B","type":"普通","start":"大宮","startTime":"19:35","dest":"大船","endTime":"21:38"},{"no":"2146B","type":"普通","start":"大船","startTime":"21:52","dest":"大宮","endTime":"23:54"}],[{"no":"1549B","type":"普通","start":"南浦和","startTime":"15:36","dest":"大船","endTime":"17:27"},{"no":"1748B","type":"普通","start":"大船","startTime":"17:34","dest":"南浦和","endTime":"19:26"},{"no":"1949B","type":"普通","start":"南浦和","startTime":"19:36","dest":"磯子","endTime":"21:10"}],[{"no":"1550B","type":"普通","start":"磯子","startTime":"15:57","dest":"大宮","endTime":"17:42"},{"no":"1751B","type":"普通","start":"大宮","startTime":"17:49","dest":"磯子","endTime":"19:34"},{"no":"1950B","type":"普通","start":"磯子","startTime":"19:52","dest":"大宮","endTime":"21:38"},{"no":"2151B","type":"普通","start":"大宮","startTime":"21:55","dest":"大船","endTime":"23:57"}],[{"no":"1555B","type":"快速","start":"南浦和","startTime":"15:06","dest":"大船","endTime":"16:54"},{"no":"1754B","type":"普通","start":"大船","startTime":"17:02","dest":"南浦和","endTime":"18:56"},{"no":"1955B","type":"普通","start":"南浦和","startTime":"19:10","dest":"大船","endTime":"21:01"},{"no":"2154B","type":"普通","start":"大船","startTime":"21:08","dest":"大宮","endTime":"23:12"},{"no":"2355B","type":"普通","start":"大宮","startTime":"23:22","dest":"蒲田","endTime":"00:34"}],[{"no":"1580C","type":"普通","start":"蒲田","startTime":"15:45","dest":"南浦和","endTime":"16:46"},{"no":"1781C","type":"普通","start":"南浦和","startTime":"17:00","dest":"大船","endTime":"18:49"}],[{"no":"1621K","type":"普通","start":"桜木町","startTime":"16:53","dest":"八王子","endTime":"18:02"},{"no":"1820K","type":"普通","start":"八王子","startTime":"18:07","dest":"磯子","endTime":"19:22"}],[{"no":"1622A","type":"普通","start":"磯子","startTime":"16:52","dest":"大宮","endTime":"18:38"},{"no":"1823A","type":"普通","start":"大宮","startTime":"18:49","dest":"大船","endTime":"20:52"}],[{"no":"1625A","type":"普通","start":"南浦和","startTime":"16:16","dest":"大船","endTime":"18:05"},{"no":"1824A","type":"普通","start":"大船","startTime":"18:11","dest":"大宮","endTime":"20:13"},{"no":"2025A","type":"普通","start":"大宮","startTime":"20:20","dest":"大船","endTime":"22:25"},{"no":"2224A","type":"普通","start":"大船","startTime":"22:34","dest":"大宮","endTime":"00:39"}],[{"no":"1627A","type":"普通","start":"南浦和","startTime":"16:26","dest":"大船","endTime":"18:14"},{"no":"1826A","type":"普通","start":"大船","startTime":"18:20","dest":"大宮","endTime":"20:22"},{"no":"2027A","type":"普通","start":"大宮","startTime":"20:29","dest":"磯子","endTime":"22:14"}],[{"no":"1631B","type":"普通","start":"大宮","startTime":"16:44","dest":"磯子","endTime":"18:29"},{"no":"1830B","type":"普通","start":"磯子","startTime":"18:41","dest":"南浦和","endTime":"20:16"},{"no":"2031B","type":"普通","start":"南浦和","startTime":"20:29","dest":"磯子","endTime":"22:02"},{"no":"2230B","type":"普通","start":"磯子","startTime":"22:21","dest":"大宮","endTime":"00:08"},{"no":"2431B","type":"普通","start":"大宮","startTime":"00:15","dest":"赤羽","endTime":"00:40"}],[{"no":"1660C","type":"普通","start":"大船","startTime":"16:06","dest":"大宮","endTime":"18:07"},{"no":"1861C","type":"普通","start":"大宮","startTime":"18:14","dest":"大船","endTime":"20:16"},{"no":"2060C","type":"普通","start":"大船","startTime":"20:29","dest":"大宮","endTime":"22:32"},{"no":"2261C","type":"普通","start":"大宮","startTime":"22:43","dest":"磯子","endTime":"00:31"}],[{"no":"1670C","type":"普通","start":"蒲田","startTime":"16:50","dest":"大宮","endTime":"18:02"},{"no":"1871C","type":"普通","start":"大宮","startTime":"18:09","dest":"桜木町","endTime":"19:42"}],[{"no":"1701K","type":"普通","start":"大船","startTime":"17:55","dest":"八王子","endTime":"19:29"},{"no":"1900K","type":"普通","start":"八王子","startTime":"19:36","dest":"東神奈川","endTime":"20:32"}],[{"no":"1727K","type":"普通","start":"桜木町","startTime":"17:53","dest":"八王子","endTime":"18:59"},{"no":"1926K","type":"普通","start":"八王子","startTime":"19:05","dest":"東神奈川","endTime":"20:01"}],[{"no":"1735B","type":"普通","start":"南浦和","startTime":"17:56","dest":"大船","endTime":"19:45"},{"no":"1934B","type":"普通","start":"大船","startTime":"19:52","dest":"南浦和","endTime":"21:43"}],[{"no":"1741K","type":"普通","start":"大船","startTime":"17:41","dest":"八王子","endTime":"19:18"},{"no":"1940K","type":"普通","start":"八王子","startTime":"19:25","dest":"東神奈川","endTime":"20:21"}],[{"no":"1765C","type":"普通","start":"大宮","startTime":"17:39","dest":"桜木町","endTime":"19:13"},{"no":"1964C","type":"普通","start":"桜木町","startTime":"19:20","dest":"南浦和","endTime":"20:41"}],[{"no":"1809A","type":"普通","start":"大宮","startTime":"18:04","dest":"大船","endTime":"20:05"},{"no":"2008A","type":"普通","start":"大船","startTime":"20:17","dest":"南浦和","endTime":"22:07"},{"no":"2209A","type":"普通","start":"南浦和","startTime":"22:21","dest":"大船","endTime":"00:09"}],[{"no":"1812K","type":"普通","start":"八王子","startTime":"18:56","dest":"磯子","endTime":"20:13"},{"no":"2013K","type":"普通","start":"磯子","startTime":"20:24","dest":"八王子","endTime":"21:40"}],[{"no":"1821B","type":"普通","start":"南浦和","startTime":"18:56","dest":"磯子","endTime":"20:29"},{"no":"2020B","type":"普通","start":"磯子","startTime":"20:39","dest":"大宮","endTime":"22:25"},{"no":"2221B","type":"普通","start":"大宮","startTime":"22:32","dest":"大船","endTime":"00:33"}],[{"no":"1845K","type":"普通","start":"磯子","startTime":"18:49","dest":"八王子","endTime":"20:04"},{"no":"2044K","type":"普通","start":"八王子","startTime":"20:10","dest":"東神奈川","endTime":"21:06"}],[{"no":"1846K","type":"普通","start":"八王子","startTime":"18:01","dest":"東神奈川","endTime":"18:56"},{"no":"2047K","type":"普通","start":"東神奈川","startTime":"20:55","dest":"八王子","endTime":"21:51"}],[{"no":"1860A","type":"普通","start":"鶴見","startTime":"18:57","dest":"南浦和","endTime":"20:06"},{"no":"2061A","type":"普通","start":"南浦和","startTime":"20:17","dest":"磯子","endTime":"21:50"},{"no":"2260A","type":"普通","start":"磯子","startTime":"22:00","dest":"南浦和","endTime":"23:34"}],[{"no":"1863C","type":"普通","start":"大宮","startTime":"18:53","dest":"桜木町","endTime":"20:27"},{"no":"2062C","type":"普通","start":"桜木町","startTime":"20:39","dest":"大宮","endTime":"22:13"},{"no":"2263C","type":"普通","start":"大宮","startTime":"22:23","dest":"大船","endTime":"00:24"}],[{"no":"1900A","type":"普通","start":"大船","startTime":"19:06","dest":"大宮","endTime":"21:08"},{"no":"2101A","type":"普通","start":"大宮","startTime":"21:17","dest":"桜木町","endTime":"22:50"}],[{"no":"1903A","type":"普通","start":"南浦和","startTime":"19:59","dest":"大船","endTime":"21:51"},{"no":"2102A","type":"普通","start":"大船","startTime":"21:59","dest":"南浦和","endTime":"23:49"}],[{"no":"1904A","type":"普通","start":"桜木町","startTime":"19:39","dest":"南浦和","endTime":"21:01"},{"no":"2105A","type":"普通","start":"南浦和","startTime":"21:11","dest":"磯子","endTime":"22:44"}],[{"no":"1919B","type":"普通","start":"大宮","startTime":"19:04","dest":"磯子","endTime":"20:50"},{"no":"2118B","type":"普通","start":"磯子","startTime":"21:10","dest":"大宮","endTime":"22:57"},{"no":"2319B","type":"普通","start":"大宮","startTime":"23:07","dest":"桜木町","endTime":"00:41"}],[{"no":"1970C","type":"普通","start":"桜木町","startTime":"19:53","dest":"大宮","endTime":"21:28"},{"no":"2171C","type":"普通","start":"大宮","startTime":"21:42","dest":"大船","endTime":"23:43"}],[{"no":"2020K","type":"普通","start":"八王子","startTime":"20:59","dest":"東神奈川","endTime":"21:55"},{"no":"2221K","type":"普通","start":"東神奈川","startTime":"22:04","dest":"橋本","endTime":"22:49"}],[{"no":"2021A","type":"普通","start":"南浦和","startTime":"20:47","dest":"大船","endTime":"22:37"},{"no":"2220A","type":"普通","start":"大船","startTime":"22:46","dest":"大宮","endTime":"00:51"}],[{"no":"2025K","type":"普通","start":"桜木町","startTime":"20:59","dest":"八王子","endTime":"22:02"},{"no":"2224K","type":"普通","start":"八王子","startTime":"22:08","dest":"桜木町","endTime":"23:12"}],[{"no":"2119K","type":"普通","start":"桜木町","startTime":"21:49","dest":"八王子","endTime":"22:52"},{"no":"2318K","type":"普通","start":"八王子","startTime":"23:02","dest":"東神奈川","endTime":"23:58"}],[{"no":"2122A","type":"普通","start":"大船","startTime":"21:01","dest":"大宮","endTime":"23:06"},{"no":"2323A","type":"普通","start":"大宮","startTime":"23:14","dest":"蒲田","endTime":"00:27"}],[{"no":"2131K","type":"普通","start":"大船","startTime":"21:48","dest":"八王子","endTime":"23:21"},{"no":"2330K","type":"普通","start":"八王子","startTime":"23:27","dest":"東神奈川","endTime":"00:23"}],[{"no":"2146K","type":"普通","start":"八王子","startTime":"21:57","dest":"東神奈川","endTime":"22:53"},{"no":"2347K","type":"普通","start":"東神奈川","startTime":"23:08","dest":"八王子","endTime":"00:05"}]]};
 const CHAIN_INDEX={平日:{},休日:{}};
+for(const day of ['平日','休日']){
+  OPERATION_CHAINS[day].forEach((chain,idx)=>{
+    const chainId=`${day}-${String(idx+1).padStart(2,'0')}`;
+    chain.forEach((entry,entryIndex)=>{
+      const raw=String(entry.no);
+      const canonical=raw.replace(/A$/i,'');
+      const info={chainId,chainIndex:idx,entryIndex,entry};
+      CHAIN_INDEX[day][raw]=info;
+      if(!CHAIN_INDEX[day][canonical]) CHAIN_INDEX[day][canonical]=info;
+    });
+  });
+}
+
 let currentTrainNo=null;
 let currentTrainSnapshot=null;
 let currentStationId=null;
@@ -1214,7 +1227,6 @@ function subscribeAllOperationState(){
       saveLocalState();
       refreshAllTrainDataCache();
       if(!isEditMode){
-        renderLine();
         renderTrainPositions();
         if(currentTrainNo) updateSheetContent();
       }
@@ -1397,16 +1409,49 @@ function chainEntries(day,trainNo){
    ただし回送103/111と通常103A/111AのようにA有無で別列車の場合は、
    まず完全一致したチェーンだけを採用する。 */
 function formationLinkedTrainNos(day,trainNo,direction=null){
-  const no=normalizeTrainNo(trainNo);
-  return no ? new Set([no]) : new Set();
+  const start=normalizeTrainNo(trainNo);
+  const requestedDirection=String(direction||'');
+  const result=new Set([start]);
+  const queue=[start];
+  const chains=OPERATION_CHAINS[day]||[];
+
+  const entryMatches=(entry,no)=>{
+    if(normalizeTrainNo(entry.no)!==no) return false;
+    if(!requestedDirection) return true;
+    if(!entry.start || !entry.dest) return true;
+    const idxA=STATIONS.findIndex(s=>s.nameJa===entry.start);
+    const idxB=STATIONS.findIndex(s=>s.nameJa===entry.dest);
+    const entryDirection=idxA>idxB?'up':'down';
+    return entryDirection===requestedDirection;
+  };
+
+  while(queue.length){
+    const no=queue.shift();
+    for(const chain of chains){
+      if(!chain.some(entry=>entryMatches(entry,no))) continue;
+      chain.forEach(entry=>{
+        const n=normalizeTrainNo(entry.no);
+        if(n && !result.has(n)){ result.add(n); queue.push(n); }
+      });
+    }
+  }
+  return result;
+}
+async function syncRegistrationToRemoteByFamily(changesByFamily){
+  const families=['keihin','yokohama'];
+  const results=await Promise.all(families.map(async family=>{
+    const changes=changesByFamily[family]||{};
+    if(!Object.keys(changes).length) return true;
+    return syncRegistrationToRemote(changes,family);
+  }));
+  return results.every(Boolean);
 }
 
 async function recordSelection(train,formId){
   if(isNonCurrentSelectedDate(selectedDateKey)) return [];
-  const family=formationFamilyForTrain(train);
-  const linkedTrainNos=formationLinkedTrainNos(currentDay,train.no);
+  const linkedTrainNos=formationLinkedTrainNos(currentDay,train.no,train.direction||null);
   const assigned=[];
-  const changes={};
+  const changesByFamily={keihin:{},yokohama:{}};
 
   linkedTrainNos.forEach(requested=>{
     const dayIndex=currentDay==='休日' ? HOLIDAY_TRAIN_INDEX : TRAIN_INDEX;
@@ -1414,27 +1459,32 @@ async function recordSelection(train,formId){
       ? requested
       : Object.keys(dayIndex).find(k=>k.replace(/A$/i,'')===String(requested).replace(/A$/i,'')) || null;
     if(!actual || assigned.includes(actual)) return;
+    const linkedTrain=dayIndex[actual] || Object.values(dayIndex).find(t=>String(t.no).replace(/A$/i,'')===String(actual).replace(/A$/i,''));
+    if(!linkedTrain) return;
+    const family=formationFamilyForTrain(linkedTrain);
+    if(family!=='keihin' && family!=='yokohama') return;
 
     const value=(formId && formId!==INITIAL_FORMATION_SELECTION.id) ? normalizeStoredFormationId(formId) : null;
     if(value) formationRemoteByFamily[family].stateByDay[currentDay][actual]=value;
     else delete formationRemoteByFamily[family].stateByDay[currentDay][actual];
-    if(value) registrationState[actual]=value;
-    else delete registrationState[actual];
     assigned.push(actual);
-    changes[actual]=value;
+    changesByFamily[family][actual]=value;
   });
 
+  mergeFormationRemoteIntoLegacyState();
+  registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
   applyRegistrationState();
   refreshAllTrainDataCache();
   saveLocalState();
 
-  const ok=await syncRegistrationToRemote(changes,family);
+  const ok=await syncRegistrationToRemoteByFamily(changesByFamily);
   if(!ok){
     saveLocalState();
     syncStatus('同期失敗（再試行待ち）');
   }
   return assigned;
 }
+
 function snapshotForCurrentRegistrations(day, state, dateKey, familyFilter=null){
   const source=day==='休日'?HOLIDAY_TRAINS:TRAINS;
   const operations=[];
@@ -2009,6 +2059,7 @@ function getExpressClass(train){
   return expressClassForTrain(train);
 }
 function renderLine(){
+  if(typeof TRAIN_ICON_CACHE!=='undefined') TRAIN_ICON_CACHE.clear();
   const container=document.getElementById('lineContainer');
   container.innerHTML='<div class="operation-info-layer" id="operationInfoLayer"></div><div class="rail-line"></div><div class="moving-train-layer" id="movingTrainLayer"></div><div class="operation-info-label-layer" id="operationInfoLabelLayer"></div>';
 
@@ -2119,64 +2170,119 @@ function normalizeLineStopTimes(stops){
   });
   return out;
 }
+function getCurrentTrainSource(){
+  return currentDay==='休日'
+    ? HOLIDAY_TRAINS
+    : TRAINS.filter(x=>!Array.isArray(x.days)||!x.days.length||x.days.includes(currentDay));
+}
+function findTerminalNextTrain(t,lastArr,terminalStation){
+  // 終点での折り返しは、埋め込んだ運用連結データだけを使用する。
+  // 野田線版と同じく、運用連結されていない別列車へは自動で繋がない。
+  const linked=connectionNext(t);
+  if(!linked) return null;
+  const dep=timeToMinutes(linked.startTime);
+  if(!Number.isFinite(dep) || !Number.isFinite(lastArr) || dep<lastArr+1) return null;
+  const linkedNo=trainEntryNo(linked);
+  const direction=linked.direction||inferDirectionFromStations(linked.start,linked.dest)||null;
+  const train=liveTrain(linkedNo,direction) ||
+    getCurrentTrainSource().find(x=>normalizeTrainNo(x?.no)===linkedNo &&
+      (!direction || String(x.direction||'')===String(direction))) || null;
+  return train ? {train,dep} : null;
+}
+function findTerminalNextDeparture(t,lastArr,terminalStation){
+  return findTerminalNextTrain(t,lastArr,terminalStation)?.dep ?? null;
+}
 function positionForTrain(t,minutes){
-  const stops=normalizeLineStopTimes(t?.stops||[]);
-  if(!stops.length) return null;
-  const first=stops[0], last=stops[stops.length-1];
-  const side=String(t?.direction||'').toLowerCase()==='up'?'left':'right';
-  const firstDep=Number(first._departure), lastArr=Number(last._arrival);
+  const meta=getTrainRuntimeMeta(t);
+  if(!meta) return null;
+  const {stops,first,last,firstIndex,lastIndex,side,firstDep,lastArr}=meta;
   if(!Number.isFinite(firstDep)||!Number.isFinite(lastArr)) return null;
 
-  // このページに存在しない駅（例：大宮）での停車・発着は表示しない。
-  // 表示区間外の駅を -1 のまま線路図へ渡すと、clamp によって
-  // 八王子（先頭駅）に誤表示されるため、明示的に除外する。
-  const firstIndex=stationIndex(first.station);
-  const lastIndex=stationIndex(last.station);
-
+  // ページ外の駅を位置計算へ入れない。
+  // 直通列車がページ外から入ってくる場合は、最初のページ内駅に
+  // 到着するまで表示しない。
   const start=firstDep-RESET_DWELL_MIN+0.5;
-  if(minutes>=start && minutes<firstDep+0.75 && firstIndex>=0){
+  if(firstIndex>=0 && minutes>=start && minutes<firstDep+0.75){
     return {pos:firstIndex,side,visualTrain:t,mode:'start-dwell'};
   }
 
+  // 駅停車中は到着(:15)から発車(:45)まで、その駅に固定表示。
   for(let i=0;i<stops.length;i++){
     const st=stops[i];
     const currentIndex=stationIndex(st.station);
     const arrive=Number(st._arrival)+0.25;
     const depart=Number(st._departure)+0.75;
-    if(currentIndex>=0 && i>0 && i<stops.length-1 && minutes>=arrive && minutes<depart){
+    if(i>0 && i<stops.length-1 && currentIndex>=0 && minutes>=arrive && minutes<depart){
       return {pos:currentIndex,side,visualTrain:t,mode:'station-dwell'};
     }
 
-    // 表示区間上の2駅間だけを走行中として描画する。
-    // 片側の駅が大宮など表示区間外なら、その走行部分は表示しない。
-    if(currentIndex<0 || i>=stops.length-1) continue;
-    const next=stops[i+1];
-    const nextIndex=stationIndex(next.station);
-    if(nextIndex<0) continue;
-    const a=Number(st._departure)+0.75;
-    const b=Number(next._arrival)+0.25;
-    if(Number.isFinite(a)&&Number.isFinite(b)&&minutes>=a&&minutes<=b){
-      const ratio=b===a?0:(minutes-a)/(b-a);
-      return {pos:currentIndex+(nextIndex-currentIndex)*ratio,side,visualTrain:t,mode:'run'};
+    if(i<stops.length-1){
+      const next=stops[i+1];
+      const nextIndex=stationIndex(next.station);
+      // 駅間の両端がともにこのページに存在するときだけ走行位置を返す。
+      if(currentIndex<0 || nextIndex<0) continue;
+
+      const a=Number(st._departure)+0.75;
+      // 終点到着は到着時刻ちょうどに駅中心へ着いた状態とする。
+      const isTerminalNext=(i===stops.length-2);
+      const b=isTerminalNext ? Number(next._arrival) : Number(next._arrival)+0.25;
+      if(Number.isFinite(a)&&Number.isFinite(b)&&minutes>=a&&(isTerminalNext ? minutes<b : minutes<=b)){
+        const ratio=b===a?0:(minutes-a)/(b-a);
+        return {pos:currentIndex+(nextIndex-currentIndex)*ratio,side,visualTrain:t,mode:'run'};
+      }
     }
   }
 
-  const endDwell=lastArr+RESET_DWELL_MIN+0.5;
-  if(minutes>=lastArr+0.25 && minutes<=endDwell && lastIndex>=0){
+  // 終点での左右反対側への移動は、野田線版と同じく
+  // 「静的に埋め込まれた運用連結」の次列車がある場合だけ行う。
+  const chainInfo=findChain(currentDay,t.no);
+  const chain=chainInfo ? OPERATION_CHAINS[currentDay][chainInfo.chainIndex] : null;
+  const isChainLast=!!chain && chainInfo.entryIndex===chain.length-1;
+  const next=connectionNext(t);
+  const nextStart=next ? timeToMinutes(next.startTime)+0.75 : null;
+
+  if(next && !isChainLast && Number.isFinite(nextStart) && minutes>lastArr && minutes<nextStart){
+    // 到着後1分間は到着側に残し、その後次列車の発車まで反対側へ移す。
+    if(minutes<=lastArr+TURNBACK_SWITCH_MIN){
+      return {pos:lastIndex,side,visualTrain:t,mode:'turn-arrival'};
+    }
+
+    const nextNo=trainEntryNo(next);
+    const nextDirection=(next.start&&next.dest)
+      ? (stationIndex(next.start)>stationIndex(next.dest)?'up':'down')
+      : null;
+    const nextTrain=liveTrain(nextNo,nextDirection) ||
+      getCurrentTrainSource().find(x=>normalizeTrainNo(x?.no)===nextNo &&
+        (!nextDirection || String(x.direction||'')===String(nextDirection))) || null;
+    const oppositeSide=side==='left'?'right':'left';
+    const nextSide=nextTrain
+      ? (String(nextTrain.direction||'').toLowerCase()==='down'?'right':
+         String(nextTrain.direction||'').toLowerCase()==='up'?'left':oppositeSide)
+      : oppositeSide;
+    return {
+      pos:lastIndex,
+      side:nextSide,
+      visualTrain:nextTrain||t,
+      mode:'turn-wait'
+    };
+  }
+
+  // 次列車へ繋がらない列車は、終着駅で到着後2分間だけ表示する。
+  if(lastIndex>=0 && minutes>=lastArr && minutes<=lastArr+RESET_DWELL_MIN){
     return {pos:lastIndex,side,visualTrain:t,mode:'end-dwell'};
   }
+
   return null;
 }
+
+
 function trainLabelText(t){ return `<span>${getShortType(t.type,t.no)} ${getShortDest(t.dest)}</span>`; }
-function trainPositionViewportVisible(p,rows,viewportTop,viewportBottom){
-  if(!p||!Number.isFinite(Number(p.pos))||!rows.length) return false;
-  // ページ外の駅を先頭・末尾へクランプして表示しない。
-  if(Number(p.pos)<0 || Number(p.pos)>rows.length-1) return false;
+function trainPositionViewportVisible(p,rowCenters,viewportTop,viewportBottom){
+  if(!p||!Number.isFinite(Number(p.pos))||!rowCenters.length) return false;
+  if(Number(p.pos)<0 || Number(p.pos)>rowCenters.length-1) return false;
   const q=Number(p.pos);
-  const i0=Math.floor(q),i1=Math.min(rows.length-1,Math.ceil(q)),f=q-i0;
-  const r0=rows[i0]?.getBoundingClientRect(),r1=rows[i1]?.getBoundingClientRect();
-  if(!r0||!r1) return false;
-  const y=r0.top+r0.height/2+(r1.top+r1.height/2-(r0.top+r0.height/2))*f;
+  const i0=Math.floor(q),i1=Math.min(rowCenters.length-1,Math.ceil(q)),f=q-i0;
+  const y=rowCenters[i0]+(rowCenters[i1]-rowCenters[i0])*f;
   const iconHalfHeight=48;
   return y+iconHalfHeight>=viewportTop&&y-iconHalfHeight<=viewportBottom;
 }
@@ -2189,41 +2295,145 @@ function scheduleViewportTrainRender(){
   });
 }
 scheduleViewportTrainRender.pending=false;
+const TRAIN_ICON_CACHE=new Map();
+const TRAIN_RUNTIME_CACHE=new Map();
+const TERMINAL_DEPARTURE_CACHE=new Map();
+function trainRuntimeKey(t){
+  return `${currentDay}|${String(t?.no||'')}|${String(t?.direction||'')}`;
+}
+function getTrainRuntimeMeta(t){
+  const key=trainRuntimeKey(t);
+  const cached=TRAIN_RUNTIME_CACHE.get(key);
+  if(cached) return cached;
+  const stops=normalizeLineStopTimes(t?.stops||[]);
+  if(!stops.length) return null;
+  const first=stops[0],last=stops[stops.length-1];
+  const firstIndex=stationIndex(first.station);
+  const lastIndex=stationIndex(last.station);
+  const rawDirection=String(t?.direction||'').toLowerCase();
+  const side=rawDirection==='up'?'left':rawDirection==='down'?'right':(firstIndex>lastIndex?'left':'right');
+  const meta={stops,first,last,firstIndex,lastIndex,side,firstDep:Number(first._departure),lastArr:Number(last._arrival)};
+  TRAIN_RUNTIME_CACHE.set(key,meta);
+  return meta;
+}
+function getTerminalDepartureIndex(){
+  const key=String(currentDay);
+  const cached=TERMINAL_DEPARTURE_CACHE.get(key);
+  if(cached) return cached;
+  const source=currentDay==='休日'
+    ? HOLIDAY_TRAINS
+    : TRAINS.filter(x=>!Array.isArray(x.days)||!x.days.length||x.days.includes(currentDay));
+  const index=new Map();
+  for(const candidate of source){
+    if(!candidate) continue;
+    const meta=getTrainRuntimeMeta(candidate);
+    if(!meta||!meta.stops.length) continue;
+    const first=meta.first;
+    const dep=Number(first._departure);
+    if(!Number.isFinite(dep)) continue;
+    const station=String(first.station||'');
+    if(!station) continue;
+    if(!index.has(station)) index.set(station,[]);
+    index.get(station).push({no:normalizeTrainNo(candidate.no),direction:String(candidate.direction||'').toLowerCase(),dep,train:candidate});
+  }
+  for(const list of index.values()) list.sort((a,b)=>a.dep-b.dep);
+  TERMINAL_DEPARTURE_CACHE.set(key,index);
+  return index;
+}
 function renderTrainPositions(){
   const layer=document.getElementById('movingTrainLayer');
   if(!layer) return;
   const minutes=currentMinutes();
-  layer.innerHTML='';
   const rows=Array.from(document.querySelectorAll('.station-row'));
   if(!rows.length) return;
   const viewportTop=0;
   const viewportBottom=window.innerHeight||document.documentElement.clientHeight||0;
-  const source=(currentDay==='休日'?HOLIDAY_TRAINS:TRAINS.filter(t=>!Array.isArray(t.days)||!t.days.length||t.days.includes(currentDay)));
+  const rowCenters=rows.map(r=>{const rect=r.getBoundingClientRect();return rect.top+rect.height/2;});
+  const source=(currentDay==='休日'
+    ? HOLIDAY_TRAINS
+    : TRAINS.filter(t=>!Array.isArray(t.days)||!t.days.length||t.days.includes(currentDay)));
+
   const visible=[];
-  const visiblePositions=new Map();
-  for(const base of source){
-    const p=positionForTrain(base,minutes);
-    if(!p||(!p.stationA&&!p.stationB && !Number.isFinite(p.pos))) continue;
-    if(!trainPositionViewportVisible(p,rows,viewportTop,viewportBottom)) continue;
-    const hydrated=liveTrain(base.no,base.direction)||base;
-    const signature=`${String(base.no||'')}|${String(base.direction||'')}`;
-    visible.push(hydrated);
-    visiblePositions.set(signature,p);
-  }
+  const keep=new Set();
   const occupied={left:[],right:[]};
-  visible.forEach(t=>{
-    const signature=`${String(t.no||'')}|${String(t.direction||'')}`;
-    const info=visiblePositions.get(signature)||positionForTrain(t,minutes);
-    if(!info||!info.visualTrain) return;
-    occupied[info.side].push({t:info.visualTrain,pos:info.pos,baseTrain:t,mode:info.mode});
-  });
+
+  // 次列車が独立して描画されるのを防ぎ、終点にいる既存アイコンを
+  // そのまま次列車へ引き継ぐ。これは野田線版と同じ考え方で処理する。
+  const suppress=new Set();
+  const handoffs=[];
+
+  for(const base of source){
+    const meta=getTrainRuntimeMeta(base);
+    if(!meta||meta.lastIndex<0||!Number.isFinite(meta.lastArr)) continue;
+    const nextInfo=findTerminalNextTrain(base,meta.lastArr,meta.last.station);
+    if(!nextInfo||!nextInfo.train||!Number.isFinite(nextInfo.dep)) continue;
+
+    const oldSignature=`${String(base.no||'')}|${String(base.direction||'')}`;
+    const nextSignature=`${String(nextInfo.train.no||'')}|${String(nextInfo.train.direction||'')}`;
+    handoffs.push({oldSignature,nextSignature,dep:nextInfo.dep,lastArr:meta.lastArr});
+
+    // 旧列車が反対側で次列車の情報を表示している間は、
+    // 次列車自身を別アイコンとして描画しない。
+    if(minutes>=meta.lastArr+1 && minutes<nextInfo.dep){
+      suppress.add(nextSignature);
+    }
+  }
+
+  // 次列車の発車時刻になったら、待機していた旧アイコンのDOMを
+  // 次列車のキーへ移す。新規アイコンは作らない。
+  for(const h of handoffs){
+    if(minutes<h.dep) continue;
+    const oldEntry=TRAIN_ICON_CACHE.get(h.oldSignature);
+    const nextEntry=TRAIN_ICON_CACHE.get(h.nextSignature);
+    if(oldEntry && !nextEntry){
+      TRAIN_ICON_CACHE.set(h.nextSignature,oldEntry);
+      TRAIN_ICON_CACHE.delete(h.oldSignature);
+    }
+  }
+
+  for(const base of source){
+    const baseSignature=`${String(base.no||'')}|${String(base.direction||'')}`;
+    if(suppress.has(baseSignature)) continue;
+
+    const p=positionForTrain(base,minutes);
+    if(!p||!p.visualTrain||!Number.isFinite(p.pos)) continue;
+    if(!trainPositionViewportVisible(p,rowCenters,viewportTop,viewportBottom)) continue;
+
+    visible.push({baseTrain:base,visualTrain:p.visualTrain,info:p,signature:baseSignature});
+    keep.add(baseSignature);
+  }
+
+  // 現在不要なDOMだけ削除。必要なアイコンは毎秒作り直さず再利用する。
+  for(const [signature,entry] of TRAIN_ICON_CACHE){
+    if(!keep.has(signature)){
+      entry.el.remove();
+      TRAIN_ICON_CACHE.delete(signature);
+    }
+  }
+
+  for(const item of visible){
+    const info=item.info;
+    occupied[info.side].push({
+      t:info.visualTrain,
+      pos:info.pos,
+      baseTrain:item.baseTrain,
+      mode:info.mode,
+      signature:item.signature
+    });
+  }
 
   const layerRect=layer.getBoundingClientRect();
-  const uiScale=1, trainWidth=66*uiScale, imageWidth=60*uiScale, laneGap=20*uiScale;
-  const rowRectAt=(pos)=>{
+  const uiScale=1;
+  const trainWidth=66*uiScale;
+  const imageWidth=60*uiScale;
+  const laneGap=20*uiScale;
+
+  const rowRectAt=pos=>{
+    if(!rows.length) return null;
     const p=Math.max(0,Math.min(rows.length-1,pos));
-    const i0=Math.floor(p), i1=Math.min(rows.length-1,Math.ceil(p));
-    const r0=rows[i0].getBoundingClientRect(), r1=rows[i1].getBoundingClientRect(), f=p-i0;
+    const i0=Math.floor(p),i1=Math.min(rows.length-1,Math.ceil(p)),f=p-i0;
+    const r0=rows[i0].getBoundingClientRect();
+    const r1=rows[i1].getBoundingClientRect();
     return {
       left:r0.left+(r1.left-r0.left)*f,
       right:r0.right+(r1.right-r0.right)*f,
@@ -2234,43 +2444,132 @@ function renderTrainPositions(){
   };
 
   ['left','right'].forEach(side=>{
-    occupied[side].sort((a,b)=>a.pos-b.pos||String(a.t.no).localeCompare(String(b.t.no),undefined,{numeric:true}));
+    occupied[side].sort((a,b)=>
+      a.pos-b.pos||String(a.t.no).localeCompare(String(b.t.no),undefined,{numeric:true})
+    );
     const used=[];
+
     occupied[side].forEach(item=>{
       let lane=0;
       while(used.some(u=>Math.abs(u.pos-item.pos)<0.24&&u.lane===lane)) lane++;
       used.push({pos:item.pos,lane});
-      const el=document.createElement('div');
+
+      const t=item.t;
+      let entry=TRAIN_ICON_CACHE.get(item.signature);
+      let el=entry?.el;
+
+      if(entry) entry.currentTrain=t;
+
+      const cls=trainVisualKind(t);
+      const formationParts=t.formation&&t.formation!==INITIAL_FORMATION_SELECTION.id
+        ? formationDisplayParts(t.formation):[];
+      const imageUrl=imageForTrain(t);
+      const labelText=trainLabelText(t);
+      const contentKey=[
+        displayTrainNo(t),
+        imageUrl,
+        formationParts.join('\n'),
+        cls,
+        getMainLabelClass(t.type),
+        labelText
+      ].join('|');
+      const contentChanged=!entry||entry.contentKey!==contentKey;
+
+      if(!el){
+        el=document.createElement('div');
+        el.className=`train-icon ${side}`;
+        el.style.visibility='hidden';
+        el.style.transition='none';
+        layer.appendChild(el);
+
+        entry={
+          el,
+          contentKey:'',
+          layoutHeight:0,
+          ready:false,
+          currentTrain:t
+        };
+
+        el.addEventListener('click',ev=>{
+          ev.preventDefault();
+          ev.stopPropagation();
+          const ct=entry.currentTrain||t;
+          openSheet(ct.no,false,ct.direction);
+        });
+
+        TRAIN_ICON_CACHE.set(item.signature,entry);
+      }
+
+      // 終点で次列車へ引き継いだ場合も、同じDOMの内容だけを更新する。
+      if(contentChanged){
+        el.innerHTML=`
+          <span class="train-no">${displayTrainNo(t)}</span>
+          <img src="${imageUrl}" alt="${displayTrainNo(t)}">
+          ${formationParts.length
+            ? `<span class="train-no train-formation">${formationParts.map(x=>
+                `<span>${String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`
+              ).join('')}</span>`
+            : ''}
+          <span class="train-label ${cls} ${getMainLabelClass(t.type)}">${labelText}</span>
+        `;
+        entry.contentKey=contentKey;
+        entry.layoutHeight=0;
+        entry.ready=false;
+      }
+
       el.className=`train-icon ${side}`;
-      el.style.visibility='hidden'; el.style.transition='none';
-      const rr=rowRectAt(item.pos)||{left:layerRect.left,right:layerRect.right,centerY:layerRect.top+layerRect.height/2};
+      el.style.transition='none';
+
+      const rr=rowRectAt(item.pos) || {
+        centerY:layerRect.top+layerRect.height/2
+      };
       const layoutWidth=window.innerWidth<960?1920:layerRect.width;
       const centerX=layoutWidth/2;
       const laneOffset=lane*(trainWidth+laneGap);
-      const trainLeft=side==='left'?centerX-340-laneOffset:centerX+340-trainWidth+laneOffset;
-      const t=item.t;
-      const cls=trainVisualKind(t);
-      const formationParts=t.formation&&t.formation!==INITIAL_FORMATION_SELECTION.id?formationDisplayParts(t.formation):[];
-      el.innerHTML=`<span class="train-no">${displayTrainNo(t)}</span><img src="${imageForTrain(t)}" alt="${displayTrainNo(t)}">${formationParts.length?`<span class="train-no train-formation">${formationParts.map(x=>`<span>${String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`).join('')}</span>`:''}<span class="train-label ${cls} ${getMainLabelClass(t.type)}">${trainLabelText(t)}</span>`;
-      el.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();openSheet(t.no,false,t.direction);});
-      layer.appendChild(el);
-      const img=el.querySelector('img'), noEl=el.querySelector('.train-no'), formationEl=el.querySelector('.train-formation');
+      const trainLeft=side==='left'
+        ? centerX-340-laneOffset
+        : centerX+340-trainWidth+laneOffset;
+
       const applyFinalPosition=()=>{
+        const img=el.querySelector('img');
+        const noEl=el.querySelector('.train-no');
+        const formationEl=el.querySelector('.train-formation');
         if(!img) return;
+
         const mobileZoom=window.innerWidth<960?window.innerWidth/960:1;
-        const imgRect=img.getBoundingClientRect(), noRect=noEl?.getBoundingClientRect(), formationRect=formationEl?.getBoundingClientRect();
+        const imgRect=img.getBoundingClientRect();
+        const noRect=noEl?.getBoundingClientRect();
+        const formationRect=formationEl?.getBoundingClientRect();
         const actualImageWidth=(imgRect.width/mobileZoom)||imageWidth;
         const imgHeight=(imgRect.height/mobileZoom)||actualImageWidth*((img.naturalHeight||30)/(img.naturalWidth||60));
         const noHeight=(noRect?.height/mobileZoom)||12*uiScale*1.05;
         const formationHeight=(formationRect?.height/mobileZoom)||0;
+        // 駅の中心には列車番号＋車両画像＋編成表示を合わせ、
+        // 行先・種別ラベルはその下へ配置する。
         const desiredCenterY=(rr.centerY-layerRect.top)/mobileZoom;
         const finalTop=desiredCenterY-(noHeight+imgHeight+formationHeight)/2;
-        el.style.top=`${finalTop}px`; el.style.left=`${trainLeft}px`; el.style.right='auto'; el.style.setProperty('--lane-shift','0px'); el.style.transform='none'; el.style.visibility='visible';
+
+        el.style.top=`${finalTop}px`;
+        el.style.left=`${trainLeft}px`;
+        el.style.right='auto';
+        el.style.setProperty('--lane-shift','0px');
+        el.style.transform='none';
+        el.style.visibility='visible';
+        entry.ready=true;
+        entry.layoutHeight=el.getBoundingClientRect().height/mobileZoom||48;
       };
-      if(img.complete&&img.naturalWidth) applyFinalPosition(); else img.addEventListener('load',applyFinalPosition,{once:true});
+
+      const img=el.querySelector('img');
+      if(img?.complete&&img.naturalWidth){
+        applyFinalPosition();
+      }else if(img){
+        img.addEventListener('load',applyFinalPosition,{once:true});
+        el.style.visibility='hidden';
+      }
     });
   });
 }
+
 window.addEventListener('scroll',scheduleViewportTrainRender,{passive:true});
 window.addEventListener('resize',scheduleViewportTrainRender,{passive:true});
 
