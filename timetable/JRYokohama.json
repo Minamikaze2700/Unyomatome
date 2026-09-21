@@ -37918,7 +37918,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -38064,7 +38064,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -38430,7 +38430,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -38686,7 +38686,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -39534,7 +39534,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -40030,15 +40030,45 @@
           "time": "08:00",
           "arrival": "08:00",
           "departure": "08:00"
+        },
+        {
+          "station": "関内",
+          "time": "08:02",
+          "arrival": "08:02",
+          "departure": "08:02"
+        },
+        {
+          "station": "石川町",
+          "time": "08:04",
+          "arrival": "08:04",
+          "departure": "08:04"
+        },
+        {
+          "station": "山手",
+          "time": "08:06",
+          "arrival": "08:06",
+          "departure": "08:06"
+        },
+        {
+          "station": "根岸",
+          "time": "08:09",
+          "arrival": "08:09",
+          "departure": "08:09"
+        },
+        {
+          "station": "磯子",
+          "time": "08:12",
+          "arrival": "08:12",
+          "departure": "08:12"
         }
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
-      "dest": "桜木町"
+      "dest": "磯子"
     },
     {
       "no": "628K",
@@ -40424,7 +40454,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -40676,15 +40706,45 @@
           "time": "08:18",
           "arrival": "08:18",
           "departure": "08:18"
+        },
+        {
+          "station": "関内",
+          "time": "08:20",
+          "arrival": "08:20",
+          "departure": "08:20"
+        },
+        {
+          "station": "石川町",
+          "time": "08:22",
+          "arrival": "08:22",
+          "departure": "08:22"
+        },
+        {
+          "station": "山手",
+          "time": "08:24",
+          "arrival": "08:24",
+          "departure": "08:24"
+        },
+        {
+          "station": "根岸",
+          "time": "08:27",
+          "arrival": "08:27",
+          "departure": "08:27"
+        },
+        {
+          "station": "磯子",
+          "time": "08:30",
+          "arrival": "08:30",
+          "departure": "08:30"
         }
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
-      "dest": "桜木町"
+      "dest": "磯子"
     },
     {
       "no": "736K",
@@ -40960,7 +41020,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -41158,15 +41218,45 @@
           "time": "08:31",
           "arrival": "08:31",
           "departure": "08:31"
+        },
+        {
+          "station": "関内",
+          "time": "08:33",
+          "arrival": "08:33",
+          "departure": "08:33"
+        },
+        {
+          "station": "石川町",
+          "time": "08:35",
+          "arrival": "08:35",
+          "departure": "08:35"
+        },
+        {
+          "station": "山手",
+          "time": "08:38",
+          "arrival": "08:38",
+          "departure": "08:38"
+        },
+        {
+          "station": "根岸",
+          "time": "08:40",
+          "arrival": "08:40",
+          "departure": "08:40"
+        },
+        {
+          "station": "磯子",
+          "time": "08:44",
+          "arrival": "08:44",
+          "departure": "08:44"
         }
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
-      "dest": "桜木町"
+      "dest": "磯子"
     },
     {
       "no": "734K",
@@ -41438,15 +41528,75 @@
           "time": "08:42",
           "arrival": "08:42",
           "departure": "08:42"
+        },
+        {
+          "station": "関内",
+          "time": "08:44",
+          "arrival": "08:44",
+          "departure": "08:44"
+        },
+        {
+          "station": "石川町",
+          "time": "08:46",
+          "arrival": "08:46",
+          "departure": "08:46"
+        },
+        {
+          "station": "山手",
+          "time": "08:48",
+          "arrival": "08:48",
+          "departure": "08:48"
+        },
+        {
+          "station": "根岸",
+          "time": "08:51",
+          "arrival": "08:51",
+          "departure": "08:51"
+        },
+        {
+          "station": "磯子",
+          "time": "08:54",
+          "arrival": "08:54",
+          "departure": "08:54"
+        },
+        {
+          "station": "新杉田",
+          "time": "08:57",
+          "arrival": "08:57",
+          "departure": "08:57"
+        },
+        {
+          "station": "洋光台",
+          "time": "09:00",
+          "arrival": "09:00",
+          "departure": "09:00"
+        },
+        {
+          "station": "港南台",
+          "time": "09:03",
+          "arrival": "09:03",
+          "departure": "09:03"
+        },
+        {
+          "station": "本郷台",
+          "time": "09:06",
+          "arrival": "09:06",
+          "departure": "09:06"
+        },
+        {
+          "station": "大船",
+          "time": "09:10",
+          "arrival": "09:10",
+          "departure": "09:10"
         }
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
-      "dest": "桜木町"
+      "dest": "大船"
     },
     {
       "no": "848K",
@@ -41664,15 +41814,45 @@
           "time": "08:49",
           "arrival": "08:49",
           "departure": "08:49"
+        },
+        {
+          "station": "関内",
+          "time": "08:51",
+          "arrival": "08:51",
+          "departure": "08:51"
+        },
+        {
+          "station": "石川町",
+          "time": "08:53",
+          "arrival": "08:53",
+          "departure": "08:53"
+        },
+        {
+          "station": "山手",
+          "time": "08:55",
+          "arrival": "08:55",
+          "departure": "08:55"
+        },
+        {
+          "station": "根岸",
+          "time": "08:58",
+          "arrival": "08:58",
+          "departure": "08:58"
+        },
+        {
+          "station": "磯子",
+          "time": "09:01",
+          "arrival": "09:01",
+          "departure": "09:01"
         }
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
-      "dest": "桜木町"
+      "dest": "磯子"
     },
     {
       "no": "742K",
@@ -42078,15 +42258,75 @@
           "time": "09:11",
           "arrival": "09:11",
           "departure": "09:11"
+        },
+        {
+          "station": "関内",
+          "time": "09:13",
+          "arrival": "09:13",
+          "departure": "09:13"
+        },
+        {
+          "station": "石川町",
+          "time": "09:15",
+          "arrival": "09:15",
+          "departure": "09:15"
+        },
+        {
+          "station": "山手",
+          "time": "09:17",
+          "arrival": "09:17",
+          "departure": "09:17"
+        },
+        {
+          "station": "根岸",
+          "time": "09:20",
+          "arrival": "09:20",
+          "departure": "09:20"
+        },
+        {
+          "station": "磯子",
+          "time": "09:23",
+          "arrival": "09:23",
+          "departure": "09:23"
+        },
+        {
+          "station": "新杉田",
+          "time": "09:26",
+          "arrival": "09:26",
+          "departure": "09:26"
+        },
+        {
+          "station": "洋光台",
+          "time": "09:29",
+          "arrival": "09:29",
+          "departure": "09:29"
+        },
+        {
+          "station": "港南台",
+          "time": "09:32",
+          "arrival": "09:32",
+          "departure": "09:32"
+        },
+        {
+          "station": "本郷台",
+          "time": "09:35",
+          "arrival": "09:35",
+          "departure": "09:35"
+        },
+        {
+          "station": "大船",
+          "time": "09:39",
+          "arrival": "09:39",
+          "departure": "09:39"
         }
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
-      "dest": "桜木町"
+      "dest": "大船"
     },
     {
       "no": "828K",
@@ -42576,7 +42816,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -42832,7 +43072,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -42978,7 +43218,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -43120,15 +43360,75 @@
           "time": "10:02",
           "arrival": "10:02",
           "departure": "10:02"
+        },
+        {
+          "station": "関内",
+          "time": "10:04",
+          "arrival": "10:04",
+          "departure": "10:04"
+        },
+        {
+          "station": "石川町",
+          "time": "10:06",
+          "arrival": "10:06",
+          "departure": "10:06"
+        },
+        {
+          "station": "山手",
+          "time": "10:09",
+          "arrival": "10:09",
+          "departure": "10:09"
+        },
+        {
+          "station": "根岸",
+          "time": "10:12",
+          "arrival": "10:12",
+          "departure": "10:12"
+        },
+        {
+          "station": "磯子",
+          "time": "10:15",
+          "arrival": "10:15",
+          "departure": "10:15"
+        },
+        {
+          "station": "新杉田",
+          "time": "10:18",
+          "arrival": "10:18",
+          "departure": "10:18"
+        },
+        {
+          "station": "洋光台",
+          "time": "10:21",
+          "arrival": "10:21",
+          "departure": "10:21"
+        },
+        {
+          "station": "港南台",
+          "time": "10:24",
+          "arrival": "10:24",
+          "departure": "10:24"
+        },
+        {
+          "station": "本郷台",
+          "time": "10:27",
+          "arrival": "10:27",
+          "departure": "10:27"
+        },
+        {
+          "station": "大船",
+          "time": "10:32",
+          "arrival": "10:32",
+          "departure": "10:32"
         }
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
-      "dest": "桜木町"
+      "dest": "大船"
     },
     {
       "no": "924K",
@@ -43380,7 +43680,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -43752,7 +44052,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -43874,7 +44174,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -44112,7 +44412,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -44234,7 +44534,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -44472,7 +44772,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -44594,7 +44894,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -44832,7 +45132,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -44954,7 +45254,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -45192,7 +45492,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -45314,7 +45614,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -45552,7 +45852,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -45674,7 +45974,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -45912,7 +46212,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -46034,7 +46334,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -46272,7 +46572,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -46394,7 +46694,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -46632,7 +46932,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -46754,7 +47054,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -46992,7 +47292,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -47114,7 +47414,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -47352,7 +47652,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -47474,7 +47774,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -47712,7 +48012,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -47834,7 +48134,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -48072,7 +48372,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -48194,7 +48494,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -48432,7 +48732,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -48554,7 +48854,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -48792,7 +49092,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -48914,7 +49214,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -49152,7 +49452,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -49274,7 +49574,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -49512,7 +49812,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -49634,7 +49934,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -49872,7 +50172,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -49994,7 +50294,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -50140,7 +50440,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -50282,15 +50582,45 @@
           "time": "16:33",
           "arrival": "16:33",
           "departure": "16:33"
+        },
+        {
+          "station": "関内",
+          "time": "16:35",
+          "arrival": "16:35",
+          "departure": "16:35"
+        },
+        {
+          "station": "石川町",
+          "time": "16:37",
+          "arrival": "16:37",
+          "departure": "16:37"
+        },
+        {
+          "station": "山手",
+          "time": "16:39",
+          "arrival": "16:39",
+          "departure": "16:39"
+        },
+        {
+          "station": "根岸",
+          "time": "16:42",
+          "arrival": "16:42",
+          "departure": "16:42"
+        },
+        {
+          "station": "磯子",
+          "time": "16:45",
+          "arrival": "16:45",
+          "departure": "16:45"
         }
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
-      "dest": "桜木町"
+      "dest": "磯子"
     },
     {
       "no": "1534K",
@@ -50542,7 +50872,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -50794,15 +51124,45 @@
           "time": "17:02",
           "arrival": "17:02",
           "departure": "17:02"
+        },
+        {
+          "station": "関内",
+          "time": "17:04",
+          "arrival": "17:04",
+          "departure": "17:04"
+        },
+        {
+          "station": "石川町",
+          "time": "17:06",
+          "arrival": "17:06",
+          "departure": "17:06"
+        },
+        {
+          "station": "山手",
+          "time": "17:09",
+          "arrival": "17:09",
+          "departure": "17:09"
+        },
+        {
+          "station": "根岸",
+          "time": "17:11",
+          "arrival": "17:11",
+          "departure": "17:11"
+        },
+        {
+          "station": "磯子",
+          "time": "17:15",
+          "arrival": "17:15",
+          "departure": "17:15"
         }
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
-      "dest": "桜木町"
+      "dest": "磯子"
     },
     {
       "no": "1628K",
@@ -51054,7 +51414,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -51468,7 +51828,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -51614,7 +51974,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -51866,15 +52226,45 @@
           "time": "18:06",
           "arrival": "18:06",
           "departure": "18:06"
+        },
+        {
+          "station": "関内",
+          "time": "18:08",
+          "arrival": "18:08",
+          "departure": "18:08"
+        },
+        {
+          "station": "石川町",
+          "time": "18:10",
+          "arrival": "18:10",
+          "departure": "18:10"
+        },
+        {
+          "station": "山手",
+          "time": "18:13",
+          "arrival": "18:13",
+          "departure": "18:13"
+        },
+        {
+          "station": "根岸",
+          "time": "18:15",
+          "arrival": "18:15",
+          "departure": "18:15"
+        },
+        {
+          "station": "磯子",
+          "time": "18:18",
+          "arrival": "18:18",
+          "departure": "18:18"
         }
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
-      "dest": "桜木町"
+      "dest": "磯子"
     },
     {
       "no": "1722K",
@@ -52768,15 +53158,45 @@
           "time": "18:50",
           "arrival": "18:50",
           "departure": "18:50"
+        },
+        {
+          "station": "関内",
+          "time": "18:52",
+          "arrival": "18:52",
+          "departure": "18:52"
+        },
+        {
+          "station": "石川町",
+          "time": "18:53",
+          "arrival": "18:53",
+          "departure": "18:53"
+        },
+        {
+          "station": "山手",
+          "time": "18:56",
+          "arrival": "18:56",
+          "departure": "18:56"
+        },
+        {
+          "station": "根岸",
+          "time": "18:59",
+          "arrival": "18:59",
+          "departure": "18:59"
+        },
+        {
+          "station": "磯子",
+          "time": "19:02",
+          "arrival": "19:02",
+          "departure": "19:02"
         }
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
-      "dest": "桜木町"
+      "dest": "磯子"
     },
     {
       "no": "1734K",
@@ -53268,15 +53688,45 @@
           "time": "19:11",
           "arrival": "19:11",
           "departure": "19:11"
+        },
+        {
+          "station": "関内",
+          "time": "19:13",
+          "arrival": "19:13",
+          "departure": "19:13"
+        },
+        {
+          "station": "石川町",
+          "time": "19:15",
+          "arrival": "19:15",
+          "departure": "19:15"
+        },
+        {
+          "station": "山手",
+          "time": "19:18",
+          "arrival": "19:18",
+          "departure": "19:18"
+        },
+        {
+          "station": "根岸",
+          "time": "19:20",
+          "arrival": "19:20",
+          "departure": "19:20"
+        },
+        {
+          "station": "磯子",
+          "time": "19:23",
+          "arrival": "19:23",
+          "departure": "19:23"
         }
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
-      "dest": "桜木町"
+      "dest": "磯子"
     },
     {
       "no": "1842K",
@@ -53792,15 +54242,45 @@
           "time": "19:33",
           "arrival": "19:33",
           "departure": "19:33"
+        },
+        {
+          "station": "関内",
+          "time": "19:35",
+          "arrival": "19:35",
+          "departure": "19:35"
+        },
+        {
+          "station": "石川町",
+          "time": "19:37",
+          "arrival": "19:37",
+          "departure": "19:37"
+        },
+        {
+          "station": "山手",
+          "time": "19:39",
+          "arrival": "19:39",
+          "departure": "19:39"
+        },
+        {
+          "station": "根岸",
+          "time": "19:42",
+          "arrival": "19:42",
+          "departure": "19:42"
+        },
+        {
+          "station": "磯子",
+          "time": "19:45",
+          "arrival": "19:45",
+          "departure": "19:45"
         }
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
-      "dest": "桜木町"
+      "dest": "磯子"
     },
     {
       "no": "1818K",
@@ -54430,7 +54910,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -54576,7 +55056,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -54856,7 +55336,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -55538,7 +56018,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -56086,7 +56566,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -56878,7 +57358,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -58820,7 +59300,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -59332,7 +59812,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -59722,7 +60202,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -60270,7 +60750,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -60764,7 +61244,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -61692,7 +62172,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -62326,7 +62806,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -62582,7 +63062,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -62593,6 +63073,36 @@
       "type": "普通",
       "direction": "up",
       "stops": [
+        {
+          "station": "磯子",
+          "time": "08:27",
+          "arrival": "08:27",
+          "departure": "08:27"
+        },
+        {
+          "station": "根岸",
+          "time": "08:30",
+          "arrival": "08:30",
+          "departure": "08:30"
+        },
+        {
+          "station": "山手",
+          "time": "08:33",
+          "arrival": "08:33",
+          "departure": "08:33"
+        },
+        {
+          "station": "石川町",
+          "time": "08:35",
+          "arrival": "08:35",
+          "departure": "08:35"
+        },
+        {
+          "station": "関内",
+          "time": "08:37",
+          "arrival": "08:37",
+          "departure": "08:37"
+        },
         {
           "station": "桜木町",
           "time": "08:39",
@@ -62728,7 +63238,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -62849,6 +63359,36 @@
       "type": "普通",
       "direction": "up",
       "stops": [
+        {
+          "station": "磯子",
+          "time": "08:40",
+          "arrival": "08:40",
+          "departure": "08:40"
+        },
+        {
+          "station": "根岸",
+          "time": "08:43",
+          "arrival": "08:43",
+          "departure": "08:43"
+        },
+        {
+          "station": "山手",
+          "time": "08:46",
+          "arrival": "08:46",
+          "departure": "08:46"
+        },
+        {
+          "station": "石川町",
+          "time": "08:48",
+          "arrival": "08:48",
+          "departure": "08:48"
+        },
+        {
+          "station": "関内",
+          "time": "08:50",
+          "arrival": "08:50",
+          "departure": "08:50"
+        },
         {
           "station": "桜木町",
           "time": "08:52",
@@ -62984,7 +63524,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -63240,6 +63780,36 @@
       "direction": "up",
       "stops": [
         {
+          "station": "磯子",
+          "time": "08:54",
+          "arrival": "08:54",
+          "departure": "08:54"
+        },
+        {
+          "station": "根岸",
+          "time": "08:57",
+          "arrival": "08:57",
+          "departure": "08:57"
+        },
+        {
+          "station": "山手",
+          "time": "09:00",
+          "arrival": "09:00",
+          "departure": "09:00"
+        },
+        {
+          "station": "石川町",
+          "time": "09:02",
+          "arrival": "09:02",
+          "departure": "09:02"
+        },
+        {
+          "station": "関内",
+          "time": "09:04",
+          "arrival": "09:04",
+          "departure": "09:04"
+        },
+        {
           "station": "桜木町",
           "time": "09:06",
           "arrival": "09:06",
@@ -63374,7 +63944,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -63630,6 +64200,36 @@
       "direction": "up",
       "stops": [
         {
+          "station": "磯子",
+          "time": "09:14",
+          "arrival": "09:14",
+          "departure": "09:14"
+        },
+        {
+          "station": "根岸",
+          "time": "09:17",
+          "arrival": "09:17",
+          "departure": "09:17"
+        },
+        {
+          "station": "山手",
+          "time": "09:20",
+          "arrival": "09:20",
+          "departure": "09:20"
+        },
+        {
+          "station": "石川町",
+          "time": "09:22",
+          "arrival": "09:22",
+          "departure": "09:22"
+        },
+        {
+          "station": "関内",
+          "time": "09:24",
+          "arrival": "09:24",
+          "departure": "09:24"
+        },
+        {
           "station": "桜木町",
           "time": "09:26",
           "arrival": "09:26",
@@ -63764,7 +64364,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -64020,7 +64620,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -64166,7 +64766,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -64270,7 +64870,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -64618,7 +65218,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -64874,7 +65474,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -64978,7 +65578,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -65234,7 +65834,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -65338,7 +65938,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -65594,7 +66194,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -65698,7 +66298,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -65954,7 +66554,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -66058,7 +66658,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -66314,7 +66914,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -66418,7 +67018,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -66674,7 +67274,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -66778,7 +67378,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -67034,7 +67634,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -67138,7 +67738,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -67394,7 +67994,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -67498,7 +68098,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -67754,7 +68354,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -67858,7 +68458,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -68114,7 +68714,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -68218,7 +68818,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -68474,7 +69074,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -68578,7 +69178,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -68834,7 +69434,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -68938,7 +69538,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -69194,7 +69794,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -69298,7 +69898,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -69554,7 +70154,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -69658,7 +70258,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -69914,7 +70514,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -70018,7 +70618,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -70274,7 +70874,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -70420,7 +71020,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -70566,7 +71166,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -70712,7 +71312,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -70968,7 +71568,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -71114,7 +71714,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -71260,7 +71860,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -71674,7 +72274,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -71820,6 +72420,36 @@
       "direction": "up",
       "stops": [
         {
+          "station": "磯子",
+          "time": "17:01",
+          "arrival": "17:01",
+          "departure": "17:01"
+        },
+        {
+          "station": "根岸",
+          "time": "17:04",
+          "arrival": "17:04",
+          "departure": "17:04"
+        },
+        {
+          "station": "山手",
+          "time": "17:07",
+          "arrival": "17:07",
+          "departure": "17:07"
+        },
+        {
+          "station": "石川町",
+          "time": "17:09",
+          "arrival": "17:09",
+          "departure": "17:09"
+        },
+        {
+          "station": "関内",
+          "time": "17:11",
+          "arrival": "17:11",
+          "departure": "17:11"
+        },
+        {
           "station": "桜木町",
           "time": "17:14",
           "arrival": "17:14",
@@ -71954,7 +72584,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -72210,7 +72840,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -72331,6 +72961,36 @@
       "type": "普通",
       "direction": "up",
       "stops": [
+        {
+          "station": "磯子",
+          "time": "17:28",
+          "arrival": "17:28",
+          "departure": "17:28"
+        },
+        {
+          "station": "根岸",
+          "time": "17:31",
+          "arrival": "17:31",
+          "departure": "17:31"
+        },
+        {
+          "station": "山手",
+          "time": "17:34",
+          "arrival": "17:34",
+          "departure": "17:34"
+        },
+        {
+          "station": "石川町",
+          "time": "17:36",
+          "arrival": "17:36",
+          "departure": "17:36"
+        },
+        {
+          "station": "関内",
+          "time": "17:38",
+          "arrival": "17:38",
+          "departure": "17:38"
+        },
         {
           "station": "桜木町",
           "time": "17:41",
@@ -72466,7 +73126,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -72612,7 +73272,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -72868,7 +73528,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -73636,6 +74296,36 @@
       "direction": "up",
       "stops": [
         {
+          "station": "磯子",
+          "time": "18:30",
+          "arrival": "18:30",
+          "departure": "18:30"
+        },
+        {
+          "station": "根岸",
+          "time": "18:33",
+          "arrival": "18:33",
+          "departure": "18:33"
+        },
+        {
+          "station": "山手",
+          "time": "18:36",
+          "arrival": "18:36",
+          "departure": "18:36"
+        },
+        {
+          "station": "石川町",
+          "time": "18:38",
+          "arrival": "18:38",
+          "departure": "18:38"
+        },
+        {
+          "station": "関内",
+          "time": "18:40",
+          "arrival": "18:40",
+          "departure": "18:40"
+        },
+        {
           "station": "桜木町",
           "time": "18:42",
           "arrival": "18:42",
@@ -73746,7 +74436,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -74514,6 +75204,36 @@
       "direction": "up",
       "stops": [
         {
+          "station": "磯子",
+          "time": "19:13",
+          "arrival": "19:13",
+          "departure": "19:13"
+        },
+        {
+          "station": "根岸",
+          "time": "19:16",
+          "arrival": "19:16",
+          "departure": "19:16"
+        },
+        {
+          "station": "山手",
+          "time": "19:18",
+          "arrival": "19:18",
+          "departure": "19:18"
+        },
+        {
+          "station": "石川町",
+          "time": "19:21",
+          "arrival": "19:21",
+          "departure": "19:21"
+        },
+        {
+          "station": "関内",
+          "time": "19:23",
+          "arrival": "19:23",
+          "departure": "19:23"
+        },
+        {
           "station": "桜木町",
           "time": "19:25",
           "arrival": "19:25",
@@ -74624,7 +75344,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -74880,6 +75600,36 @@
       "direction": "up",
       "stops": [
         {
+          "station": "磯子",
+          "time": "19:33",
+          "arrival": "19:33",
+          "departure": "19:33"
+        },
+        {
+          "station": "根岸",
+          "time": "19:37",
+          "arrival": "19:37",
+          "departure": "19:37"
+        },
+        {
+          "station": "山手",
+          "time": "19:39",
+          "arrival": "19:39",
+          "departure": "19:39"
+        },
+        {
+          "station": "石川町",
+          "time": "19:41",
+          "arrival": "19:41",
+          "departure": "19:41"
+        },
+        {
+          "station": "関内",
+          "time": "19:43",
+          "arrival": "19:43",
+          "departure": "19:43"
+        },
+        {
           "station": "桜木町",
           "time": "19:46",
           "arrival": "19:46",
@@ -75014,7 +75764,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -75270,6 +76020,36 @@
       "direction": "up",
       "stops": [
         {
+          "station": "磯子",
+          "time": "19:55",
+          "arrival": "19:55",
+          "departure": "19:55"
+        },
+        {
+          "station": "根岸",
+          "time": "19:58",
+          "arrival": "19:58",
+          "departure": "19:58"
+        },
+        {
+          "station": "山手",
+          "time": "20:01",
+          "arrival": "20:01",
+          "departure": "20:01"
+        },
+        {
+          "station": "石川町",
+          "time": "20:03",
+          "arrival": "20:03",
+          "departure": "20:03"
+        },
+        {
+          "station": "関内",
+          "time": "20:05",
+          "arrival": "20:05",
+          "departure": "20:05"
+        },
+        {
           "station": "桜木町",
           "time": "20:07",
           "arrival": "20:07",
@@ -75404,7 +76184,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -75526,7 +76306,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -75806,7 +76586,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -76086,7 +76866,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -76452,6 +77232,66 @@
       "direction": "up",
       "stops": [
         {
+          "station": "大船",
+          "time": "20:52",
+          "arrival": "20:52",
+          "departure": "20:52"
+        },
+        {
+          "station": "本郷台",
+          "time": "20:56",
+          "arrival": "20:56",
+          "departure": "20:56"
+        },
+        {
+          "station": "港南台",
+          "time": "20:59",
+          "arrival": "20:59",
+          "departure": "20:59"
+        },
+        {
+          "station": "洋光台",
+          "time": "21:02",
+          "arrival": "21:02",
+          "departure": "21:02"
+        },
+        {
+          "station": "新杉田",
+          "time": "21:05",
+          "arrival": "21:05",
+          "departure": "21:05"
+        },
+        {
+          "station": "磯子",
+          "time": "21:08",
+          "arrival": "21:08",
+          "departure": "21:08"
+        },
+        {
+          "station": "根岸",
+          "time": "21:11",
+          "arrival": "21:11",
+          "departure": "21:11"
+        },
+        {
+          "station": "山手",
+          "time": "21:14",
+          "arrival": "21:14",
+          "departure": "21:14"
+        },
+        {
+          "station": "石川町",
+          "time": "21:16",
+          "arrival": "21:16",
+          "departure": "21:16"
+        },
+        {
+          "station": "関内",
+          "time": "21:18",
+          "arrival": "21:18",
+          "departure": "21:18"
+        },
+        {
           "station": "桜木町",
           "time": "21:21",
           "arrival": "21:21",
@@ -76586,7 +77426,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -76842,7 +77682,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -77098,6 +77938,66 @@
       "direction": "up",
       "stops": [
         {
+          "station": "大船",
+          "time": "21:35",
+          "arrival": "21:35",
+          "departure": "21:35"
+        },
+        {
+          "station": "本郷台",
+          "time": "21:39",
+          "arrival": "21:39",
+          "departure": "21:39"
+        },
+        {
+          "station": "港南台",
+          "time": "21:42",
+          "arrival": "21:42",
+          "departure": "21:42"
+        },
+        {
+          "station": "洋光台",
+          "time": "21:45",
+          "arrival": "21:45",
+          "departure": "21:45"
+        },
+        {
+          "station": "新杉田",
+          "time": "21:48",
+          "arrival": "21:48",
+          "departure": "21:48"
+        },
+        {
+          "station": "磯子",
+          "time": "21:51",
+          "arrival": "21:51",
+          "departure": "21:51"
+        },
+        {
+          "station": "根岸",
+          "time": "21:54",
+          "arrival": "21:54",
+          "departure": "21:54"
+        },
+        {
+          "station": "山手",
+          "time": "21:57",
+          "arrival": "21:57",
+          "departure": "21:57"
+        },
+        {
+          "station": "石川町",
+          "time": "21:59",
+          "arrival": "21:59",
+          "departure": "21:59"
+        },
+        {
+          "station": "関内",
+          "time": "22:01",
+          "arrival": "22:01",
+          "departure": "22:01"
+        },
+        {
           "station": "桜木町",
           "time": "22:03",
           "arrival": "22:03",
@@ -77232,7 +78132,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -77488,7 +78388,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
@@ -78250,7 +79150,7 @@
       ],
       "cars": 8,
       "lineKind": "yokohama",
-      "through": false,
+      "through": true,
       "days": [
         "平日"
       ],
