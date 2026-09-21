@@ -682,6 +682,7 @@ async function loadNambuTrainData(){
   TRAIN_INDEX=Object.fromEntries(TRAINS.map(t=>[String(t.no),t]));
   HOLIDAY_TRAIN_INDEX=Object.fromEntries(HOLIDAY_TRAINS.map(t=>[String(t.no),t]));
   TIMETABLE_HTML_CACHE=new Map([...TRAINS,...HOLIDAY_TRAINS].map(t=>[String(t.days||'')+':'+String(t.no),timetableRowsHTML(t.stops)]));
+  buildNambuOperationChains();
 }
 let HOLIDAY_UP_TRAINS=[];
 let HOLIDAY_TRAINS=[];
@@ -703,6 +704,146 @@ let firebaseApp=null;
 let firebaseDb=null;
 const OPERATION_CHAINS={平日:[],休日:[]};
 const CHAIN_INDEX={平日:{},休日:{}};
+
+/*
+ * 南武線の運用折返し表示。
+ * 長時間折返し一覧(1).txtで明示されている6件は「長時間待機」として扱い、
+ * 到着後1分で反対側の待機表示へ移らず、次列車は発車2分前から表示する。
+ *
+ * それ以外は、列車番号末尾2桁の偶奇ペア（x / x+1）かつ
+ * 同一駅で20分未満の折返しだけを自動連結する。
+ * 20分以上のものは、添付の長時間折返し一覧に明記されたものだけを連結対象にする。
+ */
+const LONG_TURNBACK_PAIRS={
+  平日:[
+    ['1611F','1710F'],
+    ['829F','928F'],
+    ['1643F','1742F']
+  ],
+  休日:[
+    ['713F','812F'],
+    ['821F','920F'],
+    ['1905F','2104F']
+  ]
+};
+const TURNBACK_NEXT={平日:new Map(),休日:new Map()};
+const TURNBACK_PREV={平日:new Map(),休日:new Map()};
+const TURNBACK_META={平日:new Map(),休日:new Map()};
+
+function trainNumericValue(no){
+  const m=String(no||'').match(/^(\d+)/);
+  return m?Number(m[1]):NaN;
+}
+function trainSuffix2(no){
+  const n=trainNumericValue(no);
+  return Number.isFinite(n)?n%100:NaN;
+}
+function stopDepartureMinutes(t){
+  const st=(t?.stops||[])[0];
+  return timeToMinutes(st?.departure||st?.time||st?.arrival);
+}
+function stopArrivalMinutes(t){
+  const stops=t?.stops||[];
+  const st=stops[stops.length-1];
+  return timeToMinutes(st?.arrival||st?.time||st?.departure);
+}
+function operationPairKey(no){
+  return normalizeTrainNo(no).replace(/A$/i,'').toUpperCase();
+}
+function registerTurnback(day,prev,next,longWait=false){
+  const pKey=operationPairKey(prev?.no), nKey=operationPairKey(next?.no);
+  if(!pKey||!nKey||pKey===nKey) return;
+  TURNBACK_NEXT[day].set(pKey,nKey);
+  TURNBACK_PREV[day].set(nKey,pKey);
+  const gap=stopDepartureMinutes(next)-stopArrivalMinutes(prev);
+  TURNBACK_META[day].set(pKey,{
+    prevNo:normalizeTrainNo(prev.no),
+    nextNo:normalizeTrainNo(next.no),
+    station:String(prev.dest||next.start||''),
+    gap,
+    longWait:!!longWait
+  });
+}
+function buildNambuOperationChains(){
+  for(const day of ['平日','休日']){
+    TURNBACK_NEXT[day].clear();
+    TURNBACK_PREV[day].clear();
+    TURNBACK_META[day].clear();
+    OPERATION_CHAINS[day]=[];
+    CHAIN_INDEX[day]={};
+
+    const source=day==='休日'?HOLIDAY_TRAINS:TRAINS.filter(t=>!Array.isArray(t.days)||!t.days.length||t.days.includes(day));
+    const bySuffix=Object.create(null);
+    source.forEach(t=>{
+      const suffix=trainSuffix2(t.no);
+      if(!Number.isFinite(suffix)) return;
+      (bySuffix[suffix] ||= []).push(t);
+    });
+
+    // 通常の短時間折返し：20分未満だけ自動連結
+    const candidateByPrev=new Map();
+    source.forEach(prev=>{
+      const suffix=trainSuffix2(prev.no);
+      const arr=[];
+      if(!Number.isFinite(suffix)||!prev.dest) return;
+      for(const targetSuffix of [suffix-1,suffix+1]){
+        for(const next of (bySuffix[(targetSuffix+100)%100]||[])){
+          if(operationPairKey(prev.no)===operationPairKey(next.no)) continue;
+          if(String(prev.dest)!==String(next.start)) continue;
+          const a=stopArrivalMinutes(prev), d=stopDepartureMinutes(next);
+          if(!Number.isFinite(a)||!Number.isFinite(d)||d<a) continue;
+          const gap=d-a;
+          if(gap<20) arr.push({next,gap});
+        }
+      }
+      arr.sort((x,y)=>x.gap-y.gap || stopDepartureMinutes(x.next)-stopDepartureMinutes(y.next));
+      if(arr.length) candidateByPrev.set(operationPairKey(prev.no),arr[0]);
+    });
+
+    // 1列車に複数候補が入る場合は、時間差の短いものを優先して1本にする
+    const chosenByNext=new Map();
+    candidateByPrev.forEach((cand,pKey)=>{
+      const nKey=operationPairKey(cand.next.no);
+      const existing=chosenByNext.get(nKey);
+      if(!existing || cand.gap<existing.gap) chosenByNext.set(nKey,{pKey,cand});
+    });
+    chosenByNext.forEach(({pKey,cand})=>{
+      const prev=source.find(t=>operationPairKey(t.no)===pKey);
+      if(prev) registerTurnback(day,prev,cand.next,false);
+    });
+
+    // 長時間折返しは運用連結に含めない。
+    // 横浜線・京浜東北線と同じく、長時間待機の前後で運用を分割する。
+    // LONG_TURNBACK_PAIRS は「長時間待機として分割する箇所」の資料として保持する。
+
+    // 現在の連結マップからチェーンを再構成
+    const allPrev=new Set(TURNBACK_PREV[day].keys());
+    const starts=[];
+    TURNBACK_NEXT[day].forEach((n,p)=>{
+      if(!allPrev.has(p)) starts.push(p);
+    });
+    const seen=new Set();
+    const pushChain=(startKey)=>{
+      const chain=[];
+      let key=startKey;
+      while(key && !seen.has(key)){
+        seen.add(key);
+        const actual=(source.find(t=>operationPairKey(t.no)===key)||null);
+        if(!actual) break;
+        chain.push(actual);
+        key=TURNBACK_NEXT[day].get(key)||null;
+      }
+      if(chain.length){
+        const idx=OPERATION_CHAINS[day].length;
+        OPERATION_CHAINS[day].push(chain);
+        chain.forEach((t,i)=>CHAIN_INDEX[day][operationPairKey(t.no)]={chainIndex:idx,entryIndex:i});
+      }
+    };
+    starts.forEach(pushChain);
+    TURNBACK_NEXT[day].forEach((n,p)=>{ if(!seen.has(p)) pushChain(p); });
+    source.forEach(t=>{ const k=operationPairKey(t.no); if(!seen.has(k)) pushChain(k); });
+  }
+}
 let currentTrainNo=null;
 let currentTrainSnapshot=null;
 let currentStationId=null;
@@ -1712,28 +1853,34 @@ function inferDirectionFromStations(a,b){
 }
 function linkedEntries(t){
   const info=findChain(currentDay,t.no);
-  if(!info) return {prev:null,next:null,chain:null,index:-1};
-  const chain=OPERATION_CHAINS[currentDay][info.chainIndex];
-  return {prev:chain[info.entryIndex-1]||null,next:chain[info.entryIndex+1]||null,chain,index:info.entryIndex};
+  const prev=connectionPrev(t);
+  const next=connectionNext(t);
+  const chain=info ? OPERATION_CHAINS[currentDay][info.chainIndex] : null;
+  return {prev:prev||null,next:next||null,chain,index:info?info.entryIndex:-1};
 }
 function trainEntryNo(entry){ return entry?normalizeTrainNo(entry.no):''; }
 function connectionPrev(t){
-  const info=findChain(currentDay,t.no);
-  if(!info) return null;
-  const chain=OPERATION_CHAINS[currentDay][info.chainIndex];
-  const prev=chain[info.entryIndex-1];
+  const pKey=operationPairKey(t?.no);
+  const prevKey=TURNBACK_PREV[currentDay]?.get(pKey);
+  if(!prevKey) return null;
+  const source=currentDay==='休日'?HOLIDAY_TRAIN_INDEX:TRAIN_INDEX;
+  const actualKey=Object.keys(source).find(k=>operationPairKey(k)===prevKey);
+  const prev=actualKey?source[actualKey]:null;
   if(!prev || String(prev.dest)!==String(t.start)) return null;
-  if(timeToMinutes(prev.endTime)>timeToMinutes(t.stops[0].time)) return null;
   return prev;
 }
 function connectionNext(t){
-  const info=findChain(currentDay,t.no);
-  if(!info) return null;
-  const chain=OPERATION_CHAINS[currentDay][info.chainIndex];
-  const next=chain[info.entryIndex+1];
+  const pKey=operationPairKey(t?.no);
+  const nextKey=TURNBACK_NEXT[currentDay]?.get(pKey);
+  if(!nextKey) return null;
+  const source=currentDay==='休日'?HOLIDAY_TRAIN_INDEX:TRAIN_INDEX;
+  const actualKey=Object.keys(source).find(k=>operationPairKey(k)===nextKey);
+  const next=actualKey?source[actualKey]:null;
   if(!next || String(t.dest)!==String(next.start)) return null;
-  if(timeToMinutes(t.stops[t.stops.length-1].time)>timeToMinutes(next.startTime)) return null;
   return next;
+}
+function turnbackMeta(t){
+  return TURNBACK_META[currentDay]?.get(operationPairKey(t?.no))||null;
 }
 function normalizeNambuStopTimes(stops){
   const out=[];
@@ -1756,39 +1903,89 @@ function positionForTrain(t,minutes){
   const stops=normalizeNambuStopTimes(t?.stops||[]);
   if(!stops.length) return null;
   const first=stops[0], last=stops[stops.length-1];
+  const firstIndex=stationIndex(first.station);
+  const lastIndex=stationIndex(last.station);
   const side=String(t?.direction||'').toLowerCase()==='up'?'left':'right';
   const firstDep=Number(first._departure), lastArr=Number(last._arrival);
   if(!Number.isFinite(firstDep)||!Number.isFinite(lastArr)) return null;
 
-  const start=firstDep-RESET_DWELL_MIN+0.5;
-  if(minutes>=start && minutes<firstDep+0.75){
-    return {pos:stationIndex(first.station),side,visualTrain:t,mode:'start-dwell'};
+  const chainInfo=findChain(currentDay,t.no);
+  const chain=chainInfo ? OPERATION_CHAINS[currentDay][chainInfo.chainIndex] : null;
+  const isChainFirst=!!chain && chainInfo.entryIndex===0;
+  const isChainLast=!!chain && chainInfo.entryIndex===chain.length-1;
+  const next=connectionNext(t);
+  const nextStart=next ? stopDepartureMinutes(next)+0.75 : null;
+
+  // 運用連結されていない列車／運用の先頭列車だけ、始発駅の2分前停車を表示。
+  // 途中の折返し列車自身は始発表示を行わず、前列車側の折返し表示から連続させる。
+  if(isChainFirst && firstIndex>=0){
+    const start=firstDep-RESET_DWELL_MIN+0.5;
+    if(minutes>=start && minutes<firstDep+0.75){
+      return {pos:firstIndex,side,visualTrain:t,mode:'start-dwell'};
+    }
   }
 
+  // 駅停車中／駅間走行
   for(let i=0;i<stops.length;i++){
     const st=stops[i];
+    const currentIndex=stationIndex(st.station);
+    if(currentIndex<0) continue;
     const arrive=Number(st._arrival)+0.25;
     const depart=Number(st._departure)+0.75;
+
+    // 途中駅停車：到着から発車まで表示
     if(i>0 && i<stops.length-1 && minutes>=arrive && minutes<depart){
-      return {pos:stationIndex(st.station),side,visualTrain:t,mode:'station-dwell'};
+      return {pos:currentIndex,side,visualTrain:t,mode:'station-dwell'};
     }
-    if(stationIndex(st.station)<0) continue;
+
+    // 駅間走行：終着駅へ到着する瞬間まで走行表示
     if(i<stops.length-1){
-      const next=stops[i+1];
+      const nextStop=stops[i+1];
+      const nextIndex=stationIndex(nextStop.station);
+      if(nextIndex<0) continue;
       const a=Number(st._departure)+0.75;
-      const b=Number(next._arrival)+0.25;
-      if(Number.isFinite(a)&&Number.isFinite(b)&&minutes>=a&&minutes<=b){
-        const ia=stationIndex(st.station),ib=stationIndex(next.station);
+      const isTerminalNext=(i===stops.length-2);
+      const b=isTerminalNext ? Number(nextStop._arrival) : Number(nextStop._arrival)+0.25;
+      if(Number.isFinite(a)&&Number.isFinite(b)&&minutes>=a&&(isTerminalNext ? minutes<b : minutes<=b)){
         const ratio=b===a?0:(minutes-a)/(b-a);
-        return {pos:ia+(ib-ia)*ratio,side,visualTrain:t,mode:'run'};
+        return {pos:currentIndex+(nextIndex-currentIndex)*ratio,side,visualTrain:t,mode:'run'};
       }
     }
   }
 
-  const endDwell=lastArr+RESET_DWELL_MIN+0.5;
-  if(minutes>=lastArr+0.25 && minutes<=endDwell){
-    return {pos:stationIndex(last.station),side,visualTrain:t,mode:'end-dwell'};
+  // 折返し運用は横浜線・京浜東北線と同じ処理に統一。
+  // 到着後1分までは到着側、その後は次列車の発車直前まで次列車側で待機表示する。
+  // 長時間折返しは運用連結自体を分割しているため、ここには入らない。
+  if(next && !isChainLast && Number.isFinite(nextStart)){
+    if(minutes>lastArr && minutes<nextStart){
+      if(minutes<=lastArr+TURNBACK_SWITCH_MIN){
+        return {pos:lastIndex,side,visualTrain:t,mode:'turn-arrival'};
+      }
+
+      const nextNo=trainEntryNo(next);
+      const nextDirection=(next.start&&next.dest)
+        ? (stationIndex(next.start)>stationIndex(next.dest)?'up':'down')
+        : null;
+      const nextTrain=liveTrain(nextNo,nextDirection)
+        || baseTrainForDay(nextNo,nextDirection,currentDay)
+        || (currentDay==='休日'?HOLIDAY_TRAIN_INDEX[nextNo]:TRAIN_INDEX[nextNo])
+        || null;
+      const nextSide=nextTrain
+        ? (String(nextTrain.direction||'').toLowerCase()==='down'?'right':'left')
+        : (inferDirectionFromStations(next.start,next.dest)==='down'?'right':'left');
+      return {pos:lastIndex,side:nextSide,visualTrain:nextTrain||t,mode:'turn-wait'};
+    }
   }
+
+  // 運用の末尾列車は終着駅で2分程度だけ表示。
+  if(isChainLast){
+    const endStart=lastArr+0.25;
+    const endDwell=lastArr+RESET_DWELL_MIN+0.5;
+    if(minutes>=endStart && minutes<=endDwell){
+      return {pos:lastIndex,side,visualTrain:t,mode:'end-dwell'};
+    }
+  }
+
   return null;
 }
 function trainLabelText(t){ return `<span>${getShortType(t.type,t.no)} ${getShortDest(t.dest)}</span>`; }
