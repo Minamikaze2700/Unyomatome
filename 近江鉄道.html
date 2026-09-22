@@ -332,11 +332,11 @@ const ACTIVE_OMI_FORMATION_GROUPS=[
 const ACTIVE_OMI_FORMATIONS=ACTIVE_OMI_FORMATION_GROUPS.flatMap(g=>g.items.map(x=>({...x,type:g.type,img:OMI_IMG(x.id)})));
 const ACTIVE_OMI_FORMATION_MAP=new Map(ACTIVE_OMI_FORMATIONS.map(x=>[String(x.id),x]));
 const OMI_TYPE_SELECTIONS=ACTIVE_OMI_FORMATION_GROUPS.map(g=>({
-  id:`__TYPE__${g.type}`,
+  id:g.type,
   name:g.type,
   type:g.type,
   kind:'type',
-  img:g.items?.[0]?.id?OMI_IMG(g.items[0].id):NOIMAGE_IMG
+  img:`${FORMATION_IMG_BASE}Omi${String(g.type).replace(/\D/g,'')}.png`
 }));
 const OMI_TYPE_SELECTION_MAP=new Map(OMI_TYPE_SELECTIONS.map(x=>[String(x.id),x]));
 
@@ -957,7 +957,26 @@ function formationNumber(value){
   const s=String(value||'').trim();if(!s)return '';
   const m=s.match(/(\d{3,5})/);return m?m[1]:s.replace(/[^A-Za-z0-9_-]/g,'');
 }
-function trainImageFor(t){const n=formationNumber(t.formation);return n?OMI_IMG(n):NOIMAGE_IMG;}
+function omiTypeImageForFormation(value){
+  const raw=String(value??'').trim();
+  if(!raw)return NOIMAGE_IMG;
+  const obj=formationById(raw)||formationById(formationNumber(raw))||typeSelectionById(raw);
+  if(obj?.type){
+    const n=String(obj.type).replace(/\D/g,'');
+    return n?`${FORMATION_IMG_BASE}Omi${n}.png`:NOIMAGE_IMG;
+  }
+  const m=raw.match(/(\d{3})/);
+  if(m){
+    const num=m[1];
+    const group=ACTIVE_OMI_FORMATION_GROUPS.find(g=>g.items.some(x=>String(x.id)===num));
+    if(group){
+      const n=String(group.type).replace(/\D/g,'');
+      return n?`${FORMATION_IMG_BASE}Omi${n}.png`:NOIMAGE_IMG;
+    }
+  }
+  return NOIMAGE_IMG;
+}
+function trainImageFor(t){return omiTypeImageForFormation(t?.formation);}
 function trainLabelText(t){return `普通 ${mainShortDest(t.dest)}`.trim();}
 function displayTimeForStation(t,name){
   const s=(t.stops||[]).find(x=>sameStation(x.station,name));
@@ -1069,10 +1088,7 @@ function timetableTypeLabel(t,stationName=null){
 function stopGuideStationName(name){
   return String(name??'').normalize('NFKC');
 }
-function trainImageForDetailed(t){
-  const n=formationNumber(t?.formation);
-  return n?OMI_IMG(n):NOIMAGE_IMG;
-}
+function trainImageForDetailed(t){return omiTypeImageForFormation(t?.formation);}
 function trainVisualRouteAtStation(t,stationName){
   const n=stationNameKey(stationName); const stops=Array.isArray(t?.stops)?t.stops:[];
   let idx=-1;for(let i=stops.length-1;i>=0;i--){if(stationNameKey(stops[i]?.station)===n){idx=i;break;}}
@@ -1303,7 +1319,7 @@ function updateSheetContent(){
     return;
   }
   const selectedId=formation;
-  content.innerHTML=`<div class="train-card"><img class="train-card-img" src="${esc(selectedForm.img||NOIMAGE_IMG)}" alt="${esc(displayNo)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div>${trainSummaryHTML}</div><div class="input-trigger-btn">編成を入力中</div><div class="capacity-info">所定:普通</div></div></div><div style="text-align:left;font-weight:700;margin:6px 0 4px;font-size:1.1rem;">編成入力</div><div class="formation-manual-input"><input id="formationManualInput" type="text" inputmode="text" autocomplete="off" value="${esc(selectedId)}" placeholder="編成番号または形式を入力（例：805 / 800形）" onkeydown="if(event.key==='Enter'){event.preventDefault();registerFormationFromInput();}"><button type="button" onclick="registerFormationFromInput()">登録</button></div><div id="formationInputError" class="formation-input-error"></div>${formationDropdownHTML(selectedId)}`;
+  content.innerHTML=`<div class="train-card"><img class="train-card-img" src="${esc(trainImageForDetailed(train))}" alt="${esc(displayNo)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div>${trainSummaryHTML}</div><div class="input-trigger-btn">編成を入力中</div><div class="capacity-info">所定:普通</div></div></div><div style="text-align:left;font-weight:700;margin:6px 0 4px;font-size:1.1rem;">編成入力</div><div class="formation-manual-input"><input id="formationManualInput" type="text" inputmode="text" autocomplete="off" value="${esc(selectedId)}" placeholder="編成番号または形式を入力（例：805 / 800形）" onkeydown="if(event.key==='Enter'){event.preventDefault();registerFormationFromInput();}"><button type="button" onclick="registerFormationFromInput()">登録</button></div><div id="formationInputError" class="formation-input-error"></div>${formationDropdownHTML(selectedId)}`;
 }
 async function registerFormationFromInput(){
   if(!currentTrainNo||!selectedIsCurrentOperation())return;
