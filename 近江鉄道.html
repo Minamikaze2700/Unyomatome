@@ -15,9 +15,9 @@ button,input,select,textarea{font-family:inherit}
 html,body{width:100%;max-width:100%;min-width:0;margin:0;padding:0}
 body{font-family:"Helvetica Neue",Helvetica,Arial,"Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
 #viewportCanvas{width:100%;min-height:100vh}
-#title{height:58px;color:#fff;font-weight:500;display:flex;background:#0068b7;position:fixed;width:100%;justify-content:center;align-items:center;gap:12px;border-bottom:8px solid #159447;z-index:100;font-size:31px;letter-spacing:.03em}
+#title{height:58px;color:#fff;font-weight:500;display:flex;background:#0068b7;position:fixed;width:100%;justify-content:center;align-items:center;gap:12px;border-bottom:8px solid #159447;z-index:1000;font-size:31px;letter-spacing:.03em}
 .title-logo{width:42px;height:42px;object-fit:contain;display:block;flex:0 0 auto}
-.line-container{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;padding-top:58px;min-height:100vh}
+.line-container{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;padding:0;min-height:100vh}
 .station-row{position:relative;z-index:2;width:100%;height:var(--row-height);min-height:var(--row-height);margin:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px}
 .station-row::before{content:'';position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:12px;background:linear-gradient(to bottom,var(--line-top,#0F6CC3) 0 50%,var(--line-bottom,#0F6CC3) 50% 100%);z-index:1;pointer-events:none}
 .station-row.cut-above::before{background:linear-gradient(to bottom,transparent 0 50%,var(--line-bottom,#0F6CC3) 50% 100%)}
@@ -62,13 +62,13 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Noto Sans JP",sans-serif;back
 .station-direction-bar.split{background:linear-gradient(to right,var(--bar-left,#0F6CC3) 0 50%,var(--bar-right,#0F6CC3) 50% 100%)}.station-direction-bar.no-prev{clip-path:polygon(0 0,97% 0,100% 100%,0 100%)}.station-direction-bar.no-next{clip-path:polygon(3% 0,100% 0,100% 100%,0 100%)}.station-direction-bar.no-prev.no-next{clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
 .station-neighbor-row{display:flex;width:100%;min-height:54px;background:#fff}.station-neighbor{width:50%;display:flex;flex-direction:column;justify-content:flex-start;padding:2px 8px 8px;min-width:0}.station-neighbor.left{text-align:left;align-items:flex-start}.station-neighbor.right{text-align:right;align-items:flex-end}.station-neighbor-name-ja{font-family:inherit;font-size:27px;line-height:1.05;font-weight:400;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.station-neighbor-name-en{font-family:inherit;font-size:14px;line-height:1.1;font-weight:500;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;margin-top:1px}.station-neighbor.empty{visibility:hidden}
 .timetable-list{background:#fff;border-radius:8px;padding:12px 20px;margin-top:12px}.station-timetable-title{font-family:inherit;font-size:1.35rem;font-weight:700;text-align:left;padding:8px 0 10px}.station-timetable-direction-tabs{display:flex;gap:10px;width:100%;margin:0 0 12px;justify-content:flex-start}.station-timetable-direction-tab{flex:1 1 0;min-width:0;border:2px solid var(--primary);border-radius:6px;background:#fff;color:var(--primary);font-family:inherit;font-size:1rem;font-weight:700;padding:10px 8px;cursor:pointer}.station-timetable-direction-tab.active{background:var(--primary);color:#fff}.station-timetable-direction-tab:hover{background:#fff1f1}.station-timetable-direction-tab.active:hover{background:var(--primary-dark)}
-.station-timetable-frame{position:relative;margin-top:4px;height:53vh;background:#fff;border:3px solid #000;border-radius:11px;overflow:hidden;box-sizing:border-box}.station-timetable-wrap{position:relative;container-type:inline-size;margin-top:0;background:#fff;border:0;border-radius:0;overflow-y:auto;overflow-x:hidden;height:100%;scroll-behavior:auto;box-sizing:border-box}.station-timetable-empty{padding:24px 18px;text-align:center;font-family:inherit;color:#555}.station-timetable-row{width:100%;min-height:108px;display:grid;grid-template-columns:64px 78px 88px 88px minmax(0,1fr);align-items:center;column-gap:8px;padding:8px 12px;border:0;color:#000;text-align:left;cursor:pointer;font-family:inherit}.station-timetable-row:nth-child(odd){background:#fff}.station-timetable-row:nth-child(even){background:#cfcfcf}.station-timetable-row:hover{filter:brightness(.97)}.station-timetable-row.is-next{font-weight:800}.station-timetable-train-img{width:68px;height:86px;object-fit:contain;display:block;justify-self:center;background:transparent}.station-timetable-formation{color:#1b6e27;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:24px;line-height:1;font-weight:800;white-space:nowrap;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}.station-timetable-type{display:inline-flex;align-items:center;justify-content:center;min-width:78px;height:34px;padding:0 10px;border-radius:7px;font-family:inherit;font-size:18px;line-height:1;font-weight:700;white-space:nowrap;text-align:center;box-sizing:border-box;background:#9fa0a0;color:#fff}.station-timetable-type.hanzomon-local{background:#2d78c4;color:#fff}.station-timetable-time{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:32px;line-height:1;font-weight:800;white-space:nowrap;text-align:center;letter-spacing:.01em}.station-timetable-destination{font-family:inherit;font-size:32px;line-height:1;font-weight:500;white-space:nowrap;text-align:left;display:flex;align-items:flex-end;justify-content:flex-start;gap:.18em;height:1em}.station-timetable-type.express{background:#cf3282;color:#fff}.station-timetable-type.section-express{background:#e99ebf;color:#111}.station-timetable-type.semi-express{background:#48a839;color:#fff}.station-timetable-type.section-semi{background:#c1ca1f;color:#111}.station-timetable-type.th-liner{background:#fff;color:#111;border:1px solid #aaa}.station-timetable-type.deadhead{background:#fff;color:#111;border:1px solid #bbb}.station-timetable-type.limited-orange{background:#f49c00;color:#fff}.station-timetable-type.limited-green{background:#006e3f;color:#fff}.station-timetable-type.limited-white{background:#fff;color:#111;border:1px solid #aaa}.station-timetable-type.limited-red{background:#ea5532;color:#fff}
-.train-card{position:relative;background:#fff;border-radius:8px;padding:0;display:flex;align-items:center;gap:12px;margin-bottom:0;cursor:pointer;border:2px solid transparent}.train-card-img{width:75px;height:auto;object-fit:contain}.train-info-main{flex:1}.type-badge{background:#9fa0a0;color:#fff;padding:3px 8px;border-radius:4px;font-size:.78rem;display:inline-block}.type-badge.hanzomon-local{background:#2d78c4;color:#fff}.type-badge.express{background:#cf3282;color:#fff}.type-badge.section-express{background:#e99ebf;color:#111}.type-badge.semi-express{background:#48a839;color:#fff}.type-badge.section-semi{background:#c1ca1f;color:#111}.type-badge.th-liner{background:#fff;color:#111;border:1px solid #aaa}.type-badge.limited-orange{background:#f49c00;color:#fff}.type-badge.limited-green{background:#006e3f;color:#fff}.type-badge.limited-white{background:#fff;color:#111;border:1px solid #aaa}.type-badge.limited-red{background:#ea5532;color:#fff}.composite-branch-timetables{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:stretch;margin-top:12px}.composite-branch-timetables .timetable-list{margin-top:0;height:100%}.composite-badge-row{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}.composite-train-summary{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:8px;row-gap:4px;align-items:center}.composite-train-summary.shared-destination{grid-template-columns:auto minmax(0,1fr);position:relative}.composite-summary-type{display:flex;align-items:center;min-height:27px}.composite-summary-dest{font-size:.95rem;font-weight:700;white-space:nowrap}.composite-summary-dest.shared{grid-column:2;grid-row:1 / span 2;align-self:center}.composite-train-summary.single{display:flex;align-items:center;gap:8px}.train-title{font-size:.95rem;font-weight:700;margin-left:6px}.train-number{color:#1b6e27;font-weight:800;float:right;margin-right:15px}.formation-id{font-size:1.2rem;font-weight:800;color:#1b6e27;margin-top:4px}.capacity-info{color:#666;font-size:.85rem;margin-top:4px}
+.station-timetable-frame{position:relative;margin-top:4px;height:53vh;background:#fff;border:3px solid #000;border-radius:11px;overflow:hidden;box-sizing:border-box}.station-timetable-wrap{position:relative;container-type:inline-size;margin-top:0;background:#fff;border:0;border-radius:0;overflow-y:auto;overflow-x:hidden;height:100%;scroll-behavior:auto;box-sizing:border-box}.station-timetable-empty{padding:24px 18px;text-align:center;font-family:inherit;color:#555}.station-timetable-row{width:100%;min-height:108px;display:grid;grid-template-columns:68px 82px 92px 92px minmax(0,1fr);align-items:center;column-gap:8px;padding:8px 12px;border:0;color:#000;text-align:left;cursor:pointer;font-family:inherit}.station-timetable-row:nth-child(odd){background:#fff}.station-timetable-row:nth-child(even){background:#cfcfcf}.station-timetable-row:hover{filter:brightness(.97)}.station-timetable-row.is-next{font-weight:800}.station-timetable-train-img{width:68px;height:86px;object-fit:contain;display:block;justify-self:center;background:transparent}.station-timetable-formation{color:#1b6e27;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:24px;line-height:1;font-weight:800;white-space:nowrap;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}.station-timetable-type{display:inline-flex;align-items:center;justify-content:center;min-width:78px;height:34px;padding:0 10px;border-radius:7px;font-family:inherit;font-size:18px;line-height:1;font-weight:700;white-space:nowrap;text-align:center;box-sizing:border-box;background:#9fa0a0;color:#fff}.station-timetable-type.hanzomon-local{background:#2d78c4;color:#fff}.station-timetable-time{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:32px;line-height:1;font-weight:800;white-space:nowrap;text-align:center;letter-spacing:.01em}.station-timetable-destination{font-family:inherit;font-size:32px;line-height:1;font-weight:500;white-space:nowrap;text-align:left;display:flex;align-items:flex-end;justify-content:flex-start;gap:.18em;height:1em}.station-timetable-type.express{background:#cf3282;color:#fff}.station-timetable-type.section-express{background:#e99ebf;color:#111}.station-timetable-type.semi-express{background:#48a839;color:#fff}.station-timetable-type.section-semi{background:#c1ca1f;color:#111}.station-timetable-type.th-liner{background:#fff;color:#111;border:1px solid #aaa}.station-timetable-type.deadhead{background:#fff;color:#111;border:1px solid #bbb}.station-timetable-type.limited-orange{background:#f49c00;color:#fff}.station-timetable-type.limited-green{background:#006e3f;color:#fff}.station-timetable-type.limited-white{background:#fff;color:#111;border:1px solid #aaa}.station-timetable-type.limited-red{background:#ea5532;color:#fff}
+.train-card{position:relative;background:#fff;border-radius:8px;padding:0;display:flex;align-items:center;gap:12px;margin-bottom:0;cursor:pointer;border:2px solid transparent;min-height:136px}.train-card:hover{border-color:#bbb}.train-card.historical-readonly{cursor:default}.train-card.historical-readonly:hover{border-color:transparent}.train-card-img{width:75px;height:auto;object-fit:contain;flex:0 0 75px}.train-info-main{flex:1;min-width:0}.type-badge{background:#9fa0a0;color:#fff;padding:3px 8px;border-radius:4px;font-size:.78rem;display:inline-block}.type-badge.hanzomon-local{background:#2d78c4;color:#fff}.type-badge.express{background:#cf3282;color:#fff}.type-badge.section-express{background:#e99ebf;color:#111}.type-badge.semi-express{background:#48a839;color:#fff}.type-badge.section-semi{background:#c1ca1f;color:#111}.type-badge.th-liner{background:#fff;color:#111;border:1px solid #aaa}.type-badge.limited-orange{background:#f49c00;color:#fff}.type-badge.limited-green{background:#006e3f;color:#fff}.type-badge.limited-white{background:#fff;color:#111;border:1px solid #aaa}.type-badge.limited-red{background:#ea5532;color:#fff}
 @container (max-width:529px){.station-timetable-frame{border-width:.5660377cqw;border-radius:2.0754717cqw}.station-timetable-empty{padding:4.5283019cqw 3.3962264cqw}.station-timetable-row{min-height:20.3773585cqw;grid-template-columns:12.8301887cqw 15.4716981cqw 17.3584906cqw 17.3584906cqw minmax(0,1fr);column-gap:1.509434cqw;padding:1.509434cqw 2.264151cqw}.station-timetable-train-img{width:12.8301887cqw;height:16.2264151cqw}.station-timetable-formation{font-size:4.5283019cqw}.station-timetable-time,.station-timetable-destination{font-size:6.0377358cqw}.station-timetable-type{min-width:14.717cqw;height:6.415cqw;padding:0 1.887cqw;border-radius:1.321cqw;font-size:3.396cqw}}
-@media(max-width:959.98px){html,body{width:100%;min-width:0;max-width:100%;overflow-x:hidden}#viewportCanvas{width:1920px;min-width:1920px;max-width:none;margin-left:-480px;zoom:calc(100vw / 960px)}#viewportCanvas #title,#viewportCanvas .line-container{width:1920px;max-width:none;min-width:0}}
+@media(max-width:959.98px){html,body{width:100%;min-width:0;max-width:100%;overflow-x:hidden}#viewportCanvas{width:1920px;min-width:1920px;max-width:none;margin-left:-480px;zoom:calc(100vw / 960px)}#viewportCanvas .line-container{width:1920px;max-width:none;min-width:0}}
 /* 野田線と同じ日付・時刻コントロール */
 #title,.control-bar,.line-container{box-sizing:border-box;width:100%;max-width:100%;min-width:0}
-.control-bar{position:sticky;top:50px;z-index:20;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;padding:10px;background:#fff;border-bottom:1px solid #ddd}
+.control-bar{position:fixed;top:58px;left:0;right:0;z-index:999;margin-top:0;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;padding:10px;background:#fff;border-bottom:1px solid #ddd}
 .day-filter,.time-control{display:flex;align-items:center;gap:8px}
 .date-input{border:2px solid var(--primary);background:#fff;color:var(--primary);padding:7px 12px;border-radius:999px;font:inherit;font-weight:700;cursor:pointer;min-width:160px}
 .schedule-day-label{font-weight:800;color:#555;white-space:nowrap}
@@ -76,7 +76,8 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Noto Sans JP",sans-serif;back
 .time-now-btn.active{background:var(--primary);color:#fff}
 .time-input{width:110px;border:2px solid #ccc;border-radius:999px;padding:7px 12px;font:inherit;font-weight:700;text-align:center;background:#fff;color:#111}
 .time-label{font-weight:700;color:#555}
-.timetable-item{display:flex;align-items:center;padding:8px 0;position:relative;height:56px;min-height:56px;box-sizing:border-box}.timetable-item::before{content:'';position:absolute;left:7px;top:0;bottom:0;width:4px;background:linear-gradient(to bottom,var(--timetable-line-top,var(--primary)) 0 50%,var(--timetable-line-bottom,var(--primary)) 50% 100%);z-index:0}.timetable-item:first-child::before{top:50%}.timetable-item:last-child::before{bottom:50%}.timetable-item:first-child::before{background:var(--timetable-line-bottom,var(--primary))}.timetable-item:last-child::before{background:var(--timetable-line-top,var(--primary))}.time-dot{width:18px;height:18px;background:var(--timetable-dot-color,var(--primary));border-radius:50%;z-index:1;margin-right:16px;flex:none}.time-text{width:58px;font-weight:700;display:flex;flex-direction:column;justify-content:center;line-height:1.05;gap:0;height:40px;flex:none}.time-text span{display:block;height:20px;line-height:20px;white-space:nowrap}.station-text{font-weight:700;font-size:1.05rem;line-height:1.2;display:flex;align-items:center;min-height:40px}.timetable-list{background:#fff;border-radius:8px;padding:12px 20px;margin-top:12px}.train-card-img{width:75px;height:auto;object-fit:contain}.train-card{min-height:136px}.sheet-header-left{font-size:1rem}
+#lineContainer{margin-top:calc(58px + var(--control-bar-height, 69px));}
+.timetable-item{display:flex;align-items:center;padding:8px 0;position:relative;height:56px;min-height:56px;box-sizing:border-box}.timetable-item::before{content:'';position:absolute;left:7px;top:0;bottom:0;width:4px;background:linear-gradient(to bottom,var(--timetable-line-top,var(--primary)) 0 50%,var(--timetable-line-bottom,var(--primary)) 50% 100%);z-index:0}.timetable-item:first-child::before{top:50%}.timetable-item:last-child::before{bottom:50%}.timetable-item:first-child::before{background:var(--timetable-line-bottom,var(--primary))}.timetable-item:last-child::before{background:var(--timetable-line-top,var(--primary))}.time-dot{width:18px;height:18px;background:var(--timetable-dot-color,var(--primary));border-radius:50%;z-index:1;margin-right:16px;flex:none}.time-text{width:58px;font-weight:700;display:flex;flex-direction:column;justify-content:center;line-height:1.05;gap:0;height:40px;flex:none}.time-text span{display:block;height:20px;line-height:20px;white-space:nowrap}.station-text{font-weight:700;font-size:1.05rem;line-height:1.2;display:flex;align-items:center;min-height:40px}.timetable-list{background:#fff;border-radius:8px;padding:12px 20px;margin-top:12px}.train-card-img{width:75px;height:auto;object-fit:contain}.train-title{font-size:.95rem;font-weight:700;margin-left:6px}.train-number{color:#1b6e27;font-weight:800;float:right;margin-right:15px}.formation-id{font-size:1.2rem;font-weight:800;color:#1b6e27;margin-top:4px}.capacity-info{color:#666;font-size:.85rem;margin-top:4px}.sheet-header-left{font-size:1rem}
 .moving-train-layer{position:absolute;inset:0;z-index:6;pointer-events:none}
 .train-icon{position:absolute;top:0;width:66px;display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:transform .15s;pointer-events:auto}
 .train-icon.left,.train-icon.right{right:auto}
@@ -90,7 +91,7 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Noto Sans JP",sans-serif;back
 .train-card{cursor:pointer;position:relative}.train-card.historical-readonly{cursor:default}.formation-updated-at{position:absolute;right:12px;bottom:8px;font-size:.78rem;color:#777}
 .input-trigger-btn{background:#c62828;color:#fff;padding:4px 8px;border-radius:4px;font-size:.75rem;margin-top:4px;display:inline-block}
 .formation-manual-input{display:flex;gap:8px;margin:6px 0;align-items:stretch}.formation-manual-input input{flex:1;min-width:0;border:2px solid #ccc;border-radius:8px;padding:10px;font:inherit;font-weight:700}.formation-manual-input button{border:0;border-radius:8px;background:var(--primary);color:#fff;padding:0 14px;font:inherit;font-weight:700;cursor:pointer}
-.formation-input-error{min-height:0;color:#c62828;font-size:.8rem;font-weight:700;margin:2px 0 4px}.select-box-container{position:relative;width:100%;margin:12px 0}.formation-select-row{display:flex;gap:8px;width:100%}.formation-select-row>.custom-select-trigger{flex:1;min-width:0}.formation-select-row.single{display:flex}.formation-select-row.single>.custom-select-trigger{flex:1}.formation-select-row.composite{flex-direction:row;gap:8px;align-items:flex-start}.formation-select-field{position:relative;width:calc(50% - 4px);min-width:0;z-index:1}.formation-select-field:focus-within{z-index:20}.formation-select-row.composite>.formation-select-field>.custom-select-trigger{width:100%;flex:0 0 auto}.formation-select-field>.custom-select-options{top:calc(100% + 6px);left:0;right:0}.select-box-container>.custom-select-options{top:calc(100% + 6px)}.custom-select-trigger{background:#fff;border:2px solid #ccc;border-radius:8px;padding:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:700;font-size:1.1rem;color:#1b6e27}.custom-select-options{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ccc;border-radius:8px;max-height:250px;overflow-y:auto;z-index:200;display:none;box-shadow:0 4px 10px rgba(0,0,0,.15)}.custom-select-options.open{display:block}.option-header,.option-item{display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid #f0f0f0}.option-header{background:#f0f0f0;padding-left:16px;font-weight:700;font-size:1.1rem}.option-item{padding-left:16px;min-height:60px;font-size:1.1rem}.option-item:hover,.option-header:hover{background:#e8f5e9}.option-item.type-option{background:#f0f0f0!important}.option-item.type-option:hover{background:#e8e8e8!important}.option-item.initial-option{background:#e0e0e0!important}.option-item.initial-option:hover{background:#d0d0d0!important}.option-img{width:auto;height:60px;object-fit:contain}.option-category-header{cursor:pointer!important;pointer-events:auto;background:#f0f0f0!important;}
+.formation-input-error{min-height:0;color:#c62828;font-size:.8rem;font-weight:700;margin:2px 0 4px}.select-box-container{position:relative;width:100%;margin:12px 0}.formation-select-row{display:flex;gap:8px;width:100%}.formation-select-row>.custom-select-trigger{flex:1;min-width:0}.formation-select-row.single{display:flex}.formation-select-row.single>.custom-select-trigger{flex:1}
 .option-subheader{background:#e8f7ff!important;padding-left:16px!important;font-size:1.15rem!important;cursor:pointer!important;pointer-events:auto;}
 .option-subheader:hover{background:#d3efff!important;}
 .option-subitem{padding-left:16px!important;}
@@ -198,8 +199,8 @@ flex:0 0 auto;white-space:nowrap;font-size:.8em;line-height:1;text-align:left;
 .operation-info-zone-label.delay{color:#8a7200;background:rgba(255,255,255,.92)}
 .operation-info-option-mark{display:inline-block;font-weight:900;color:inherit}.operation-info-option-name{color:#111!important;}
 .operation-info-zone.suspend .operation-info-zone-label{color:#d32f2f;background:rgba(255,255,255,.96)}
-@media(max-width:700px){#title{padding-left:70px;padding-right:120px}#operationInfoBtn{right:20px;top:13px;font-size:13px;padding:7px 11px.operation-info-grid{grid-template-columns:1fr}.operation-info-field.full{grid-column:auto}.operation-info-range{grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr)}.operation-info-card{grid-template-columns:1fr}.operation-info-card-delete{justify-self:end}}
-.formation-select-row.composite{display:flex;flex-direction:row;gap:8px;} .formation-select-row.composite>.formation-select-field{flex:1;min-width:0;position:relative;}
+@media(max-width:700px){#title{padding-left:70px;padding-right:120px}#operationInfoBtn{right:20px;top:13px;font-size:13px;padding:7px 11px}.operation-info-grid{grid-template-columns:1fr}.operation-info-field.full{grid-column:auto}.operation-info-range{grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr)}.operation-info-card{grid-template-columns:1fr}.operation-info-card-delete{justify-self:end}}
+
 
 /* 近江鉄道版追加調整 */
 :root{--primary:#0068b7;--primary-dark:#00589a;--row-height:270px}
@@ -227,25 +228,68 @@ flex:0 0 auto;white-space:nowrap;font-size:.8em;line-height:1;text-align:left;
 .station-stop-name{font-weight:700}
 @media(max-width:959.98px){#title{padding-left:70px;padding-right:70px}}
 
+
+/* 近江鉄道・編成入力：JR南武線の単一編成入力UIを基準にする。路線図処理には触れない。 */
+.select-box-container{position:relative;width:100%;margin:12px 0;}
+.formation-select-row.single{display:flex;width:100%;}
+.formation-select-field{position:relative;width:100%;min-width:0;z-index:1;}
+.custom-select-trigger{background:#fff;border:2px solid #ccc;border-radius:8px;padding:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:700;font-size:1.25rem;color:#1b6e27;min-height:96px;}
+.selected-option-img{width:auto;height:70px;object-fit:contain;display:block;flex:0 0 auto;}
+.formation-select-arrow{font-size:1.45rem;line-height:1;color:#1b6e27;flex:0 0 auto;margin-left:10px;}
+.custom-select-options{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid #ccc;border-radius:8px;max-height:250px;overflow-y:auto;z-index:200;display:none;box-shadow:0 4px 10px rgba(0,0,0,.15);}
+.custom-select-options.open{display:block;}
+.option-header,.option-item{display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid #f0f0f0;box-sizing:border-box;}
+.option-header{background:#f0f0f0;padding:0 16px;font-weight:700;font-size:1.25rem;min-height:68px;}
+.option-category-header{cursor:pointer!important;pointer-events:auto;background:#f0f0f0!important;}
+.option-category-header.selected{background:#e8f5e9!important;}
+.option-category-header:hover{background:#e8f5e9!important;}
+.option-item{padding:0 16px;min-height:60px;font-size:1.25rem;background:#fff;}
+.option-item:hover{background:#e8f5e9;}
+.option-item.selected{background:#e8f5e9;}
+.option-item.initial-option{background:#e0e0e0!important;min-height:76px;}
+.option-item.initial-option:hover{background:#d0d0d0!important;}
+.option-img{width:auto;height:60px;object-fit:contain;display:block;flex:0 0 auto;}
+.option-header .option-img{height:60px;}
 </style>
 </head>
 <body>
 
-<div id="viewportCanvas">
-<h1 id="title"><span>近江鉄道</span></h1>
+<h1 id="title"><span>近江鉄道</span><button id="operationInfoBtn" type="button" onclick="openOperationInfo()">運行情報</button></h1>
 <div class="control-bar">
   <div class="day-filter"><input id="dateInput" class="date-input" type="date"><span id="scheduleDayLabel" class="schedule-day-label">平日ダイヤ</span></div>
   <div class="time-control"><span class="time-label">表示時刻</span><input id="timeInput" class="time-input" type="time" step="60"><button id="nowBtn" class="time-now-btn active" type="button">現在時刻</button></div>
 </div>
-<div class="line-container" id="lineContainer"></div>
+<div id="viewportCanvas">
+  <div class="line-container" id="lineContainer"></div>
 </div>
 <div class="overlay" id="overlay"></div>
 <div class="bottom-sheet" id="bottomSheet">
   <div class="sheet-header"><div class="sheet-header-left"><button id="sheetBackBtn" class="sheet-back-btn" type="button" aria-label="駅情報に戻る"></button><span id="sheetHeaderTitle">駅情報</span></div><span class="close-btn" id="closeBtn">✖</span></div>
   <div class="sheet-content" id="sheetContent"></div>
 </div>
+<div class="operation-info-backdrop" id="operationInfoBackdrop" onclick="closeOperationInfo()"></div>
+<div class="operation-info-panel" id="operationInfoPanel" role="dialog" aria-modal="true" aria-label="運行情報">
+  <div class="operation-info-header"><span>運行情報の登録</span><button type="button" onclick="closeOperationInfo()" aria-label="閉じる">✖</button></div>
+  <div class="operation-info-body">
+    <div class="operation-info-form">
+      <div class="operation-info-grid">
+        <div class="operation-info-field full"><label>状態</label><div class="operation-info-status" id="operationInfoStatus"><label><input type="radio" name="operationStatus" value="delay" checked><span>遅延</span></label><label><input type="radio" name="operationStatus" value="suspend"><span>運転見合わせ</span></label></div></div>
+        <div class="operation-info-field full"><label>区間</label><div class="operation-info-range"><select id="operationInfoStart" aria-label="区間始点"></select><div class="operation-info-range-arrow">→</div><select id="operationInfoEnd" aria-label="区間終点"></select></div></div>
+        <div class="operation-info-field"><label for="operationInfoDelay">遅延時間</label><select id="operationInfoDelay"><option value="unknown">遅延時間不明</option><option value="5">5分</option><option value="10">10分</option><option value="15">15分</option><option value="20">20分</option><option value="25">25分</option><option value="30">30分</option><option value="35">35分</option><option value="40">40分</option><option value="45">45分</option><option value="50">50分</option><option value="55">55分</option><option value="60">60分</option><option value="65">65分</option><option value="70">70分</option><option value="75">75分</option><option value="80">80分</option><option value="85">85分</option><option value="90">90分</option><option value="95">95分</option><option value="100">100分</option><option value="105">105分</option><option value="110">110分</option><option value="115">115分</option><option value="120">120分</option></select></div>
+        <div class="operation-info-field"><label for="operationInfoReason">理由</label><select id="operationInfoReason"></select></div>
+      </div>
+      <div class="operation-info-actions"><button class="operation-info-cancel" type="button" onclick="resetOperationInfoForm()">入力クリア</button><button class="operation-info-add" type="button" onclick="addOperationInfo()">運行情報を登録</button></div>
+    </div>
+    <div class="operation-info-list" id="operationInfoList"></div>
+  </div>
+</div>
+<div class="operation-info-detail-backdrop" id="operationInfoDetailBackdrop" onclick="hideOperationInfoDetail()"></div>
+<div class="operation-info-detail" id="operationInfoDetail" role="dialog" aria-modal="true"><div class="operation-info-detail-header"><span>運行情報の詳細</span><button type="button" onclick="hideOperationInfoDetail()">✖</button></div><div class="operation-info-detail-body" id="operationInfoDetailBody"></div></div>
 
 
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script>
 'use strict';
 
@@ -269,6 +313,32 @@ const OMI_JSON_URL='https://minamikaze2700.github.io/Unyomatome/timetable/Omi.js
 const FORMATION_IMG_BASE='https://minamikaze2700.github.io/Unyomatome/images/';
 const OMI_IMG=n=>`${FORMATION_IMG_BASE}Omi${n}.png`;
 const NOIMAGE_IMG=`${FORMATION_IMG_BASE}Omi_noimage.png`;
+const DEST_SHORT={
+  '貴生川':'貴生',
+  '八日市':'八日',
+  '近江八幡':'八幡',
+  '多賀大社前':'大社'
+};
+function mainShortDest(d){const x=String(d||'');return DEST_SHORT[x]||x.replace('とうきょうスカイツリー','ｽｶｲﾂﾘｰ');}
+
+// 編成入力で選択・登録できる現役編成
+const ACTIVE_OMI_FORMATION_GROUPS=[
+  {type:'200形',items:[{id:'201',name:'201F'},{id:'203',name:'203F'}]},
+  {type:'800形',items:[{id:'802',name:'802F'},{id:'804',name:'804F'},{id:'805',name:'805F'},{id:'806',name:'806F'},{id:'807',name:'807F'},{id:'808',name:'808F'},{id:'809',name:'809F'},{id:'810',name:'810F'},{id:'811',name:'811F'}]},
+  {type:'900形',items:[{id:'901',name:'901F'}]},
+  {type:'100形',items:[{id:'101',name:'101F'},{id:'102',name:'102F'},{id:'103',name:'103F'},{id:'104',name:'104F'},{id:'105',name:'105F'}]},
+  {type:'300形',items:[{id:'301',name:'301F'},{id:'302',name:'302F'}]}
+];
+const ACTIVE_OMI_FORMATIONS=ACTIVE_OMI_FORMATION_GROUPS.flatMap(g=>g.items.map(x=>({...x,type:g.type,img:OMI_IMG(x.id)})));
+const ACTIVE_OMI_FORMATION_MAP=new Map(ACTIVE_OMI_FORMATIONS.map(x=>[String(x.id),x]));
+const OMI_TYPE_SELECTIONS=ACTIVE_OMI_FORMATION_GROUPS.map(g=>({
+  id:`__TYPE__${g.type}`,
+  name:g.type,
+  type:g.type,
+  kind:'type',
+  img:g.items?.[0]?.id?OMI_IMG(g.items[0].id):NOIMAGE_IMG
+}));
+const OMI_TYPE_SELECTION_MAP=new Map(OMI_TYPE_SELECTIONS.map(x=>[String(x.id),x]));
 
 let TRAINS=[];
 let activeBranches=new Set();
@@ -277,12 +347,30 @@ let selectedDateKey='';
 let followNow=true;
 let currentStationId=null;
 let currentStationRoute='main';
-let stationTimetableDirection='down';
+let stationTimetableDirection='up';
 let currentTrainNo=null;
 let currentTrainDirection=null;
+let currentTrainService=null;
+let currentTrainSnapshot=null;
 let previousSheetContext=null;
+let isEditMode=false;
 const FORMATION_STORAGE_KEY='omi_formation_state_v1';
 let formationState={平日:{},休日:{}};
+const RESET_HOUR=3;
+let formationUpdatedAt={平日:{},休日:{}};
+const FIREBASE_CONFIG={
+  apiKey:'AIzaSyDfoX_p2t-d_A3lj89AWoV5mMG50lC3f-0',
+  authDomain:'unyomatome-omi.firebaseapp.com',
+  projectId:'unyomatome-omi',
+  databaseURL:'https://unyomatome-omi-default-rtdb.asia-southeast1.firebasedatabase.app',
+  storageBucket:'unyomatome-omi.firebasestorage.app',
+  messagingSenderId:'244668432781',
+  appId:'1:244668432781:web:8038585e226f89d5727dc4',
+  measurementId:'G-MBBTNF29JK'
+};
+let firebaseApp=null;
+let firebaseDb=null;
+let firebaseReady=false;
 
 function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function normName(v){return String(v??'').normalize('NFKC').replace(/\u3000/g,'').replace(/\s+/g,'').trim();}
@@ -334,6 +422,11 @@ function parseMin(v){
   if(!Number.isFinite(h)||!Number.isFinite(mi))return NaN;
   return h*60+mi;
 }
+function serviceDayMinuteFromTime(time){
+  const m=parseMin(time);if(!Number.isFinite(m))return Infinity;
+  const h=Math.floor(m/60),mi=m%60;
+  return h<3?m+1440:m;
+}
 function toTimeText(v){
   const m=parseMin(v); if(!Number.isFinite(m))return '';
   const h=Math.floor(m/60)%24,mi=m%60;
@@ -368,6 +461,20 @@ function normalizeTrain(raw,dayOverride=null){
   const direction=normalizeDirection(raw.direction)||inferTrainDirection(stops);
   const dest=String(raw.dest??raw.destination??raw.end??stops.at(-1)?.station??'').trim();
   const formation=String(raw.formation??raw.formationNo??raw.編成??'').trim();
+  // PDFの中間駅は時刻が1つだけ記載される箇所があるため、始発・終着以外は
+  // その時刻を着発同時として保持する。明示的な着発差はそのまま残す。
+  for(let i=0;i<stops.length;i++){
+    const st=stops[i];
+    if(i>0 && i<stops.length-1){
+      if(!st.arrival && st.departure) st.arrival=st.departure;
+      if(!st.departure && st.arrival) st.departure=st.arrival;
+      if(!st.arrival && !st.departure && st.time){st.arrival=st.time;st.departure=st.time;}
+    }else if(i===0){
+      if(!st.departure && st.time) st.departure=st.time;
+    }else if(i===stops.length-1){
+      if(!st.arrival && st.time) st.arrival=st.time;
+    }
+  }
   return {...raw,no,direction,dest,formation,type:'普通',days,stops};
 }
 function minuteOfStop(s){return parseMin(s?.time);}
@@ -417,54 +524,231 @@ async function loadOmi(){
   applyFormationState();
 }
 function todayKey(d=new Date()){const x=new Date(d);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;}
-function scheduleDayForKey(key){const d=new Date(`${key}T00:00:00`);return [0,6].includes(d.getDay())?'休日':'平日';}
-function saveFormationState(){try{localStorage.setItem(FORMATION_STORAGE_KEY,JSON.stringify(formationState));}catch(e){}}
-function loadFormationState(){try{const x=JSON.parse(localStorage.getItem(FORMATION_STORAGE_KEY)||'{}');formationState={平日:{...(x.平日||{})},休日:{...(x.休日||{})}};}catch(e){}}
+function nthMondayDateKey(year,month,nth){const d=new Date(year,month-1,1);const offset=(8-d.getDay())%7;d.setDate(1+offset+(nth-1)*7);return todayKey(d);}
+function equinoxDateKey(year,isVernal){const y=year-1980,base=isVernal?20.8431:23.2488,drift=.242194,day=Math.floor(base+drift*y-Math.floor(y/4));return `${year}-${isVernal?'03':'09'}-${String(day).padStart(2,'0')}`;}
+function getJapaneseNationalHolidays(year){const h=new Set(),add=(m,d)=>h.add(`${year}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`);add(1,1);h.add(nthMondayDateKey(year,1,2));add(2,11);if(year>=2020)add(2,23);h.add(equinoxDateKey(year,true));add(4,29);add(5,3);add(5,4);add(5,5);h.add(nthMondayDateKey(year,7,3));add(8,11);h.add(nthMondayDateKey(year,9,3));h.add(equinoxDateKey(year,false));h.add(nthMondayDateKey(year,10,2));add(11,3);add(11,23);if(year===2019){add(5,1);add(10,22);}if(year===2020){h.delete(`${year}-07-20`);add(7,23);h.delete(`${year}-10-12`);add(7,24);}if(year===2021){h.delete(`${year}-07-19`);add(7,22);add(7,23);h.delete(`${year}-08-11`);add(8,8);h.delete(`${year}-10-11`);}return h;}
+function getJapaneseHolidaySet(year){const national=getJapaneseNationalHolidays(year),holidays=new Set(national);for(const key of [...national]){const d=new Date(`${key}T00:00:00`);if(d.getDay()!==0)continue;const cursor=new Date(d);do{cursor.setDate(cursor.getDate()+1);const k=todayKey(cursor);if(!national.has(k)&&!holidays.has(k)){holidays.add(k);break;}}while(cursor.getFullYear()<=year+1);}for(let d=new Date(year,0,1),end=new Date(year,11,31);d<=end;d.setDate(d.getDate()+1)){const key=todayKey(d);if(holidays.has(key))continue;const prev=new Date(d),next=new Date(d);prev.setDate(prev.getDate()-1);next.setDate(next.getDate()+1);if(national.has(todayKey(prev))&&national.has(todayKey(next)))holidays.add(key);}return holidays;}
+function isJapaneseHoliday(dateObj){return getJapaneseHolidaySet(dateObj.getFullYear()).has(todayKey(dateObj));}
+function getScheduleDayForDate(dateObj){const d=new Date(dateObj);return (d.getDay()===0||d.getDay()===6||isJapaneseHoliday(d))?'休日':'平日';}
+function saveFormationState(){
+  try{localStorage.setItem(FORMATION_STORAGE_KEY,JSON.stringify({formationState,formationUpdatedAt}));}catch(e){}
+}
+function loadFormationState(){
+  try{
+    const x=JSON.parse(localStorage.getItem(FORMATION_STORAGE_KEY)||'{}');
+    formationState={平日:{...(x.formationState?.平日||x.平日||{})},休日:{...(x.formationState?.休日||x.休日||{})}};
+    formationUpdatedAt={平日:{...(x.formationUpdatedAt?.平日||{})},休日:{...(x.formationUpdatedAt?.休日||{})}};
+  }catch(e){}
+}
 function formationKey(t){return `${currentDay}|${t.no}|${t.direction}`;}
 function effectiveFormation(t){const key=formationKey(t);return formationState[currentDay]?.[`${t.no}|${t.direction}`]??t.formation??'';}
-function applyFormationState(){loadFormationState();}
-function setFormationForTrain(t,value){
-  if(!formationState[currentDay])formationState[currentDay]={};
-  const key=`${t.no}|${t.direction}`;
-  formationState[currentDay][key]=String(value||'').trim();
-  t.formation=formationState[currentDay][key];
-  saveFormationState();
-  renderTrainPositions();
+function selectedFormationIdForTrain(t){
+  if(!t)return '';
+  return String(formationState[currentDay]?.[`${String(t.no)}|${String(t.direction)}`] ?? t.formation ?? '').trim();
 }
-function liveTrain(t){
-  const copy={...t,stops:(t.stops||[]).map(x=>({...x}))};
-  copy.formation=formationState[currentDay]?.[`${copy.no}|${copy.direction}`]??copy.formation??'';
+function formationTimestamp(no,direction=null){
+  return formationUpdatedAt[currentDay]?.[`${String(no||'')}|${String(direction||'')}`]||'';
+}
+function formatTimestampShort(ts){
+  if(!ts)return '';
+  const d=typeof ts==='number'?new Date(ts):new Date(String(ts));
+  if(Number.isNaN(d.getTime()))return '';
+  const now=new Date();
+  const hhmm=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()&&d.getDate()===now.getDate()
+    ? hhmm
+    : `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${hhmm}`;
+}
+function formatFormationUpdatedAt(no,direction=null){return formatTimestampShort(formationTimestamp(no,direction));}
+function applyFormationState(){
+  loadFormationState();
+}
+function setFormationForTrain(t,value){
+  if(!t)return false;
+  if(!selectedIsCurrentOperation())return false;
+  const v=String(value||'').trim();
+  if(v && !ACTIVE_OMI_FORMATION_MAP.has(v) && !OMI_TYPE_SELECTION_MAP.has(v))return false;
+  if(!formationState[currentDay])formationState[currentDay]={};
+  if(!formationUpdatedAt[currentDay])formationUpdatedAt[currentDay]={};
+  const key=`${String(t.no)}|${String(t.direction)}`;
+  if(v){
+    formationState[currentDay][key]=v;
+    formationUpdatedAt[currentDay][key]=Date.now();
+  }else{
+    delete formationState[currentDay][key];
+    delete formationUpdatedAt[currentDay][key];
+  }
+  t.formation=v;
+  saveFormationState();
+  return true;
+}
+function firebaseStateKey(t){return `${String(t?.no||'')}|${String(t?.direction||'')}`;}
+async function initFirebase(){
+  loadFormationState();
+  if(!window.firebase?.initializeApp || !FIREBASE_CONFIG.apiKey || !FIREBASE_CONFIG.databaseURL)return false;
+  try{
+    firebaseApp=firebase.apps.find(a=>a.name==='omi');
+    if(!firebaseApp)firebaseApp=firebase.initializeApp(FIREBASE_CONFIG,'omi');
+    firebaseDb=firebase.database(firebaseApp);
+    firebaseReady=true;
+
+    // 南武線側と同じく、初期状態の読込に失敗しても画面全体は停止させずローカル動作へ戻す。
+    try{
+      const root=firebaseDb.ref('運用');
+      const snap=await root.child('stateByDay').child(currentDay||'平日').once('value');
+      const remote=snap.val();
+      if(remote && typeof remote==='object'){
+        formationState[currentDay||'平日']={...(formationState[currentDay||'平日']||{}),...remote};
+      }
+      const tsSnap=await root.child('formationUpdatedAtByDay').child(currentDay||'平日').once('value');
+      const remoteTs=tsSnap.val();
+      if(remoteTs && typeof remoteTs==='object'){
+        formationUpdatedAt[currentDay||'平日']={...(formationUpdatedAt[currentDay||'平日']||{}),...remoteTs};
+      }
+      saveFormationState();
+      applyFormationState();
+    }catch(e){
+      console.warn('近江鉄道 Firebase 初期データ読込失敗（ローカル動作へ切替）',e);
+      firebaseReady=false;
+      firebaseDb=null;
+      return false;
+    }
+
+    // 別端末の編成登録をリアルタイム反映。権限がない場合はその場で監視だけ停止。
+    try{
+      const ref=firebaseDb.ref('運用').child('stateByDay').child(currentDay||'平日');
+      ref.on('value',snap=>{
+        const remote=snap.val();
+        if(!remote || typeof remote!=='object')return;
+        formationState[currentDay||'平日']={...remote};
+        saveFormationState();
+        if(!isEditMode){
+          applyFormationState();
+          if(currentTrainNo){
+            currentTrainSnapshot=liveTrain(currentTrainNo,currentTrainDirection,currentTrainService)||currentTrainSnapshot;
+            updateSheetContent();
+          }
+          render();
+        }
+      },err=>{
+        console.warn('近江鉄道 Firebase リアルタイム同期失敗',err);
+        firebaseReady=false;
+        firebaseDb=null;
+      });
+      const tsRef=firebaseDb.ref('運用').child('formationUpdatedAtByDay').child(currentDay||'平日');
+      tsRef.on('value',snap=>{
+        const remote=snap.val();
+        if(remote && typeof remote==='object'){
+          formationUpdatedAt[currentDay||'平日']={...remote};
+          saveFormationState();
+          if(currentTrainNo&&!isEditMode)updateSheetContent();
+        }
+      },()=>{});
+    }catch(e){}
+    return true;
+  }catch(e){
+    console.warn('近江鉄道 Firebase 初期化失敗（ローカル動作へ切替）',e);
+    firebaseReady=false;
+    firebaseDb=null;
+    return false;
+  }
+}
+async function syncFormationToFirebase(t,value){
+  if(!firebaseReady||!firebaseDb||!t)return true;
+  try{
+    const day=currentDay||'平日';
+    const key=firebaseStateKey(t);
+    const root=firebaseDb.ref('運用');
+    await root.child('stateByDay').child(day).update({[key]:value?String(value):null});
+    await root.child('formationUpdatedAtByDay').child(day).update({[key]:value?Date.now():null});
+    return true;
+  }catch(e){
+    const msg=String(e?.message||e||'');
+    if(/permission_denied/i.test(msg)){
+      console.warn('近江鉄道 Firebase 書込権限がないため、この端末の保存結果を使用します。');
+    }else{
+      console.warn('近江鉄道 Firebase 編成同期失敗',e);
+    }
+    firebaseReady=false;
+    firebaseDb=null;
+    return false;
+  }
+}
+let formationSelectionSyncInProgress=false;
+async function recordFormationSelection(train,formId){
+  if(!train||!selectedIsCurrentOperation()||formationSelectionSyncInProgress)return false;
+  const value=String(formId??'').trim();
+  if(value && !ACTIVE_OMI_FORMATION_MAP.has(value) && !OMI_TYPE_SELECTION_MAP.has(value))return false;
+  formationSelectionSyncInProgress=true;
+  try{
+    if(!setFormationForTrain(train,value))return false;
+    const latest=liveTrain(train.no,train.direction,currentSelectedService())||train;
+    currentTrainSnapshot={...(currentTrainSnapshot||{}),...latest,formation:value};
+    await syncFormationToFirebase(latest,value);
+    refreshTrainCachesAfterFormationChange();
+    renderTrainPositions();
+    return true;
+  }finally{
+    formationSelectionSyncInProgress=false;
+  }
+}
+function refreshTrainCachesAfterFormationChange(){
+  // OmiはliveTrainがformationStateを参照するため、データ本体を複製し直す必要はない。
+  // 表示中の列車情報と路線図だけを再描画する。
+}
+
+function trainGroupKey(t){return String(t?.service||'omi');}
+function liveTrain(noOrTrain,direction=null,service=null){
+  let base=null;
+  if(noOrTrain && typeof noOrTrain==='object')base=noOrTrain;
+  else{
+    const no=String(noOrTrain??'');
+    const dir=direction?String(direction):'';
+    const svc=service?String(service):'';
+    base=TRAINS.find(x=>String(x?.no)===no && (!dir||String(x?.direction)===dir) && (!svc||trainGroupKey(x)===svc) && (!Array.isArray(x?.days)||!x.days.length||x.days.includes(currentDay)))
+      ||TRAINS.find(x=>String(x?.no)===no && (!dir||String(x?.direction)===dir) && (!svc||trainGroupKey(x)===svc))
+      ||TRAINS.find(x=>String(x?.no)===no && (!svc||trainGroupKey(x)===svc))
+      ||TRAINS.find(x=>String(x?.no)===no)
+      ||null;
+  }
+  if(!base)return null;
+  const copy={...base,stops:(base.stops||[]).map(x=>({...x}))};
+  copy.formation=selectedFormationIdForTrain(copy);
   copy.type='普通';
   return copy;
 }
-function currentMinutes(){
-  const input=document.getElementById('timeInput');
-  const m=parseMin(input?.value);
-  if(Number.isFinite(m)&&!followNow)return m;
-  const d=new Date();return d.getHours()*60+d.getMinutes()+d.getSeconds()/60;
-}
-function setNowTime(){
-  followNow=true;document.getElementById('nowBtn')?.classList.add('active');
-  const d=new Date();const el=document.getElementById('timeInput');if(el)el.value=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-  renderTrainPositions();
-}
+function currentSelectedService(){return currentTrainService||'omi';}
+function formatTimeNow(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
+function currentMinutes(){if(followNow){const d=new Date(),base=d.getHours()*60+d.getMinutes()+d.getSeconds()/60+d.getMilliseconds()/60000;return d.getHours()<RESET_HOUR?base+1440:base;}const input=document.getElementById('timeInput'),value=input?.value||formatTimeNow(),parts=String(value).split(':').map(Number),h=Number.isFinite(parts[0])?parts[0]:0,m=Number.isFinite(parts[1])?parts[1]:0,base=h*60+m+0.5;return h<RESET_HOUR?base+1440:base;}
+function setNowTime(){followNow=true;const operationDate=operationDateKey(new Date());if(selectedDateKey!==operationDate)setDateValue(operationDate);const input=document.getElementById('timeInput');if(input)input.value=formatTimeNow();document.getElementById('nowBtn')?.classList.add('active');renderTrainPositions();}
+function updateCurrentTimeOnly(){followNow=true;const input=document.getElementById('timeInput');if(input)input.value=formatTimeNow();document.getElementById('nowBtn')?.classList.add('active');renderTrainPositions();}
+function setManualTime(){followNow=false;document.getElementById('nowBtn')?.classList.remove('active');renderTrainPositions();}
+function initDateControl(){const input=document.getElementById('dateInput');if(!input)return;if(!selectedDateKey)selectedDateKey=operationDateKey();currentDay=getScheduleDayForDate(new Date(`${selectedDateKey}T00:00:00`));input.value=selectedDateKey;const label=document.getElementById('scheduleDayLabel');if(label)label.textContent=`${currentDay}ダイヤ`;input.addEventListener('change',e=>setDateValue(e.target.value));}
+function initTimeControl(){const input=document.getElementById('timeInput');if(!input)return;input.value=formatTimeNow();input.addEventListener('input',setManualTime);}
 function updateDayUI(){
   const label=document.getElementById('scheduleDayLabel');if(label)label.textContent=`${currentDay}ダイヤ`;
   const date=document.getElementById('dateInput');if(date)date.value=selectedDateKey;
 }
+function operationDateKey(d=new Date()){const x=new Date(d);if(x.getHours()<RESET_HOUR)x.setDate(x.getDate()-1);return todayKey(x);}
+function selectedIsCurrentOperation(){return !selectedDateKey||selectedDateKey===operationDateKey();}
 function setDateValue(v){
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(String(v)))return;
-  selectedDateKey=String(v);currentDay=scheduleDayForKey(selectedDateKey);updateDayUI();render();
+  const value=String(v||'');
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return;
+  const d=new Date(`${value}T00:00:00`);
+  if(Number.isNaN(d.getTime()))return;
+  selectedDateKey=value;
+  currentDay=getScheduleDayForDate(d);
+  updateDayUI();
+  loadOperationInfo();
+  render();
+  if(currentTrainNo&&!isEditMode)updateSheetContent();
 }
 function routeDirectionLabels(routeKey,st){
   const name=st[0];
-  if(routeKey==='taga')return name==='多賀大社前'?['高宮・米原方面','多賀大社前方面']:['高宮・米原方面','多賀大社前方面'];
-  if(routeKey==='yokaichi')return name==='近江八幡'?['八日市方面','近江八幡方面']:['八日市・米原方面','近江八幡方面'];
-  const i=MAIN_NAMES.findIndex(x=>sameStation(x,name));
-  if(i<=0)return ['米原方面','貴生川方面'];
-  if(i>=MAIN_NAMES.length-1)return ['米原方面','貴生川方面'];
-  if(name==='八日市')return ['高宮・彦根・米原方面','日野・貴生川方面'];
-  if(name==='高宮')return ['米原・彦根方面','八日市・貴生川方面'];
+  if(routeKey==='taga')return ['高宮方面','多賀大社前方面'];
+  if(routeKey==='yokaichi')return ['八日市方面','近江八幡方面'];
+  if(name==='高宮')return ['米原方面','貴生川・多賀大社前方面'];
+  if(name==='八日市')return ['米原方面','貴生川・近江八幡方面'];
   return ['米原方面','貴生川方面'];
 }
 function directionLabelForTrain(t,dir){
@@ -674,11 +958,21 @@ function formationNumber(value){
   const m=s.match(/(\d{3,5})/);return m?m[1]:s.replace(/[^A-Za-z0-9_-]/g,'');
 }
 function trainImageFor(t){const n=formationNumber(t.formation);return n?OMI_IMG(n):NOIMAGE_IMG;}
-function trainLabelText(t){return `普通 ${t.dest||''}`.trim();}
+function trainLabelText(t){return `普通 ${mainShortDest(t.dest)}`.trim();}
 function displayTimeForStation(t,name){
   const s=(t.stops||[]).find(x=>sameStation(x.station,name));
   return s?toTimeText(s.time):'';
 }
+function scheduleViewportTrainRender(){
+if(scheduleViewportTrainRender.pending)return;
+scheduleViewportTrainRender.pending=true;
+requestAnimationFrame(()=>{
+scheduleViewportTrainRender.pending=false;
+renderTrainPositions();
+});
+}
+scheduleViewportTrainRender.pending=false;
+
 function renderTrainPositions(){
   const layer=document.getElementById('movingTrainLayer');if(!layer)return;layer.innerHTML='';
   const rows=currentRows();if(!rows.length)return;const minute=currentMinutes();
@@ -707,81 +1001,941 @@ function renderTrainPositions(){
     });
   }
 }
-function stationNeighbors(st,routeKey){
-  const arr=ROUTES[routeKey].stations;const i=arr.findIndex(x=>x[0]===st[0]);return {prev:i>0?arr[i-1]:null,next:i>=0&&i<arr.length-1?arr[i+1]:null};
+function lineColorFor(routeKey){return ROUTES[routeKey]?.color||COLORS.main;}
+function stationById(id){
+  const [routeKey,name]=String(id).split('::');
+  const route=ROUTES[routeKey]; if(!route)return null;
+  const st=route.stations.find(x=>sameStation(x[0],name));
+  return st?{routeKey,st}:null;
+}
+function stationNameKey(name){return normName(name);}
+function stationNamesEqual(a,b){return stationNameKey(a)===stationNameKey(b);}
+function stationScreenNeighbors(st,routeKey){
+  const rows=buildScreenRows();
+  const idx=rows.findIndex(r=>r.routeKey===routeKey&&stationNamesEqual(r.st[0],st[0]));
+  if(idx<0)return {prev:null,next:null,prevColor:null,nextColor:null};
+  const cur=rows[idx],p=rows[idx-1],n=rows[idx+1];
+  const prevBreak=!!cur.opt.breakBefore||!!p?.opt?.breakAfter;
+  const nextBreak=!!cur.opt.breakAfter||!!n?.opt?.breakBefore;
+  return {
+    prev:(!prevBreak?p:null),
+    next:(!nextBreak?n:null),
+    prevColor:(!prevBreak&&p)?screenEdgeColor(p,cur):null,
+    nextColor:(!nextBreak&&n)?screenEdgeColor(cur,n):null
+  };
+}
+function getVisibleTrains(){
+  const seen=new Set(),out=[];
+  for(const base of TRAINS){
+    if(!base || !Array.isArray(base.stops) || base.stops.length<2)continue;
+    if(Array.isArray(base.days) && base.days.length && !base.days.includes(currentDay))continue;
+    const signature=`${trainGroupKey(base)}|${String(base.no||'')}|${String(base.direction||'')}`;
+    if(seen.has(signature))continue;
+    seen.add(signature);
+    out.push(liveTrain(base));
+  }
+  return out;
+}
+function displayStopsForTrain(t){
+  return (Array.isArray(t?.stops)?t.stops:[]).filter(s=>String(s?.station||'')!=='着番線' && s?.timingOnly!==true);
+}
+function isTimingOnlyStop(trainOrStop,stationName=null){
+  const stop=trainOrStop && trainOrStop.station!==undefined ? trainOrStop : null;
+  if(stop)return stop.timingOnly===true;
+  const key=stationNameKey(stationName||'');
+  return !!(Array.isArray(trainOrStop?.stops) && trainOrStop.stops.some(s=>stationNameKey(s?.station||'')===key && s?.timingOnly===true));
+}
+function displayOperationNo(t){return String(t?.operationNo ?? t?.no ?? '').trim();}
+function displayTrainNo(t,stationName=null){return displayOperationNo(t);}
+function displayDestinationText(t){return String(t?.dest||'');}
+
+// スカイツリーラインと同じ駅時刻表・列車情報の表示処理
+function trainTypeBySection(t,section){
+  const map=(t&&typeof t.typeByRoute==='object')?t.typeByRoute:{};
+  if(section==='hanzomon') return String(map.hanzomon||t?.type||'各停');
+  if(section==='denentoshi') return String(map.denentoshi||map.hanzomon||t?.type||'各停');
+  if(section==='tobu') return String(map.tobu||t?.type||'');
+  return String(t?.type||'');
+}
+function trainTypeAtStation(t,stationName){
+  return String(t?.type||'普通');
+}
+function trainTypeAtPosition(t,p){
+  return String(t?.type||'普通');
+}
+function timetableTypeLabel(t,stationName=null){
+  return String(stationName!=null?trainTypeAtStation(t,stationName):t?.type||'普通');
+}
+function stopGuideStationName(name){
+  return String(name??'').normalize('NFKC');
+}
+function trainImageForDetailed(t){
+  const n=formationNumber(t?.formation);
+  return n?OMI_IMG(n):NOIMAGE_IMG;
+}
+function trainVisualRouteAtStation(t,stationName){
+  const n=stationNameKey(stationName); const stops=Array.isArray(t?.stops)?t.stops:[];
+  let idx=-1;for(let i=stops.length-1;i>=0;i--){if(stationNameKey(stops[i]?.station)===n){idx=i;break;}}
+  if(idx<0)return 'main';
+  if(n===stationNameKey('高宮')){
+    const p=idx>0?stops[idx-1]?.station:''; const q=idx+1<stops.length?stops[idx+1]?.station:'';
+    if(p&&routeForPair(p,stationName)!=='main')return routeForPair(p,stationName);
+    if(q&&routeForPair(stationName,q)!=='main')return routeForPair(stationName,q);
+  }
+  if(n===stationNameKey('八日市')){
+    const p=idx>0?stops[idx-1]?.station:''; const q=idx+1<stops.length?stops[idx+1]?.station:'';
+    if(p&&routeForPair(p,stationName)!=='main')return routeForPair(p,stationName);
+    if(q&&routeForPair(stationName,q)!=='main')return routeForPair(stationName,q);
+  }
+  return routeForStationName(stationName);
+}
+function trainAllowedOnVisibleBranch(train,stationName){
+  const route=trainVisualRouteAtStation(train,stationName);
+  if(route==='taga')return activeBranches.has('taga');
+  if(route==='yokaichi')return activeBranches.has('yokaichi');
+  return true;
+}
+function timetableVisualSideAtStation(t,stationName,routeKey){
+  const name=stationNameKey(stationName), stops=Array.isArray(t?.stops)?t.stops:[];
+  let idx=-1;for(let i=stops.length-1;i>=0;i--){if(stationNameKey(stops[i]?.station)===name){idx=i;break;}}
+  if(idx<0)return null;
+  if(routeKey==='taga' || routeKey==='yokaichi'){
+    const next=idx<stops.length-1?stops[idx+1]?.station:null;
+    const prev=idx>0?stops[idx-1]?.station:null;
+    const d=next?directionForPair(stops[idx].station,next):(prev?directionForPair(prev,stops[idx].station):t.direction);
+    return d==='down'?'left':d==='up'?'right':null;
+  }
+  return String(t?.direction||'')==='down'?'left':'right';
 }
 function stationTimetableEntries(st,routeKey,direction){
-  const out=[];
-  for(const base of TRAINS){
-    if(!base.days.includes(currentDay))continue;
-    const t=liveTrain(base);const stop=(t.stops||[]).find(x=>sameStation(x.station,st[0]));if(!stop)continue;
-    const actualDir=String(t.direction||'down');if(direction&&actualDir!==direction)continue;
-    const actualRoute=stationRouteKeyForTrain(t,st[0]);
-    if(routeKey!==actualRoute && !(routeKey==='main' && (st[0]==='高宮'||st[0]==='八日市') && actualRoute!=='main'))continue;
-    const m=parseMin(stop.time);if(!Number.isFinite(m))continue;
-    out.push({t,stop,time:m});
+  const name=String(st?.[0]||'');
+  const nameKey=stationNameKey(name);
+  const wantedSide=direction==='down'?'left':'right';
+  const byTrain=new Map();
+  for(const train of getVisibleTrains()){
+    if(!trainAllowedOnVisibleBranch(train,name))continue;
+    if(stationNamesEqual(train?.dest,name))continue;
+    if(String(train?.type||'')==='回送')continue;
+    const stops=Array.isArray(train?.stops)?train.stops:[];
+    const stopIndex=[...stops].map(x=>stationNameKey(x?.station)).lastIndexOf(nameKey);
+    if(stopIndex<0)continue;
+    const stop=stops[stopIndex];
+    if(stop?.timingOnly===true)continue;
+    if(!stop?.departure&&!stop?.arrival&&!stop?.time)continue;
+    const side=timetableVisualSideAtStation(train,name,routeKey);
+    if(side!==wantedSide)continue;
+    const key=`${trainGroupKey(train)}|${String(train.no||'')}`;
+    if(!key||byTrain.has(key))continue;
+    byTrain.set(key,{train,stop});
   }
-  out.sort((a,b)=>a.time-b.time);return out;
+  return [...byTrain.values()].sort((a,b)=>serviceDayMinuteFromTime(a.stop.departure||a.stop.arrival||a.stop.time)-serviceDayMinuteFromTime(b.stop.departure||b.stop.arrival||b.stop.time)||String(a.train.no).localeCompare(String(b.train.no),undefined,{numeric:true}));
 }
-function timetableRowHTML(item){
-  const t=item.t;const form=formationNumber(t.formation);const img=trainImageFor(t);return `<button class="station-timetable-row" type="button" data-no="${esc(t.no)}" data-dir="${esc(t.direction)}"><img class="station-timetable-train-img" src="${esc(img)}" alt="${esc(t.no)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span class="station-timetable-formation">${form?esc(form):''}</span><span class="station-timetable-type hanzomon-local">普通</span><span class="station-timetable-time">${esc(toTimeText(item.stop.time))}</span><span class="station-timetable-destination"><span class="station-timetable-destination-station">${esc(t.dest||'')}</span><span class="station-timetable-destination-go">行</span></span></button>`;
+function destinationScaleClass(dest){return '';}
+function trainRowHTML(train,st){
+  const stop=((train.stops||[]).filter(s=>stationNamesEqual(s?.station,st[0]))).pop();
+  const displayType=trainTypeAtStation(train,st[0]);
+  const displayTrain={...train,type:displayType};
+  const trainImg=trainImageForDetailed(train);
+  const displayNo=displayTrainNo(train,st[0]);
+  const time=stop?.departure||stop?.arrival||stop?.time||'';
+  const dest=displayDestinationText(train);
+  return `<button class="station-timetable-row" type="button" title="列車 ${esc(displayNo)} / ${esc(time)} / ${esc(dest)} 行" onclick="openTrainSheet('${esc(train.no)}',{type:'station-timetable',stationId:currentStationId,stationName:'${esc(st[0])}',direction:stationTimetableDirection,displayType:'${esc(displayType)}'},'${esc(train.service||trainGroupKey(train))}')"><img class="station-timetable-train-img" src="${esc(trainImg)}" alt="${esc(displayNo)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span class="station-timetable-formation">${formationDisplayHTML(train.formation,train.direction)||'—'}</span><span class="station-timetable-time">${esc(time)}</span><span class="station-timetable-type">${esc(timetableTypeLabel(displayTrain,st[0]))}</span><span class="station-timetable-destination"><span class="station-timetable-destination-station${destinationScaleClass(dest)}">${esc(dest)}</span><span class="station-timetable-destination-go">行</span></span></button>`;
 }
-function stationSheetHTML(st,routeKey){
-  const {prev,next}=stationNeighbors(st,routeKey);const labels=routeDirectionLabels(routeKey,st);const entries=stationTimetableEntries(st,routeKey,stationTimetableDirection);
-  const barLeft=prev?ROUTES[routeKey].color:'transparent';const barRight=next?ROUTES[routeKey].color:'transparent';
-  const title=`${st[0]} 駅時刻表`;
-  return `<div class="station-overview-card" style="--bar-left:${barLeft};--bar-right:${barRight}">
-    <div class="station-overview-main"><div class="station-overview-name-ja">${esc(st[0])}</div><div class="station-overview-name-en">${esc(st[1])}</div></div>
-    <div class="station-direction-bar-wrap"><span class="station-direction-bar"></span></div>
-    <div class="station-neighbor-row"><div class="station-neighbor left">${prev?`<div class="station-neighbor-name-ja">${esc(prev[0])}</div><div class="station-neighbor-name-en">${esc(prev[1])}</div>`:''}</div><div class="station-neighbor right">${next?`<div class="station-neighbor-name-ja">${esc(next[0])}</div><div class="station-neighbor-name-en">${esc(next[1])}</div>`:''}</div></div>
-  </div>
-  <div class="timetable-list"><div class="station-timetable-title">${esc(title)}</div><div class="station-timetable-direction-tabs"><button class="station-timetable-direction-tab ${stationTimetableDirection==='up'?'active':''}" data-dir="up">${esc(labels[0])}</button><button class="station-timetable-direction-tab ${stationTimetableDirection==='down'?'active':''}" data-dir="down">${esc(labels[1])}</button></div><div class="station-timetable-frame"><div class="station-timetable-wrap">${entries.length?entries.map(timetableRowHTML).join(''):'<div class="station-timetable-empty">該当する列車がありません。</div>'}</div></div></div>`;
+function stationTimetableHTML(st,routeKey,direction){
+  const entries=stationTimetableEntries(st,routeKey,direction); if(!entries.length)return '<div class="station-timetable-empty">この方面の時刻表はありません。</div>';
+  const now=currentMinutes(), nextIndex=entries.findIndex(x=>serviceDayMinuteFromTime(x.stop.departure||x.stop.arrival||x.stop.time)>=now);
+  const rows=entries.map((x,i)=>{const html=trainRowHTML(x.train,st);return i===nextIndex?html.replace('class="station-timetable-row"','class="station-timetable-row is-next" data-next-train="true"'):html;}).join('');
+  return `<div class="station-timetable-frame"><div class="station-timetable-wrap" id="stationTimetableScroll">${rows}</div></div>`;
 }
-function openStationSheet(st,routeKey){
-  currentStationId=stationId(routeKey,st);currentStationRoute=routeKey;stationTimetableDirection='down';previousSheetContext=null;setSheetBackVisible(false);document.getElementById('sheetHeaderTitle').textContent='駅情報';updateStationSheetContent();openSheet();scrollStationTimetableToNext();
+function timetableSegmentColor(stops,i){
+  const a=stationNameKey(stops?.[i]?.station||''), b=stationNameKey(stops?.[i+1]?.station||''); if(!a||!b)return null;
+  const r=routeForPair(a,b); return lineColorFor(r);
+}
+function timetableStationColor(stops,i){return timetableSegmentColor(stops,i)||timetableSegmentColor(stops,i-1)||COLORS.main;}
+function timetableRowsHTML(stops){
+  const visibleStops=(Array.isArray(stops)?stops:[]).filter(s=>s?.timingOnly!==true && String(s?.station||'')!=='着番線');
+  let html='';
+  for(let i=0;i<visibleStops.length;){
+    const station=visibleStops[i].station;
+    const cur=visibleStops[i];
+    const times=[];
+    if(cur?.arrival) times.push(cur.arrival);
+    if(cur?.departure && cur.departure!==cur.arrival) times.push(cur.departure);
+    if(!times.length && cur?.time) times.push(cur.time);
+    let j=i+1;
+    while(j<visibleStops.length&&sameStation(visibleStops[j].station,station)){
+      const q=visibleStops[j];
+      if(q?.arrival&&!times.includes(q.arrival))times.push(q.arrival);
+      if(q?.departure&&!times.includes(q.departure))times.push(q.departure);
+      if(q?.time&&!times.includes(q.time))times.push(q.time);
+      j++;
+    }
+    const shown=times.slice(0,2);
+    const dotColor=timetableStationColor(visibleStops,i);
+    const topLineColor=i>0?timetableSegmentColor(visibleStops,i-1):null;
+    const bottomLineColor=timetableSegmentColor(visibleStops,j-1)||topLineColor||dotColor;
+    const lineStyle=`--timetable-line-top:${topLineColor||bottomLineColor};--timetable-line-bottom:${bottomLineColor};--timetable-dot-color:${dotColor};`;
+    html+=`<div class="timetable-item" style="${lineStyle}"><div class="time-dot"></div><div class="time-text${shown.length>1?' two-line':''}">${shown.map(x=>`<span>${esc(x)}</span>`).join('')}</div><div class="station-text">${esc(stopGuideStationName(station))}</div></div>`;
+    i=j;
+  }
+  return html;
 }
 function updateStationSheetContent(){
-  const found=findStationMeta(currentStationId);const content=document.getElementById('sheetContent');if(!found||!content)return;
-  content.innerHTML=stationSheetHTML(found.st,currentStationRoute);
-  content.querySelectorAll('.station-timetable-direction-tab').forEach(b=>b.addEventListener('click',()=>{stationTimetableDirection=b.dataset.dir;updateStationSheetContent();scrollStationTimetableToNext();}));
-  content.querySelectorAll('.station-timetable-row').forEach(b=>b.addEventListener('click',()=>{const t=TRAINS.find(x=>String(x.no)===String(b.dataset.no)&&String(x.direction)===String(b.dataset.dir)&&x.days.includes(currentDay));if(t)openTrainSheet(t,{type:'station-timetable',stationId:currentStationId,direction:stationTimetableDirection,stationName:found.st[0]});}));
+  const found=stationById(currentStationId),content=document.getElementById('sheetContent'); if(!found||!content)return;
+  const {routeKey,st}=found; const {prev,next,prevColor,nextColor}=stationScreenNeighbors(st,routeKey); const labels=routeDirectionLabels(routeKey,st);
+  content.style.setProperty('--primary',nextColor||lineColorFor(routeKey));content.style.setProperty('--primary-dark',nextColor||lineColorFor(routeKey));
+  const split=prevColor&&nextColor&&prevColor!==nextColor?' split':'';
+  const bar=`<div class="station-direction-bar${!prev?' no-prev':''}${!next?' no-next':''}${split}" style="--bar-left:${prevColor||nextColor||lineColorFor(routeKey)};--bar-right:${nextColor||prevColor||lineColorFor(routeKey)}"></div>`;
+  const entries=stationTimetableEntries(st,routeKey,stationTimetableDirection),now=currentMinutes();let nextIndex=entries.findIndex(x=>serviceDayMinuteFromTime(x.stop.departure||x.stop.arrival||x.stop.time)>=now);if(nextIndex<0&&entries.length)nextIndex=0;
+  const rows=entries.map((x,i)=>{const html=trainRowHTML(x.train,st);return i===nextIndex?html.replace('class="station-timetable-row"','class="station-timetable-row is-next" data-next-train="true"'):html;}).join('');
+  content.innerHTML=`<div class="station-overview-card station-info-card"><div class="station-overview-main"><div class="station-overview-name-ja">${esc(st[0])}</div><div class="station-overview-name-en">${esc(st[1])}</div></div><div class="station-direction-bar-wrap">${bar}</div><div class="station-neighbor-row"><div class="station-neighbor left${prev?'':' empty'}"><div class="station-neighbor-name-ja">${esc(prev?.st?.[0]||'')}</div><div class="station-neighbor-name-en">${esc(prev?.st?.[1]||'')}</div></div><div class="station-neighbor right${next?'':' empty'}"><div class="station-neighbor-name-ja">${esc(next?.st?.[0]||'')}</div><div class="station-neighbor-name-en">${esc(next?.st?.[1]||'')}</div></div></div></div><div class="timetable-list"><div class="station-timetable-title">時刻表</div><div class="station-timetable-direction-tabs"><button class="station-timetable-direction-tab ${stationTimetableDirection==='up'?'active':''}" type="button" onclick="setStationTimetableDirection('up')">${esc(labels[0])}</button><button class="station-timetable-direction-tab ${stationTimetableDirection==='down'?'active':''}" type="button" onclick="setStationTimetableDirection('down')">${esc(labels[1])}</button></div>${entries.length?`<div class="station-timetable-frame"><div class="station-timetable-wrap" id="stationTimetableScroll">${rows}</div></div>`:'<div class="station-timetable-empty">該当する列車はありません</div>'}</div>`;
+  scrollStationTimetableToNext();
 }
-function scrollStationTimetableToNext(){
-  requestAnimationFrame(()=>{
-    const wrap=document.querySelector('.station-timetable-wrap');if(!wrap)return;const rows=[...wrap.querySelectorAll('.station-timetable-row')];if(!rows.length)return;
-    const now=currentMinutes();let target=rows.find(r=>{const m=parseMin(r.querySelector('.station-timetable-time')?.textContent||'');return Number.isFinite(m)&&m>=now;});if(!target)target=rows[0];if(target)wrap.scrollTop=Math.max(0,target.offsetTop-2);
-  });
+function openStationSheet(st,routeKey){currentStationId=stationId(routeKey,st);currentStationRoute=routeKey||'main';stationTimetableDirection='up';isEditMode=false;previousSheetContext=null;currentTrainSnapshot=null;setSheetBackVisible(false);document.getElementById('sheetHeaderTitle').textContent='駅情報';updateStationSheetContent();scrollStationTimetableToNext();openSheet();}
+function openStationSheetById(id,direction='up'){const found=stationById(id);if(!found)return;currentStationId=id;currentStationRoute=found.routeKey;stationTimetableDirection=direction==='down'?'down':'up';isEditMode=false;previousSheetContext=null;currentTrainSnapshot=null;setSheetBackVisible(false);document.getElementById('sheetHeaderTitle').textContent='駅情報';updateStationSheetContent();scrollStationTimetableToNext();openSheet();}
+function scrollStationTimetableToNext(){const wrap=document.getElementById('stationTimetableScroll');if(!wrap)return;const next=wrap.querySelector('[data-next-train="true"]')||wrap.querySelector('.station-timetable-row');if(!next)return;requestAnimationFrame(()=>{wrap.scrollTop=Math.max(0,next.offsetTop);});}
+function setStationTimetableDirection(direction){stationTimetableDirection=direction==='down'?'down':'up';updateStationSheetContent();scrollStationTimetableToNext();}
+function currentTrainObjectByNo(no,direction=null,service=null){
+  const key=String(no??'').trim();
+  const dir=direction?String(direction):'';
+  const svc=service?String(service):'';
+  const found=TRAINS.find(x=>String(x?.no)===key
+    && (!dir||String(x?.direction)===dir)
+    && (!svc||trainGroupKey(x)===svc)
+    && (!Array.isArray(x?.days)||!x.days.length||x.days.includes(currentDay)));
+  if(!found)return null;
+  return liveTrain(found,found.direction,trainGroupKey(found));
 }
-function trainStopListHTML(t){return (t.stops||[]).map(s=>`<div class="station-stop-item"><span class="station-stop-time">${esc(toTimeText(s.time))}</span><span class="station-stop-dot"></span><span class="station-stop-name">${esc(s.station)}</span></div>`).join('');}
-function openTrainSheet(base,fromContext=null){
-  const t=liveTrain(base);currentTrainNo=t.no;currentTrainDirection=t.direction;previousSheetContext=fromContext&&fromContext.type==='station-timetable'?fromContext:null;setSheetBackVisible(!!previousSheetContext);document.getElementById('sheetHeaderTitle').textContent='列車情報';
-  const content=document.getElementById('sheetContent');const form=formationNumber(t.formation);
-  content.innerHTML=`<div class="train-card"><img class="train-card-img" src="${esc(trainImageFor(t))}" alt="${esc(t.no)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div><span class="type-badge hanzomon-local">普通</span><span class="train-title">${esc(t.dest||'')}</span><span class="train-number">${esc(t.no)}</span></div><div class="formation-id">${form?`編成 ${esc(form)}`:'編成未選択'}</div><div class="capacity-info">所定: 普通</div></div></div>
-  <div class="formation-edit-box"><div style="font-weight:800;margin-bottom:7px">編成を入力</div><input id="formationInput" value="${esc(form)}" placeholder="例：805"><button type="button" id="formationSaveBtn">登録</button></div>
-  <div class="station-stop-list">${trainStopListHTML(t)}</div>`;
-  content.querySelector('#formationSaveBtn')?.addEventListener('click',()=>{const v=content.querySelector('#formationInput')?.value||'';const target=TRAINS.find(x=>String(x.no)===String(t.no)&&String(x.direction)===String(t.direction)&&x.days.includes(currentDay));if(target)setFormationForTrain(target,v);updateTrainSheetAfterFormation(target||t);});
-  openSheet();
+function updateTrainSheetAfterFormation(){updateSheetContent();renderTrainPositions();}
+function formationById(id){return ACTIVE_OMI_FORMATION_MAP.get(String(id??'').trim())||null;}
+function typeSelectionById(id){return OMI_TYPE_SELECTION_MAP.get(String(id??'').trim())||null;}
+function selectionDisplayObject(id){
+  const key=String(id??'').trim();
+  if(!key)return {id:'__INITIAL__',name:'編成未選択',img:NOIMAGE_IMG,kind:'placeholder'};
+  return formationById(key)||typeSelectionById(key)||{id:'__INITIAL__',name:'編成未選択',img:NOIMAGE_IMG,kind:'placeholder'};
 }
-function updateTrainSheetAfterFormation(base){
-  const t=liveTrain(base||{});const content=document.getElementById('sheetContent');const img=content.querySelector('.train-card-img');if(img){img.src=trainImageFor(t);}const id=content.querySelector('.formation-id');if(id){const form=formationNumber(t.formation);id.textContent=form?`編成 ${form}`:'編成未選択';}renderTrainPositions();
+function formationDisplayParts(id){
+  const obj=selectionDisplayObject(id);
+  if(!obj || obj.id==='__INITIAL__')return [];
+  const type=String(obj.type||'').trim();
+  const name=String(obj.name||'').trim();
+  if(type && name && name!==type && name.startsWith(type))return [type,name.slice(type.length).trim()];
+  return [name||type].filter(Boolean);
 }
+function formationDisplayHTML(id,direction=null){
+  return formationDisplayParts(id).map(x=>`<span>${esc(x)}</span>`).join('');
+}
+function formationDropdownOptionHTML(item,selected){
+  const cls=String(item.id)===String(selected)?'option-item selected':'option-item';
+  return `<div class="${cls}" onclick="selectFormation('${esc(item.id)}')"><img src="${esc(OMI_IMG(item.id))}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${esc(item.name)}</span></div>`;
+}
+function buildOmiFormationOptions(selectedId){
+  const selected=String(selectedId||'').trim();
+  const initial=`<div class="option-item initial-option" onclick="selectFormation('')"><img src="${esc(NOIMAGE_IMG)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>編成未選択</span></div>`;
+  const groups=ACTIVE_OMI_FORMATION_GROUPS.map(g=>{
+    const typeObj=OMI_TYPE_SELECTIONS.find(x=>x.type===g.type)||OMI_TYPE_SELECTIONS[0];
+    const typeImg=typeObj?.img||NOIMAGE_IMG;
+    const typeSelected=String(typeObj?.id)===selected?' selected':'';
+    const header=`<div class="option-header option-category-header${typeSelected}" onclick="selectFormation('${esc(typeObj.id)}')" role="option"><img src="${esc(typeImg)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${esc(g.type)}</span></div>`;
+    const items=(g.items||[]).map(item=>formationDropdownOptionHTML(item,selected)).join('');
+    return header+items;
+  }).join('');
+  return initial+groups;
+}
+function formationDropdownHTML(selectedId){
+  const selected=selectionDisplayObject(selectedId);
+  const img=selected.img||NOIMAGE_IMG;
+  const name=selected.name||'編成未選択';
+  return `<div class="select-box-container"><div class="formation-select-row single"><div class="formation-select-field"><div class="custom-select-trigger" onclick="toggleFormationDropdown()"><div style="display:flex;align-items:center;gap:10px;min-width:0"><img src="${esc(img)}" id="selectedFormationImg" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'" class="selected-option-img"><span id="selectedFormationText">${esc(name)}</span></div><span class="formation-select-arrow">▼</span></div><div class="custom-select-options" id="formationDropdownOptions">${buildOmiFormationOptions(selectedId)}</div></div></div></div>`;
+}
+function closeFormationDropdown(){
+  document.querySelectorAll('.custom-select-options.open').forEach(el=>{el.classList.remove('open');el.style.maxHeight='';});
+}
+function toggleFormationDropdown(){
+  const el=document.getElementById('formationDropdownOptions');
+  if(!el)return;
+  document.querySelectorAll('.custom-select-options.open').forEach(other=>{if(other!==el){other.classList.remove('open');other.style.maxHeight='';}});
+  const open=!el.classList.contains('open');
+  el.classList.toggle('open',open);
+  if(open){
+    requestAnimationFrame(()=>{
+      const r=el.getBoundingClientRect();
+      el.style.maxHeight=Math.max(120,window.innerHeight-r.top-10)+'px';
+    });
+  }else el.style.maxHeight='';
+}
+function formationIdFromInput(value,trainOverride=null){
+  const raw=String(value??'').normalize('NFKC').trim().replace(/^Omi/i,'');
+  if(!raw)return {ok:true,id:''};
+  const typeMatch=OMI_TYPE_SELECTIONS.find(x=>x.type===raw);
+  if(typeMatch)return {ok:true,id:String(typeMatch.id)};
+  const normalized=raw.replace(/F$/i,'');
+  if(!/^\d{3,4}$/.test(normalized))return {ok:false,error:'登録されている編成番号または形式を入力してください。'};
+  const known=formationById(normalized);
+  if(!known)return {ok:false,error:`編成「${normalized}F」は登録されていません。`};
+  const train=trainOverride||currentTrainObjectByNo(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService());
+  if(!train)return {ok:false,error:'対象列車が時刻表データに登録されていません。'};
+  return {ok:true,id:String(known.id)};
+}
+function switchToEditMode(){
+  if(!currentTrainNo||!selectedIsCurrentOperation())return;
+  const loaded=liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService())||currentTrainSnapshot;
+  if(!loaded)return;
+  currentTrainSnapshot={...loaded,stationName:String(currentTrainSnapshot?.stationName||''),displayType:'普通'};
+  isEditMode=true;
+  document.getElementById('bottomSheet')?.classList.add('editing');
+  updateSheetContent();
+}
+function updateSheetContent(){
+  if(currentStationId){updateStationSheetContent();return;}
+  const loadedTrain=liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService())||currentTrainSnapshot;
+  if(!loadedTrain)return;
+  const train={...loadedTrain,type:'普通'};
+  const content=document.getElementById('sheetContent');
+  const displayNo=displayTrainNo(train);
+  const dest=displayDestinationText(train);
+  const formation=String(train.formation||'').trim();
+  const selectedForm=selectionDisplayObject(formation);
+  const updated=formatFormationUpdatedAt(train.no,train.direction);
+  const trainSummaryHTML=`<span class="type-badge">普通</span><span class="train-title">${esc(dest)} 行</span><span class="train-number">${esc(displayNo)}</span>`;
+  if(!isEditMode){
+    content.innerHTML=`<div class="train-card${selectedIsCurrentOperation()?'':' historical-readonly'}" ${selectedIsCurrentOperation()?'onclick="switchToEditMode()"':''}><img class="train-card-img" src="${esc(trainImageForDetailed(train))}" alt="${esc(displayNo)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div>${trainSummaryHTML}</div>${formation?`<div class="formation-id">${esc(selectedForm.name)}</div>`:`<div class="input-trigger-btn">ここから編成を入力</div>`}<div class="capacity-info">所定:普通</div></div>${formation&&updated?`<div class="formation-updated-at">編成入力：${esc(updated)}</div>`:''}</div><div class="timetable-list">${timetableRowsHTML(displayStopsForTrain(train))}</div>`;
+    return;
+  }
+  const selectedId=formation;
+  content.innerHTML=`<div class="train-card"><img class="train-card-img" src="${esc(selectedForm.img||NOIMAGE_IMG)}" alt="${esc(displayNo)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><div class="train-info-main"><div>${trainSummaryHTML}</div><div class="input-trigger-btn">編成を入力中</div><div class="capacity-info">所定:普通</div></div></div><div style="text-align:left;font-weight:700;margin:6px 0 4px;font-size:1.1rem;">編成入力</div><div class="formation-manual-input"><input id="formationManualInput" type="text" inputmode="text" autocomplete="off" value="${esc(selectedId)}" placeholder="編成番号または形式を入力（例：805 / 800形）" onkeydown="if(event.key==='Enter'){event.preventDefault();registerFormationFromInput();}"><button type="button" onclick="registerFormationFromInput()">登録</button></div><div id="formationInputError" class="formation-input-error"></div>${formationDropdownHTML(selectedId)}`;
+}
+async function registerFormationFromInput(){
+  if(!currentTrainNo||!selectedIsCurrentOperation())return;
+  const input=document.getElementById('formationManualInput');
+  const err=document.getElementById('formationInputError');
+  if(err)err.textContent='';
+  const result=formationIdFromInput(input?.value||'');
+  if(!result.ok){if(err)err.textContent=result.error;input?.focus();return;}
+  const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService())||currentTrainSnapshot;
+  if(!train){if(err)err.textContent='対象列車が時刻表データに登録されていません。';return;}
+  const ok=await selectFormation(result.id);
+  if(!ok&&err)err.textContent='編成の登録に失敗しました。';
+}
+async function selectFormation(id){
+  if(!currentTrainNo||!selectedIsCurrentOperation()||formationSelectionSyncInProgress)return false;
+  const value=String(id??'').trim();
+  if(value && !ACTIVE_OMI_FORMATION_MAP.has(value) && !OMI_TYPE_SELECTION_MAP.has(value)){
+    const err=document.getElementById('formationInputError');if(err)err.textContent='選択された編成は登録されていません。';
+    return false;
+  }
+  const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction,currentSelectedService())||currentTrainSnapshot;
+  if(!train)return false;
+  const ok=await recordFormationSelection(train,value);
+  if(!ok)return false;
+  closeFormationDropdown();
+  isEditMode=false;
+  document.getElementById('bottomSheet')?.classList.remove('editing');
+  currentTrainSnapshot=liveTrain(train.no,train.direction,currentSelectedService())||{...train,formation:value};
+  updateSheetContent();
+  return true;
+}
+
+function sheetBack(){if(previousSheetContext?.type==='station-timetable'){const ctx=previousSheetContext;previousSheetContext=null;openStationSheetById(ctx.stationId,ctx.direction);return;}closeSheet();}
+function openTrainSheet(noOrTrain,fromContext=null,service=null){
+  const requestedService=String(service||fromContext?.service||'').trim()||null;
+  const train=liveTrain(noOrTrain,fromContext?.direction,requestedService);if(!train)return;
+  currentTrainNo=String(train.no);currentTrainDirection=String(train.direction||'');currentTrainService=String(requestedService||trainGroupKey(train));
+  const stationName=String(fromContext?.stationName||'').trim();
+  currentTrainSnapshot={...train,stationName,displayType:'普通'};currentStationId=null;isEditMode=false;
+  previousSheetContext=(fromContext&&fromContext.type==='station-timetable')?{type:'station-timetable',stationId:fromContext.stationId,direction:fromContext.direction==='down'?'down':'up',service:currentTrainService,stationName}:null;
+  setSheetBackVisible(!!previousSheetContext);document.getElementById('sheetHeaderTitle').textContent='列車情報';updateSheetContent();openSheet();
+}
+function openTrainSheetByNo(no,ctx=null){openTrainSheet(no,ctx,ctx?.service||null);}
 function openSheet(){document.getElementById('overlay').style.display='block';document.getElementById('bottomSheet').classList.add('active');}
-function closeSheet(){document.getElementById('overlay').style.display='none';document.getElementById('bottomSheet').classList.remove('active');currentStationId=null;currentTrainNo=null;previousSheetContext=null;setSheetBackVisible(false);}
+function closeSheet(){closeFormationDropdown();document.getElementById('overlay').style.display='none';document.getElementById('bottomSheet').classList.remove('active','editing');currentStationId=null;currentTrainNo=null;currentTrainDirection=null;currentTrainService=null;currentTrainSnapshot=null;currentStationRoute='main';isEditMode=false;previousSheetContext=null;setSheetBackVisible(false);}
 function setSheetBackVisible(v){const b=document.getElementById('sheetBackBtn');if(b)b.classList.toggle('visible',!!v);}
-function sheetBack(){if(previousSheetContext?.stationId){currentStationId=previousSheetContext.stationId;currentStationRoute=String(previousSheetContext.stationId).split('::')[0];stationTimetableDirection=previousSheetContext.direction==='up'?'up':'down';previousSheetContext=null;setSheetBackVisible(false);document.getElementById('sheetHeaderTitle').textContent='駅情報';updateStationSheetContent();scrollStationTimetableToNext();}}
-function render(){const lc=document.getElementById('lineContainer');lc.innerHTML='<div class="moving-train-layer" id="movingTrainLayer"></div>';buildScreenRows().forEach(r=>lc.appendChild(createRow(r.st,r.routeKey,r.opt)));renderTrainPositions();}
+function render(){const lc=document.getElementById('lineContainer');lc.innerHTML='<div class="operation-info-layer" id="operationInfoLayer"></div><div class="moving-train-layer" id="movingTrainLayer"></div><div class="operation-info-label-layer" id="operationInfoLabelLayer"></div>';buildScreenRows().forEach(r=>lc.appendChild(createRow(r.st,r.routeKey,r.opt)));renderTrainPositions();renderOperationInfoZones();}
 function initControls(){
-  const d=new Date();selectedDateKey=todayKey(d);currentDay=scheduleDayForKey(selectedDateKey);updateDayUI();const ti=document.getElementById('timeInput');if(ti)ti.value=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-  document.getElementById('dateInput')?.addEventListener('change',e=>setDateValue(e.target.value));
-  document.getElementById('timeInput')?.addEventListener('input',()=>{followNow=false;document.getElementById('nowBtn')?.classList.remove('active');renderTrainPositions();});
+  initDateControl();
+  initTimeControl();
   document.getElementById('nowBtn')?.addEventListener('click',setNowTime);
-  document.getElementById('closeBtn')?.addEventListener('click',closeSheet);document.getElementById('overlay')?.addEventListener('click',closeSheet);document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
-  setInterval(()=>{if(followNow){const d=new Date();const ti=document.getElementById('timeInput');if(ti)ti.value=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;renderTrainPositions();}},10000);
+  document.getElementById('closeBtn')?.addEventListener('click',closeSheet);
+  document.getElementById('overlay')?.addEventListener('click',closeSheet);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
 }
-window.addEventListener('resize',()=>renderTrainPositions());window.addEventListener('scroll',()=>renderTrainPositions(),{passive:true});
-async function init(){initControls();loadFormationState();try{await loadOmi();render();}catch(e){console.error(e);document.getElementById('lineContainer').innerHTML=`<div style="padding:40px;text-align:center;font-weight:700;color:#c62828;max-width:900px">時刻表データを読み込めませんでした。<br>${esc(e.message||e)}<br><br>GitHubの <b>Omi.json</b> を読み込めませんでした。</div>`;}}
+window.addEventListener('resize',()=>{renderTrainPositions();renderOperationInfoZones();});window.addEventListener('scroll',()=>renderTrainPositions(),{passive:true});
+
+/* 近江鉄道・運行情報（南武線版の処理系を基準に、近江鉄道の3路線へ置換） */
+const OPERATION_INFO_STORAGE_KEY='omiOperationInfo_v2';
+function operationInfoNormalizeName(name){
+return String(name??'').normalize('NFKC').replace(/\u3000/g,' ').trim();
+}
+const OPERATION_INFO_REASONS=['人身事故','車両故障・点検','信号・電気設備トラブル','線路内立入り・支障物','踏切・安全確認','天候（大雨・強風・雷・雪）','地震・災害','急病人救護','混雑・その他'];
+const OPERATION_INFO_LINE_GROUPS=[
+{label:'本線',stations:ROUTES.main.stations},
+{label:'多賀線',stations:ROUTES.taga.stations},
+{label:'八日市線',stations:ROUTES.yokaichi.stations}
+];
+const OPERATION_INFO_STATIONS=[...new Set(OPERATION_INFO_LINE_GROUPS.flatMap(g=>g.stations.map(x=>operationInfoNormalizeName(x[0]))))];
+let operationInfoEntries=[];
+function operationInfoGraph(){
+const g=new Map(),add=(a,b)=>{a=operationInfoNormalizeName(a);b=operationInfoNormalizeName(b);if(!a||!b||a===b)return;(g.has(a)?g.get(a):g.set(a,new Set()).get(a)).add(b);(g.has(b)?g.get(b):g.set(b,new Set()).get(b)).add(a);};
+OPERATION_INFO_LINE_GROUPS.forEach(group=>{const ss=group.stations.map(x=>operationInfoNormalizeName(x[0]));for(let i=0;i<ss.length-1;i++)add(ss[i],ss[i+1]);});
+return g;
+}
+function operationInfoFindPath(start,end){
+start=operationInfoNormalizeName(start);end=operationInfoNormalizeName(end);
+if(!start||!end||start===end)return null;
+const g=operationInfoGraph();if(!g.has(start)||!g.has(end))return null;
+const q=[start],prev=new Map([[start,null]]);
+while(q.length){
+const cur=q.shift();if(cur===end)break;
+const nexts=[...(g.get(cur)||[])].sort((a,b)=>OPERATION_INFO_STATIONS.indexOf(a)-OPERATION_INFO_STATIONS.indexOf(b));
+for(const n of nexts){if(prev.has(n))continue;prev.set(n,cur);q.push(n);}
+}
+if(!prev.has(end))return null;
+const path=[];for(let x=end;x!=null;x=prev.get(x))path.push(x);path.reverse();
+return path.length>=2?path:null;
+}
+function operationInfoUndirectedKey(a,b){return [String(a||''),String(b||'')].sort().join('\u0000');}
+function operationInfoPathEdges(stations){const set=new Set();for(let i=0;i<stations.length-1;i++)set.add(operationInfoUndirectedKey(stations[i],stations[i+1]));return set;}
+function normalizeOperationEntry(e){const rawStations=Array.isArray(e?.stations)&&e.stations.length>=2?e.stations.map(operationInfoNormalizeName):operationInfoFindPath(e?.start,e?.end);const stations=rawStations;return stations&&stations.length>=2?{...e,start:stations[0],end:stations.at(-1),stations,delay:e?.status==='suspend'?'unknown':operationInfoDelayValue(e?.delay)}:null;}
+let operationInfoFirebaseLoaded=false;
+let operationInfoFirebaseSyncing=false;
+let operationInfoFirebaseListeners={};
+function operationInfoFirebaseDatabases(){return firebaseDb?{omi:firebaseDb}:{};}
+function operationInfoFirebaseProjectForRoute(routeKey){
+const key=String(routeKey||'');
+if(key==='main'||key==='taga'||key==='yokaichi')return 'omi';
+return null;
+}
+function operationInfoFirebaseProjectForStation(stationName){
+return operationInfoFirebaseProjectForRoute(operationInfoStationRouteKey(stationName));
+}
+function operationInfoFirebaseStationKey(stationName){
+return encodeURIComponent(operationInfoNormalizeName(stationName));
+}
+function operationInfoFirebaseFlatten(snapshotValue){
+const result=new Map();
+const root=snapshotValue&&typeof snapshotValue==='object'?snapshotValue:{};
+for(const stationMap of Object.values(root)){
+if(!stationMap||typeof stationMap!=='object')continue;
+for(const [entryId,payload] of Object.entries(stationMap)){
+if(!payload||typeof payload!=='object')continue;
+const id=String(payload.id||entryId);
+const normalized=normalizeOperationEntry(payload);
+if(!normalized)continue;
+const prev=result.get(id);
+const ts=Number(payload.createdAt)||0;
+if(!prev||ts>=Number(prev.createdAt||0))result.set(id,normalized);
+}
+}
+return [...result.values()];
+}
+function operationInfoDelayValue(value){
+if(value===null||value===undefined||String(value)==='') return 'unknown';
+const n=Number(value);
+return Number.isFinite(n)&&n>0 ? n : 'unknown';
+}
+function operationInfoDelayText(value){
+const d=operationInfoDelayValue(value);
+return d==='unknown'?'遅延時間不明':`遅延 ${d}分`;
+}
+function operationInfoFirebasePayload(entry){
+return {
+id:String(entry.id),
+start:operationInfoNormalizeName(entry.start),
+end:operationInfoNormalizeName(entry.end),
+stations:Array.isArray(entry.stations)?entry.stations.map(operationInfoNormalizeName):[],
+status:entry.status==='suspend'?'suspend':'delay',
+delay:operationInfoDelayValue(entry.delay),
+reason:String(entry.reason||OPERATION_INFO_REASONS[0]),
+createdAt:Number(entry.createdAt)||0,
+operationDate:operationDateKey()
+};
+}
+function operationInfoFirebaseDesiredTree(projectKey){
+const tree={};
+for(const raw of operationInfoEntries){
+const entry=normalizeOperationEntry(raw);
+if(!entry||!Array.isArray(entry.stations)||entry.stations.length<2)continue;
+const payload=operationInfoFirebasePayload(entry);
+for(const station of entry.stations){
+const project=operationInfoFirebaseProjectForStation(station);
+if(project!==projectKey)continue;
+const sk=operationInfoFirebaseStationKey(station);
+if(!tree[sk])tree[sk]={};
+tree[sk][String(entry.id)]=payload;
+}
+}
+return tree;
+}
+async function saveOperationInfoToFirebase(){
+if(!firebaseReady||operationInfoFirebaseSyncing)return;
+operationInfoFirebaseSyncing=true;
+try{
+const dateKey=operationDateKey();
+for(const [key,db] of Object.entries(operationInfoFirebaseDatabases())){
+if(key!=='omi'||!db)continue;
+const ref=db.ref('運行情報').child(dateKey);
+const desired=operationInfoFirebaseDesiredTree(key);
+await ref.set(desired);
+}
+}catch(e){
+console.warn('運行情報Firebase保存失敗',e);
+}finally{
+operationInfoFirebaseSyncing=false;
+}
+}
+async function loadOperationInfoFromFirebase(){
+if(!firebaseReady)return false;
+try{
+const dateKey=operationDateKey();
+const localBefore=[...operationInfoEntries].map(normalizeOperationEntry).filter(Boolean);
+const merged=new Map();
+let foundRemote=false;
+for(const [key,db] of Object.entries(operationInfoFirebaseDatabases())){
+if(key!=='omi'||!db)continue;
+try{
+const snap=await db.ref('運行情報').child(dateKey).once('value');
+if(snap.exists())foundRemote=true;
+for(const entry of operationInfoFirebaseFlatten(snap.val())){
+const id=String(entry.id);
+const prev=merged.get(id);
+if(!prev||Number(entry.createdAt||0)>=Number(prev.createdAt||0))merged.set(id,entry);
+}
+}catch(e){console.warn('運行情報Firebase読込失敗',key,e);}
+}
+if(foundRemote){
+operationInfoEntries=[...merged.values()];
+}else{
+operationInfoEntries=localBefore;
+}
+operationInfoFirebaseLoaded=true;
+saveOperationInfo();
+if(!foundRemote&&operationInfoEntries.length) await saveOperationInfoToFirebase();
+renderOperationInfoList();
+renderOperationInfoZones();
+return true;
+}catch(e){
+console.warn('運行情報Firebase統合読込失敗',e);
+return false;
+}
+}
+function attachOperationInfoFirebaseListeners(){
+const dateKey=operationDateKey();
+for(const [key,db] of Object.entries(operationInfoFirebaseDatabases())){
+if(key!=='omi'||!db)continue;
+if(operationInfoFirebaseListeners[key]){
+try{operationInfoFirebaseListeners[key].off();}catch(e){}
+}
+const ref=db.ref('運行情報').child(dateKey);
+const handler=snap=>{
+if(operationInfoFirebaseSyncing)return;
+const incoming=operationInfoFirebaseFlatten(snap.val());
+const byId=new Map(incoming.map(e=>[String(e.id),e]));
+const others=operationInfoEntries.filter(e=>operationInfoFirebaseProjectForStation(e?.stations?.[0])!==key);
+const merged=new Map();
+[...others,...incoming].forEach(e=>{if(!e?.id)return;const id=String(e.id),prev=merged.get(id);if(!prev||Number(e.createdAt||0)>=Number(prev.createdAt||0))merged.set(id,e);});
+operationInfoEntries=[...merged.values()];
+operationInfoFirebaseLoaded=true;
+saveOperationInfo();
+renderOperationInfoList();
+renderOperationInfoZones();
+};
+ref.on('value',handler);
+operationInfoFirebaseListeners[key]=ref;
+}
+}
+function loadOperationInfo(){try{const key=operationDateKey();const all=JSON.parse(localStorage.getItem(OPERATION_INFO_STORAGE_KEY)||'{}');const raw=Array.isArray(all?.[key])?all[key]:[];operationInfoEntries=raw.map(normalizeOperationEntry).filter(Boolean);}catch(e){operationInfoEntries=[];}}
+function saveOperationInfo(){try{const all=JSON.parse(localStorage.getItem(OPERATION_INFO_STORAGE_KEY)||'{}');all[operationDateKey()]=operationInfoEntries;localStorage.setItem(OPERATION_INFO_STORAGE_KEY,JSON.stringify(all));}catch(e){}}
+function operationInfoRouteColor(label){
+const map={
+'本線':COLORS.main,
+'多賀線':COLORS.taga,
+'八日市線':COLORS.yokaichi
+};
+return map[label]||'#333';
+}
+function operationInfoStationGroups(){
+return OPERATION_INFO_LINE_GROUPS.map(group=>{
+const stations=group.label==='多賀線'||group.label==='八日市線'?group.stations.slice(1):group.stations;
+return {
+label:group.label,
+color:operationInfoRouteColor(group.label),
+stations:stations.map(x=>operationInfoNormalizeName(x[0]))
+};
+});
+}
+function operationInfoEnsureCustomSelect(select){
+if(!select)return null;
+let wrap=select.nextElementSibling;
+if(!wrap||!wrap.classList.contains('operation-info-custom-select')){
+wrap=document.createElement('div');
+wrap.className='operation-info-custom-select';
+select.insertAdjacentElement('afterend',wrap);
+}
+select.style.display='none';
+return wrap;
+}
+function operationInfoCloseCustomSelect(except){
+document.querySelectorAll('.operation-info-custom-select.open').forEach(x=>{if(x!==except)x.classList.remove('open');});
+}
+function operationInfoBuildCustomSelect(select){
+const wrap=operationInfoEnsureCustomSelect(select); if(!wrap)return;
+const groups=operationInfoStationGroups();
+const current=operationInfoNormalizeName(select.value);
+const currentMeta=groups.flatMap(g=>g.stations.map(st=>({station:st,color:g.color,label:g.label}))).find(x=>x.station===current)||null;
+wrap.innerHTML='';
+const trigger=document.createElement('button');
+trigger.type='button'; trigger.className='operation-info-custom-trigger';
+trigger.setAttribute('aria-haspopup','listbox');
+trigger.innerHTML=`<span class="operation-info-option-mark" style="color:${esc(currentMeta?.color||'#333')}">■</span><span class="operation-info-option-name">${esc(current||'駅を選択')}</span><span class="operation-info-custom-arrow">▼</span>`;
+trigger.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const open=!wrap.classList.contains('open');operationInfoCloseCustomSelect(wrap);wrap.classList.toggle('open',open);});
+wrap.appendChild(trigger);
+const menu=document.createElement('div'); menu.className='operation-info-custom-options'; menu.setAttribute('role','listbox');
+groups.forEach(group=>{
+function getContrastTextColor(hex){
+const m=String(hex||'').trim().replace('#','');
+if(!/^[0-9a-fA-F]{6}$/.test(m)) return '#111';
+const r=parseInt(m.slice(0,2),16)/255;
+const g=parseInt(m.slice(2,4),16)/255;
+const b=parseInt(m.slice(4,6),16)/255;
+const lin=v=>v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);
+const lum=0.2126*lin(r)+0.7152*lin(g)+0.0722*lin(b);
+return lum>0.179?'#111':'#fff';
+}
+const header=document.createElement('div'); header.className='operation-info-custom-group'; header.style.backgroundColor=group.color; header.style.color='#fff'; header.textContent=group.label; menu.appendChild(header);
+group.stations.forEach(st=>{
+const opt=document.createElement('button'); opt.type='button'; opt.className='operation-info-custom-option'; opt.dataset.value=st; opt.setAttribute('role','option');
+opt.innerHTML=`<span class="operation-info-option-mark" style="color:${esc(group.color)}">■</span><span class="operation-info-option-name">${esc(st)}</span>`;
+if(st===current)opt.classList.add('selected');
+opt.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();select.value=st;select.dispatchEvent(new Event('change',{bubbles:true}));operationInfoBuildCustomSelect(select);operationInfoCloseCustomSelect();});
+menu.appendChild(opt);
+});
+});
+wrap.appendChild(menu);
+}
+function updateOperationInfoStationOptions(){
+const a=document.getElementById('operationInfoStart'),b=document.getElementById('operationInfoEnd');
+if(!a||!b)return;
+const groups=operationInfoStationGroups();
+const html=groups.map(group=>`<optgroup label="${esc(group.label)}">${group.stations.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('')}</optgroup>`).join('');
+const pa=operationInfoNormalizeName(a.value),pb=operationInfoNormalizeName(b.value);
+a.innerHTML=html; b.innerHTML=html;
+if(OPERATION_INFO_STATIONS.includes(pa))a.value=pa;
+if(OPERATION_INFO_STATIONS.includes(pb))b.value=pb;
+if(!a.value)a.selectedIndex=0;
+if(!b.value)b.selectedIndex=Math.min(1,OPERATION_INFO_STATIONS.length-1);
+operationInfoBuildCustomSelect(a);
+operationInfoBuildCustomSelect(b);
+}
+document.addEventListener('click',e=>{if(!e.target.closest('.operation-info-custom-select'))operationInfoCloseCustomSelect();});
+function updateOperationInfoReasonOptions(){const r=document.getElementById('operationInfoReason');if(!r)return;const prev=r.value||OPERATION_INFO_REASONS[0];r.innerHTML=OPERATION_INFO_REASONS.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');if(OPERATION_INFO_REASONS.includes(prev))r.value=prev;}
+function initOperationInfoUI(){updateOperationInfoStationOptions();updateOperationInfoReasonOptions();const delay=document.getElementById('operationInfoDelay');document.querySelectorAll('input[name="operationStatus"]').forEach(x=>{if(x.dataset.bound==='1')return;x.dataset.bound='1';x.addEventListener('change',()=>{if(delay)delay.disabled=x.value==='suspend'&&x.checked;});});const checked=document.querySelector('input[name="operationStatus"]:checked');if(checked&&delay)delay.disabled=checked.value==='suspend';renderOperationInfoList();}
+function openOperationInfo(){initOperationInfoUI();document.getElementById('operationInfoBackdrop')?.classList.add('active');document.getElementById('operationInfoPanel')?.classList.add('active');renderOperationInfoList();}
+function closeOperationInfo(){document.getElementById('operationInfoBackdrop')?.classList.remove('active');document.getElementById('operationInfoPanel')?.classList.remove('active');hideOperationInfoDetail();}
+function resetOperationInfoForm(){updateOperationInfoStationOptions();updateOperationInfoReasonOptions();const d=document.getElementById('operationInfoDelay');if(d){d.disabled=false;d.value='unknown';}const r=document.getElementById('operationInfoReason');if(r)r.value=OPERATION_INFO_REASONS[0];const first=document.querySelector('input[name="operationStatus"][value="delay"]');if(first){first.checked=true;first.dispatchEvent(new Event('change'));}}
+function operationInfoSubtractEdges(stations,blocked){const parts=[];let cur=[];for(let i=0;i<stations.length-1;i++){const a=stations[i],b=stations[i+1];if(blocked.has(operationInfoUndirectedKey(a,b))){if(cur.length>=2)parts.push(cur);cur=[];continue;}if(!cur.length)cur=[a];cur.push(b);}if(cur.length>=2)parts.push(cur);return parts;}
+function addOperationInfo(){const start=operationInfoNormalizeName(document.getElementById('operationInfoStart')?.value||''),end=operationInfoNormalizeName(document.getElementById('operationInfoEnd')?.value||''),status=document.querySelector('input[name="operationStatus"]:checked')?.value||'delay',reason=document.getElementById('operationInfoReason')?.value||OPERATION_INFO_REASONS[0],delay=(document.getElementById('operationInfoDelay')?.value==='unknown'?'unknown':Number(document.getElementById('operationInfoDelay')?.value||0)||0),path=operationInfoFindPath(start,end);if(!path){alert('選択した2駅を結ぶ区間が見つかりません。');return;}if(status==='delay'&&delay!=='unknown'&&(!Number.isFinite(delay)||delay<5||delay%5!==0)){alert('遅延時間は5分単位で選択してください。');return;}const newEdges=operationInfoPathEdges(path),next=[];for(const raw of operationInfoEntries){const old=normalizeOperationEntry(raw);if(!old)continue;for(const part of operationInfoSubtractEdges(old.stations,newEdges)){next.push({...old,id:`${old.id}_${Math.random().toString(36).slice(2,7)}`,start:part[0],end:part.at(-1),stations:part});}}
+next.push({id:`${Date.now()}_${Math.random().toString(36).slice(2,8)}`,start,end,stations:path,status,delay:status==='delay'?delay:'unknown',reason,createdAt:Date.now()});operationInfoEntries=next;saveOperationInfo();renderOperationInfoList();renderOperationInfoZones();resetOperationInfoForm();saveOperationInfoToFirebase();}
+function deleteOperationInfo(id){operationInfoEntries=operationInfoEntries.filter(x=>x.id!==id);saveOperationInfo();renderOperationInfoList();renderOperationInfoZones();saveOperationInfoToFirebase();}
+function showOperationInfoDetail(id){
+const e=operationInfoEntries.find(x=>x.id===id);if(!e)return;
+const body=document.getElementById('operationInfoDetailBody');if(!body)return;
+const txt=e.status==='suspend'?'運転見合わせ':operationInfoDelayText(e.delay);
+const posted=formatTimestampShort(e.createdAt);
+body.innerHTML=`<div class="operation-info-detail-status ${e.status==='suspend'?'suspend':'delay'}">${esc(txt)}</div><div><strong>区間：</strong>${esc(`${e.start} ⇄ ${e.end}`)}</div><div><strong>理由：</strong>${esc(e.reason||OPERATION_INFO_REASONS[0])}</div><div><strong>投稿時刻：</strong>${esc(posted)}</div>`;
+document.getElementById('operationInfoDetailBackdrop')?.classList.add('active');document.getElementById('operationInfoDetail')?.classList.add('active');
+}
+function hideOperationInfoDetail(){document.getElementById('operationInfoDetailBackdrop')?.classList.remove('active');document.getElementById('operationInfoDetail')?.classList.remove('active');}
+function renderOperationInfoList(){const box=document.getElementById('operationInfoList');if(!box)return;if(!operationInfoEntries.length){box.innerHTML='<div class="operation-info-empty">登録されている運行情報はありません。</div>';return;}box.innerHTML=operationInfoEntries.map(x=>{const txt=x.status==='suspend'?'運転見合わせ':operationInfoDelayText(x.delay);return `<div class="operation-info-card ${x.status==='suspend'?'suspend':'delay'}"><button type="button" class="operation-info-card-main operation-info-card-open" onclick="showOperationInfoDetail('${esc(x.id)}')"><div class="operation-info-card-title">${esc(x.start)} ⇄ ${esc(x.end)}</div><div class="operation-info-card-meta">${esc(txt)}</div><div class="operation-info-card-reason">${esc(x.reason||OPERATION_INFO_REASONS[0])}</div></button><button class="operation-info-card-delete" type="button" onclick="deleteOperationInfo('${esc(x.id)}')">削除</button></div>`;}).join('');}
+function operationInfoStationRouteKey(stationName){
+const n=operationInfoNormalizeName(stationName);
+if(n==='高宮'||n==='八日市')return 'main';
+const group=OPERATION_INFO_LINE_GROUPS.find(g=>g.stations.some(x=>operationInfoNormalizeName(x[0])===n));
+if(!group)return null;
+return ({'本線':'main','多賀線':'taga','八日市線':'yokaichi'})[group.label]||null;
+}
+function operationInfoVisibleSegments(){
+const rows=[...document.querySelectorAll('.station-row')];
+const byRouteName=new Map();
+const byName=new Map();
+rows.forEach((r,index)=>{
+const name=operationInfoNormalizeName(r.querySelector('.station-name-ja')?.textContent||'');
+const routeKey=r.dataset.routeKey||'';
+if(!name)return;
+const item={row:r,index};
+const key=`${routeKey}\\u0000${name}`;
+if(!byRouteName.has(key))byRouteName.set(key,[]);
+byRouteName.get(key).push(item);
+if(!byName.has(name))byName.set(name,[]);
+byName.get(name).push(item);
+});
+
+const boundaryNames=new Set(['高宮','八日市']);
+const rawSegments=[];
+for(const raw of operationInfoEntries){
+const e=normalizeOperationEntry(raw);
+if(!e||!Array.isArray(e.stations)||e.stations.length<2)continue;
+for(let i=0;i<e.stations.length-1;i++){
+const a=operationInfoNormalizeName(e.stations[i]);
+const b=operationInfoNormalizeName(e.stations[i+1]);
+const routeA=operationInfoStationRouteKey(a);
+const routeB=operationInfoStationRouteKey(b);
+if(!routeA||!routeB)continue;
+
+const getRows=(name,route)=>{
+const exact=byRouteName.get(`${route}\\u0000${name}`)||[];
+if(exact.length)return exact;
+return boundaryNames.has(name)?(byName.get(name)||[]):[];
+};
+const ar=getRows(a,routeA),br=getRows(b,routeB);
+if(!ar.length||!br.length)continue;
+
+let best=null;
+for(const x of ar)for(const y of br){
+if(x.index===y.index)continue;
+const lo=Math.min(x.index,y.index),hi=Math.max(x.index,y.index);
+const dist=hi-lo;
+if(!best||dist<best.distance)best={a:x,b:y,lo,hi,distance:dist};
+}
+if(!best)continue;
+
+rawSegments.push({
+lo:best.lo,hi:best.hi,rowA:best.a,rowB:best.b,
+routeA,routeB,status:e.status==='suspend'?'suspend':'delay',
+delay:operationInfoDelayValue(e.delay),entryId:e.id,createdAt:Number(e.createdAt)||0,
+stationA:a,stationB:b
+});
+}
+}
+
+const picked=new Map();
+for(const seg of rawSegments){
+const edgeKey=operationInfoUndirectedKey(seg.stationA,seg.stationB);
+const key=`${seg.entryId}\\u0000${edgeKey}`;
+const prev=picked.get(key);
+if(!prev||seg.createdAt>=prev.createdAt)picked.set(key,seg);
+}
+return {rows,segments:[...picked.values()]};
+}
+
+function renderOperationInfoZones(){
+const layer=document.getElementById('operationInfoLayer');
+if(!layer)return;
+layer.innerHTML='';
+const labelLayer=document.getElementById('operationInfoLabelLayer');
+if(labelLayer)labelLayer.innerHTML='';
+const {rows,segments}=operationInfoVisibleSegments();
+if(rows.length<2||!segments.length)return;
+
+const fixedZoneWidth=700;
+const pieces=[];
+const boundaryNames=new Set(['高宮','八日市']);
+
+for(const seg of segments){
+const lo=Math.min(seg.rowA.index,seg.rowB.index),hi=Math.max(seg.rowA.index,seg.rowB.index);
+if(seg.routeA===seg.routeB){
+let runStart=lo;
+for(let i=lo+1;i<=hi;i++){
+const route=rows[i]?.dataset?.routeKey||'';
+if(route!==seg.routeA){
+if(i-1>=runStart)pieces.push({...seg,lo:runStart,hi:i-1});
+runStart=i+1;
+}
+}
+if(runStart<=hi)pieces.push({...seg,lo:runStart,hi});
+}else{
+pieces.push({...seg,lo,hi});
+}
+}
+
+const groups=[];
+const orderedPieces=[...pieces]
+.filter(p=>p.lo!==p.hi)
+.sort((a,b)=>a.lo-b.lo||a.hi-b.hi);
+for(const p of orderedPieces){
+const last=groups[groups.length-1];
+if(last && last.status===p.status && p.lo<=last.hi+1){
+last.lo=Math.min(last.lo,p.lo);
+last.hi=Math.max(last.hi,p.hi);
+last.delay=(last.delay==='unknown'?p.delay:(p.delay==='unknown'?last.delay:Math.max(Number(last.delay),Number(p.delay))));
+last.entryIds.add(p.entryId);
+last.stationStart=rows[last.lo]?.querySelector('.station-name-ja')?.textContent||last.stationStart;
+last.stationEnd=rows[last.hi]?.querySelector('.station-name-ja')?.textContent||last.stationEnd;
+if(last.routeA!==p.routeA) last.routeA=p.routeA;
+if(last.routeB!==p.routeB) last.routeB=p.routeB;
+}else{
+groups.push({
+lo:p.lo,hi:p.hi,status:p.status,delay:p.delay,
+routeA:p.routeA,routeB:p.routeB,
+entryIds:new Set([p.entryId]),
+stationStart:p.stationA,stationEnd:p.stationB
+});
+}
+}
+
+const labeledEntries=new Set();
+for(let gi=0;gi<groups.length;gi++){
+const g=groups[gi];
+const topRow=rows[g.lo],bottomRow=rows[g.hi];
+if(!topRow||!bottomRow)continue;
+
+const boundaryStationNames=new Set(['高宮','八日市']);
+if(g.hi-g.lo===1){
+const topName=operationInfoNormalizeName(topRow.querySelector('.station-name-ja')?.textContent||'');
+const bottomName=operationInfoNormalizeName(bottomRow.querySelector('.station-name-ja')?.textContent||'');
+if(boundaryStationNames.has(topName)||boundaryStationNames.has(bottomName))continue;
+}
+
+let top=topRow.offsetTop;
+let bottom=bottomRow.offsetTop+bottomRow.offsetHeight;
+
+const prev=groups[gi-1],next=groups[gi+1];
+
+if(prev && prev.status!==g.status){
+if(prev.hi===g.lo){
+const boundaryRow=rows[g.lo];
+if(boundaryRow){
+const badge=boundaryRow.querySelector('.station-badge');
+const layerRect=layer.getBoundingClientRect();
+if(badge){
+const badgeRect=badge.getBoundingClientRect();
+const center=badgeRect.top-layerRect.top+badgeRect.height/2;
+top=center+10;
+}else{
+const rowRect=boundaryRow.getBoundingClientRect();
+const center=rowRect.top-layerRect.top+rowRect.height/2;
+top=center+10;
+}
+}
+}else if(prev.hi+1===g.lo){
+const upperRow=rows[prev.hi];
+const lowerRow=rows[g.lo];
+if(upperRow && lowerRow){
+const boundary=Math.max(
+upperRow.offsetTop+upperRow.offsetHeight,
+lowerRow.offsetTop
+);
+top=boundary+10;
+}
+}
+}
+
+if(next && next.status!==g.status){
+if(next.lo===g.hi){
+const boundaryRow=rows[g.hi];
+if(boundaryRow){
+const badge=boundaryRow.querySelector('.station-badge');
+const layerRect=layer.getBoundingClientRect();
+if(badge){
+const badgeRect=badge.getBoundingClientRect();
+const center=badgeRect.top-layerRect.top+badgeRect.height/2;
+bottom=center-10;
+}else{
+const rowRect=boundaryRow.getBoundingClientRect();
+const center=rowRect.top-layerRect.top+rowRect.height/2;
+bottom=center-10;
+}
+}
+}else if(next.lo===g.hi+1){
+const upperRow=rows[g.hi];
+const lowerRow=rows[next.lo];
+if(upperRow && lowerRow){
+const boundary=Math.min(
+upperRow.offsetTop+upperRow.offsetHeight,
+lowerRow.offsetTop
+);
+bottom=boundary-10;
+}
+}
+}
+
+if(bottom<=top)continue;
+
+const zone=document.createElement('div');
+zone.className=`operation-info-zone ${g.status==='suspend'?'suspend':''}`;
+zone.style.top=`${top}px`;
+zone.style.height=`${bottom-top}px`;
+zone.style.width=`${fixedZoneWidth}px`;
+zone.style.left=`calc(50% - ${fixedZoneWidth/2}px)`;
+layer.appendChild(zone);
+
+const id=[...g.entryIds][0];
+if(labelLayer&&id&&!labeledEntries.has(id)){
+labeledEntries.add(id);
+const label=document.createElement('button');
+label.type='button';
+label.className=`operation-info-zone-label ${g.status==='suspend'?'suspend':'delay'}`;
+label.textContent=g.status==='suspend'?'運転見合わせ':operationInfoDelayText(g.delay);
+label.title='運行情報の詳細を表示';
+label.setAttribute('aria-label','運行情報の詳細を表示');
+label.style.top=`${top+36}px`;
+label.style.left=`calc(50% + ${fixedZoneWidth/2-100}px)`;
+label.style.right='auto';
+label.style.transform='translateX(-100%)';
+label.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();showOperationInfoDetail(id);});
+labelLayer.appendChild(label);
+}
+}
+}
+function operationInfoRerender(){renderOperationInfoZones();}
+window.addEventListener('resize',operationInfoRerender);
+window.addEventListener('scroll',scheduleViewportTrainRender,{passive:true});
+window.addEventListener('resize',scheduleViewportTrainRender,{passive:true});
+
+async function init(){
+  initControls();
+  loadFormationState();
+  loadOperationInfo();
+  try{
+    await loadOmi();
+  }catch(e){
+    console.error(e);
+    document.getElementById('lineContainer').innerHTML=`<div style="padding:40px;text-align:center;font-weight:700;color:#c62828;max-width:900px">時刻表データを読み込めませんでした。<br>${esc(e.message||e)}<br><br>GitHubの <b>Omi.json</b> を読み込めませんでした。</div>`;
+    return;
+  }
+  await initFirebase();
+  initOperationInfoUI();
+  if(firebaseReady){
+    await loadOperationInfoFromFirebase();
+    attachOperationInfoFirebaseListeners();
+  }
+  setNowTime();
+  render();
+  let lastOperationDate=operationDateKey();
+  setInterval(()=>{
+    if(isEditMode)return;
+    if(followNow)updateCurrentTimeOnly();
+    else renderTrainPositions();
+  },1000);
+  setInterval(()=>{
+    const op=operationDateKey();
+    if(op===lastOperationDate)return;
+    lastOperationDate=op;
+    if(followNow)setNowTime();
+    else{loadOperationInfo();renderOperationInfoList();renderOperationInfoZones();}
+  },1000);
+}
 init();
+(function(){function syncControlBarLayout(){const title=document.getElementById('title'),bar=document.querySelector('.control-bar'),line=document.getElementById('lineContainer');if(!bar||!line)return;const scale=window.innerWidth<=959.98?window.innerWidth/960:1;const tr=title?.getBoundingClientRect(),br=bar.getBoundingClientRect(),titleH=(tr?.height||(58*scale))/scale,barH=(br?.height||0)/scale;line.style.marginTop=`${Math.ceil(titleH+barH)}px`;document.documentElement.style.setProperty('--control-bar-height',`${Math.ceil(barH)}px`);}window.addEventListener('load',syncControlBarLayout);window.addEventListener('resize',syncControlBarLayout);if(document.fonts?.ready)document.fonts.ready.then(syncControlBarLayout).catch(()=>{});setTimeout(syncControlBarLayout,0);})();
 </script>
 
 </body>
 </html>
+
+<style>
+/* 近江鉄道：普通の種別色は近江鉄道カラーで固定 */
+.type-badge{background:#0068b7!important;color:#fff!important;border:0!important;}
+.station-timetable-type{background:#0068b7!important;color:#fff!important;border:0!important;}
+</style>
+
+<style>
+/* ヘッダーとコントロールバーは南武線と同じく路線図キャンバスの外で固定 */
+#title{position:fixed!important;top:0!important;left:0!important;right:0!important;width:100vw!important;max-width:none!important;min-width:0!important;height:58px!important;margin:0!important;z-index:10000!important;box-sizing:border-box!important;}
+.control-bar{position:fixed!important;top:58px!important;left:0!important;right:0!important;width:100vw!important;max-width:none!important;min-width:0!important;margin:0!important;z-index:9999!important;box-sizing:border-box!important;}
+#viewportCanvas{padding-top:0!important;}
+#lineContainer{margin-top:calc(58px + var(--control-bar-height, 69px))!important;}
+@media(max-width:959.98px){
+  #title{width:960px!important;left:50%!important;right:auto!important;transform:translateX(-50%) scale(calc(100vw / 960px))!important;transform-origin:top center!important;}
+  .control-bar{width:960px!important;left:50%!important;right:auto!important;top:calc(58px * (100vw / 960px))!important;transform:translateX(-50%) scale(calc(100vw / 960px))!important;transform-origin:top center!important;}
+  #lineContainer{margin-top:calc(58px + var(--control-bar-height, 69px))!important;}
+}
+</style>
