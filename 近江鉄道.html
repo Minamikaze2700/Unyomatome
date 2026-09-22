@@ -329,7 +329,7 @@ const ACTIVE_OMI_FORMATION_GROUPS=[
   {type:'100形',items:[{id:'101',name:'101F'},{id:'102',name:'102F'},{id:'103',name:'103F'},{id:'104',name:'104F'},{id:'105',name:'105F'}]},
   {type:'300形',items:[{id:'301',name:'301F'},{id:'302',name:'302F'}]}
 ];
-const ACTIVE_OMI_FORMATIONS=ACTIVE_OMI_FORMATION_GROUPS.flatMap(g=>g.items.map(x=>{const typeNo=String(g.type).replace(/\D/g,'');return {...x,type:g.type,img:typeNo?`${FORMATION_IMG_BASE}Omi${typeNo}.png`:NOIMAGE_IMG};}));
+const ACTIVE_OMI_FORMATIONS=ACTIVE_OMI_FORMATION_GROUPS.flatMap(g=>g.items.map(x=>({...x,type:g.type,img:OMI_IMG(x.id)})));
 const ACTIVE_OMI_FORMATION_MAP=new Map(ACTIVE_OMI_FORMATIONS.map(x=>[String(x.id),x]));
 const OMI_TYPE_SELECTIONS=ACTIVE_OMI_FORMATION_GROUPS.map(g=>({
   id:g.type,
@@ -1046,7 +1046,15 @@ function omiTypeImageForFormation(value){
   }
   return NOIMAGE_IMG;
 }
-function trainImageFor(t){return omiTypeImageForFormation(t?.formation);}
+function trainImageFor(t){
+  const raw=String(t?.formation??'').trim();
+  if(!raw)return NOIMAGE_IMG;
+  const num=formationNumber(raw);
+  if(num && ACTIVE_OMI_FORMATION_MAP.has(num)){
+    return `${FORMATION_IMG_BASE}Omi${num}.png`;
+  }
+  return omiTypeImageForFormation(raw);
+}
 function trainLabelText(t){return `普通 ${mainShortDest(t.dest)}`.trim();}
 function getMainLabelClass(type){ return String(type||'')==='回送' ? 'deadhead' : ''; }
 function displayTimeForStation(t,name){
@@ -1229,7 +1237,7 @@ function timetableTypeLabel(t,stationName=null){
 function stopGuideStationName(name){
   return String(name??'').normalize('NFKC');
 }
-function trainImageForDetailed(t){return omiTypeImageForFormation(t?.formation);}
+function trainImageForDetailed(t){return trainImageFor(t);}
 function trainVisualRouteAtStation(t,stationName){
   const n=stationNameKey(stationName); const stops=Array.isArray(t?.stops)?t.stops:[];
   let idx=-1;for(let i=stops.length-1;i>=0;i--){if(stationNameKey(stops[i]?.station)===n){idx=i;break;}}
@@ -1384,8 +1392,7 @@ function formationDisplayHTML(id,direction=null){
 }
 function formationDropdownOptionHTML(item,selected,typeName=''){
   const cls=String(item.id)===String(selected)?'option-item selected':'option-item';
-  const typeNo=String(typeName||item.type||'').replace(/\D/g,'');
-  const img=typeNo?`${FORMATION_IMG_BASE}Omi${typeNo}.png`:OMI_IMG(item.id);
+  const img=OMI_IMG(item.id);
   return `<div class="${cls}" onclick="selectFormation('${esc(item.id)}')"><img src="${esc(img)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${esc(item.name)}</span></div>`;
 }
 function buildOmiFormationOptions(selectedId){
