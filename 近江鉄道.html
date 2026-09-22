@@ -329,7 +329,7 @@ const ACTIVE_OMI_FORMATION_GROUPS=[
   {type:'100形',items:[{id:'101',name:'101F'},{id:'102',name:'102F'},{id:'103',name:'103F'},{id:'104',name:'104F'},{id:'105',name:'105F'}]},
   {type:'300形',items:[{id:'301',name:'301F'},{id:'302',name:'302F'}]}
 ];
-const ACTIVE_OMI_FORMATIONS=ACTIVE_OMI_FORMATION_GROUPS.flatMap(g=>g.items.map(x=>({...x,type:g.type,img:OMI_IMG(x.id)})));
+const ACTIVE_OMI_FORMATIONS=ACTIVE_OMI_FORMATION_GROUPS.flatMap(g=>g.items.map(x=>{const typeNo=String(g.type).replace(/\D/g,'');return {...x,type:g.type,img:typeNo?`${FORMATION_IMG_BASE}Omi${typeNo}.png`:NOIMAGE_IMG};}));
 const ACTIVE_OMI_FORMATION_MAP=new Map(ACTIVE_OMI_FORMATIONS.map(x=>[String(x.id),x]));
 const OMI_TYPE_SELECTIONS=ACTIVE_OMI_FORMATION_GROUPS.map(g=>({
   id:g.type,
@@ -357,6 +357,8 @@ let isEditMode=false;
 const FORMATION_STORAGE_KEY='omi_formation_state_v1';
 let formationState={平日:{},休日:{}};
 const RESET_HOUR=3;
+// 南武線と同じく、始発駅は発車2分前から、終着駅は到着後2分まで表示する。
+const RESET_DWELL_MIN=2;
 let formationUpdatedAt={平日:{},休日:{}};
 const FIREBASE_CONFIG={
   apiKey:'AIzaSyDfoX_p2t-d_A3lj89AWoV5mMG50lC3f-0',
@@ -907,21 +909,43 @@ function findVisualRowPair(a,b,t){
   if(ia<0||ib<0)return null;
   return {r0:ia,r1:ib,route:routeForPair(a,b)};
 }
+function stopArrivalMinute(st){
+  return parseMin(st?.arrival||st?.time||st?.departure);
+}
+function stopDepartureMinute(st){
+  return parseMin(st?.departure||st?.time||st?.arrival);
+}
+function normalizedOmiStops(t){
+  return (Array.isArray(t?.stops)?t.stops:[]).map(st=>({
+    ...st,
+    _arrival:stopArrivalMinute(st),
+    _departure:stopDepartureMinute(st)
+  }));
+}
 function trainRunsAtMinute(t,minutes){
-  if(!(t.days||[]).includes(currentDay))return false;
-  const s=t.stops||[];if(s.length<1)return false;
-  const first=parseMin(s[0].time),last=parseMin(s.at(-1).time);if(!Number.isFinite(first)||!Number.isFinite(last))return false;
-  let end=last;if(end<first)end+=1440;let m=minutes;if(m<first)m+=1440;
-  return m>=first && m<=end+1;
+  const s=normalizedOmiStops(t);if(!s.length)return false;
+  const firstDep=s[0]._departure,lastArr=s.at(-1)._arrival;
+  if(!Number.isFinite(firstDep)||!Number.isFinite(lastArr))return false;
+  let end=lastArr;if(end<firstDep)end+=1440;
+  let m=minutes;if(m<firstDep)m+=1440;
+  return m>=firstDep&&m<=end+RESET_DWELL_MIN+0.5;
 }
 function stopDwellPosition(t,minutes){
-  const s=t.stops||[];if(!s.length)return null;let m=minutes;
+  const s=normalizedOmiStops(t);if(!s.length)return null;
+  let m=minutes;
   for(let i=0;i<s.length;i++){
-    const tm=parseMin(s[i].time);if(!Number.isFinite(tm))continue;
-    let base=tm;if(i>0){const prev=parseMin(s[i-1].time);if(Number.isFinite(prev)&&base<prev)base+=1440;}
-    let mm=m;if(mm<base)mm+=1440;
-    if(i>0 && mm>=base+0.25 && mm<base+0.75){
-      const rk=stationRouteKeyForTrain(t,s[i].station),ri=visualRowIndex(s[i].station,rk);if(ri>=0)return {pos:ri,stationA:s[i].station,stationB:s[i].station,terminal:true,side:t.direction==='up'?'right':'left'};
+    const st=s[i],currentIndex=stationRouteKeyForTrain(t,st.station);
+    const row=visualRowIndex(st.station,currentIndex);
+    if(row<0)continue;
+    const arrive=st._arrival+0.25;
+    const depart=st._departure+0.75;
+    if(!Number.isFinite(st._arrival)||!Number.isFinite(st._departure))continue;
+    let a=arrive,d=depart;
+    if(i>0&&d<a){d+=1440;}
+    if(m<a)m+=1440;
+    if(i>0&&i<s.length-1&&m>=a&&m<d){
+      if(currentIndex!=='main'&&!activeBranches.has(currentIndex))return null;
+      return {pos:row,stationA:st.station,stationB:st.station,terminal:true,side:String(t.direction||'').toLowerCase()==='up'?'left':'right',visualTrain:t,mode:'station-dwell'};
     }
   }
   return null;
@@ -933,23 +957,69 @@ function mainlineVisualPosition(pair,q){
   const first=branchRows[0],last=branchRows.at(-1);let safeStart,safeEnd;
   if(pair.r0<pair.r1){safeStart=pair.r0+(first-pair.r0)/2;safeEnd=last+(pair.r1-last)/2;}else{safeStart=pair.r0-(pair.r0-last)/2;safeEnd=first+(pair.r1-first)/2;}
   const a=Math.abs(safeStart-pair.r0),b=Math.abs(pair.r1-safeEnd),total=a+b||1,split=a/total;
-  if(q<=split){const z=split? q/split:0;return pair.r0+(safeStart-pair.r0)*z;}
+  if(q<=split){const z=split?q/split:0;return pair.r0+(safeStart-pair.r0)*z;}
   const z=(q-split)/(1-split||1);return safeEnd+(pair.r1-safeEnd)*z;
 }
 function trainPosition(t,minutes){
-  if(!trainRunsAtMinute(t,minutes))return null;
-  const dwell=stopDwellPosition(t,minutes);if(dwell)return dwell;
-  const s=t.stops||[];
-  for(let i=0;i<s.length-1;i++){
-    const a=s[i],b=s[i+1];const t0=parseMin(a.time),t1=parseMin(b.time);if(!Number.isFinite(t0)||!Number.isFinite(t1))continue;
-    let start=t0+0.75,end=t1+0.25;if(end<start)end+=1440;let m=minutes;if(m<start)m+=1440;
-    if(m<start||m>end)continue;
-    const pair=findVisualRowPair(a.station,b.station,t);if(!pair)continue;
-    if(pair.route!=='main'&&!activeBranches.has(pair.route))return null;
-    const q=Math.max(0,Math.min(1,(m-start)/(end-start||1)));
-    const pos=pair.route==='main'?mainlineVisualPosition(pair,q):pair.r0+(pair.r1-pair.r0)*q;
-    const side=pair.r1<pair.r0?'left':'right';
-    return {pos,stationA:a.station,stationB:b.station,side,route:pair.route};
+  const s=normalizedOmiStops(t);if(!s.length)return null;
+  const first=s[0],last=s.at(-1);
+  const firstIndex=visualRowIndex(first.station,stationRouteKeyForTrain(t,first.station));
+  const lastIndex=visualRowIndex(last.station,stationRouteKeyForTrain(t,last.station));
+  if(firstIndex<0||lastIndex<0)return null;
+  const firstDep=first._departure,lastArr=last._arrival;
+  if(!Number.isFinite(firstDep)||!Number.isFinite(lastArr))return null;
+  // 左右は駅間の向きではなく列車の方向に固定。駅間や支線境界で突然入れ替わらない。
+  const side=String(t.direction||'').toLowerCase()==='up'?'left':'right';
+
+  // 始発駅の2分前から表示。
+  let m=minutes;
+  let firstStart=firstDep-RESET_DWELL_MIN+0.5;
+  let firstEnd=firstDep+0.75;
+  if(firstEnd<firstStart)firstEnd+=1440;
+  let mm=m;if(mm<firstStart)mm+=1440;
+  if(mm>=firstStart&&mm<firstEnd){
+    if((stationRouteKeyForTrain(t,first.station)!=='main')&&!activeBranches.has(stationRouteKeyForTrain(t,first.station)))return null;
+    return {pos:firstIndex,side,visualTrain:t,mode:'start-dwell'};
+  }
+
+  // 駅停車中・駅間走行。南武線と同じく着後0.25分／発前0.75分を境界にする。
+  for(let i=0;i<s.length;i++){
+    const st=s[i],currentRoute=stationRouteKeyForTrain(t,st.station),currentIndex=visualRowIndex(st.station,currentRoute);
+    if(currentIndex<0)continue;
+    const arrive=st._arrival+0.25,depart=st._departure+0.75;
+    if(i>0&&i<s.length-1&&Number.isFinite(arrive)&&Number.isFinite(depart)){
+      let a=arrive,d=depart;let x=minutes;if(d<a)d+=1440;if(x<a)x+=1440;
+      if(x>=a&&x<d){
+        if(currentRoute!=='main'&&!activeBranches.has(currentRoute))return null;
+        return {pos:currentIndex,side,visualTrain:t,mode:'station-dwell'};
+      }
+    }
+    if(i<s.length-1){
+      const next=s[i+1],nextRoute=stationRouteKeyForTrain(t,next.station),nextIndex=visualRowIndex(next.station,nextRoute);
+      if(nextIndex<0)continue;
+      const a=st._departure+0.75;
+      const isTerminalNext=i===s.length-2;
+      const b=isTerminalNext?next._arrival:next._arrival+0.25;
+      if(!Number.isFinite(a)||!Number.isFinite(b))continue;
+      let aa=a,bb=b,x=minutes;
+      if(bb<aa)bb+=1440;if(x<aa)x+=1440;
+      if(x>=aa&&(isTerminalNext?x<bb:x<=bb)){
+        const pair=findVisualRowPair(st.station,next.station,t);if(!pair)continue;
+        if(pair.route!=='main'&&!activeBranches.has(pair.route))return null;
+        const q=Math.max(0,Math.min(1,(x-aa)/(bb-aa||1)));
+        const pos=pair.route==='main'?mainlineVisualPosition(pair,q):pair.r0+(pair.r1-pair.r0)*q;
+        return {pos,stationA:st.station,stationB:next.station,side,route:pair.route,visualTrain:t,mode:'run'};
+      }
+    }
+  }
+
+  // 終着駅の到着後2分まで表示。
+  let endStart=lastArr+0.25,endDwell=lastArr+RESET_DWELL_MIN+0.5;
+  let x=minutes;if(x<endStart)x+=1440;if(endDwell<endStart)endDwell+=1440;
+  if(x>=endStart&&x<=endDwell){
+    const endRoute=stationRouteKeyForTrain(t,last.station);
+    if(endRoute!=='main'&&!activeBranches.has(endRoute))return null;
+    return {pos:lastIndex,side,visualTrain:t,mode:'end-dwell'};
   }
   return null;
 }
@@ -978,47 +1048,118 @@ function omiTypeImageForFormation(value){
 }
 function trainImageFor(t){return omiTypeImageForFormation(t?.formation);}
 function trainLabelText(t){return `普通 ${mainShortDest(t.dest)}`.trim();}
+function getMainLabelClass(type){ return String(type||'')==='回送' ? 'deadhead' : ''; }
 function displayTimeForStation(t,name){
   const s=(t.stops||[]).find(x=>sameStation(x.station,name));
   return s?toTimeText(s.time):'';
 }
+function trainPositionViewportVisible(p,rows,viewportTop,viewportBottom){
+  if(!p||!Number.isFinite(Number(p.pos))||!rows.length)return false;
+  const q=Math.max(0,Math.min(rows.length-1,Number(p.pos)));
+  const i0=Math.floor(q),i1=Math.min(rows.length-1,Math.ceil(q));
+  const r0=rows[i0]?.getBoundingClientRect(),r1=rows[i1]?.getBoundingClientRect();
+  if(!r0||!r1)return false;
+  const y=r0.top+r0.height/2+(r1.top+r1.height/2-(r0.top+r0.height/2))*(q-i0);
+  const iconHalfHeight=48;
+  return y+iconHalfHeight>=viewportTop&&y-iconHalfHeight<=viewportBottom;
+}
 function scheduleViewportTrainRender(){
-if(scheduleViewportTrainRender.pending)return;
-scheduleViewportTrainRender.pending=true;
-requestAnimationFrame(()=>{
-scheduleViewportTrainRender.pending=false;
-renderTrainPositions();
-});
+  if(scheduleViewportTrainRender.pending)return;
+  scheduleViewportTrainRender.pending=true;
+  requestAnimationFrame(()=>{
+    scheduleViewportTrainRender.pending=false;
+    renderTrainPositions();
+  });
 }
 scheduleViewportTrainRender.pending=false;
-
 function renderTrainPositions(){
-  const layer=document.getElementById('movingTrainLayer');if(!layer)return;layer.innerHTML='';
-  const rows=currentRows();if(!rows.length)return;const minute=currentMinutes();
+  const layer=document.getElementById('movingTrainLayer');
+  if(!layer)return;
+  const minutes=currentMinutes();
+  layer.innerHTML='';
+  const rows=Array.from(document.querySelectorAll('.station-row'));
+  if(!rows.length)return;
+  const viewportTop=0;
+  const viewportBottom=window.innerHeight||document.documentElement.clientHeight||0;
+  const source=TRAINS.filter(t=>!Array.isArray(t.days)||!t.days.length||t.days.includes(currentDay));
   const visible=[];
-  for(const base of TRAINS){
-    const t=liveTrain(base);const p=trainPosition(t,minute);if(!p)continue;
-    const row0=rows[Math.max(0,Math.min(rows.length-1,Math.floor(p.pos)))],row1=rows[Math.max(0,Math.min(rows.length-1,Math.ceil(p.pos)))];
-    if(!row0||!row1)continue;
-    visible.push({t,p,row0,row1});
+  const visiblePositions=new Map();
+  for(const base of source){
+    const p=trainPosition(base,minutes);
+    if(!p||(!p.stationA&&!p.stationB&&!Number.isFinite(p.pos)))continue;
+    if(!trainPositionViewportVisible(p,rows,viewportTop,viewportBottom))continue;
+    const hydrated=liveTrain(base.no,base.direction)||base;
+    const signature=`${String(base.no||'')}|${String(base.direction||'')}`;
+    visible.push(hydrated);
+    visiblePositions.set(signature,p);
   }
-  const occupied={left:[],right:[]};for(const x of visible){
-    const side=x.p.side||'right';occupied[side].push(x);
-  }
-  const layerRect=layer.getBoundingClientRect();const layoutWidth=window.innerWidth<960?1920:(layerRect.width||1920);const centerX=layoutWidth/2;const trainWidth=66,laneGap=20;
-  for(const side of ['left','right']){
-    const used=[];occupied[side].sort((a,b)=>a.p.pos-b.p.pos).forEach(x=>{
-      let lane=0;while(used.some(u=>Math.abs(u.pos-x.p.pos)<0.22&&u.lane===lane))lane++;used.push({pos:x.p.pos,lane});
-      const p=Math.max(0,Math.min(rows.length-1,x.p.pos));const i0=Math.floor(p),i1=Math.min(rows.length-1,Math.ceil(p)),f=p-i0;
-      const r0=rows[i0].getBoundingClientRect(),r1=rows[i1].getBoundingClientRect();const y=r0.top+r0.height/2+(r1.top+r1.height/2-(r0.top+r0.height/2))*f;
-      const el=document.createElement('div');el.className=`train-icon ${side}`;el.style.visibility='hidden';el.style.transition='none';
-      const form=formationNumber(x.t.formation);const img=trainImageFor(x.t);const no=String(x.t.no);el.innerHTML=`<span class="train-no">${esc(no)}</span><img src="${esc(img)}" alt="${esc(no)}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'">${form?`<span class="train-no train-formation"><span>${esc(form)}</span></span>`:''}<span class="train-label hanzomon-local"><span>${esc(trainLabelText(x.t))}</span></span>`;
-      const laneOffset=lane*(trainWidth+laneGap);const left=side==='left'?centerX-340-laneOffset:centerX+340-trainWidth+laneOffset;el.style.left=`${left}px`;
-      el.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();openTrainSheet(x.t);});layer.appendChild(el);
-      const imgEl=el.querySelector('img'),noEl=el.querySelector('.train-no');const apply=()=>{const ih=imgEl?.getBoundingClientRect().height||60;const nh=noEl?.getBoundingClientRect().height||12;const zoom=window.innerWidth<960?window.innerWidth/960:1;el.style.top=`${(y-layerRect.top)/zoom-nh-ih/(2*zoom)}px`;el.style.visibility='visible';};
-      if(imgEl?.complete)apply();else imgEl?.addEventListener('load',apply,{once:true});
+  const occupied={left:[],right:[]};
+  visible.forEach(t=>{
+    const signature=`${String(t.no||'')}|${String(t.direction||'')}`;
+    const info=visiblePositions.get(signature)||trainPosition(t,minutes);
+    if(!info||!info.visualTrain)return;
+    occupied[info.side||'right'].push({t:info.visualTrain,pos:info.pos,baseTrain:t,mode:info.mode});
+  });
+
+  const layerRect=layer.getBoundingClientRect();
+  const uiScale=1,trainWidth=66*uiScale,imageWidth=60*uiScale,laneGap=20*uiScale;
+  const rowRectAt=(pos)=>{
+    const p=Math.max(0,Math.min(rows.length-1,pos));
+    const i0=Math.floor(p),i1=Math.min(rows.length-1,Math.ceil(p)),f=p-i0;
+    const r0=rows[i0].getBoundingClientRect(),r1=rows[i1].getBoundingClientRect();
+    return {
+      left:r0.left+(r1.left-r0.left)*f,
+      right:r0.right+(r1.right-r0.right)*f,
+      top:r0.top+(r1.top-r0.top)*f,
+      bottom:r0.bottom+(r1.bottom-r0.bottom)*f,
+      centerY:r0.top+r0.height/2+(r1.top+r1.height/2-(r0.top+r0.height/2))*f
+    };
+  };
+
+  ['left','right'].forEach(side=>{
+    occupied[side].sort((a,b)=>a.pos-b.pos||String(a.t.no).localeCompare(String(b.t.no),undefined,{numeric:true}));
+    const used=[];
+    occupied[side].forEach(item=>{
+      let lane=0;
+      while(used.some(u=>Math.abs(u.pos-item.pos)<0.24&&u.lane===lane))lane++;
+      used.push({pos:item.pos,lane});
+      const el=document.createElement('div');
+      el.className=`train-icon ${side}`;
+      el.style.visibility='hidden';
+      el.style.transition='none';
+      const rr=rowRectAt(item.pos)||{left:layerRect.left,right:layerRect.right,centerY:layerRect.top+layerRect.height/2};
+      const layoutWidth=window.innerWidth<960?1920:layerRect.width;
+      const centerX=layoutWidth/2;
+      const laneOffset=lane*(trainWidth+laneGap);
+      const trainLeft=side==='left'?centerX-340-laneOffset:centerX+340-trainWidth+laneOffset;
+      const t=item.t;
+      const formationParts=t.formation&&t.formation!=='__INITIAL__'?formationDisplayParts(t.formation):[];
+      const formationHTML=formationParts.length?`<span class="train-no train-formation">${formationParts.map(x=>`<span>${esc(x)}</span>`).join('')}</span>`:'';
+      el.innerHTML=`<span class="train-no">${esc(displayTrainNo(t))}</span><img src="${esc(trainImageFor(t))}" alt="${esc(displayTrainNo(t))}" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'">${formationHTML}<span class="train-label ${getMainLabelClass(t.type)}"><span>${esc(trainLabelText(t))}</span></span>`;
+      el.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();openTrainSheet(t);});
+      layer.appendChild(el);
+      const img=el.querySelector('img'),noEl=el.querySelector('.train-no'),formationEl=el.querySelector('.train-formation');
+      const applyFinalPosition=()=>{
+        if(!img)return;
+        const mobileZoom=window.innerWidth<960?window.innerWidth/960:1;
+        const imgRect=img.getBoundingClientRect(),noRect=noEl?.getBoundingClientRect(),formationRect=formationEl?.getBoundingClientRect();
+        const actualImageWidth=(imgRect.width/mobileZoom)||imageWidth;
+        const imgHeight=(imgRect.height/mobileZoom)||actualImageWidth*((img.naturalHeight||30)/(img.naturalWidth||60));
+        const noHeight=(noRect?.height/mobileZoom)||12*uiScale*1.05;
+        const formationHeight=(formationRect?.height/mobileZoom)||0;
+        const desiredCenterY=(rr.centerY-layerRect.top)/mobileZoom;
+        const finalTop=desiredCenterY-(noHeight+imgHeight+formationHeight)/2;
+        el.style.top=`${finalTop}px`;
+        el.style.left=`${trainLeft}px`;
+        el.style.right='auto';
+        el.style.setProperty('--lane-shift','0px');
+        el.style.transform='none';
+        el.style.visibility='visible';
+      };
+      if(img.complete&&img.naturalWidth)applyFinalPosition();
+      else img.addEventListener('load',applyFinalPosition,{once:true});
     });
-  }
+  });
 }
 function lineColorFor(routeKey){return ROUTES[routeKey]?.color||COLORS.main;}
 function stationById(id){
@@ -1241,9 +1382,11 @@ function formationDisplayParts(id){
 function formationDisplayHTML(id,direction=null){
   return formationDisplayParts(id).map(x=>`<span>${esc(x)}</span>`).join('');
 }
-function formationDropdownOptionHTML(item,selected){
+function formationDropdownOptionHTML(item,selected,typeName=''){
   const cls=String(item.id)===String(selected)?'option-item selected':'option-item';
-  return `<div class="${cls}" onclick="selectFormation('${esc(item.id)}')"><img src="${esc(OMI_IMG(item.id))}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${esc(item.name)}</span></div>`;
+  const typeNo=String(typeName||item.type||'').replace(/\D/g,'');
+  const img=typeNo?`${FORMATION_IMG_BASE}Omi${typeNo}.png`:OMI_IMG(item.id);
+  return `<div class="${cls}" onclick="selectFormation('${esc(item.id)}')"><img src="${esc(img)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${esc(item.name)}</span></div>`;
 }
 function buildOmiFormationOptions(selectedId){
   const selected=String(selectedId||'').trim();
@@ -1253,7 +1396,7 @@ function buildOmiFormationOptions(selectedId){
     const typeImg=typeObj?.img||NOIMAGE_IMG;
     const typeSelected=String(typeObj?.id)===selected?' selected':'';
     const header=`<div class="option-header option-category-header${typeSelected}" onclick="selectFormation('${esc(typeObj.id)}')" role="option"><img src="${esc(typeImg)}" class="option-img" onerror="this.onerror=null;this.src='${NOIMAGE_IMG}'"><span>${esc(g.type)}</span></div>`;
-    const items=(g.items||[]).map(item=>formationDropdownOptionHTML(item,selected)).join('');
+    const items=(g.items||[]).map(item=>formationDropdownOptionHTML(item,selected,g.type)).join('');
     return header+items;
   }).join('');
   return initial+groups;
@@ -1375,7 +1518,6 @@ function initControls(){
   document.getElementById('overlay')?.addEventListener('click',closeSheet);
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
 }
-window.addEventListener('resize',()=>{renderTrainPositions();renderOperationInfoZones();});window.addEventListener('scroll',()=>renderTrainPositions(),{passive:true});
 
 /* 近江鉄道・運行情報（南武線版の処理系を基準に、近江鉄道の3路線へ置換） */
 const OPERATION_INFO_STORAGE_KEY='omiOperationInfo_v2';
