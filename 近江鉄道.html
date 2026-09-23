@@ -1106,7 +1106,7 @@ function renderTrainPositions(){
     const signature=`${String(t.no||'')}|${String(t.direction||'')}`;
     const info=visiblePositions.get(signature)||trainPosition(t,minutes);
     if(!info||!info.visualTrain)return;
-    occupied[info.side||'right'].push({t:info.visualTrain,pos:info.pos,baseTrain:t,mode:info.mode});
+    occupied[info.side||'right'].push({t,pos:info.pos,baseTrain:t,mode:info.mode});
   });
 
   const layerRect=layer.getBoundingClientRect();
