@@ -17,12 +17,12 @@
         {
           "name": "河内",
           "number": "JR-G14",
-          "nameEn": "Kawachi"
+          "nameEn": "Kochi"
         },
         {
           "name": "入野",
           "number": "JR-G13",
-          "nameEn": "Nyuno"
+          "nameEn": "Irino"
         },
         {
           "name": "白市",
@@ -67,17 +67,29 @@
         {
           "name": "海田市",
           "number": "JR-G04",
-          "nameEn": "Kaitaichi"
+          "nameEn": "Kaitaichi",
+          "directions": {
+            "up": "白市・呉・三原方面",
+            "down": "広島・岩国方面"
+          }
         },
         {
           "name": "向洋",
           "number": "JR-G03",
-          "nameEn": "Mukainada"
+          "nameEn": "Mukainada",
+          "directions": {
+            "up": "白市・呉・三原方面",
+            "down": "広島・岩国方面"
+          }
         },
         {
           "name": "天神川",
           "number": "JR-G02",
-          "nameEn": "Tenjingawa"
+          "nameEn": "Tenjin-gawa",
+          "directions": {
+            "up": "白市・呉・三原方面",
+            "down": "広島・岩国方面"
+          }
         },
         {
           "name": "広島",
@@ -85,9 +97,17 @@
             "JR-G01",
             "JR-R01"
           ],
-          "nameEn": "Hiroshima"
+          "nameEn": "Hiroshima",
+          "directions": {
+            "up": "白市・呉・三原方面",
+            "down": "岩国・あき亀山方面"
+          }
         }
-      ]
+      ],
+      "directions": {
+        "up": "三原方面",
+        "down": "広島方面"
+      }
     },
     {
       "name": "山陽本線（広島～岩国）",
@@ -99,7 +119,11 @@
             "JR-G01",
             "JR-R01"
           ],
-          "nameEn": "Hiroshima"
+          "nameEn": "Hiroshima",
+          "directions": {
+            "up": "白市・呉・三原方面",
+            "down": "岩国・あき亀山方面"
+          }
         },
         {
           "name": "新白島",
@@ -109,7 +133,11 @@
         {
           "name": "横川",
           "number": "JR-R03",
-          "nameEn": "Yokogawa"
+          "nameEn": "Yokogawa",
+          "directions": {
+            "up": "広島・三原方面",
+            "down": "岩国・あき亀山方面"
+          }
         },
         {
           "name": "西広島",
@@ -119,7 +147,7 @@
         {
           "name": "新井口",
           "number": "JR-R05",
-          "nameEn": "Shin-Iguchi"
+          "nameEn": "Shin-Inokuchi"
         },
         {
           "name": "五日市",
@@ -134,7 +162,7 @@
         {
           "name": "宮内串戸",
           "number": "JR-R08",
-          "nameEn": "Miyauchikushido"
+          "nameEn": "Miyauchi-Kusado"
         },
         {
           "name": "阿品",
@@ -176,7 +204,11 @@
           "number": "JR-R16",
           "nameEn": "Iwakuni"
         }
-      ]
+      ],
+      "directions": {
+        "up": "広島方面",
+        "down": "岩国方面"
+      }
     },
     {
       "name": "呉線",
@@ -215,7 +247,7 @@
         {
           "name": "大乗",
           "number": "JR-Y26",
-          "nameEn": "Onori"
+          "nameEn": "Ono"
         },
         {
           "name": "竹原",
@@ -325,24 +357,44 @@
         {
           "name": "海田市",
           "number": "JR-Y04",
-          "nameEn": "Kaitaichi"
+          "nameEn": "Kaitaichi",
+          "directions": {
+            "up": "白市・呉・三原方面",
+            "down": "広島・岩国方面"
+          }
         },
         {
           "name": "向洋",
           "number": "JR-Y03",
-          "nameEn": "Mukainada"
+          "nameEn": "Mukainada",
+          "directions": {
+            "up": "白市・呉・三原方面",
+            "down": "広島・岩国方面"
+          }
         },
         {
           "name": "天神川",
           "number": "JR-Y02",
-          "nameEn": "Tenjingawa"
+          "nameEn": "Tenjin-gawa",
+          "directions": {
+            "up": "白市・呉・三原方面",
+            "down": "広島・岩国方面"
+          }
         },
         {
           "name": "広島",
           "number": "JR-Y01",
-          "nameEn": "Hiroshima"
+          "nameEn": "Hiroshima",
+          "directions": {
+            "up": "白市・呉・三原方面",
+            "down": "岩国・あき亀山方面"
+          }
         }
-      ]
+      ],
+      "directions": {
+        "up": "三原方面",
+        "down": "広島方面"
+      }
     },
     {
       "name": "可部線",
@@ -351,7 +403,11 @@
         {
           "name": "広島",
           "number": "JR-B01",
-          "nameEn": "Hiroshima"
+          "nameEn": "Hiroshima",
+          "directions": {
+            "up": "白市・呉・三原方面",
+            "down": "岩国・あき亀山方面"
+          }
         },
         {
           "name": "新白島",
@@ -361,7 +417,11 @@
         {
           "name": "横川",
           "number": "JR-B03",
-          "nameEn": "Yokogawa"
+          "nameEn": "Yokogawa",
+          "directions": {
+            "up": "広島・三原方面",
+            "down": "岩国・あき亀山方面"
+          }
         },
         {
           "name": "三滝",
@@ -396,7 +456,7 @@
         {
           "name": "七軒茶屋",
           "number": "JR-B10",
-          "nameEn": "Shikenjaya"
+          "nameEn": "Shichikenchaya"
         },
         {
           "name": "梅林",
@@ -406,7 +466,7 @@
         {
           "name": "上八木",
           "number": "JR-B12",
-          "nameEn": "Kamiyagi"
+          "nameEn": "Kami-Yagi"
         },
         {
           "name": "中島",
@@ -421,14 +481,18 @@
         {
           "name": "河戸帆待川",
           "number": "JR-B15",
-          "nameEn": "Kodo-Homachigawa"
+          "nameEn": "Kōdo-Homatsukawa"
         },
         {
           "name": "あき亀山",
           "number": "JR-B16",
           "nameEn": "Aki-Kameyama"
         }
-      ]
+      ],
+      "directions": {
+        "up": "広島方面",
+        "down": "あき亀山方面"
+      }
     }
   ],
   "stationAliases": {
@@ -84342,42 +84406,40 @@
     }
   ],
   "commonFormationIcon": "227-0_noimage",
-  "directionLabels": {
-    "routes": {
-      "山陽本線（三原～岩国）": {
-        "up": "上り 三原方面",
-        "down": "下り 岩国方面"
-      },
-      "可部線": {
-        "up": "上り 広島方面",
-        "down": "下り あき亀山方面"
-      },
-      "呉線": {
-        "up": "上り 三原方面",
-        "down": "下り 広島方面"
-      }
+  "routeDirections": {
+    "山陽本線（三原～岩国）": {
+      "up": "三原方面",
+      "down": "岩国方面"
     },
-    "stations": {
-      "横川": {
-        "up": "上り 広島・三原方面",
-        "down": "下り 岩国・あき亀山方面"
-      },
-      "天神川": {
-        "up": "上り 白市・呉・三原方面",
-        "down": "下り 広島・岩国方面"
-      },
-      "向洋": {
-        "up": "上り 白市・呉・三原方面",
-        "down": "下り 広島・岩国方面"
-      },
-      "海田市": {
-        "up": "上り 白市・呉・三原方面",
-        "down": "下り 広島・岩国方面"
-      },
-      "広島": {
-        "up": "上り 白市・呉・三原方面",
-        "down": "下り 岩国・あき亀山方面"
-      }
+    "可部線": {
+      "up": "広島方面",
+      "down": "あき亀山方面"
+    },
+    "呉線": {
+      "up": "三原方面",
+      "down": "広島方面"
+    }
+  },
+  "stationDirections": {
+    "横川": {
+      "up": "広島・三原方面",
+      "down": "岩国・あき亀山方面"
+    },
+    "天神川": {
+      "up": "白市・呉・三原方面",
+      "down": "広島・岩国方面"
+    },
+    "向洋": {
+      "up": "白市・呉・三原方面",
+      "down": "広島・岩国方面"
+    },
+    "海田市": {
+      "up": "白市・呉・三原方面",
+      "down": "広島・岩国方面"
+    },
+    "広島": {
+      "up": "白市・呉・三原方面",
+      "down": "岩国・あき亀山方面"
     }
   }
 }
