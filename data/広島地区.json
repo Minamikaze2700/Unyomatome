@@ -6,70 +6,86 @@
       "stations": [
         {
           "name": "三原",
-          "number": "JR-G16"
+          "number": "JR-G16",
+          "nameEn": "Mihara"
         },
         {
           "name": "本郷",
-          "number": "JR-G15"
+          "number": "JR-G15",
+          "nameEn": "Hongo"
         },
         {
           "name": "河内",
-          "number": "JR-G14"
+          "number": "JR-G14",
+          "nameEn": "Kawachi"
         },
         {
           "name": "入野",
-          "number": "JR-G13"
+          "number": "JR-G13",
+          "nameEn": "Nyuno"
         },
         {
           "name": "白市",
-          "number": "JR-G12"
+          "number": "JR-G12",
+          "nameEn": "Shiraichi"
         },
         {
           "name": "西高屋",
-          "number": "JR-G11"
+          "number": "JR-G11",
+          "nameEn": "Nishi-Takaya"
         },
         {
           "name": "西条",
-          "number": "JR-G10"
+          "number": "JR-G10",
+          "nameEn": "Saijo"
         },
         {
           "name": "寺家",
-          "number": "JR-G09"
+          "number": "JR-G09",
+          "nameEn": "Jike"
         },
         {
           "name": "八本松",
-          "number": "JR-G08"
+          "number": "JR-G08",
+          "nameEn": "Hachihonmatsu"
         },
         {
           "name": "瀬野",
-          "number": "JR-G07"
+          "number": "JR-G07",
+          "nameEn": "Seno"
         },
         {
           "name": "中野東",
-          "number": "JR-G06"
+          "number": "JR-G06",
+          "nameEn": "Nakano-Higashi"
         },
         {
           "name": "安芸中野",
-          "number": "JR-G05"
+          "number": "JR-G05",
+          "nameEn": "Aki-Nakano"
         },
         {
           "name": "海田市",
-          "number": "JR-G04"
+          "number": "JR-G04",
+          "nameEn": "Kaitaichi"
         },
         {
           "name": "向洋",
-          "number": "JR-G03"
+          "number": "JR-G03",
+          "nameEn": "Mukainada"
         },
         {
           "name": "天神川",
-          "number": "JR-G02"
+          "number": "JR-G02",
+          "nameEn": "Tenjingawa"
         },
         {
           "name": "広島",
           "number": [
             "JR-G01",
             "JR-R01"
-          ]
+          ],
+          "nameEn": "Hiroshima"
         }
       ]
     },
@@ -82,67 +98,83 @@
           "number": [
             "JR-G01",
             "JR-R01"
-          ]
+          ],
+          "nameEn": "Hiroshima"
         },
         {
           "name": "新白島",
-          "number": "JR-R02"
+          "number": "JR-R02",
+          "nameEn": "Shin-Hakushima"
         },
         {
           "name": "横川",
-          "number": "JR-R03"
+          "number": "JR-R03",
+          "nameEn": "Yokogawa"
         },
         {
           "name": "西広島",
-          "number": "JR-R04"
+          "number": "JR-R04",
+          "nameEn": "Nishi-Hiroshima"
         },
         {
           "name": "新井口",
-          "number": "JR-R05"
+          "number": "JR-R05",
+          "nameEn": "Shin-Iguchi"
         },
         {
           "name": "五日市",
-          "number": "JR-R06"
+          "number": "JR-R06",
+          "nameEn": "Itsukaichi"
         },
         {
           "name": "廿日市",
-          "number": "JR-R07"
+          "number": "JR-R07",
+          "nameEn": "Hatsukaichi"
         },
         {
           "name": "宮内串戸",
-          "number": "JR-R08"
+          "number": "JR-R08",
+          "nameEn": "Miyauchikushido"
         },
         {
           "name": "阿品",
-          "number": "JR-R09"
+          "number": "JR-R09",
+          "nameEn": "Ajina"
         },
         {
           "name": "宮島口",
-          "number": "JR-R10"
+          "number": "JR-R10",
+          "nameEn": "Miyajima-guchi"
         },
         {
           "name": "前空",
-          "number": "JR-R11"
+          "number": "JR-R11",
+          "nameEn": "Maezora"
         },
         {
           "name": "大野浦",
-          "number": "JR-R12"
+          "number": "JR-R12",
+          "nameEn": "Onoura"
         },
         {
           "name": "玖波",
-          "number": "JR-R13"
+          "number": "JR-R13",
+          "nameEn": "Kuba"
         },
         {
           "name": "大竹",
-          "number": "JR-R14"
+          "number": "JR-R14",
+          "nameEn": "Otake"
         },
         {
           "name": "和木",
-          "number": "JR-R15"
+          "number": "JR-R15",
+          "nameEn": "Waki"
         },
         {
           "name": "岩国",
-          "number": "JR-R16"
+          "number": "JR-R16",
+          "nameEn": "Iwakuni"
         }
       ]
     },
@@ -152,131 +184,163 @@
       "stations": [
         {
           "name": "糸崎",
-          "number": null
+          "number": null,
+          "nameEn": "Itozaki"
         },
         {
           "name": "三原",
-          "number": "JR-Y31"
+          "number": "JR-Y31",
+          "nameEn": "Mihara"
         },
         {
           "name": "須波",
-          "number": "JR-Y30"
+          "number": "JR-Y30",
+          "nameEn": "Sunami"
         },
         {
           "name": "安芸幸崎",
-          "number": "JR-Y29"
+          "number": "JR-Y29",
+          "nameEn": "Aki-Saizaki"
         },
         {
           "name": "忠海",
-          "number": "JR-Y28"
+          "number": "JR-Y28",
+          "nameEn": "Tadanoumi"
         },
         {
           "name": "安芸長浜",
-          "number": "JR-Y27"
+          "number": "JR-Y27",
+          "nameEn": "Aki-Nagahama"
         },
         {
           "name": "大乗",
-          "number": "JR-Y26"
+          "number": "JR-Y26",
+          "nameEn": "Onori"
         },
         {
           "name": "竹原",
-          "number": "JR-Y25"
+          "number": "JR-Y25",
+          "nameEn": "Takehara"
         },
         {
           "name": "吉名",
-          "number": "JR-Y24"
+          "number": "JR-Y24",
+          "nameEn": "Yoshina"
         },
         {
           "name": "安芸津",
-          "number": "JR-Y23"
+          "number": "JR-Y23",
+          "nameEn": "Akitsu"
         },
         {
           "name": "風早",
-          "number": "JR-Y22"
+          "number": "JR-Y22",
+          "nameEn": "Kazahaya"
         },
         {
           "name": "安浦",
-          "number": "JR-Y21"
+          "number": "JR-Y21",
+          "nameEn": "Yasuura"
         },
         {
           "name": "安登",
-          "number": "JR-Y20"
+          "number": "JR-Y20",
+          "nameEn": "Ato"
         },
         {
           "name": "安芸川尻",
-          "number": "JR-Y19"
+          "number": "JR-Y19",
+          "nameEn": "Aki-Kawajiri"
         },
         {
           "name": "仁方",
-          "number": "JR-Y18"
+          "number": "JR-Y18",
+          "nameEn": "Nigata"
         },
         {
           "name": "広",
-          "number": "JR-Y17"
+          "number": "JR-Y17",
+          "nameEn": "Hiro"
         },
         {
           "name": "新広",
-          "number": "JR-Y16"
+          "number": "JR-Y16",
+          "nameEn": "Shin-Hiro"
         },
         {
           "name": "安芸阿賀",
-          "number": "JR-Y15"
+          "number": "JR-Y15",
+          "nameEn": "Aki-Aga"
         },
         {
           "name": "呉",
-          "number": "JR-Y14"
+          "number": "JR-Y14",
+          "nameEn": "Kure"
         },
         {
           "name": "川原石",
-          "number": "JR-Y13"
+          "number": "JR-Y13",
+          "nameEn": "Kawaraishi"
         },
         {
           "name": "吉浦",
-          "number": "JR-Y12"
+          "number": "JR-Y12",
+          "nameEn": "Yoshiura"
         },
         {
           "name": "かるが浜",
-          "number": "JR-Y11"
+          "number": "JR-Y11",
+          "nameEn": "Karugahama"
         },
         {
           "name": "天応",
-          "number": "JR-Y10"
+          "number": "JR-Y10",
+          "nameEn": "Tenno"
         },
         {
           "name": "呉ポートピア",
-          "number": "JR-Y09"
+          "number": "JR-Y09",
+          "nameEn": "Kure-Portopia"
         },
         {
           "name": "小屋浦",
-          "number": "JR-Y08"
+          "number": "JR-Y08",
+          "nameEn": "Koyaura"
         },
         {
           "name": "水尻",
-          "number": "JR-Y07"
+          "number": "JR-Y07",
+          "nameEn": "Mizushiri"
         },
         {
           "name": "坂",
-          "number": "JR-Y06"
+          "number": "JR-Y06",
+          "nameEn": "Saka"
         },
         {
           "name": "矢野",
-          "number": "JR-Y05"
+          "number": "JR-Y05",
+          "nameEn": "Yano"
         },
         {
           "name": "海田市",
-          "number": "JR-Y04"
+          "number": "JR-Y04",
+          "nameEn": "Kaitaichi"
         },
         {
           "name": "向洋",
-          "number": "JR-Y03"
+          "number": "JR-Y03",
+          "nameEn": "Mukainada"
         },
         {
           "name": "天神川",
-          "number": "JR-Y02"
+          "number": "JR-Y02",
+          "nameEn": "Tenjingawa"
         },
         {
           "name": "広島",
-          "number": "JR-Y01"
+          "number": "JR-Y01",
+          "nameEn": "Hiroshima"
         }
       ]
     },
@@ -286,67 +350,83 @@
       "stations": [
         {
           "name": "広島",
-          "number": "JR-B01"
+          "number": "JR-B01",
+          "nameEn": "Hiroshima"
         },
         {
           "name": "新白島",
-          "number": "JR-B02"
+          "number": "JR-B02",
+          "nameEn": "Shin-Hakushima"
         },
         {
           "name": "横川",
-          "number": "JR-B03"
+          "number": "JR-B03",
+          "nameEn": "Yokogawa"
         },
         {
           "name": "三滝",
-          "number": "JR-B04"
+          "number": "JR-B04",
+          "nameEn": "Mitaki"
         },
         {
           "name": "安芸長束",
-          "number": "JR-B05"
+          "number": "JR-B05",
+          "nameEn": "Aki-Nagatsuka"
         },
         {
           "name": "下祇園",
-          "number": "JR-B06"
+          "number": "JR-B06",
+          "nameEn": "Shimo-Gion"
         },
         {
           "name": "古市橋",
-          "number": "JR-B07"
+          "number": "JR-B07",
+          "nameEn": "Furuichibashi"
         },
         {
           "name": "大町",
-          "number": "JR-B08"
+          "number": "JR-B08",
+          "nameEn": "Omachi"
         },
         {
           "name": "緑井",
-          "number": "JR-B09"
+          "number": "JR-B09",
+          "nameEn": "Midori"
         },
         {
           "name": "七軒茶屋",
-          "number": "JR-B10"
+          "number": "JR-B10",
+          "nameEn": "Shikenjaya"
         },
         {
           "name": "梅林",
-          "number": "JR-B11"
+          "number": "JR-B11",
+          "nameEn": "Bairin"
         },
         {
           "name": "上八木",
-          "number": "JR-B12"
+          "number": "JR-B12",
+          "nameEn": "Kamiyagi"
         },
         {
           "name": "中島",
-          "number": "JR-B13"
+          "number": "JR-B13",
+          "nameEn": "Nakashima"
         },
         {
           "name": "可部",
-          "number": "JR-B14"
+          "number": "JR-B14",
+          "nameEn": "Kabe"
         },
         {
           "name": "河戸帆待川",
-          "number": "JR-B15"
+          "number": "JR-B15",
+          "nameEn": "Kodo-Homachigawa"
         },
         {
           "name": "あき亀山",
-          "number": "JR-B16"
+          "number": "JR-B16",
+          "nameEn": "Aki-Kameyama"
         }
       ]
     }
@@ -84261,5 +84341,43 @@
       "image": "227_S42"
     }
   ],
-  "commonFormationIcon": "227-0_noimage"
+  "commonFormationIcon": "227-0_noimage",
+  "directionLabels": {
+    "routes": {
+      "山陽本線（三原～岩国）": {
+        "up": "上り 三原方面",
+        "down": "下り 岩国方面"
+      },
+      "可部線": {
+        "up": "上り 広島方面",
+        "down": "下り あき亀山方面"
+      },
+      "呉線": {
+        "up": "上り 三原方面",
+        "down": "下り 広島方面"
+      }
+    },
+    "stations": {
+      "横川": {
+        "up": "上り 広島・三原方面",
+        "down": "下り 岩国・あき亀山方面"
+      },
+      "天神川": {
+        "up": "上り 白市・呉・三原方面",
+        "down": "下り 広島・岩国方面"
+      },
+      "向洋": {
+        "up": "上り 白市・呉・三原方面",
+        "down": "下り 広島・岩国方面"
+      },
+      "海田市": {
+        "up": "上り 白市・呉・三原方面",
+        "down": "下り 広島・岩国方面"
+      },
+      "広島": {
+        "up": "上り 白市・呉・三原方面",
+        "down": "下り 岩国・あき亀山方面"
+      }
+    }
+  }
 }
