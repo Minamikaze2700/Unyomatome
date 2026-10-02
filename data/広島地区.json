@@ -17,12 +17,12 @@
         {
           "name": "河内",
           "number": "JR-G14",
-          "nameEn": "Kochi"
+          "nameEn": "Kawachi"
         },
         {
           "name": "入野",
           "number": "JR-G13",
-          "nameEn": "Irino"
+          "nameEn": "Nyuno"
         },
         {
           "name": "白市",
@@ -47,7 +47,7 @@
         {
           "name": "八本松",
           "number": "JR-G08",
-          "nameEn": "Hachihonmatsu"
+          "nameEn": "Hachihommatsu"
         },
         {
           "name": "瀬野",
@@ -85,7 +85,7 @@
         {
           "name": "天神川",
           "number": "JR-G02",
-          "nameEn": "Tenjin-gawa",
+          "nameEn": "Tenjingawa",
           "directions": {
             "up": "白市・呉・三原方面",
             "down": "広島・岩国方面"
@@ -162,7 +162,7 @@
         {
           "name": "宮内串戸",
           "number": "JR-R08",
-          "nameEn": "Miyauchi-Kusado"
+          "nameEn": "Miyauchikushido"
         },
         {
           "name": "阿品",
@@ -172,7 +172,7 @@
         {
           "name": "宮島口",
           "number": "JR-R10",
-          "nameEn": "Miyajima-guchi"
+          "nameEn": "Miyajimaguchi"
         },
         {
           "name": "前空",
@@ -242,12 +242,12 @@
         {
           "name": "安芸長浜",
           "number": "JR-Y27",
-          "nameEn": "Aki-Nagahama"
+          "nameEn": "Akinagahama"
         },
         {
           "name": "大乗",
           "number": "JR-Y26",
-          "nameEn": "Ono"
+          "nameEn": "Onori"
         },
         {
           "name": "竹原",
@@ -277,7 +277,7 @@
         {
           "name": "安登",
           "number": "JR-Y20",
-          "nameEn": "Ato"
+          "nameEn": "Atto"
         },
         {
           "name": "安芸川尻",
@@ -375,7 +375,7 @@
         {
           "name": "天神川",
           "number": "JR-Y02",
-          "nameEn": "Tenjin-gawa",
+          "nameEn": "Tenjingawa",
           "directions": {
             "up": "白市・呉・三原方面",
             "down": "広島・岩国方面"
@@ -456,7 +456,7 @@
         {
           "name": "七軒茶屋",
           "number": "JR-B10",
-          "nameEn": "Shichikenchaya"
+          "nameEn": "Shikenjaya"
         },
         {
           "name": "梅林",
@@ -466,7 +466,7 @@
         {
           "name": "上八木",
           "number": "JR-B12",
-          "nameEn": "Kami-Yagi"
+          "nameEn": "Kamiyagi"
         },
         {
           "name": "中島",
@@ -481,7 +481,7 @@
         {
           "name": "河戸帆待川",
           "number": "JR-B15",
-          "nameEn": "Kōdo-Homatsukawa"
+          "nameEn": "Kodo-Homatagawa"
         },
         {
           "name": "あき亀山",
@@ -84422,6 +84422,10 @@
   },
   "stationDirections": {
     "横川": {
+      "up": "広島・三原方面",
+      "down": "岩国・あき亀山方面"
+    },
+    "新白島": {
       "up": "広島・三原方面",
       "down": "岩国・あき亀山方面"
     },
