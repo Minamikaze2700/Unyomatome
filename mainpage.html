@@ -4518,7 +4518,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
 </script>
 
 <script>
-/* 広島地区の編成登録：Firebaseは「広島地区 / 日付 / エリア / 列車番号」に集約し、
+/* 広島地区の編成登録：Firebaseは「広島地区 / エリア / 日付 / 列車番号」に集約し、
    1列車の保存データも {f:編成, t:入力分@登録名} の最小構成にする。曜日区分・ISO時刻・UIDは保存しない。 */
 (function(){
   const HIROSHIMA_FORMATION_FAMILY='hiroshima';
@@ -4631,23 +4631,47 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
   trainBelongsToFamily=function(no,family){ return family===HIROSHIMA_FORMATION_FAMILY && !!String(no||'').trim(); };
 
   function normalizeAreaRoot(raw){
+    // Firebaseの実保存形式は「広島地区 / エリア / 日付 / 列車番号」。
+    // 読み込みでは旧形式「広島地区 / 日付 / エリア / 列車番号」も互換対応し、
+    // アプリ内部では従来どおり date -> area -> train の形に正規化する。
     const out={};
     if(!raw||typeof raw!=='object') return out;
-    for(const [date,areas] of Object.entries(raw)){
-      if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date))||!areas||typeof areas!=='object') continue;
-      out[date]=out[date]||{};
-      for(const [rawArea,trains] of Object.entries(areas)){
-        if(!trains||typeof trains!=='object') continue;
-        const area=hiroshimaCanonicalAreaKey(rawArea);
-        const areaOut=out[date][area]||{};
-        for(const [no,entry] of Object.entries(trains)){
-          if(!entry||typeof entry!=='object') continue;
-          const ids=String(entry.f??entry.formation??'').split('+').map(one=>canonicalFormationId(one)).filter(Boolean);
-          if(!ids.length) continue;
-          const meta=normalizeCompactMeta(entry.t??entry.time??'');
-          areaOut[String(no)]={f:ids.join('+'),t:meta.time+(meta.author?`@${meta.author}`:'')};
+    for(const [level1,value1] of Object.entries(raw)){
+      if(!value1||typeof value1!=='object') continue;
+      const level1IsDate=/^\d{4}-\d{2}-\d{2}$/.test(String(level1));
+      if(level1IsDate){
+        // 旧形式: 日付 -> エリア -> 列車番号
+        const date=String(level1);
+        out[date]=out[date]||{};
+        for(const [rawArea,trains] of Object.entries(value1)){
+          if(!trains||typeof trains!=='object') continue;
+          const area=hiroshimaCanonicalAreaKey(rawArea);
+          const areaOut=out[date][area]||{};
+          for(const [no,entry] of Object.entries(trains)){
+            if(!entry||typeof entry!=='object') continue;
+            const ids=String(entry.f??entry.formation??'').split('+').map(one=>canonicalFormationId(one)).filter(Boolean);
+            if(!ids.length) continue;
+            const meta=normalizeCompactMeta(entry.t??entry.time??'');
+            areaOut[String(no)]={f:ids.join('+'),t:meta.time+(meta.author?`@${meta.author}`:'')};
+          }
+          if(Object.keys(areaOut).length) out[date][String(area)]=areaOut;
         }
-        if(Object.keys(areaOut).length) out[date][String(area)]=areaOut;
+      }else{
+        // 新形式: エリア -> 日付 -> 列車番号
+        const area=hiroshimaCanonicalAreaKey(level1);
+        for(const [date,trains] of Object.entries(value1)){
+          if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date))||!trains||typeof trains!=='object') continue;
+          out[date]=out[date]||{};
+          const areaOut=out[date][area]||{};
+          for(const [no,entry] of Object.entries(trains)){
+            if(!entry||typeof entry!=='object') continue;
+            const ids=String(entry.f??entry.formation??'').split('+').map(one=>canonicalFormationId(one)).filter(Boolean);
+            if(!ids.length) continue;
+            const meta=normalizeCompactMeta(entry.t??entry.time??'');
+            areaOut[String(no)]={f:ids.join('+'),t:meta.time+(meta.author?`@${meta.author}`:'')};
+          }
+          if(Object.keys(areaOut).length) out[date][String(area)]=areaOut;
+        }
       }
     }
     return out;
@@ -4812,7 +4836,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     if(!db) return true;
     const entries=Object.entries(changes||{}); if(!entries.length) return true;
     const date=formationDateKey(), area=hiroshimaCanonicalAreaKey(hiroshimaAreaKey());
-    const areaRef=db.ref(ROOT).child(date).child(area);
+    const areaRef=db.ref(ROOT).child(area).child(date);
     const updates={};
     entries.forEach(([no,formId])=>{
       const ids=String(formId??'').split('+').map(canonicalFormationId).filter(Boolean);
@@ -4856,7 +4880,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     if(db){
       (async()=>{
         try{
-          const ref=db.ref(ROOT).child(date).child(area).child(key);
+          const ref=db.ref(ROOT).child(area).child(date).child(key);
           if(value){ await ref.set({f:value,t:storedMeta}); } else { await ref.remove(); }
           syncStatus('Firebase同期済み');
         }catch(e){
