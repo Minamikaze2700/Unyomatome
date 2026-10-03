@@ -407,7 +407,7 @@ button,input,select,textarea{font-family:inherit}
 .formation-id{font-size:1.2rem;font-weight:800;color:#444 !important;margin-top:4px}
 .capacity-info{color:#666;font-size:.85rem;margin-top:4px}
 
-.formation-updated-at{position:absolute;right:12px;bottom:8px;font-size:.78rem;color:#777;text-align:right;} 
+.formation-updated-at{position:absolute;right:12px;bottom:8px;font-size:.78rem;color:#777;text-align:right;white-space:nowrap;z-index:2;} 
 .input-trigger-btn{
   background:#c62828;color:#fff;padding:4px 8px;border-radius:4px;
   font-size:.75rem;margin-top:4px;display:inline-block;
@@ -3194,8 +3194,17 @@ function formatFormationUpdatedAt(trainNo){
   const area=typeof hiroshimaAreaKey==='function'?hiroshimaAreaKey():String(activeRouteName||'');
   const entry=formationRemoteByFamily.hiroshima?.areaStateByDate?.[date]?.[area]?.[key];
   if(!entry?.f) return '';
-  const text=typeof hiroshimaFormatStoredMeta==='function'?hiroshimaFormatStoredMeta(entry.t):'';
-  return text;
+  // 新形式 t=「分@登録名」を優先し、将来のaフィールドや旧形式にも対応する。
+  const rawMeta=entry.t??entry.time??'';
+  const parsed=typeof hiroshimaParseStoredMeta==='function'
+    ? hiroshimaParseStoredMeta(rawMeta, entry.a)
+    : null;
+  if(parsed){
+    const hh=String(Math.floor(Number(parsed.time)/60)).padStart(2,'0');
+    const mm=String(Number(parsed.time)%60).padStart(2,'0');
+    return `${hh}:${mm}${parsed.author?` @${parsed.author}`:''}`;
+  }
+  return typeof hiroshimaFormatStoredMeta==='function'?hiroshimaFormatStoredMeta(rawMeta):'';
 }
 function sheetBack(){
   if(previousSheetContext?.type==='station-timetable'){
@@ -4523,14 +4532,17 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
   formationRemoteByFamily.keihin=formationRemoteByFamily.hiroshima;
   formationRemoteByFamily.yokohama=formationRemoteByFamily.hiroshima;
 
+  function hiroshimaCanonicalAreaKey(value){
+    // Firebase上の広島地区編成データは、路線ごとに分けず
+    // すべて同じ「JR広島」エリアへ保存する。
+    return 'JR広島';
+  }
+  window.hiroshimaCanonicalAreaKey=hiroshimaCanonicalAreaKey;
+
   function hiroshimaAreaKey(routeName=activeRouteName){
     const meta=ROUTE_REGISTRY[String(routeName||'')]||{};
-    if(meta.area) return String(meta.area);
-    const name=String(routeName||'');
-    if(name.includes('可部')) return '可部';
-    if(name.includes('呉')) return '呉';
-    if(name.includes('山陽')) return '山陽';
-    return '共通';
+    if(meta.area) return hiroshimaCanonicalAreaKey(meta.area);
+    return hiroshimaCanonicalAreaKey(routeName);
   }
   window.hiroshimaAreaKey=hiroshimaAreaKey;
 
@@ -4568,10 +4580,18 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     }
     return {time:'',author:''};
   }
+  window.hiroshimaParseStoredMeta=function(raw,authorFallback=''){
+    const parsed=parseStoredMeta(raw);
+    if(!parsed.author && authorFallback) parsed.author=String(authorFallback).trim();
+    if(!parsed.time) return null;
+    return parsed;
+  };
+
   function makeStoredMeta(){
     const now=new Date();
     const mins=now.getHours()*60+now.getMinutes();
-    const name=profileRegistered&&currentUserProfile?.name ? String(currentUserProfile.name).trim() : '';
+    // 保存時は認証済みユーザーの登録名を最優先。profileRegisteredの状態に左右されない。
+    const name=String(currentUserProfile?.name||currentAuthUser?.displayName||'').trim();
     return name ? `${mins}@${name}` : String(mins);
   }
   function formatStoredMeta(meta){
@@ -4615,10 +4635,11 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     if(!raw||typeof raw!=='object') return out;
     for(const [date,areas] of Object.entries(raw)){
       if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date))||!areas||typeof areas!=='object') continue;
-      out[date]={};
-      for(const [area,trains] of Object.entries(areas)){
+      out[date]=out[date]||{};
+      for(const [rawArea,trains] of Object.entries(areas)){
         if(!trains||typeof trains!=='object') continue;
-        const areaOut={};
+        const area=hiroshimaCanonicalAreaKey(rawArea);
+        const areaOut=out[date][area]||{};
         for(const [no,entry] of Object.entries(trains)){
           if(!entry||typeof entry!=='object') continue;
           const ids=String(entry.f??entry.formation??'').split('+').map(one=>canonicalFormationId(one)).filter(Boolean);
@@ -4790,7 +4811,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     const db=firebaseDatabase();
     if(!db) return true;
     const entries=Object.entries(changes||{}); if(!entries.length) return true;
-    const date=formationDateKey(), area=hiroshimaAreaKey();
+    const date=formationDateKey(), area=hiroshimaCanonicalAreaKey(hiroshimaAreaKey());
     const areaRef=db.ref(ROOT).child(date).child(area);
     const updates={};
     entries.forEach(([no,formId])=>{
@@ -4808,7 +4829,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     if(!formationInputAllowed()) return [];
     const key=String(train?.no||'').trim(); if(!key) return [];
     const value=(formId&&formId!==INITIAL_FORMATION_SELECTION.id)?normalizeStoredFormationId(formId):null;
-    const date=formationDateKey(), area=hiroshimaAreaKey();
+    const date=formationDateKey(), area=hiroshimaCanonicalAreaKey(hiroshimaAreaKey());
     const all=formationRemoteByFamily.hiroshima.areaStateByDate;
     if(!all[date]) all[date]={};
     if(!all[date][area]) all[date][area]={};
