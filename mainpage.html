@@ -4631,47 +4631,27 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
   trainBelongsToFamily=function(no,family){ return family===HIROSHIMA_FORMATION_FAMILY && !!String(no||'').trim(); };
 
   function normalizeAreaRoot(raw){
-    // Firebaseの実保存形式は「広島地区 / エリア / 日付 / 列車番号」。
-    // 読み込みでは旧形式「広島地区 / 日付 / エリア / 列車番号」も互換対応し、
-    // アプリ内部では従来どおり date -> area -> train の形に正規化する。
+    // Firebaseの実保存形式は「広島地区 / エリア / 日付 / 列車番号」のみを使用する。
+    // 旧形式（日付 -> エリア）は読み込まない。
     const out={};
     if(!raw||typeof raw!=='object') return out;
     for(const [level1,value1] of Object.entries(raw)){
       if(!value1||typeof value1!=='object') continue;
-      const level1IsDate=/^\d{4}-\d{2}-\d{2}$/.test(String(level1));
-      if(level1IsDate){
-        // 旧形式: 日付 -> エリア -> 列車番号
-        const date=String(level1);
+      // 日付が第1階層に来る旧形式は明示的に無視する。
+      if(/^\d{4}-\d{2}-\d{2}$/.test(String(level1))) continue;
+      const area=hiroshimaCanonicalAreaKey(level1);
+      for(const [date,trains] of Object.entries(value1)){
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date))||!trains||typeof trains!=='object') continue;
         out[date]=out[date]||{};
-        for(const [rawArea,trains] of Object.entries(value1)){
-          if(!trains||typeof trains!=='object') continue;
-          const area=hiroshimaCanonicalAreaKey(rawArea);
-          const areaOut=out[date][area]||{};
-          for(const [no,entry] of Object.entries(trains)){
-            if(!entry||typeof entry!=='object') continue;
-            const ids=String(entry.f??entry.formation??'').split('+').map(one=>canonicalFormationId(one)).filter(Boolean);
-            if(!ids.length) continue;
-            const meta=normalizeCompactMeta(entry.t??entry.time??'');
-            areaOut[String(no)]={f:ids.join('+'),t:meta.time+(meta.author?`@${meta.author}`:'')};
-          }
-          if(Object.keys(areaOut).length) out[date][String(area)]=areaOut;
+        const areaOut=out[date][area]||{};
+        for(const [no,entry] of Object.entries(trains)){
+          if(!entry||typeof entry!=='object') continue;
+          const ids=String(entry.f??entry.formation??'').split('+').map(one=>canonicalFormationId(one)).filter(Boolean);
+          if(!ids.length) continue;
+          const meta=normalizeCompactMeta(entry.t??entry.time??'');
+          areaOut[String(no)]={f:ids.join('+'),t:meta.time+(meta.author?`@${meta.author}`:'')};
         }
-      }else{
-        // 新形式: エリア -> 日付 -> 列車番号
-        const area=hiroshimaCanonicalAreaKey(level1);
-        for(const [date,trains] of Object.entries(value1)){
-          if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date))||!trains||typeof trains!=='object') continue;
-          out[date]=out[date]||{};
-          const areaOut=out[date][area]||{};
-          for(const [no,entry] of Object.entries(trains)){
-            if(!entry||typeof entry!=='object') continue;
-            const ids=String(entry.f??entry.formation??'').split('+').map(one=>canonicalFormationId(one)).filter(Boolean);
-            if(!ids.length) continue;
-            const meta=normalizeCompactMeta(entry.t??entry.time??'');
-            areaOut[String(no)]={f:ids.join('+'),t:meta.time+(meta.author?`@${meta.author}`:'')};
-          }
-          if(Object.keys(areaOut).length) out[date][String(area)]=areaOut;
-        }
+        if(Object.keys(areaOut).length) out[date][String(area)]=areaOut;
       }
     }
     return out;
