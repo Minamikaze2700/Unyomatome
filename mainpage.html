@@ -813,7 +813,8 @@ const ROUTE_REGISTRY={
     range:'新長田～三宮・花時計前',
     area:'神戸市営地下鉄',
     company:'神戸市営地下鉄',
-    formationCountDefault:1
+    formationCountDefault:1,
+    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobekaigan_noimage.png'
   }
 };
 let activeRouteName='';
@@ -847,15 +848,51 @@ function buildStationsForRoute(json,meta){
   return list;
 }
 function buildFormationsForJson(json){
-  const groups={A:[],S:[]};
   const base='https://minamikaze2700.github.io/Unyomatome/images/';
+  const makeImg=(rawImage, fallback)=>{
+    const v=String(rawImage||fallback||'').trim();
+    if(!v) return LINE_TRAIN_IMG;
+    if(/^https?:\/\//i.test(v)) return v;
+    return `${base}${v.replace(/\.png$/i,'')}.png`;
+  };
+  const rawFormations=Array.isArray(json?.formations)?json.formations:[];
+  const declaredType=String(json?.formationType||'').trim();
+  const declaredTypeImg=makeImg(json?.formationTypeImage,json?.commonFormationIcon);
+
+  // 路線固有の編成グループをJSON側で指定できるようにする。
+  // 227系A/S編成など従来形式は従来どおり自動分類する。
+  if(declaredType){
+    const items=[];
+    for(const raw of rawFormations){
+      const rawId=String(raw?.formation||raw?.id||'').trim();
+      if(!rawId) continue;
+      const displayId=rawId.replace(/F$/i,'');
+      const carsArr=Array.isArray(raw?.cars)?raw.cars.map(x=>String(x||'').trim()).filter(Boolean):[];
+      const cars=carsArr.length || Number(raw?.carCount)||2;
+      const item={
+        id:displayId,
+        name:String(raw?.name||`${displayId}編成`),
+        img:makeImg(raw?.image,json?.formationDefaultImage||json?.commonFormationIcon),
+        cars,
+        carNames:carsArr
+      };
+      items.push(item);
+      for(const car of carsArr){
+        VEHICLE_TO_FORMATION[car]=item.id;
+        const normalized=car.replace(/[^0-9A-Za-z一-龥]+/g,'');
+        if(normalized) VEHICLE_TO_FORMATION[normalized]=item.id;
+      }
+    }
+    return items.length?[{type:declaredType,typeImg:declaredTypeImg,items}]:[];
+  }
+
+  const groups={A:[],S:[]};
   const commonTypeImg=`${base}227-0.png`;
-  for(const raw of (Array.isArray(json?.formations)?json.formations:[])){
+  for(const raw of rawFormations){
     const id=String(raw?.formation||'').trim(); if(!id) continue;
-    // Firebase/UIで使用する正式IDはA01/S01のような「Fなし」に統一する。
     const displayId=id.replace(/F$/i,'');
     const prefix=displayId[0]==='S'?'S':'A';
-    const img=`${base}227_${encodeURIComponent(displayId)}.png`;
+    const img=makeImg(raw?.image,`227_${encodeURIComponent(displayId)}`);
     const cars=Array.isArray(raw?.cars)?raw.cars.length:Number(raw?.cars)||2;
     const item={id:displayId,name:displayId,img,cars,carNames:Array.isArray(raw?.cars)?raw.cars.slice():[]};
     for(const car of (Array.isArray(raw?.cars)?raw.cars:[])){
@@ -866,11 +903,11 @@ function buildFormationsForJson(json){
     groups[prefix].push(item);
   }
   const out=[];
-  // 「A編成」「S編成」と表示されるカテゴリ項目は共通画像。
   if(groups.A.length) out.push({type:'227系 A編成',typeImg:commonTypeImg,items:groups.A});
   if(groups.S.length) out.push({type:'227系 S編成',typeImg:commonTypeImg,items:groups.S});
   return out;
 }
+
 function normalizeExternalTrain(raw,day,direction,meta){
   if(!raw||!Array.isArray(raw.stops)||!raw.stops.length) return [];
 
@@ -879,7 +916,9 @@ function normalizeExternalTrain(raw,day,direction,meta){
   // 内部識別子として使い、画面上では列車番号を非表示にする。
   const allowedLineNames=new Set(Array.isArray(meta?.jsonLines)?meta.jsonLines:[]);
   const rawTrainNumbers=(raw?.trainNumbers&&typeof raw.trainNumbers==='object')?raw.trainNumbers:{};
-  const rawNumberEntries=Object.entries(rawTrainNumbers).filter(([name,val])=>allowedLineNames.has(String(name))&&Array.isArray(val));
+  // 列車番号は「現在表示中の路線」だけでなく、JSONに収録された全線区分を保持する。
+  // 可部線・呉線のページでも、山陽本線を走る列車の番号をその列車自身の番号として表示できるようにする。
+  const rawNumberEntries=Object.entries(rawTrainNumbers).filter(([,val])=>Array.isArray(val));
   const hasTrainNumber=rawNumberEntries.some(([,val])=>val.some(n=>String(n??'').trim()));
   const numbersByLine={};
   const allNumbers=[];
@@ -995,6 +1034,8 @@ function trainDisplayNoAtPosition(train,pos){
     }
   }
   if(best) return best;
+  // JSONに列車番号が存在しない列車は、内部IDを画面へ漏らさない。
+  if(train?.hasTrainNumber===false || train?.hideTrainNumber) return '';
   return String(train?.noSequence?.[0]||train?.no||'');
 }
 function displayTrainNoAtTime(train,minutes){
@@ -1017,6 +1058,8 @@ async function loadLineTrainData(routeName=activeRouteName){
   if(!res.ok) throw new Error(`広島地区.json の読み込みに失敗しました (${res.status})`);
   const json=await res.json(); activeJson=json;
   STATIONS=buildStationsForRoute(json,activeRouteMeta);
+  // 路線ごとの初期編成アイコンを即時反映。海岸線は専用5000形アイコンを使用する。
+  if(typeof defaultTrainImage==='function') INITIAL_FORMATION_SELECTION.img=defaultTrainImage();
   for(const key of Object.keys(VEHICLE_TO_FORMATION)) delete VEHICLE_TO_FORMATION[key];
   FORMATIONS=buildFormationsForJson(json);
   TYPE_SELECTIONS=FORMATIONS.map(g=>({id:g.type,name:g.type,img:g.typeImg,kind:'type',type:g.type}));
@@ -2149,7 +2192,6 @@ function formationIdFromInput(value){
   if(!v) return {ok:false,error:'車両番号または編成番号を入力してください。'};
 
   const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction||null) || currentTrainSnapshot || trainForCurrentDay(currentTrainNo,currentTrainSnapshot?.direction||null);
-  const allowedFamily=allowedFormationFamily(train);
   const candidates=[
     v,
     v.endsWith('F')?v.slice(0,-1):v,
@@ -2158,8 +2200,8 @@ function formationIdFromInput(value){
   for(const c of candidates){
     const exact=formationById(c);
     if(!exact) continue;
-    if(formationFamily(exact)!==allowedFamily){
-      return {ok:false,error:allowedFamily==='yokohama'?'この列車は横浜線系統の編成のみ入力できます。':'この列車は京浜東北線系統の編成のみ入力できます。'};
+    if(!formationAllowedForTrain(train,exact.id)){
+      return {ok:false,error:'この路線ではこの編成を入力できません。'};
     }
     if(exact.disabled || UNAVAILABLE_FORMATIONS.has(normalizeStoredFormationId(exact.id))) {
       return {ok:false,error:`編成「${exact.name||exact.id}」は入力できません。`};
@@ -2167,16 +2209,28 @@ function formationIdFromInput(value){
     return {ok:true,id:normalizeStoredFormationId(exact.id)};
   }
 
-  // 車両番号から編成番号を特定する。
-  // 南武線版と同様、車種 + E233 + ハイフン + 4桁の形式を受け付ける。
-  const vehicleNoMatch=v.match(/^(?:クハE233|クハE232|モハE233|モハE232|サハE233|サハE232)-(\d{4})$/i);
-  if(vehicleNoMatch){
-    const formationId=VEHICLE_TO_FORMATION[vehicleNoMatch[1]];
-    const exact=formationId?formationById(formationId):null;
+  // JSONに登録された車両番号から編成番号を特定する。
+  // 海岸線の5101～5410など、路線固有の車両番号もここで直接解決する。
+  const formationId=VEHICLE_TO_FORMATION[v] || VEHICLE_TO_FORMATION[v.replace(/F$/i,'')];
+  if(formationId){
+    const exact=formationById(formationId);
     if(exact){
-      if(formationFamily(exact)!==allowedFamily){
-        return {ok:false,error:allowedFamily==='yokohama'?'この列車は横浜線系統の編成のみ入力できます。':'この列車は京浜東北線系統の編成のみ入力できます。'};
+      if(!formationAllowedForTrain(train,exact.id)) return {ok:false,error:'この路線ではこの編成を入力できません。'};
+      if(exact.disabled || UNAVAILABLE_FORMATIONS.has(normalizeStoredFormationId(exact.id))) {
+        return {ok:false,error:`編成「${exact.name||exact.id}」は入力できません。`};
       }
+      return {ok:true,id:normalizeStoredFormationId(exact.id)};
+    }
+  }
+
+  // 227系など従来の車種＋車号表記にも対応。
+  const vehicleNoMatch=v.match(/^(?:クハE233|クハE232|モハE233|モハE232|サハE233|サハE232)-([0-9]+)$/i);
+  if(vehicleNoMatch){
+    const vehicleKey=vehicleNoMatch[1];
+    const legacyId=VEHICLE_TO_FORMATION[vehicleKey];
+    const exact=legacyId?formationById(legacyId):null;
+    if(exact){
+      if(!formationAllowedForTrain(train,exact.id)) return {ok:false,error:'この路線ではこの編成を入力できません。'};
       if(exact.disabled || UNAVAILABLE_FORMATIONS.has(normalizeStoredFormationId(exact.id))) {
         return {ok:false,error:`編成「${exact.name||exact.id}」は入力できません。`};
       }
@@ -2186,6 +2240,7 @@ function formationIdFromInput(value){
 
   return {ok:false,error:`車両番号「${raw}」に該当する編成が見つかりません。`};
 }
+
 function formationFamily(groupOrItem){
   return formationFamilyFromType(groupOrItem?.type);
 }
@@ -3315,8 +3370,8 @@ function updateSheetContent(){
         <div class="custom-select-options" id="dropdownOptions">
           <div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}')"><img src="${INITIAL_FORMATION_SELECTION.img}" class="option-img"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>
           ${formationsForTrain(train).map(group=>`
-            <div class="option-header option-category-header" onclick="selectFormation('${group.type}')">
-              <img src="${group.typeImg}" class="option-img"><span>${group.type}</span>
+            <div class="option-header option-category-header" ${/227系 [AS]編成$/.test(String(group.type||''))?`onclick="selectFormation('${String(group.type).includes('S編成')?'S編成':'A編成'}')"`:''}>
+              <img src="${group.typeImg}" class="option-img"><span>${String(group.type).replace(/^227系 /,'')}</span>
             </div>
             ${(group.variants||[]).map(variant=>`
               <div class="option-header option-subheader" onclick="selectFormation('${variant.id}')">
@@ -4323,7 +4378,10 @@ function getMainLabelClass(type){
   return value==='回送'?'deadhead':(value.includes('快速')?'express':'route-normal');
 }
 function trainVisualKind(t){ return expressClassForTrain(t); }
-function defaultTrainImage(){ return activeJson?.commonFormationIcon ? `https://minamikaze2700.github.io/Unyomatome/images/${activeJson.commonFormationIcon}.png` : LINE_TRAIN_IMG; }
+function defaultTrainImage(){
+  if(activeRouteMeta?.trainImage) return String(activeRouteMeta.trainImage);
+  return activeJson?.commonFormationIcon ? `https://minamikaze2700.github.io/Unyomatome/images/${activeJson.commonFormationIcon}.png` : LINE_TRAIN_IMG;
+}
 function formationsForTrain(){ return FORMATIONS; }
 function allowedFormationFamily(){ return 'hiroshima'; }
 function formationFamilyForTypeSafe(){ return 'hiroshima'; }
@@ -5054,10 +5112,14 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     const groups=formationsForTrain(currentTrainSnapshot||{});
     const initial=`<div class="option-item initial-option" onclick="selectFormationAtSlot(${slot},'${INITIAL_FORMATION_SELECTION.id}')"><img src="${esc(INITIAL_FORMATION_SELECTION.img)}" class="option-img"><span>${esc(INITIAL_FORMATION_SELECTION.name)}</span></div>`;
     const body=groups.map(group=>{
-      const genericId=String(group.type||'').includes('S編成')?'S編成':'A編成';
-      // A編成/S編成は「個別列車未指定」の共通選択肢。
-      // 共通選択肢は重複扱いにせず、何枠でも選択できる。
-      const type=`<div class="option-header option-category-header option-selectable-category" role="button" tabindex="0" onclick="selectFormationAtSlot(${slot},'${genericId}')"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${genericId}</span></div>`;
+      const groupType=String(group.type||'');
+      const isGenericAS=/^[^A-Z]*227系 [AS]編成$/.test(groupType);
+      const genericId=groupType.includes('S編成')?'S編成':groupType.includes('A編成')?'A編成':'';
+      // A編成/S編成だけは「個別列車未指定」の共通選択肢として選択可能。
+      // それ以外の路線固有形式（例：5000形）は見出しのみで、個別編成を選択する。
+      const type=isGenericAS
+        ? `<div class="option-header option-category-header option-selectable-category" role="button" tabindex="0" onclick="selectFormationAtSlot(${slot},'${genericId}')"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${genericId}</span></div>`
+        : `<div class="option-header option-category-header"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(groupType)}</span></div>`;
       const items=(group.items||[]).map(item=>{
         const id=String(item.id||'').replace(/F$/i,'');
         if(!id || item.disabled || UNAVAILABLE_FORMATIONS.has(id)) return '';
