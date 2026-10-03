@@ -813,8 +813,7 @@ const ROUTE_REGISTRY={
     range:'新長田～三宮・花時計前',
     area:'神戸市営地下鉄',
     company:'神戸市営地下鉄',
-    formationCountDefault:1,
-    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobekaigan_noimage.png'
+    formationCountDefault:1
   }
 };
 let activeRouteName='';
@@ -824,6 +823,13 @@ const LINE_TRAIN_IMG='https://minamikaze2700.github.io/Unyomatome/images/227-0_n
 const KEIHIN_TOHOKU_TRAIN_IMG=LINE_TRAIN_IMG;
 const YOKOHAMA_TRAIN_IMG=LINE_TRAIN_IMG;
 const INITIAL_FORMATION_SELECTION={id:'__INITIAL__',name:'編成未選択',img:LINE_TRAIN_IMG,kind:'placeholder'};
+function jsonNoImageUrl(json=activeJson){
+  const raw=String(json?.noImage||json?.formationDefaultImage||json?.commonFormationIcon||'').trim();
+  if(!raw) return LINE_TRAIN_IMG;
+  if(/^https?:\/\//i.test(raw)) return raw;
+  return `https://minamikaze2700.github.io/Unyomatome/images/${raw.replace(/\.png$/i,'')}.png`;
+}
+function syncInitialFormationImage(){ INITIAL_FORMATION_SELECTION.img=jsonNoImageUrl(); return INITIAL_FORMATION_SELECTION.img; }
 const UNAVAILABLE_FORMATIONS=new Set();
 const OPERATION_CHAINS={平日:[],休日:[]};
 const CHAIN_INDEX={平日:{},休日:{}};
@@ -851,7 +857,7 @@ function buildFormationsForJson(json){
   const base='https://minamikaze2700.github.io/Unyomatome/images/';
   const makeImg=(rawImage, fallback)=>{
     const v=String(rawImage||fallback||'').trim();
-    if(!v) return LINE_TRAIN_IMG;
+    if(!v) return jsonNoImageUrl(json);
     if(/^https?:\/\//i.test(v)) return v;
     return `${base}${v.replace(/\.png$/i,'')}.png`;
   };
@@ -2300,7 +2306,7 @@ function prescribedFormationName(){
 }
 function defaultTrainImage(){
   if(activeRouteMeta?.trainImage) return String(activeRouteMeta.trainImage);
-  return activeJson?.commonFormationIcon ? `https://minamikaze2700.github.io/Unyomatome/images/${activeJson.commonFormationIcon}.png` : LINE_TRAIN_IMG;
+  return jsonNoImageUrl();
 }
 function imageForTrain(t){
   // 表示時はFirebaseから同期したregistrationStateを登録情報の基準にする。
@@ -3368,7 +3374,7 @@ function updateSheetContent(){
           </div>▼
         </div>
         <div class="custom-select-options" id="dropdownOptions">
-          <div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}')"><img src="${INITIAL_FORMATION_SELECTION.img}" class="option-img"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>
+          <div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}')"><img src="${syncInitialFormationImage()}" class="option-img"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>
           ${formationsForTrain(train).map(group=>`
             <div class="option-header option-category-header" ${/227系 [AS]編成$/.test(String(group.type||''))?`onclick="selectFormation('${String(group.type).includes('S編成')?'S編成':'A編成'}')"`:''}>
               <img src="${group.typeImg}" class="option-img"><span>${String(group.type).replace(/^227系 /,'')}</span>
@@ -4380,7 +4386,7 @@ function getMainLabelClass(type){
 function trainVisualKind(t){ return expressClassForTrain(t); }
 function defaultTrainImage(){
   if(activeRouteMeta?.trainImage) return String(activeRouteMeta.trainImage);
-  return activeJson?.commonFormationIcon ? `https://minamikaze2700.github.io/Unyomatome/images/${activeJson.commonFormationIcon}.png` : LINE_TRAIN_IMG;
+  return jsonNoImageUrl();
 }
 function formationsForTrain(){ return FORMATIONS; }
 function allowedFormationFamily(){ return 'hiroshima'; }
@@ -5110,7 +5116,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
   function renderFormationOptions(slot,currentIds,count){
     const current=currentIds[slot]||'';
     const groups=formationsForTrain(currentTrainSnapshot||{});
-    const initial=`<div class="option-item initial-option" onclick="selectFormationAtSlot(${slot},'${INITIAL_FORMATION_SELECTION.id}')"><img src="${esc(INITIAL_FORMATION_SELECTION.img)}" class="option-img"><span>${esc(INITIAL_FORMATION_SELECTION.name)}</span></div>`;
+    const initial=`<div class="option-item initial-option" onclick="selectFormationAtSlot(${slot},'${INITIAL_FORMATION_SELECTION.id}')"><img src="${esc(syncInitialFormationImage())}" class="option-img"><span>${esc(INITIAL_FORMATION_SELECTION.name)}</span></div>`;
     const body=groups.map(group=>{
       const groupType=String(group.type||'');
       const isGenericAS=/^[^A-Z]*227系 [AS]編成$/.test(groupType);
@@ -5131,7 +5137,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
         });
         // 重複する個別編成は「選択不可」ではなく、候補そのものから除外する。
         if(selectedElsewhere) return '';
-        return `<div class="option-item" onclick="selectFormationAtSlot(${slot},'${escapeJs(id)}')"><img src="${esc(item.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src='${escapeJs(LINE_TRAIN_IMG)}'"><span>${esc(item.name||id)}</span></div>`;
+        return `<div class="option-item" onclick="selectFormationAtSlot(${slot},'${escapeJs(id)}')"><img src="${esc(item.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=defaultTrainImage()"><span>${esc(item.name||id)}</span></div>`;
       }).join('');
       return type+items;
     }).join('');
