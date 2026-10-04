@@ -960,7 +960,7 @@ const ROUTE_REGISTRY={
     formationTypeImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobecity6000.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png',
-    access:{public:true,routeAdmins:[]},
+    access:{public:false,routeAdmins:[]},
     formationInputExample:'6000形'
   },
   '京浜東北・根岸線':{
@@ -1069,6 +1069,15 @@ const ROUTE_REGISTRY={
     prescribedFormationRule:'nagano'
   }
 };
+
+// 新規路線は access を省略した場合も非公開を既定値とする。
+for(const meta of Object.values(ROUTE_REGISTRY)){
+  if(!meta.access || typeof meta.access!=='object') meta.access={public:false,routeAdmins:[]};
+  else {
+    meta.access.public=meta.access.public===true;
+    if(!Array.isArray(meta.access.routeAdmins)) meta.access.routeAdmins=[];
+  }
+}
 function routeNameFromId(value){
   const raw=String(value??'').trim();
   if(!raw) return '';
