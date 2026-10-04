@@ -4538,20 +4538,27 @@ function syncRegionNavLayout(){
   const nav=document.getElementById('regionNav');
   if(!nav) return;
   const rect=nav.getBoundingClientRect();
-  const vv=window.visualViewport;
-  const viewportBottom=(Number(vv?.offsetTop||0))+(Number(vv?.height||window.innerHeight)||0);
-  const pageBottom=Number.isFinite(viewportBottom) && viewportBottom>0 ? viewportBottom : window.innerHeight;
-  // 地域メニューの実際の下端から上端までを「避ける領域」として使う。
-  // transform/scale後もgetBoundingClientRect()なので実表示サイズに追従する。
-  const top=Math.min(pageBottom,Math.max(0,Number(rect.top)||0));
-  const bottom=Math.min(pageBottom,Math.max(top,Number(rect.bottom)||pageBottom));
-  const offset=Math.max(0,Math.ceil(pageBottom-top));
-  document.documentElement.style.setProperty('--sheet-bottom-offset',offset+'px');
-  document.documentElement.style.setProperty('--current-nav-height',Math.max(0,Math.ceil(pageBottom-bottom))+'px');
+  const isMobile=window.innerWidth<=959.98;
+  // 地域メニューはスマホでは960px基準でzoomされるため、
+  // viewportCanvasにはzoom前の高さを渡す。bottom-sheetには実表示高さを渡す。
+  const scale=isMobile ? Math.max(0.01,window.innerWidth/960) : 1;
+  const visualHeight=Math.max(0,Number(rect.height)||0);
+  const layoutHeight=Math.ceil(visualHeight/scale);
+  document.documentElement.style.setProperty('--current-nav-height',layoutHeight+'px');
+  document.documentElement.style.setProperty('--sheet-bottom-offset',Math.ceil(visualHeight)+'px');
 }
-window.addEventListener('load',syncRegionNavLayout);
-window.addEventListener('resize',syncRegionNavLayout);
-if(window.visualViewport){window.visualViewport.addEventListener('resize',syncRegionNavLayout);}
+function scheduleRegionNavLayout(){
+  if(window.__regionNavLayoutRaf) cancelAnimationFrame(window.__regionNavLayoutRaf);
+  window.__regionNavLayoutRaf=requestAnimationFrame(()=>{
+    window.__regionNavLayoutRaf=0;
+    syncRegionNavLayout();
+  });
+}
+window.addEventListener('load',scheduleRegionNavLayout,{passive:true});
+window.addEventListener('resize',scheduleRegionNavLayout,{passive:true});
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',scheduleRegionNavLayout,{passive:true});
+}
 
 function initRegionNavigation(){
   const nav=document.getElementById('regionNav');
@@ -4635,7 +4642,7 @@ function initRegionNavigation(){
     .region-panel-card{background:#fff;line-height:1.8;}
     /* メインページ準拠：地域メニューの上端をメイン表示の下端にする */
     :root{--region-nav-height:42px;}
-    body{padding-bottom:var(--current-nav-height,42px) !important;}
+    #viewportCanvas{padding-bottom:var(--current-nav-height,42px) !important;} body{padding-bottom:0 !important;}
     #viewportCanvas{padding-bottom:var(--current-nav-height,42px) !important;}
     #lineContainer{padding-bottom:0 !important;}
     .region-nav{position:fixed;left:0;right:0;bottom:0;height:42px;z-index:50000;display:grid;grid-template-columns:repeat(11,minmax(0,1fr));background:#c7c7c7;border-top:1px solid #b7b7b7;pointer-events:auto !important;}
