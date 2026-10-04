@@ -2,10 +2,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta property="og:title" content="広島地区 - 運用まとめ">
-<meta property="og:description" content="JR西日本 広島地区の運用を記録しよう">
+<meta property="og:title" content="運用まとめ">
+<meta property="og:description" content="日本各地の鉄道路線の運用を記録・確認できる運用まとめ">
 
-<meta property="og:url" content="https://minamikaze2700.github.io/Unyomatome/広島地区.html">
+<meta property="og:url" content="https://minamikaze2700.github.io/Unyomatome/mainpage.html">
 <meta property="og:type" content="website">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -14,7 +14,7 @@
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>運用まとめ - 広島地区</title>
+<title>運用まとめ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -42,14 +42,14 @@ button,input,select,textarea{font-family:inherit}
     color: #fff;
     font-weight: 500;
     display: flex;
-    background: #f2c400;
+    background: #808080;
     width: 100%;
     position: fixed;
     top: 0;
     left: 0;
     justify-content: center;
     align-items: center;
-    border-bottom: 8px solid #fff1a8;
+    border-bottom: 8px solid #d9d9d9;
     z-index: 1000;
 }
 
@@ -142,6 +142,7 @@ button,input,select,textarea{font-family:inherit}
 /* モーダル */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:none}
 .bottom-sheet{
+  container-type:inline-size;
   position:fixed;left:0;right:0;bottom:calc(-100% - var(--sheet-bottom-offset,42px));z-index:101;
   max-width:820px;margin:0 auto;max-height:75vh;min-height:0;overflow-y:auto;
   background:var(--sheet);border-radius:16px 16px 0 0;
@@ -397,17 +398,62 @@ button,input,select,textarea{font-family:inherit}
 }
 .station-neighbor.empty{visibility:hidden;}
 
+/* 駅情報の前後駅表示：パソコン時の820px幅を基準に、スマホでも全要素を同じ比率で縮小 */
+@container (max-width:819px){
+  .station-overview-card{
+    margin-bottom:1.9512195cqw;
+    border-width:.2439024cqw;
+    border-radius:1.2195122cqw;
+  }
+  .station-overview-main{
+    padding:.9756098cqw 1.2195122cqw 1.097561cqw;
+  }
+  .station-overview-name-ja{
+    font-size:6.3414634cqw;
+  }
+  .station-overview-name-en{
+    font-size:3.5365854cqw;
+    margin-top:.2439024cqw;
+  }
+  .station-direction-bar{
+    height:2.195122cqw;
+  }
+  .station-neighbor-row{
+    min-height:6.5853659cqw;
+  }
+  .station-neighbor{
+    padding:.2439024cqw .9756098cqw .9756098cqw;
+  }
+  .station-neighbor-name-ja{
+    font-size:3.2926829cqw;
+  }
+  .station-neighbor-name-en{
+    font-size:1.7073171cqw;
+    margin-top:.1219512cqw;
+  }
+}
+
 .train-card-img{width:75px;height:auto;object-fit:contain}
 .train-info-main{flex:1}
 .type-badge{background:#f2c400;color:#111;padding:3px 8px;border-radius:4px;font-size:.78rem;display:inline-block}
 .type-badge.a-express{background:#f39800}
 .type-badge.b-express{background:#f39800}
 .train-title{font-size:0.95rem;font-weight:700;margin-left:6px}
+.train-title.no-type{margin-left:0}
 .train-number{color:#1b6e27;font-weight:800;float:right;margin-right:15px}
 .formation-id{font-size:1.2rem;font-weight:800;color:#444 !important;margin-top:4px}
 .capacity-info{color:#666;font-size:.85rem;margin-top:4px}
 
-.formation-updated-at{position:absolute;right:12px;bottom:8px;font-size:.78rem;color:#777;text-align:right;} 
+.formation-updated-at{position:absolute;right:12px;bottom:8px;font-size:.78rem;color:#777;text-align:right;white-space:nowrap;z-index:2;}
+.formation-updated-at .permission-tag{font-size:inherit;font-weight:400;margin-left:8px;vertical-align:middle;} 
+.formation-updated-time,.formation-updated-author{display:inline;}
+@media(max-width:520px){
+  /* スマホでも「編成入力」と「時刻」の間に改行を入れない。
+     ユーザー名と管理人タグも同じ行にする。 */
+  .formation-updated-time{display:inline;}
+  .formation-updated-author{display:inline;}
+  .formation-updated-at .permission-tag{display:inline-flex;}
+}
 .input-trigger-btn{
   background:#c62828;color:#fff;padding:4px 8px;border-radius:4px;
   font-size:.75rem;margin-top:4px;display:inline-block;
@@ -521,7 +567,34 @@ button,input,select,textarea{font-family:inherit}
 
 /* 運行情報 */
 .title-route-mark{width:40px;height:40px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;background:#fff;color:#111;font-weight:900;font-size:20px;line-height:1;flex:0 0 auto;box-shadow:0 1px 4px rgba(0,0,0,.15)}
-#operationInfoBtn{position:fixed;right:20px;top:10px;appearance:none;border:0;border-radius:999px;background:#fff;color:#7a6200;padding:8px 17px;font:700 16px/1 inherit;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.18);white-space:nowrap;z-index:1001}
+#operationInfoBtn{position:fixed;right:80px;left:auto;top:10px;appearance:none;border:0;border-radius:999px;background:#fff;color:#7a6200;padding:8px 17px;font:700 16px/1 inherit;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.18);white-space:nowrap;z-index:1001}
+#siteMenuBtn{position:fixed;right:2px;top:0;width:88px;height:58px;appearance:none;border:0;border-radius:0;background:transparent;color:#fff;padding:0;font:900 30px/.72 Arial,sans-serif;cursor:pointer;z-index:1001;display:inline-flex;align-items:center;justify-content:center;line-height:.62;text-shadow:0 1px 3px rgba(0,0,0,.25);transform:scale(1.0);transform-origin:center}
+#siteMenuBtn:hover{filter:brightness(.9)}
+.site-menu-backdrop,.auth-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.32);z-index:1600;display:none}
+.site-menu-backdrop.active,.auth-backdrop.active{display:block}
+.site-menu-panel{position:fixed;right:14px;top:66px;width:min(320px,calc(100vw - 28px));background:#fff;border-radius:14px;box-shadow:0 10px 32px rgba(0,0,0,.28);z-index:1601;display:none;overflow:hidden}
+.site-menu-panel.active{display:block}
+.site-menu-header{padding:13px 16px;background:#9e9e9e;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:space-between}
+.site-menu-header button,.auth-panel-header button{border:0;background:transparent;color:inherit;font-size:20px;cursor:pointer}
+.site-menu-body{padding:12px}
+.site-menu-item{display:block;width:100%;border:0;border-radius:9px;background:#f1f1f1;color:#222;padding:13px 14px;text-align:left;font:700 1rem/1.35 inherit;cursor:pointer}
+.site-menu-item.primary{background:#808080;color:#fff}
+.auth-panel{position:fixed;left:50%;top:80px;transform:translateX(-50%);width:min(560px,calc(100vw - 24px));max-height:calc(100vh - 100px);overflow:auto;background:#eee;border-radius:16px;box-shadow:0 10px 35px rgba(0,0,0,.3);z-index:1602;display:none}
+.auth-panel.active{display:block}
+.auth-panel-header{position:sticky;top:0;z-index:2;background:#9e9e9e;color:#fff;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;font-weight:800;border-radius:16px 16px 0 0}
+.auth-panel-body{padding:16px}
+.auth-description{margin:0 0 12px;color:#555}
+.provider-login{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:10px;padding:12px 14px;margin-bottom:10px;font:700 1rem/1.2 inherit;cursor:pointer}
+.provider-login.google{background:#fff;color:#222;border:1px solid #ddd}.provider-login.twitter{background:#111;color:#fff}
+.provider-icon{font-weight:900;font-size:1.15rem;min-width:20px;text-align:center}
+.user-profile-form{display:flex;flex-direction:column;gap:8px}.user-profile-form[hidden],.login-choices[hidden]{display:none!important}.user-profile-account{font-size:.9rem;color:#555;background:#f5f5f5;border-radius:8px;padding:8px 10px}
+.profile-name-input-row{display:flex;align-items:center;gap:10px;width:100%;}.profile-name-input-row #profileNameInput{flex:1;min-width:0;}.permission-tag{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;background:#999;color:#fff;border-radius:999px;padding:2px 10px;font-size:.86rem;font-weight:400;line-height:1.2;white-space:nowrap;}.permission-a,.permission-l{background:#999;color:#fff;}.profile-permission-info{font-size:.82rem;color:#777;margin-top:-3px;margin-bottom:2px;}
+.user-profile-field{display:flex;flex-direction:column;gap:5px;font-weight:800}.user-profile-field input{width:100%;border:2px solid #ccc;border-radius:8px;padding:10px 11px;font:inherit;background:#fff;color:#111}
+.user-profile-help{font-size:.82rem;color:#777;margin-top:-3px;margin-bottom:3px}
+.profile-save-btn{margin-top:4px;width:100%;border:0;border-radius:9px;padding:11px 14px;background:#808080;color:#fff;font:800 1rem/1 inherit;cursor:pointer}
+.logout-area{margin-top:18px;padding-top:14px;border-top:1px solid #ddd}.logout-btn{width:100%;border:0;border-radius:9px;padding:10px 14px;background:#e6e6e6;color:#b00020;font:800 1rem/1 inherit;cursor:pointer}
+.auth-error{min-height:1.2em;margin-top:8px;color:#c62828;font-size:.88rem;line-height:1.4}
+@media(max-width:700px){#operationInfoBtn{right:88px;padding-left:10px;padding-right:10px}#siteMenuBtn{right:0;width:88px;height:58px;font-size:30px}.site-menu-panel{right:8px;top:62px;width:calc(100vw - 16px)}.auth-panel{top:62px;width:calc(100vw - 16px)}}
 #operationInfoBtn:hover{filter:brightness(.96)}
 .operation-info-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1200;display:none}.operation-info-backdrop.active{display:block}
 .operation-info-panel{position:fixed;left:50%;top:72px;transform:translateX(-50%);width:min(900px,calc(100vw - 24px));max-height:calc(100vh - 96px);overflow:auto;background:#eee;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.3);z-index:1201;display:none}.operation-info-panel.active{display:block}
@@ -613,11 +686,57 @@ button,input,select,textarea{font-family:inherit}
   }
   .time-dot{background:var(--station-route-color-bg) !important;}
 <style id="hiroshima-ui-overrides">
-/* 地域メニュー上に重ならないようsheetの下端をメニュー上端へ */
-.bottom-sheet.active{bottom:var(--sheet-bottom-offset,var(--current-nav-height,42px)) !important;visibility:visible;}
-/* 地域メニュー高さはメインページ準拠 */
+/* 下部メニュー：メインページ.html と同じ固定・サイズ設定 */
 :root{--region-nav-height:42px;}
-@media(max-width:520px){:root{--region-nav-height:64px;}}
+body{padding-bottom:42px !important;}
+#viewportCanvas{padding-bottom:42px !important;}
+.region-nav{
+  position:fixed !important;
+  left:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  width:auto !important;
+  height:42px !important;
+  z-index:120 !important;
+  display:flex !important;
+  align-items:stretch !important;
+  justify-content:flex-start !important;
+  background:#bdbdbd !important;
+  border-radius:12px 12px 0 0 !important;
+  box-shadow:0 -3px 10px rgba(0,0,0,.16) !important;
+  padding:0 4px !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  scrollbar-width:none !important;
+  transform:none !important;
+  margin:0 !important;
+}
+.region-nav::-webkit-scrollbar{display:none;}
+.region-nav button{
+  flex:1 0 auto !important;
+  min-width:76px !important;
+  height:42px !important;
+  border:0 !important;
+  border-left:1px solid #fff !important;
+  border-right:2px solid #fff !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#222 !important;
+  font-size:1.08rem !important;
+  font-weight:700 !important;
+  line-height:1 !important;
+  padding:0 8px !important;
+  white-space:nowrap !important;
+}
+.region-nav button:last-child{border-right:0 !important;}
+.region-nav button:first-child{border-left:0 !important;}
+@media(max-width:520px){
+  :root{--region-nav-height:42px;}
+  body{padding-bottom:42px !important;}
+  #viewportCanvas{padding-bottom:42px !important;}
+  .region-nav{height:42px !important; width:auto !important; left:0 !important; right:0 !important; transform:none !important;}
+  .region-nav button{min-width:58px !important; padding:0 4px !important; height:42px !important;}
+}
 </style>
 <style id="dropdown-region-nav-layer-fix">
 /* 編成プルダウンより地域メニューを常に前面にする */
@@ -630,7 +749,7 @@ button,input,select,textarea{font-family:inherit}
 </head>
 <body>
 
-<h1 id="title"><span id="titleText">運用まとめ</span><button id="operationInfoBtn" type="button" onclick="openOperationInfo()">運行情報</button></h1>
+<h1 id="title"><span id="titleText">運用まとめ</span><button id="operationInfoBtn" type="button" onclick="openOperationInfo()">運行情報</button><button id="siteMenuBtn" type="button" onclick="toggleSiteMenu(event)" aria-label="メニュー" aria-expanded="false">☰</button></h1>
 <div class="control-bar">
   <div class="day-filter">
     <input id="dateInput" class="date-input" type="date">
@@ -664,6 +783,38 @@ button,input,select,textarea{font-family:inherit}
   <div class="sheet-content" id="sheetContent"></div>
 </div>
 
+
+
+<div class="site-menu-backdrop" id="siteMenuBackdrop" onclick="closeSiteMenu()"></div>
+<div class="site-menu-panel" id="siteMenuPanel" role="dialog" aria-modal="true" aria-label="メニュー">
+  <div class="site-menu-header"><span>メニュー</span><button type="button" onclick="closeSiteMenu()" aria-label="閉じる">✖</button></div>
+  <div class="site-menu-body">
+    <button id="siteAccountBtn" class="site-menu-item primary" type="button" onclick="openAccountFromMenu()">ログイン</button>
+  </div>
+</div>
+
+<div class="auth-backdrop" id="authBackdrop" onclick="closeAuthPanel()"></div>
+<div class="auth-panel" id="authPanel" role="dialog" aria-modal="true" aria-label="ログイン・ユーザー情報">
+  <div class="auth-panel-header"><span id="authPanelTitle">ログイン</span><button type="button" onclick="closeAuthPanel()" aria-label="閉じる">✖</button></div>
+  <div class="auth-panel-body">
+    <div id="loginChoices" class="login-choices">
+      <p class="auth-description">Googleでログインできます。</p>
+      <button class="provider-login google" type="button" onclick="signInWithGoogle()"><span class="provider-icon">G</span><span>Googleでログイン</span></button>
+      <div id="authError" class="auth-error"></div>
+    </div>
+    <div id="userProfileForm" class="user-profile-form" hidden>
+      <div class="user-profile-account" id="userProfileAccount"></div>
+      <label class="user-profile-field"><span>登録名</span><input id="profileNameInput" type="text" maxlength="30" autocomplete="nickname" placeholder="登録名を入力"></label>
+      <div class="user-profile-help">他のユーザーと同じ登録名は使用できません。</div>
+      <label class="user-profile-field"><span>ID</span><input id="profileIdInput" type="text" maxlength="30" autocomplete="off" placeholder="IDを入力"></label>
+      <div class="user-profile-help">IDも他のユーザーと重複できません。</div>
+      <div id="profileSaveError" class="auth-error"></div>
+      <button class="profile-save-btn" type="button" onclick="saveUserProfile()">保存</button>
+      <div class="logout-area"><button class="logout-btn" type="button" onclick="logoutUser()">ログアウト</button></div>
+    </div>
+  </div>
+</div>
+
 <div class="operation-info-backdrop" id="operationInfoBackdrop" onclick="closeOperationInfo()"></div>
 <div class="operation-info-panel" id="operationInfoPanel" role="dialog" aria-modal="true" aria-label="運行情報">
   <div class="operation-info-header"><span>運行情報の登録</span><button type="button" onclick="closeOperationInfo()" aria-label="閉じる">✖</button></div>
@@ -685,35 +836,29 @@ button,input,select,textarea{font-family:inherit}
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics-compat.js"></script>
 <script>
-/* Firebase設定：広島地区 */
+/* Firebase設定 */
 window.JRELINE_FIREBASE_CONFIG = {
-  apiKey: "AIzaSyAad3EIFOYCIemCWr8qIc885kQyJcy9HQQ",
-  authDomain: "unyomatome-hiroshima.firebaseapp.com",
-  databaseURL: "https://unyomatome-hiroshima-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "unyomatome-hiroshima",
-  storageBucket: "unyomatome-hiroshima.firebasestorage.app",
-  messagingSenderId: "880082169387",
-  appId: "1:880082169387:web:5a396aab74fcce714e446e",
-  measurementId: "G-ZERKRW3X8G"
+  apiKey: "AIzaSyDjbevyf9NXeBXCi-wrtkvOq_5LWGOPgVI",
+  authDomain: "unyomatome-5782e.firebaseapp.com",
+  // Realtime Database のURL。Consoleの「Realtime Database」画面に表示されるURLと
+  // 異なる場合は、そのURLへ置き換えてください。
+  databaseURL: window.JRELINE_FIREBASE_DATABASE_URL || "https://unyomatome-5782e-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "unyomatome-5782e",
+  storageBucket: "unyomatome-5782e.firebasestorage.app",
+  messagingSenderId: "574667463811",
+  appId: "1:574667463811:web:e4ac5d526c83c416444fb6",
+  measurementId: "G-CB29XT8ZT9"
 };
 </script>
 <script>
-const JRE_KEIHIN_FIREBASE_CONFIG = {
-  apiKey: "AIzaSyAad3EIFOYCIemCWr8qIc885kQyJcy9HQQ",
-  authDomain: "unyomatome-hiroshima.firebaseapp.com",
-  databaseURL: "https://unyomatome-hiroshima-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "unyomatome-hiroshima",
-  storageBucket: "unyomatome-hiroshima.firebasestorage.app",
-  messagingSenderId: "880082169387",
-  appId: "1:880082169387:web:5a396aab74fcce714e446e",
-  measurementId: "G-ZERKRW3X8G"
-};
+const JRE_KEIHIN_FIREBASE_CONFIG = window.JRELINE_FIREBASE_CONFIG;
 const JRE_YOKOHAMA_FIREBASE_CONFIG = JRE_KEIHIN_FIREBASE_CONFIG;
 </script>
 <script>
-/* 広島地区：路線・時刻表・編成はJSONから外部読み込み */
+/* 路線・時刻表・編成はJSONから外部読み込み */
 let STATIONS=[];
 let FORMATIONS=[];
 let TRAINS=[];
@@ -730,28 +875,79 @@ const RESET_HOUR=3;
 const RESET_DWELL_MIN=2;
 const TURNBACK_SWITCH_MIN=1;
 const TRAIN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/広島地区.json';
+const KOBE_KAIGAN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/神戸市営地下鉄.json';
 const DEFAULT_ROUTE_TITLE='運用まとめ';
-const LAST_ROUTE_STORAGE_KEY='hiroshimaAreaLastRoute_v1';
+const LAST_ROUTE_STORAGE_KEY='routeLastRoute_v1';
 const ROUTE_REGISTRY={
   '山陽本線（糸崎～岩国）':{
+    id:'sanyo-hiroshima',
     json:TRAIN_DATA_URL,
     jsonLines:['山陽本線（三原～広島）','山陽本線（広島～岩国）'],
     range:'糸崎～岩国',
-    company:'JR西日本'
+    area:'JR広島',
+    storageRoot:'広島地区',
+    storageArea:'JR広島',
+    company:'JR西日本',
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '可部線':{
+    id:'kabe',
     json:TRAIN_DATA_URL,
     jsonLines:['可部線'],
     range:'広島～あき亀山',
-    company:'JR西日本'
+    area:'JR広島',
+    storageRoot:'広島地区',
+    storageArea:'JR広島',
+    company:'JR西日本',
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '呉線':{
+    id:'kure',
     json:TRAIN_DATA_URL,
     jsonLines:['呉線'],
     range:'糸崎～広島',
-    company:'JR西日本'
+    area:'JR広島',
+    storageRoot:'広島地区',
+    storageArea:'JR広島',
+    company:'JR西日本',
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'クモハ226-1 / A01 / S01'
+  },
+  '海岸線':{
+    id:'kobe-kaigan',
+    json:KOBE_KAIGAN_DATA_URL,
+    jsonLines:['海岸線'],
+    range:'新長田～三宮・花時計前',
+    area:'神戸市営',
+    storageRoot:'神戸市営',
+    storageArea:null,
+    company:'神戸市営地下鉄',
+    formationCountDefault:1,
+    access:{public:true,routeAdmins:[]},
+    formationInputExample:'5101 / 5101F / 5000系'
   }
 };
+function routeNameFromId(value){
+  const raw=String(value??'').trim();
+  if(!raw) return '';
+  if(ROUTE_REGISTRY[raw]) return raw;
+  const entry=Object.entries(ROUTE_REGISTRY).find(([,meta])=>String(meta?.id||'')===raw);
+  return entry?entry[0]:'';
+}
+function routeIdFromName(routeName){
+  return String(ROUTE_REGISTRY[String(routeName||'')]?.id||'').trim();
+}
+function formationStorageContext(routeOrTrain=activeRouteName){
+  const routeName=typeof routeOrTrain==='string' ? routeOrTrain : String(routeOrTrain?.routeName||activeRouteName||'');
+  const meta=ROUTE_REGISTRY[routeName]||{};
+  const isKobe=routeName==='海岸線' || String(routeOrTrain?.lineKind||'').toLowerCase()==='kobe' || meta.storageRoot==='神戸市営';
+  return isKobe
+    ? {family:'kobe',root:'神戸市営',area:null}
+    : {family:'hiroshima',root:String(meta.storageRoot||'広島地区'),area:String(meta.storageArea||'JR広島')};
+}
+function formationStorageFamilyForTrain(train){ return formationStorageContext(train).family; }
 let activeRouteName='';
 let activeRouteMeta=null;
 let activeJson=null;
@@ -759,9 +955,67 @@ const LINE_TRAIN_IMG='https://minamikaze2700.github.io/Unyomatome/images/227-0_n
 const KEIHIN_TOHOKU_TRAIN_IMG=LINE_TRAIN_IMG;
 const YOKOHAMA_TRAIN_IMG=LINE_TRAIN_IMG;
 const INITIAL_FORMATION_SELECTION={id:'__INITIAL__',name:'編成未選択',img:LINE_TRAIN_IMG,kind:'placeholder'};
+function jsonNoImageUrl(json=activeJson){
+  const raw=String(json?.noImage||json?.formationDefaultImage||json?.commonFormationIcon||'').trim();
+  if(!raw) return LINE_TRAIN_IMG;
+  if(/^https?:\/\//i.test(raw)) return raw;
+  return `https://minamikaze2700.github.io/Unyomatome/images/${raw.replace(/\.png$/i,'')}.png`;
+}
+function syncInitialFormationImage(){ INITIAL_FORMATION_SELECTION.img=jsonNoImageUrl(); return INITIAL_FORMATION_SELECTION.img; }
 const UNAVAILABLE_FORMATIONS=new Set();
 const OPERATION_CHAINS={平日:[],休日:[]};
 const CHAIN_INDEX={平日:{},休日:{}};
+
+/* JSONに保存した一日分の運用連結を、位置計算で使える列車オブジェクトへ展開する。
+   JSON側は列車IDだけを持たせ、始発・終着・時刻などは列車本体から参照する。 */
+function rebuildOperationChainIndex(){
+  for(const day of ['平日','休日']){
+    CHAIN_INDEX[day]={};
+    const chains=OPERATION_CHAINS[day]||[];
+    chains.forEach((chain,chainIndex)=>{
+      (chain||[]).forEach((entry,entryIndex)=>{
+        const raw=String(entry?.no||entry||'').trim();
+        const t=entry?.stops ? entry : findOperationTrainRecord(raw,day);
+        const no=String(t?.no||raw).trim();
+        if(!no) return;
+        const info={chainId:`${day}-${String(chainIndex+1).padStart(2,'0')}`,chainIndex,entryIndex,entry:t||{no}};
+        CHAIN_INDEX[day][no]=info;
+        const canonical=no.replace(/A$/i,'');
+        if(!CHAIN_INDEX[day][canonical]) CHAIN_INDEX[day][canonical]=info;
+      });
+    });
+  }
+}
+function loadOperationChainsFromJson(json){
+  for(const day of ['平日','休日']){
+    const rawChains=json?.operationChains?.[day];
+    OPERATION_CHAINS[day]=Array.isArray(rawChains)
+      ? rawChains.map(chain=>(Array.isArray(chain)?chain:[])
+          .map(entry=>{
+            const id=String(entry??'').trim();
+            return id ? findOperationTrainRecord(id,day) : null;
+          })
+          .filter(Boolean)
+          .map(t=>({
+            no:String(t.no||''),
+            type:String(t.type||''),
+            start:String(t.start||t.stops?.[0]?.station||''),
+            startTime:String(t.startTime||t.stops?.[0]?.departure||t.stops?.[0]?.time||''),
+            dest:String(t.dest||t.stops?.[t.stops.length-1]?.station||''),
+            endTime:String(t.endTime||t.stops?.[t.stops.length-1]?.arrival||t.stops?.[t.stops.length-1]?.time||'')
+          }))
+        ).filter(chain=>chain.length)
+      : [];
+  }
+  rebuildOperationChainIndex();
+}
+function operationChainFirstNo(day,trainNo){
+  const info=findChain(day,trainNo);
+  if(!info) return normalizeTrainNo(trainNo);
+  const chain=OPERATION_CHAINS[day]?.[info.chainIndex]||[];
+  return normalizeTrainNo(chain[0]?.no || chain[0] || trainNo);
+}
+const operationChainFirstTrainNo=operationChainFirstNo;
 const VEHICLE_TO_FORMATION={};
 let TYPE_SELECTIONS=[];
 function formationFamilyFromType(){return 'keihin';}
@@ -783,18 +1037,53 @@ function buildStationsForRoute(json,meta){
   return list;
 }
 function buildFormationsForJson(json){
-  const groups={A:[],S:[]};
   const base='https://minamikaze2700.github.io/Unyomatome/images/';
+  const makeImg=(rawImage, fallback)=>{
+    const v=String(rawImage||fallback||'').trim();
+    if(!v) return jsonNoImageUrl(json);
+    if(/^https?:\/\//i.test(v)) return v;
+    return `${base}${v.replace(/\.png$/i,'')}.png`;
+  };
+  const rawFormations=Array.isArray(json?.formations)?json.formations:[];
+  const declaredType=String(json?.formationType||'').trim();
+  const declaredTypeImg=makeImg(json?.formationTypeImage,json?.commonFormationIcon);
+
+  // 路線固有の編成グループをJSON側で指定できるようにする。
+  // 227系A/S編成など従来形式は従来どおり自動分類する。
+  if(declaredType){
+    const items=[];
+    for(const raw of rawFormations){
+      const rawId=String(raw?.formation||raw?.id||'').trim();
+      if(!rawId) continue;
+      const displayId=rawId.replace(/F$/i,'');
+      const carsArr=Array.isArray(raw?.cars)?raw.cars.map(x=>String(x||'').trim()).filter(Boolean):[];
+      const cars=carsArr.length || Number(raw?.carCount)||2;
+      const item={
+        id:displayId,
+        name:String(raw?.name||`${displayId}編成`),
+        img:makeImg(raw?.image,json?.formationDefaultImage||json?.commonFormationIcon),
+        cars,
+        carNames:carsArr
+      };
+      items.push(item);
+      for(const car of carsArr){
+        VEHICLE_TO_FORMATION[car]=item.id;
+        const normalized=car.replace(/[^0-9A-Za-z一-龥]+/g,'');
+        if(normalized) VEHICLE_TO_FORMATION[normalized]=item.id;
+      }
+    }
+    return items.length?[{type:declaredType,typeImg:declaredTypeImg,items}]:[];
+  }
+
+  const groups={A:[],S:[]};
   const commonTypeImg=`${base}227-0.png`;
-  for(const raw of (Array.isArray(json?.formations)?json.formations:[])){
+  for(const raw of rawFormations){
     const id=String(raw?.formation||'').trim(); if(!id) continue;
     const displayId=id.replace(/F$/i,'');
     const prefix=displayId[0]==='S'?'S':'A';
-    // 個別編成は必ず「227_編成番号.png」を使用する。
-    // JSONのimage値が別名でも、S編成をA01画像に差し替えない。
-    const img=`${base}227_${encodeURIComponent(displayId)}.png`;
+    const img=makeImg(raw?.image,`227_${encodeURIComponent(displayId)}`);
     const cars=Array.isArray(raw?.cars)?raw.cars.length:Number(raw?.cars)||2;
-    const item={id:id.endsWith('F')?id:id+'F',name:displayId,img,cars,carNames:Array.isArray(raw?.cars)?raw.cars.slice():[]};
+    const item={id:displayId,name:displayId,img,cars,carNames:Array.isArray(raw?.cars)?raw.cars.slice():[]};
     for(const car of (Array.isArray(raw?.cars)?raw.cars:[])){
       const c=String(car||''); if(!c) continue;
       VEHICLE_TO_FORMATION[c]=item.id;
@@ -803,36 +1092,38 @@ function buildFormationsForJson(json){
     groups[prefix].push(item);
   }
   const out=[];
-  // 「A編成」「S編成」と表示されるカテゴリ項目は共通画像。
   if(groups.A.length) out.push({type:'227系 A編成',typeImg:commonTypeImg,items:groups.A});
   if(groups.S.length) out.push({type:'227系 S編成',typeImg:commonTypeImg,items:groups.S});
   return out;
 }
+
 function normalizeExternalTrain(raw,day,direction,meta){
   if(!raw||!Array.isArray(raw.stops)||!raw.stops.length) return [];
 
-  // 現在表示している路線に属する列車だけを採用する。
-  // 直通列車は、現在路線のJSON線区名が1つでもtrainNumbersに含まれていれば採用する。
+  // 列車番号が存在する路線は従来どおり線区ごとの番号を使う。
+  // 列車番号を持たない路線（例：神戸市営地下鉄 海岸線）は、JSONのidを
+  // 内部識別子として使い、画面上では列車番号を非表示にする。
   const allowedLineNames=new Set(Array.isArray(meta?.jsonLines)?meta.jsonLines:[]);
   const rawTrainNumbers=(raw?.trainNumbers&&typeof raw.trainNumbers==='object')?raw.trainNumbers:{};
-  const matchedLineNames=Object.keys(rawTrainNumbers).filter(name=>allowedLineNames.has(String(name)));
-  if(!matchedLineNames.length) return [];
-
+  // 列車番号は「現在表示中の路線」だけでなく、JSONに収録された全線区分を保持する。
+  // 可部線・呉線のページでも、山陽本線を走る列車の番号をその列車自身の番号として表示できるようにする。
+  const rawNumberEntries=Object.entries(rawTrainNumbers).filter(([,val])=>Array.isArray(val));
+  const hasTrainNumber=rawNumberEntries.some(([,val])=>val.some(n=>String(n??'').trim()));
   const numbersByLine={};
   const allNumbers=[];
-  for(const lineName of matchedLineNames){
-    const arrRaw=rawTrainNumbers[lineName];
-    if(!Array.isArray(arrRaw)) continue;
-    const arr=[];
-    for(const n of arrRaw){
-      const normalized=normalizeTrainNo(n);
-      if(!normalized) continue;
-      if(!arr.includes(normalized)) arr.push(normalized);
-      if(!allNumbers.includes(normalized)) allNumbers.push(normalized);
+  if(hasTrainNumber){
+    for(const [lineName,arrRaw] of rawNumberEntries){
+      const arr=[];
+      for(const n of arrRaw){
+        const normalized=normalizeTrainNo(n);
+        if(!normalized) continue;
+        if(!arr.includes(normalized)) arr.push(normalized);
+        if(!allNumbers.includes(normalized)) allNumbers.push(normalized);
+      }
+      if(arr.length) numbersByLine[lineName]=arr;
     }
-    if(arr.length) numbersByLine[lineName]=arr;
+    if(!allNumbers.length) return [];
   }
-  if(!allNumbers.length) return [];
 
   const stops=raw.stops.map(st=>{
     const hasTime=!!String(st?.arrival||st?.departure||st?.time||'').trim();
@@ -845,64 +1136,77 @@ function normalizeExternalTrain(raw,day,direction,meta){
       isStop:hasTime
     };
   }).filter(st=>st.station);
+  if(!stops.length) return [];
 
-  // 列車が実際に跨っている全線区名を色判定用コンテキストとして保持する。
-  // 表示中の路線に絞ると、呉線列車の岩国側など別路線区間を色付けできない。
-  const servedLineNames=Object.keys(rawTrainNumbers).filter(name=>lineDefByName(name));
+  // 列車が実際に跨っている全線区名を色判定用コンテキストとして保持。
+  // 列車番号を持たない単一路線では、現在の路線自体を使用する。
+  let servedLineNames=Object.keys(rawTrainNumbers).filter(name=>lineDefByName(name));
+  if(!servedLineNames.length) servedLineNames=[...allowedLineNames];
   const segmentLineNames=[];
   for(let i=0;i<stops.length-1;i++) segmentLineNames.push(preferredTrainServiceLine(stops[i].station,stops[i+1].station,{servedLineNames})?.name||null);
 
-  // JSON側で変更駅を指定できる。指定がなければ路線間の実際の接続境界を使う。
   const explicitChanges=Array.isArray(raw?.numberChanges)?raw.numberChanges:[];
   const numberSegments={};
-  for(const [lineName,nums] of Object.entries(numbersByLine)){
-    if(nums.length===1){
-      numberSegments[lineName]=[{no:nums[0],from:0,to:stops.length-1}];
-      continue;
-    }
-    const changes=explicitChanges.filter(x=>String(x?.line||lineName)===lineName && String(x?.station||''));
-    if(changes.length){
-      const pts=[];
-      for(const c of changes){
-        const idx=stops.findIndex(s=>s.station===String(c.station));
-        if(idx>=0) pts.push({index:idx,after:Number(c.afterIndex ?? 1)});
+  if(hasTrainNumber){
+    for(const [lineName,nums] of Object.entries(numbersByLine)){
+      if(nums.length===1){
+        numberSegments[lineName]=[{no:nums[0],from:0,to:stops.length-1}];
+        continue;
       }
-      pts.sort((a,b)=>a.index-b.index);
-      const segs=[];
-      let from=0,numberIndex=0;
-      for(const p of pts){
-        const afterIndex=Math.max(1,Math.min(nums.length-1,Number(p.after)||1));
-        segs.push({no:nums[Math.min(numberIndex,nums.length-1)],from,to:p.index});
-        numberIndex=afterIndex; from=p.index;
+      const changes=explicitChanges.filter(x=>String(x?.line||lineName)===lineName && String(x?.station||''));
+      if(changes.length){
+        const pts=[];
+        for(const c of changes){
+          const idx=stops.findIndex(st=>st.station===String(c.station));
+          if(idx>=0) pts.push({index:idx,after:Number(c.afterIndex ?? 1)});
+        }
+        pts.sort((a,b)=>a.index-b.index);
+        const segs=[];
+        let from=0,numberIndex=0;
+        for(const p of pts){
+          const afterIndex=Math.max(1,Math.min(nums.length-1,Number(p.after)||1));
+          segs.push({no:nums[Math.min(numberIndex,nums.length-1)],from,to:p.index});
+          numberIndex=afterIndex; from=p.index;
+        }
+        segs.push({no:nums[Math.min(numberIndex,nums.length-1)],from,to:stops.length-1});
+        numberSegments[lineName]=segs;
+      }else{
+        numberSegments[lineName]=[{no:nums[0],from:0,to:stops.length-1}];
       }
-      segs.push({no:nums[Math.min(numberIndex,nums.length-1)],from,to:stops.length-1});
-      numberSegments[lineName]=segs;
-    }else{
-      // 変更駅がJSONにない場合でも横並び表示はさせず、先頭列番を一本の列番として扱う。
-      numberSegments[lineName]=[{no:nums[0],from:0,to:stops.length-1}];
     }
   }
 
   const firstTimed=stops.find(st=>st.isStop) || {};
   const lastTimed=[...stops].reverse().find(st=>st.isStop) || firstTimed;
-  const primaryNo=allNumbers[0];
-  const jsonType=String(raw?.type||'').trim() || '普通';
+  const internalNo=hasTrainNumber
+    ? allNumbers[0]
+    : String(raw?.id||raw?.uid||`${day}-${direction}-${String(firstTimed.station||'')}-${String(firstTimed.time||'')}`);
+  const jsonType=String(raw?.type||'').trim();
   return [{
-    no:primaryNo,
+    no:internalNo,
+    hasTrainNumber,
+    hideTrainNumber:!hasTrainNumber,
     noSequence:allNumbers,
     numbersByLine,
     numberSegments,
     type:jsonType,
-    lineKind:'hiroshima',lineName:activeRouteName,direction:direction==='上り'?'up':'down',cars:Number(raw?.cars)||3,days:[day],
+    lineKind:activeRouteName==='海岸線'?'kobe':'hiroshima',
+    lineName:activeRouteName,
+    direction:direction==='上り'?'up':'down',
+    cars:Number(raw?.cars)||0,
+    days:[day],
     start:String(raw?.start||firstTimed.station||''),
     startTime:String(raw?.startTime||firstTimed.departure||firstTimed.arrival||firstTimed.time||''),
     dest:String(raw?.dest||lastTimed.station||''),
     endTime:String(raw?.endTime||lastTimed.arrival||lastTimed.departure||lastTimed.time||''),
-    trainNumbers:raw?.trainNumbers||{},servedLineNames,stops,rawTrain:raw
+    trainNumbers:raw?.trainNumbers||{},
+    servedLineNames,
+    stops,
+    rawTrain:raw
   }];
 }
 function trainDisplayNoAtStation(train,stationName){
-  if(!train) return '';
+  if(!train || train.hideTrainNumber) return '';
   const station=String(stationName||'');
   const idx=(train.stops||[]).findIndex(s=>String(s?.station||'')===station);
   return trainDisplayNoAtPosition(train,idx>=0?idx:0);
@@ -919,6 +1223,8 @@ function trainDisplayNoAtPosition(train,pos){
     }
   }
   if(best) return best;
+  // JSONに列車番号が存在しない列車は、内部IDを画面へ漏らさない。
+  if(train?.hasTrainNumber===false || train?.hideTrainNumber) return '';
   return String(train?.noSequence?.[0]||train?.no||'');
 }
 function displayTrainNoAtTime(train,minutes){
@@ -938,9 +1244,11 @@ async function loadLineTrainData(routeName=activeRouteName){
   activeRouteMeta=ROUTE_REGISTRY[activeRouteName];
   if(!activeRouteMeta) throw new Error(`路線設定が見つかりません: ${activeRouteName}`);
   const res=await fetch(activeRouteMeta.json,{cache:'no-store'});
-  if(!res.ok) throw new Error(`広島地区.json の読み込みに失敗しました (${res.status})`);
+  if(!res.ok) throw new Error(`路線JSONの読み込みに失敗しました (${res.status})`);
   const json=await res.json(); activeJson=json;
   STATIONS=buildStationsForRoute(json,activeRouteMeta);
+  // 路線ごとの初期編成アイコンを即時反映。海岸線は専用5000形アイコンを使用する。
+  if(typeof defaultTrainImage==='function') INITIAL_FORMATION_SELECTION.img=defaultTrainImage();
   for(const key of Object.keys(VEHICLE_TO_FORMATION)) delete VEHICLE_TO_FORMATION[key];
   FORMATIONS=buildFormationsForJson(json);
   TYPE_SELECTIONS=FORMATIONS.map(g=>({id:g.type,name:g.type,img:g.typeImg,kind:'type',type:g.type}));
@@ -961,6 +1269,8 @@ async function loadLineTrainData(routeName=activeRouteName){
   HOLIDAY_UP_TRAINS=HOLIDAY_TRAINS.filter(t=>t.direction==='up');
   TRAIN_INDEX={}; for(const t of TRAINS) if(!TRAIN_INDEX[t.no]) TRAIN_INDEX[t.no]=t;
   HOLIDAY_TRAIN_INDEX={}; for(const t of HOLIDAY_TRAINS) if(!HOLIDAY_TRAIN_INDEX[t.no]) HOLIDAY_TRAIN_INDEX[t.no]=t;
+  // JSONに定義した一日分の運用連結を位置計算・編成連動へ反映する。
+  loadOperationChainsFromJson(json);
   if(typeof TIMETABLE_HTML_CACHE!=='undefined') TIMETABLE_HTML_CACHE=new Map();
   if(typeof TRAIN_DATA_CACHE!=='undefined') TRAIN_DATA_CACHE.clear();
   if(typeof TRAIN_RUNTIME_CACHE!=='undefined') TRAIN_RUNTIME_CACHE.clear();
@@ -968,13 +1278,14 @@ async function loadLineTrainData(routeName=activeRouteName){
   if(typeof TERMINAL_NEXT_CACHE!=='undefined') TERMINAL_NEXT_CACHE.clear();
   if(typeof TERMINAL_DEPARTURE_CACHE!=='undefined') TERMINAL_DEPARTURE_CACHE.clear();
   if(typeof OPERATION_INFO_STATIONS!=='undefined') OPERATION_INFO_STATIONS=STATIONS.map(x=>x.nameJa);
+  if(typeof applyRegistrationState==='function') applyRegistrationState();
   updateRouteVisuals();
 }
 
-const STORAGE_KEY='hiroshimaAreaTrainRegistrations_v1';
-const CHANNEL_NAME='hiroshimaAreaTrainRegistrationSync_v1';
+const STORAGE_KEY='routeTrainRegistrations_v2';
+const CHANNEL_NAME='routeTrainRegistrationSync_v2';
 const FIREBASE_CONFIG=(window.JRELINE_FIREBASE_CONFIG||{});
-const FIREBASE_ENABLED=!!(window.firebase && FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.databaseURL);
+const FIREBASE_ENABLED=!!(window.firebase && FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId && FIREBASE_CONFIG.databaseURL);
 const FIREBASE_APP_NAME='unyomatomeHiroshima';
 let firebaseApp=null;
 let firebaseDb=null;
@@ -996,7 +1307,8 @@ let remoteRoot={version:0,operationDate:null,stateByDay:{平日:{},休日:{}},fo
 const PRIMARY_FORMATION_FAMILY='keihin';
 let formationRemoteByFamily={
   keihin:{stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}}},
-  yokohama:{stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}}}
+  yokohama:{stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}}},
+  kobe:{stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}}}
 };
 const formationFirebaseApps={};
 const formationFirebaseDbs={};
@@ -1004,6 +1316,11 @@ let formationFirebaseReady=false;
 let pendingFormationState={};
 let channel=null;
 let firebaseReady=false;
+let firebaseAuth=null;
+let currentAuthUser=null;
+let currentUserProfile=null;
+let profileRegistered=false;
+let authStateReady=false;
 let lastHistoryFingerprint='';
 let firebaseDayListenerDay=null;
 let firebaseDayListenerCallback=null;
@@ -1281,12 +1598,16 @@ function formationFirebaseConfigForFamily(family){
   return family==='yokohama'?JRE_YOKOHAMA_FIREBASE_CONFIG:JRE_KEIHIN_FIREBASE_CONFIG;
 }
 function normalizeStoredFormationId(value){
-  if(value===null||value===undefined||String(value)==='') return null;
+  if(value===null||value===undefined||String(value).trim()==='') return null;
   const raw=String(value).trim();
-  const obj=formationById(raw) || formationById(raw.replace(/F$/i,''));
-  if(obj?.id) return String(obj.id).replace(/F$/i,'');
-  return raw.replace(/F$/i,'');
+  const ids=raw.split('+').map(x=>x.trim()).filter(Boolean);
+  const normalized=ids.map(one=>{
+    const obj=formationById(one) || formationById(one.replace(/F$/i,''));
+    return obj?.id ? String(obj.id).replace(/F$/i,'') : String(one).replace(/F$/i,'');
+  }).filter(Boolean);
+  return normalized.length?normalized.join('+'):null;
 }
+
 function trainBelongsToFamily(no,family){
   const key=String(no||'');
   if(!key) return false;
@@ -1482,6 +1803,11 @@ async function initFirebase(){
     }
     firebaseApp=formationFirebaseApps[PRIMARY_FORMATION_FAMILY];
     firebaseDb=formationFirebaseDbs[PRIMARY_FORMATION_FAMILY];
+    // AuthenticationはDatabaseとは別に明示的に初期化する。
+    // これを行わないとログイン押下時にfirebaseAuthがnullのままとなる。
+    if(typeof window.initFirebaseAuth==='function' && firebaseApp){
+      window.initFirebaseAuth(firebaseApp);
+    }
     firebaseReady=true;
     syncStatus('Firebase接続中');
 
@@ -1860,7 +2186,7 @@ function getDetailType(type){
   return value;
 }
 // 列車番号はJSONの値をそのまま表示する。
-function displayTrainNo(train){ return train ? normalizeTrainNo(train.no) : ''; }
+function displayTrainNo(train){ return (train && !train.hideTrainNumber) ? normalizeTrainNo(train.no) : ''; }
 // 略称は元ファイルと同じく「短縮表示用」の関数で処理する。
 function getShortDest(dest){
   const value=String(dest||'');
@@ -2027,18 +2353,44 @@ function initDateControl(){
   if(label) label.textContent=`${currentDay}ダイヤ`;
   input.addEventListener('change',e=>setSelectedDate(e.target.value));
 }
+function formationInputExampleForRoute(routeName=activeRouteName){
+  const meta=ROUTE_REGISTRY[String(routeName||activeRouteName||'')]||activeRouteMeta||{};
+  return String(meta.formationInputExample||'編成番号を入力').trim();
+}
+function formationInputPlaceholderForTrain(train=currentTrainSnapshot){
+  const example=formationInputExampleForRoute(train?.routeName||activeRouteName);
+  const count=typeof formationCountForTrain==='function'?formationCountForTrain(train):Number(activeJson?.formationCountDefault||activeRouteMeta?.formationCountDefault||1);
+  return count>1
+    ? `編成番号を「+」で区切って前寄りから入力（最大${count}編成・例：${example}）`
+    : `車両番号または編成番号（例：${example}）を入力`;
+}
 function formationById(id){
   if(!id || id===INITIAL_FORMATION_SELECTION.id) return null;
-  const key=String(id);
-  const keyWithF=/F$/i.test(key)?key:key+'F';
+  const key=String(id).trim();
+  const canonical=key.replace(/F$/i,'');
+  const upper=canonical.toUpperCase();
+  const base='https://minamikaze2700.github.io/Unyomatome/images/';
+  // A編成/S編成そのものも選択可能な「個別列車未指定」の共通選択肢。
+  if(upper==='A' || upper==='A編成' || key==='227系 A編成') return {id:'A編成',name:'A編成',img:`${base}227-0.png`,kind:'type',type:'A編成',generic:true};
+  if(upper==='S' || upper==='S編成' || key==='227系 S編成') return {id:'S編成',name:'S編成',img:`${base}227-0.png`,kind:'type',type:'S編成',generic:true};
+  const declaredType=String(activeJson?.formationType||'').trim();
+  if(declaredType && (canonical===declaredType || upper===declaredType.toUpperCase())){
+    const imgRaw=String(activeJson?.formationTypeImage||activeJson?.commonFormationIcon||activeJson?.noImage||'').trim();
+    const img=/^https?:\/\//i.test(imgRaw) ? imgRaw : `${base}${imgRaw.replace(/\.png$/i,'')}.png`;
+    return {id:declaredType,name:declaredType,img,kind:'type',type:declaredType,generic:true};
+  }
   for(const group of FORMATIONS){
-    if(group.type===key) return {id:group.type,name:group.type,img:group.typeImg,kind:'type',type:group.type};
-    const direct=(group.items||[]).find(i=>String(i.id)===key || String(i.id)===keyWithF || String(i.name)===key || String(i.name)===key.replace(/F$/i,''));
-    if(direct) return {...direct,type:group.type};
+    const groupType=String(group.type||'');
+    const direct=(group.items||[]).find(i=>{
+      const iid=String(i.id||'').replace(/F$/i,'');
+      const iname=String(i.name||'').replace(/F$/i,'');
+      return iid===canonical || iname===canonical;
+    });
+    if(direct) return {...direct,id:String(direct.id).replace(/F$/i,''),type:groupType};
     for(const variant of (group.variants||[])){
-      if(variant.id===key) return {...variant,kind:'variant',type:group.type};
-      const found=(variant.items||[]).find(i=>String(i.id)===key || String(i.id)===keyWithF || String(i.name)===key || String(i.name)===key.replace(/F$/i,''));
-      if(found) return {...found,type:group.type};
+      if(String(variant.id||'').replace(/F$/i,'')===canonical) return {...variant,id:String(variant.id).replace(/F$/i,''),kind:'variant',type:groupType};
+      const found=(variant.items||[]).find(i=>String(i.id||'').replace(/F$/i,'')===canonical || String(i.name||'').replace(/F$/i,'')===canonical);
+      if(found) return {...found,id:String(found.id).replace(/F$/i,''),type:groupType};
     }
   }
   return null;
@@ -2049,7 +2401,6 @@ function formationIdFromInput(value){
   if(!v) return {ok:false,error:'車両番号または編成番号を入力してください。'};
 
   const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction||null) || currentTrainSnapshot || trainForCurrentDay(currentTrainNo,currentTrainSnapshot?.direction||null);
-  const allowedFamily=allowedFormationFamily(train);
   const candidates=[
     v,
     v.endsWith('F')?v.slice(0,-1):v,
@@ -2058,8 +2409,8 @@ function formationIdFromInput(value){
   for(const c of candidates){
     const exact=formationById(c);
     if(!exact) continue;
-    if(formationFamily(exact)!==allowedFamily){
-      return {ok:false,error:allowedFamily==='yokohama'?'この列車は横浜線系統の編成のみ入力できます。':'この列車は京浜東北線系統の編成のみ入力できます。'};
+    if(!formationAllowedForTrain(train,exact.id)){
+      return {ok:false,error:'この路線ではこの編成を入力できません。'};
     }
     if(exact.disabled || UNAVAILABLE_FORMATIONS.has(normalizeStoredFormationId(exact.id))) {
       return {ok:false,error:`編成「${exact.name||exact.id}」は入力できません。`};
@@ -2067,16 +2418,28 @@ function formationIdFromInput(value){
     return {ok:true,id:normalizeStoredFormationId(exact.id)};
   }
 
-  // 車両番号から編成番号を特定する。
-  // 南武線版と同様、車種 + E233 + ハイフン + 4桁の形式を受け付ける。
-  const vehicleNoMatch=v.match(/^(?:クハE233|クハE232|モハE233|モハE232|サハE233|サハE232)-(\d{4})$/i);
-  if(vehicleNoMatch){
-    const formationId=VEHICLE_TO_FORMATION[vehicleNoMatch[1]];
-    const exact=formationId?formationById(formationId):null;
+  // JSONに登録された車両番号から編成番号を特定する。
+  // 海岸線の5101～5410など、路線固有の車両番号もここで直接解決する。
+  const formationId=VEHICLE_TO_FORMATION[v] || VEHICLE_TO_FORMATION[v.replace(/F$/i,'')];
+  if(formationId){
+    const exact=formationById(formationId);
     if(exact){
-      if(formationFamily(exact)!==allowedFamily){
-        return {ok:false,error:allowedFamily==='yokohama'?'この列車は横浜線系統の編成のみ入力できます。':'この列車は京浜東北線系統の編成のみ入力できます。'};
+      if(!formationAllowedForTrain(train,exact.id)) return {ok:false,error:'この路線ではこの編成を入力できません。'};
+      if(exact.disabled || UNAVAILABLE_FORMATIONS.has(normalizeStoredFormationId(exact.id))) {
+        return {ok:false,error:`編成「${exact.name||exact.id}」は入力できません。`};
       }
+      return {ok:true,id:normalizeStoredFormationId(exact.id)};
+    }
+  }
+
+  // 227系など従来の車種＋車号表記にも対応。
+  const vehicleNoMatch=v.match(/^(?:クハE233|クハE232|モハE233|モハE232|サハE233|サハE232)-([0-9]+)$/i);
+  if(vehicleNoMatch){
+    const vehicleKey=vehicleNoMatch[1];
+    const legacyId=VEHICLE_TO_FORMATION[vehicleKey];
+    const exact=legacyId?formationById(legacyId):null;
+    if(exact){
+      if(!formationAllowedForTrain(train,exact.id)) return {ok:false,error:'この路線ではこの編成を入力できません。'};
       if(exact.disabled || UNAVAILABLE_FORMATIONS.has(normalizeStoredFormationId(exact.id))) {
         return {ok:false,error:`編成「${exact.name||exact.id}」は入力できません。`};
       }
@@ -2086,6 +2449,7 @@ function formationIdFromInput(value){
 
   return {ok:false,error:`車両番号「${raw}」に該当する編成が見つかりません。`};
 }
+
 function formationFamily(groupOrItem){
   return formationFamilyFromType(groupOrItem?.type);
 }
@@ -2141,10 +2505,11 @@ function formationDisplayHTML(id){
 }
 
 function prescribedFormationName(){
-  return '普通共通';
+  return String(activeJson?.formationDefaultName||'普通共通');
 }
 function defaultTrainImage(){
-  return activeJson?.commonFormationIcon ? `https://minamikaze2700.github.io/Unyomatome/images/${activeJson.commonFormationIcon}.png` : LINE_TRAIN_IMG;
+  if(activeRouteMeta?.trainImage) return String(activeRouteMeta.trainImage);
+  return jsonNoImageUrl();
 }
 function imageForTrain(t){
   // 表示時はFirebaseから同期したregistrationStateを登録情報の基準にする。
@@ -2301,10 +2666,15 @@ function stationEnglishTextColor(bg){
 function applyStationLabelColors(badge,index){
   if(!badge) return;
   const bg=stationLabelBackground(index);
-  badge.style.background=bg;
+  // 駅名ラベルは路線ごとの色に戻し、上段は白地・下段は路線色とする。
+  badge.style.background='#fff';
+  badge.style.setProperty('--station-label-bg',bg);
   badge.style.setProperty('--station-en-text-color',stationEnglishTextColor(bg));
   const en=badge.querySelector('.station-name-en');
-  if(en) en.style.color=stationEnglishTextColor(bg);
+  if(en){
+    en.style.background=bg;
+    en.style.color=stationEnglishTextColor(bg);
+  }
 }
 function renderLine(){
   if(typeof TRAIN_ICON_CACHE!=='undefined') TRAIN_ICON_CACHE.clear();
@@ -2534,7 +2904,11 @@ function positionForTrain(t,minutes){
   return null;
 }
 
-function trainLabelText(t){ return `<span>${getShortType(t.type,t.no)} ${getShortDest(t.dest)}</span>`; }
+function trainLabelText(t){
+  const type=String(t?.type||'').trim();
+  const dest=getShortDest(t?.dest);
+  return `<span>${type?`${getShortType(type,t?.no)} ${dest}`:dest}</span>`;
+}
 function trainPositionViewportVisible(p,rowCenters,viewportTop,viewportBottom){
   if(!p||!Number.isFinite(Number(p.pos))||!rowCenters.length) return false;
   if(Number(p.pos)<0 || Number(p.pos)>rowCenters.length-1) return false;
@@ -2728,7 +3102,12 @@ function renderTrainPositions(){
       let el=entry?.el;
       if(entry) entry.currentTrain=t;
       const cls=trainVisualKind(t);
-      const formationParts=t.formation&&t.formation!==INITIAL_FORMATION_SELECTION.id?formationDisplayParts(t.formation):[];
+      // 列車アイコン下部の編成表示は、列車オブジェクトの古い値ではなく
+      // Firebase／選択中日付から復元した登録状態を正として表示する。
+      const registeredFormation=registeredFormationForTrain(t);
+      const formationIdForDisplay=registeredFormation||t.formation||'';
+      const formationParts=formationIdForDisplay&&formationIdForDisplay!==INITIAL_FORMATION_SELECTION.id
+        ?formationDisplayParts(formationIdForDisplay):[];
       const imageUrl=imageForTrain(t);
       const displayNo=trainDisplayNoAtPosition(t,item.pos);
       const labelText=trainLabelText(t);
@@ -2748,7 +3127,7 @@ function renderTrainPositions(){
 
       const tForLayout=t;
       if(contentChanged){
-        el.innerHTML=`<span class="train-no">${displayNo}</span><img src="${imageUrl}" alt="${displayNo}">${formationParts.length?`<span class="train-no train-formation">${formationParts.map(x=>`<span>${String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`).join('')}</span>`:''}<span class="train-label ${cls} ${getMainLabelClass(tForLayout.type)}" style="${typeBadgeInlineStyle(tForLayout,item.pos)}">${labelText}</span>`;
+        el.innerHTML=`${displayNo?`<span class="train-no">${displayNo}</span>`:''}<img src="${imageUrl}" alt="${displayNo}">${formationParts.length?`<span class="train-no train-formation">${formationParts.map(x=>`<span>${String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`).join('')}</span>`:''}<span class="train-label ${cls} ${getMainLabelClass(tForLayout.type)}" style="${typeBadgeInlineStyle(tForLayout,item.pos)}">${labelText}</span>`;
         entry.contentKey=contentKey;
         entry.layoutHeight=0;
         entry.ready=false;
@@ -3063,7 +3442,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
           <img class="station-timetable-train-img" src="${escapeAttr(imgSrc)}" alt="${escapeAttr(trainDisplayNoAtStation(train,stationName))}">
           ${stationTimetableFormationHTML(train)}
           <span class="station-timetable-time">${escapeAttr(item.time)}</span>
-          <span class="station-timetable-type ${escapeAttr(getExpressClass(train))}" style="${typeBadgeInlineStyle(train,(train.stops||[]).findIndex(s=>String(s?.station||'')===stationName),stationDirectionRouteColor(STATIONS.findIndex(st=>String(st?.nameJa||'')===stationName),key))}">${escapeAttr(getDetailType(train.type))}</span>
+          ${String(train.type||'').trim()?`<span class="station-timetable-type ${escapeAttr(getExpressClass(train))}" style="${typeBadgeInlineStyle(train,(train.stops||[]).findIndex(s=>String(s?.station||'')===stationName),stationDirectionRouteColor(STATIONS.findIndex(st=>String(st?.nameJa||'')===stationName),key))}">${escapeAttr(getDetailType(train.type))}</span>`:''}
           <span class="station-timetable-destination"><span class="station-timetable-destination-station">${escapeAttr(getDetailDest(train.dest))}</span><span class="station-timetable-destination-go">行</span></span>
         </button>
       `;
@@ -3083,21 +3462,50 @@ function stationTimetableHTML(station, selectedDirection='up'){
   `;
 }
 
+function formationStorageEntryForTrain(train){
+  if(!train) return null;
+  const ctx=formationStorageContext(train);
+  const area=ctx.area || '__ROOT__';
+  const date=String(selectedDateKey||operationDateKey());
+  const rawNo=String(train.no||'').trim();
+  // 海岸線は運用連結の先頭列車だけをDBへ保存するため、
+  // 後続の折返し列車を表示するときも先頭列車の登録情報を参照する。
+  const storageNo=(activeRouteName==='海岸線' && typeof operationChainFirstNo==='function')
+    ? operationChainFirstNo(currentDay,rawNo)
+    : rawNo;
+  return formationRemoteByFamily[ctx.family]?.areaStateByDate?.[date]?.[area]?.[storageNo] || null;
+}
+function formationUpdatedAuthorForTrain(trainNo){
+  const key=String(trainNo||'');
+  const train=(currentTrainSnapshot&&String(currentTrainSnapshot.no||'')===key)?currentTrainSnapshot:trainForCurrentDay(key,currentTrainSnapshot?.direction||null);
+  const entry=formationStorageEntryForTrain(train);
+  if(!entry) return null;
+  const text=String(entry.t||'');
+  const at=text.indexOf('@');
+  if(at<0) return null;
+  const name=text.slice(at+1).trim();
+  return name?{name}:null;
+}
+
 function formatFormationUpdatedAt(trainNo){
-  const key=String(trainNo);
-  // 編成未入力の列車には入力時刻を絶対に表示しない。
-  const direction=currentTrainSnapshot?.direction||null;
+  const key=String(trainNo||'');
   const train=(currentTrainSnapshot&&String(currentTrainSnapshot.no||'')===key)
     ? currentTrainSnapshot
-    : trainForCurrentDay(key,direction);
-  const formation = registeredFormationForTrain(train);
-  if(!formation || formation===INITIAL_FORMATION_SELECTION.id) return '';
-  const family=train?formationFamilyForTrain(train):PRIMARY_FORMATION_FAMILY;
-  const ts=formationRemoteByFamily[family]?.formationUpdatedAtByDay?.[currentDay]?.[key] || remoteRoot.formationUpdatedAtByDay?.[currentDay]?.[key] || pendingFormationTimestamps?.[currentDay]?.[key];
-  if(!ts) return '';
-  const d=new Date(ts);
-  if(Number.isNaN(d.getTime())) return '';
-  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    : trainForCurrentDay(key,currentTrainSnapshot?.direction||null);
+  if(!train) return '';
+  const entry=formationStorageEntryForTrain(train);
+  if(!entry?.f) return '';
+  // 新形式 t=「分@登録名」を優先し、将来のaフィールドや旧形式にも対応する。
+  const rawMeta=entry.t??entry.time??'';
+  const parsed=typeof hiroshimaParseStoredMeta==='function'
+    ? hiroshimaParseStoredMeta(rawMeta, entry.a)
+    : null;
+  if(parsed){
+    const hh=String(Math.floor(Number(parsed.time)/60)).padStart(2,'0');
+    const mm=String(Number(parsed.time)%60).padStart(2,'0');
+    return `${hh}:${mm}${parsed.author?` @${parsed.author}`:''}`;
+  }
+  return typeof hiroshimaFormatStoredMeta==='function'?hiroshimaFormatStoredMeta(rawMeta):'';
 }
 function sheetBack(){
   if(previousSheetContext?.type==='station-timetable'){
@@ -3120,23 +3528,31 @@ function updateSheetContent(){
   const selectedForm=selectionDisplayObjectForTrain(train,train.formation);
   const content=document.getElementById('sheetContent');
   const imgSrc=(train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id)?selectedForm.img:defaultTrainImage(train);
+  const readonly=!formationInputAllowed();
+  const cardClass=readonly?' historical-readonly':'';
+  const cardClick=readonly?'':'onclick="switchToEditMode()"';
+  const noFormationText=currentAuthUser
+    ? 'ここから編成を入力'
+    : '編成を入力するにはログインしてください';
 
-  if(!isEditMode){
+  if(!isEditMode || readonly){
+    // 未ログイン時は当日列車でも編集画面を開かず、当日以外の列車と同じ閲覧専用表示にする。
+    if(isEditMode && readonly) isEditMode=false;
     content.innerHTML=`
-      <div class="train-card${isNonCurrentSelectedDate(selectedDateKey)?' historical-readonly':''}" ${isNonCurrentSelectedDate(selectedDateKey)?'':'onclick="switchToEditMode()"'}>
+      <div class="train-card${cardClass}" ${cardClick}>
         <img src="${imgSrc}" class="train-card-img">
         <div class="train-info-main">
           <div>
-            <span class="type-badge ${getExpressClass(train)}" style="${typeBadgeInlineStyle(train)}">${getDetailType(train.type)}</span>
-            <span class="train-title">${getDetailDest(train.dest)} 行</span>
-            <span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>
+            ${String(train.type||'').trim()?`<span class="type-badge ${getExpressClass(train)}" style="${typeBadgeInlineStyle(train)}">${getDetailType(train.type)}</span>`:''}
+            <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDetailDest(train.dest)} 行</span>
+            ${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}
           </div>
           ${train.formation && train.formation!==INITIAL_FORMATION_SELECTION.id
             ? `<div class="formation-id">${selectedForm.name}</div>`
-            : `<div class="input-trigger-btn">ここから編成を入力</div>`}
-          <div class="capacity-info">所定:${prescribedFormationName(train)}</div>
+            : `<div class="input-trigger-btn">${noFormationText}</div>`}
+          ${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}
         </div>
-        ${train.formation && train.formation!==INITIAL_FORMATION_SELECTION.id && formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAt(train.no)}</div>`:''}
+        ${train.formation && train.formation!==INITIAL_FORMATION_SELECTION.id && formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
       </div>
       <div class="timetable-list">
         ${timetableHTMLForCurrentDay(train)}
@@ -3149,17 +3565,17 @@ function updateSheetContent(){
         <img src="${(train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id)?selectedForm.img:defaultTrainImage(train)}" class="train-card-img">
         <div class="train-info-main">
           <div>
-            <span class="type-badge ${getExpressClass(train)}" style="${typeBadgeInlineStyle(train)}">${getDetailType(train.type)}</span>
-            <span class="train-title">${getDetailDest(train.dest)} 行</span>
-            <span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>
+            ${String(train.type||'').trim()?`<span class="type-badge ${getExpressClass(train)}" style="${typeBadgeInlineStyle(train)}">${getDetailType(train.type)}</span>`:''}
+            <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDetailDest(train.dest)} 行</span>
+            ${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}
           </div>
           <div class="input-trigger-btn">編成を入力中</div>
-          <div class="capacity-info">所定:${prescribedFormationName(train)}</div>
+          ${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}
         </div>
       </div>
       <div style="text-align:left;font-weight:700;margin:6px 0 4px;font-size:1.1rem;">編成入力</div>
       <div class="formation-manual-input">
-        <input id="formationManualInput" type="text" inputmode="text" autocomplete="off" value="${selectedForm.id===INITIAL_FORMATION_SELECTION.id?'':selectedForm.name}" placeholder="車両番号または編成番号（例：クモハ226-1 / A01 / S01）を入力" onkeydown="if(event.key==='Enter'){event.preventDefault();registerFormationFromInput();}">
+        <input id="formationManualInput" type="text" inputmode="text" autocomplete="off" value="${selectedForm.id===INITIAL_FORMATION_SELECTION.id?'':selectedForm.name}" placeholder="${esc(formationInputPlaceholderForTrain(train))}" onkeydown="if(event.key==='Enter'){event.preventDefault();registerFormationFromInput();}">
         <button type="button" onclick="registerFormationFromInput()">登録</button>
       </div>
       <div id="formationInputError" class="formation-input-error"></div>
@@ -3171,10 +3587,10 @@ function updateSheetContent(){
           </div>▼
         </div>
         <div class="custom-select-options" id="dropdownOptions">
-          <div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}')"><img src="${INITIAL_FORMATION_SELECTION.img}" class="option-img"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>
+          <div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}')"><img src="${syncInitialFormationImage()}" class="option-img"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>
           ${formationsForTrain(train).map(group=>`
-            <div class="option-header option-category-header" onclick="selectFormation('${group.type}')">
-              <img src="${group.typeImg}" class="option-img"><span>${group.type}</span>
+            <div class="option-header option-category-header" ${/227系 [AS]編成$/.test(String(group.type||''))?`onclick="selectFormation('${String(group.type).includes('S編成')?'S編成':'A編成'}')"`:''}>
+              <img src="${group.typeImg}" class="option-img"><span>${String(group.type).replace(/^227系 /,'')}</span>
             </div>
             ${(group.variants||[]).map(variant=>`
               <div class="option-header option-subheader" onclick="selectFormation('${variant.id}')">
@@ -3198,8 +3614,14 @@ function updateSheetContent(){
     `;
   }
 }
+function formationInputAllowed(){
+  // 当日列車でも、未ログイン時は編成入力不可。
+  // Authenticationの状態が確定するまでも安全側に倒して編集を禁止する。
+  return !!(authStateReady && currentAuthUser && !isNonCurrentSelectedDate(selectedDateKey));
+}
+
 function switchToEditMode(){
-  if(isNonCurrentSelectedDate(selectedDateKey)) return;
+  if(!formationInputAllowed()) return;
   const train=liveTrain(currentTrainNo);
   if(!train) return;
   isEditMode=true;
@@ -3208,7 +3630,7 @@ function switchToEditMode(){
   updateSheetContent();
 }
 async function registerFormationFromInput(){
-  if(isNonCurrentSelectedDate(selectedDateKey)) return;
+  if(!formationInputAllowed()) return;
   const input=document.getElementById('formationManualInput');
   const errorEl=document.getElementById('formationInputError');
   const value=String(input?.value||'').trim();
@@ -3238,6 +3660,7 @@ function closeFormationDropdown(){
   if(!el) return;
   el.classList.remove('open');
   el.style.display='';
+  el.style.position='';
   el.style.maxHeight='';
   el.style.left='';el.style.top='';el.style.width='';
   el.style.pointerEvents='';
@@ -3258,39 +3681,14 @@ function positionFormationDropdown(el,trigger){
   const leftBound=Number(vv?.offsetLeft||0)+6;
   const viewportW=Number(vv?.width||window.innerWidth);
   const viewportH=Number(vv?.height||window.innerHeight);
-
-  // 下部の地域メニューはdropdownより常に前面に置く。
-  // さらに、プルダウン自身も地域メニューの高さ分より下へは伸ばさない。
-  const nav=document.getElementById('regionNav');
-  const navRect=nav?.getBoundingClientRect();
-  const navTop=Number(navRect?.top);
-  const visualBottom=Number(vv?.offsetTop||0)+viewportH-6;
-  const menuTop=Number.isFinite(navTop) ? navTop-6 : visualBottom;
-  const bottomBound=Math.min(visualBottom,menuTop);
+  const bottomBound=Number(vv?.offsetTop||0)+viewportH-10;
 
   const width=Math.min(Math.max(rect.width,260),Math.max(120,viewportW-12));
-  const below=Math.max(0,Math.floor(bottomBound-rect.bottom));
-  const above=Math.max(0,Math.floor(rect.top-topBound));
-
-  // 下に十分なスペースがなければ上向きに開く。いずれの場合も
-  // 地域メニューの上端より下へはみ出さない。
-  let maxH=Math.min(250,below);
-  let top=rect.bottom;
-  if(below<140 && above>below){
-    maxH=Math.min(300,above);
-    top=Math.max(topBound,rect.top-maxH);
-  }
-
-  // trigger直下に置いた結果メニュー領域へ入る場合は、上開きへ切り替える。
-  if(top+Math.max(60,maxH)>bottomBound && above>0){
-    maxH=Math.min(300,above);
-    top=Math.max(topBound,rect.top-maxH);
-  }
-
-  // どうしても表示領域が小さい場合も、最低限の高さで表示する。
-  maxH=Math.max(40,Math.min(maxH,Math.max(40,bottomBound-top)));
-
+  const top=Math.max(topBound,rect.bottom+4);
+  const maxH=Math.max(40,Math.floor(bottomBound-top));
   let left=Math.min(Math.max(leftBound,rect.left),leftBound+viewportW-width);
+
+  el.style.position='fixed';
   el.style.left=Math.round(left)+'px';
   el.style.top=Math.round(top)+'px';
   el.style.width=Math.round(width)+'px';
@@ -3331,6 +3729,7 @@ document.addEventListener('pointerdown',event=>{
 let selectionSyncInProgress=false;
 let pendingFormationTimestamps={平日:{},休日:{}};
 async function selectFormation(formId){
+  if(!formationInputAllowed()) return;
   const formation=formationById(formId);
   if(formation?.disabled || UNAVAILABLE_FORMATIONS.has(normalizeStoredFormationId(formId))) {
     syncStatus('この編成は入力できません');
@@ -3369,12 +3768,19 @@ async function selectFormation(formId){
   }
 }
 window.addEventListener('load',async ()=>{
-  // 前回選択していた路線を自動復元する。保存値がない/無効なら「運用まとめ」。
+  // URLの ?route=路線ID を最優先し、なければ前回の路線を復元する。
   let restoredRoute='';
   try{
-    const saved=String(localStorage.getItem(LAST_ROUTE_STORAGE_KEY)||'').trim();
-    if(saved && ROUTE_REGISTRY[saved]) restoredRoute=saved;
+    const params=new URLSearchParams(window.location.search||'');
+    const queryRoute=routeNameFromId(params.get('route')||'');
+    if(queryRoute) restoredRoute=queryRoute;
   }catch(e){}
+  if(!restoredRoute){
+    try{
+      const saved=String(localStorage.getItem(LAST_ROUTE_STORAGE_KEY)||'').trim();
+      if(saved && ROUTE_REGISTRY[saved]) restoredRoute=saved;
+    }catch(e){}
+  }
 
   if(restoredRoute){
     try{
@@ -3430,8 +3836,8 @@ window.addEventListener('load',async ()=>{
   },60000);
 });
 
-/* 広島地区・運行情報 */
-const OPERATION_INFO_STORAGE_KEY='hiroshimaAreaOperationInfo_v1';
+/* 運行情報 */
+const OPERATION_INFO_STORAGE_KEY='routeOperationInfo_v2';
 const OPERATION_INFO_REASONS=['人身事故','車両故障・点検','信号・電気設備トラブル','線路内立入り・支障物','踏切・安全確認','天候（大雨・強風・雷・雪）','地震・災害','急病人救護','混雑・その他'];
 let OPERATION_INFO_STATIONS=STATIONS.map(s=>s.nameJa);
 let operationInfoEntries=[];
@@ -3786,7 +4192,7 @@ window.addEventListener('resize',renderOperationInfoZones);
 </nav>
 
 <script>
-/* ===== 広島地区：共通仕様 ===== */
+/* ===== 共通仕様 ===== */
 const JR_WEST_CORPORATE_COLOR='#0072bc';
 const FAST_TYPE_COLOR='#f39800';
 const REGION_DEFINITIONS={
@@ -3796,13 +4202,18 @@ const REGION_DEFINITIONS={
   '北陸':[],
   '甲信':[],
   '東海':[],
-  '近畿':[],
+  '近畿':[{
+    company:'神戸市営地下鉄',
+    routes:[
+      {name:'海岸線',id:'kobe-kaigan'}
+    ]
+  }],
   '中国':[{
     company:'JR西日本',
     routes:[
-      {name:'山陽本線（糸崎～岩国）'},
-      {name:'可部線'},
-      {name:'呉線'}
+      {name:'山陽本線（糸崎～岩国）',id:'sanyo-hiroshima'},
+      {name:'可部線',id:'kabe'},
+      {name:'呉線',id:'kure'}
     ]
   }],
   '四国':[],
@@ -3885,16 +4296,49 @@ function trainServiceLineCandidates(a,b,trainContext=null){
 function preferredTrainServiceLine(a,b,trainContext=null){
   const aa=String(a||''),bb=String(b||'');
   if(!aa||!bb||aa===bb) return null;
-  const candidates=trainServiceLineCandidates(aa,bb,trainContext);
-  if(!candidates.length) return null;
+  const allCandidates=allJsonLines().filter(line=>lineContainsStops(line,aa,bb));
+  if(!allCandidates.length) return null;
 
-  // 共有区間は「現在表示中の路線」を最優先し、次に列車が実際に跨る線区を優先。
-  const activeNames=new Set(getActiveRouteLineNames());
   const servedNames=new Set(Array.isArray(trainContext?.servedLineNames)?trainContext.servedLineNames.map(String):[]);
+  const servedCandidates=servedNames.size
+    ? allCandidates.filter(line=>servedNames.has(String(line?.name||'')))
+    : [];
+  const candidates=servedCandidates.length?servedCandidates:allCandidates;
+  if(candidates.length===1) return candidates[0];
+
+  // 実際の列車が複数線区をまたぐ場合、共有区間だけは「列車の進行方向側に
+  // 続いている固有区間」を優先する。これにより呉線→山陽本線の広島～海田市
+  // の共有区間は、呉線側／山陽本線側を列車の進行に合わせて正しく判定できる。
+  const rows=Array.isArray(trainContext?.stops)?trainContext.stops:[];
+  const findPairIndex=()=>{
+    for(let i=0;i<rows.length-1;i++){
+      const x=String(rows[i]?.station||''),y=String(rows[i+1]?.station||'');
+      if((x===aa&&y===bb)||(x===bb&&y===aa)) return i;
+    }
+    return -1;
+  };
+  const pairIndex=findPairIndex();
+  if(pairIndex>=0){
+    const direction=String(trainContext?.direction||'').toLowerCase();
+    const searchDirs=direction==='up'?[1,-1]:direction==='down'?[-1,1]:[1,-1];
+    for(const delta of searchDirs){
+      let i=pairIndex+delta;
+      while(i>=0&&i<rows.length-1){
+        const x=String(rows[i]?.station||''),y=String(rows[i+1]?.station||'');
+        const near=servedNames.size
+          ? allJsonLines().filter(line=>servedNames.has(String(line?.name||''))&&lineContainsStops(line,x,y))
+          : allJsonLines().filter(line=>lineContainsStops(line,x,y));
+        if(near.length===1) return near[0];
+        i+=delta;
+      }
+    }
+  }
+
+  // 曖昧さが残る場合だけ現在表示中の路線を優先する（trainContextに実列車
+  // の停車駅がない、単なる画面側の色判定コンテキストなど）。
+  const activeNames=new Set(getActiveRouteLineNames());
   const activeHit=candidates.find(line=>activeNames.has(String(line?.name||'')));
   if(activeHit) return activeHit;
-  const servedHit=candidates.find(line=>servedNames.has(String(line?.name||'')));
-  if(servedHit) return servedHit;
   return candidates[0];
 }
 function fallbackTrainServiceColor(trainContext=null){
@@ -3954,12 +4398,21 @@ function activeSegmentColors(a,b){
   return line?.color?[line.color]:[activeRouteColors()[0]||'#666'];
 }
 function stationLabelColor(index){
+  // 駅名ラベルは「現在表示している路線」のJSON線区カラーを直接参照する。
+  // CSSの既定値（旧デザインの #00a3d9）には依存しない。
   const colors=activeRouteColors();
   if(activeRouteName==='山陽本線（糸崎～岩国）' && colors.length>=2){
     const h=STATIONS.findIndex(st=>st.nameJa==='広島');
-    return (h>=0 && index>=h)?(colors[1]||colors[0]||'#666'):(colors[0]||'#666');
+    return (h>=0 && Number(index)>=h) ? (colors[1]||colors[0]||'#666') : (colors[0]||'#666');
   }
-  return colors[0]||'#666';
+  if(colors.length) return colors[0];
+  // activeRouteColors() がまだ初期化前でも、JSONの線区定義から取得する。
+  const names=Array.isArray(ROUTE_REGISTRY[activeRouteName]?.jsonLines) ? ROUTE_REGISTRY[activeRouteName].jsonLines : [];
+  for(const name of names){
+    const color=String((activeJson?.lines||[]).find(x=>String(x?.name||'')===String(name||''))?.color||'').trim();
+    if(/^#[0-9a-fA-F]{6}$/.test(color)) return color;
+  }
+  return '#666';
 }
 function stationLabelBackground(index){ return stationLabelColor(index); }
 
@@ -4086,10 +4539,14 @@ function displayedRouteColorForTrainPosition(train,position=null){
   const a=STATIONS[segIndex]?.nameJa;
   const b=STATIONS[segIndex+1]?.nameJa;
   if(!a||!b) return null;
-  return activeSegmentColors(a,b)?.[0]||null;
+  return trainServiceColorBetweenStations(a,b,train)||activeSegmentColors(a,b)?.[0]||null;
 }
 function typeColorForTrain(train,position=null){
-  const type=String(train?.type||'普通');
+  const type=String(train?.type||'').trim();
+  if(!type){
+    const currentRouteColor=displayedRouteColorForTrainPosition(train,position);
+    return String(currentRouteColor||activeRouteColors()[0]||'#666');
+  }
   const colors=activeJson?.typeColors||{};
   if(type==='回送') return String(colors?.回送||'#fff');
   if(type.includes('快速')) return String(colors?.快速||FAST_TYPE_COLOR||'#f39800');
@@ -4113,17 +4570,20 @@ function typeBadgeInlineStyle(train,position=null,stationDirectionColor=null){
   return `background:${typeColorForTrain(train,resolvedPosition)};color:#fff;`;
 }
 function expressClassForTrain(t){
-  const type=String(t?.type||'普通');
+  const type=String(t?.type||'').trim();
   if(type==='回送') return 'deadhead';
   return type.includes('快速')?'express':'route-normal';
 }
 function getExpressClass(train){ return expressClassForTrain(train); }
 function getMainLabelClass(type){
-  const value=String(type||'普通');
+  const value=String(type||'').trim();
   return value==='回送'?'deadhead':(value.includes('快速')?'express':'route-normal');
 }
 function trainVisualKind(t){ return expressClassForTrain(t); }
-function defaultTrainImage(){ return activeJson?.commonFormationIcon ? `https://minamikaze2700.github.io/Unyomatome/images/${activeJson.commonFormationIcon}.png` : LINE_TRAIN_IMG; }
+function defaultTrainImage(){
+  if(activeRouteMeta?.trainImage) return String(activeRouteMeta.trainImage);
+  return jsonNoImageUrl();
+}
 function formationsForTrain(){ return FORMATIONS; }
 function allowedFormationFamily(){ return 'hiroshima'; }
 function formationFamilyForTypeSafe(){ return 'hiroshima'; }
@@ -4168,7 +4628,7 @@ function openRegionSheet(region){
 <p class="terms-end">以上</p><p class="terms-date">制定日：2026年9月18日</p>
 </div>`
     : (defs.length
-      ? defs.map(c=>`<section class="company-block"><h2 class="company-name">${esc(c.company)}</h2><div class="route-list">${c.routes.map(r=>`<button type="button" class="route-button" onclick="selectRoute('${escapeJs(r.name)}')">${esc(r.name)}</button>`).join('')}</div></section>`).join('')
+      ? defs.map(c=>`<section class="company-block"><h2 class="company-name">${esc(c.company)}</h2><div class="route-list">${c.routes.map(r=>`<button type="button" class="route-button" onclick="selectRoute('${escapeJs(r.id||r.name)}')">${esc(r.name)}</button>`).join('')}</div></section>`).join('')
       : `<section class="company-block"><h2 class="company-name">この地域の路線は未登録です。</h2></section>`);
   content.innerHTML=inner;
   overlay.style.display='block';
@@ -4180,9 +4640,15 @@ function closeRegionSheet(){
   document.querySelectorAll('#regionNav button').forEach(b=>b.classList.remove('active'));
   if(activeSheetMode==='region') closeSheet();
 }
-async function selectRoute(routeName){
-  if(!ROUTE_REGISTRY[routeName]) return;
+async function selectRoute(routeValue){
+  const routeName=routeNameFromId(routeValue);
+  if(!routeName) return;
   try{ localStorage.setItem(LAST_ROUTE_STORAGE_KEY,routeName); }catch(e){}
+  try{
+    const url=new URL(window.location.href);
+    url.searchParams.set('route',routeIdFromName(routeName)||routeName);
+    window.history.replaceState({},'',url.toString());
+  }catch(e){}
   closeRegionSheet();
   try{
     await loadLineTrainData(routeName);
@@ -4197,24 +4663,31 @@ function syncRegionNavLayout(){
   const nav=document.getElementById('regionNav');
   if(!nav) return;
   const rect=nav.getBoundingClientRect();
-  const vv=window.visualViewport;
-  const viewportBottom=(Number(vv?.offsetTop||0))+(Number(vv?.height||window.innerHeight)||0);
-  const pageBottom=Number.isFinite(viewportBottom) && viewportBottom>0 ? viewportBottom : window.innerHeight;
-  // 地域メニューの実際の下端から上端までを「避ける領域」として使う。
-  // transform/scale後もgetBoundingClientRect()なので実表示サイズに追従する。
-  const top=Math.min(pageBottom,Math.max(0,Number(rect.top)||0));
-  const bottom=Math.min(pageBottom,Math.max(top,Number(rect.bottom)||pageBottom));
-  const offset=Math.max(0,Math.ceil(pageBottom-top));
-  document.documentElement.style.setProperty('--sheet-bottom-offset',offset+'px');
-  document.documentElement.style.setProperty('--current-nav-height',Math.max(0,Math.ceil(pageBottom-bottom))+'px');
+  const isMobile=window.innerWidth<=959.98;
+  // 地域メニューはスマホでは960px基準でzoomされるため、
+  // viewportCanvasにはzoom前の高さを渡す。bottom-sheetには実表示高さを渡す。
+  const scale=isMobile ? Math.max(0.01,window.innerWidth/960) : 1;
+  const visualHeight=Math.max(0,Number(rect.height)||0);
+  const layoutHeight=Math.ceil(visualHeight/scale);
+  document.documentElement.style.setProperty('--current-nav-height',layoutHeight+'px');
+  document.documentElement.style.setProperty('--sheet-bottom-offset',Math.ceil(visualHeight)+'px');
 }
-window.addEventListener('load',syncRegionNavLayout);
-window.addEventListener('resize',syncRegionNavLayout);
-if(window.visualViewport){window.visualViewport.addEventListener('resize',syncRegionNavLayout);}
+function scheduleRegionNavLayout(){
+  if(window.__regionNavLayoutRaf) cancelAnimationFrame(window.__regionNavLayoutRaf);
+  window.__regionNavLayoutRaf=requestAnimationFrame(()=>{
+    window.__regionNavLayoutRaf=0;
+    syncRegionNavLayout();
+  });
+}
+window.addEventListener('load',scheduleRegionNavLayout,{passive:true});
+window.addEventListener('resize',scheduleRegionNavLayout,{passive:true});
 
 function initRegionNavigation(){
   const nav=document.getElementById('regionNav');
-  if(!nav || nav.dataset.bound==='1') return;
+  if(!nav) return;
+  // 路線図キャンバス（zoom/transformがかかる要素）の子だとfixedの基準がずれるため、body直下へ移す。
+  if(nav.parentElement!==document.body) document.body.appendChild(nav);
+  if(nav.dataset.bound==='1') return;
   nav.dataset.bound='1';
   nav.addEventListener('click',ev=>{
     const btn=ev.target.closest('button[data-region]');
@@ -4229,14 +4702,12 @@ function initRegionNavigation(){
 (function(){
   const style=document.createElement('style');
   style.textContent=`
-    /* 元ファイルの駅ラベル形状 */
-    .station-badge{width:384px;min-width:384px;height:72px;background:var(--station-label-bg,#00a3d9);border:0;border-radius:0;overflow:hidden;box-shadow:0 7px 14px rgba(0,0,0,.26);padding:4px 8px;position:relative;text-align:center;z-index:4;}
-    .station-badge::before{content:'';position:absolute;inset:4px 4px 28px 4px;z-index:0;background:#fff;clip-path:none;}
-    .station-name-ja,.station-name-en{position:relative;z-index:1;background:transparent;font-family:inherit;}
-.station-name-ja{color:#000;}
-.station-name-en{color:var(--station-en-text-color,#fff);}
-    .station-name-ja{height:61%;font-size:36px;font-weight:400;}
-    .station-name-en{height:33%;font-size:15.2px;font-weight:400;}
+    /* 駅名ラベル：添付画像下段の新デザイン（黒枠＋白地の駅名＋路線色の英字帯） */
+    .station-badge{width:384px;min-width:384px;height:72px;background:#fff;border:4px solid #000;border-radius:0;overflow:hidden;box-shadow:0 7px 14px rgba(0,0,0,.26);padding:0;position:relative;text-align:center;z-index:4;display:flex;flex-direction:column;}
+    .station-badge::before{display:none;}
+    .station-name-ja,.station-name-en{position:relative;z-index:1;font-family:inherit;display:flex;align-items:center;justify-content:center;}
+    .station-name-ja{height:calc(100% - 24px);min-height:0;flex:1 1 auto;background:#fff;color:#000;font-size:36px;font-weight:400;line-height:1;}
+    .station-name-en{height:24px;min-height:24px;flex:0 0 24px;background:var(--station-label-bg,#666);color:#fff;font-size:15.2px;font-weight:400;line-height:1;}
     .rail-line{width:12px;background:transparent;overflow:visible;}
     .rail-segment{position:absolute;left:0;width:100%;}
     .timetable-item::before{background:linear-gradient(to bottom,var(--route-line-top-bg,#666) 0 50%,var(--route-line-bottom-bg,#666) 50% 100%);}
@@ -4296,16 +4767,18 @@ function initRegionNavigation(){
     .region-panel-card{background:#fff;line-height:1.8;}
     /* メインページ準拠：地域メニューの上端をメイン表示の下端にする */
     :root{--region-nav-height:42px;}
-    body{padding-bottom:var(--current-nav-height,42px) !important;}
+    #viewportCanvas{padding-bottom:var(--current-nav-height,42px) !important;} body{padding-bottom:0 !important;}
     #viewportCanvas{padding-bottom:var(--current-nav-height,42px) !important;}
     #lineContainer{padding-bottom:0 !important;}
-    .region-nav{position:fixed;left:0;right:0;bottom:0;height:42px;z-index:50000;display:grid;grid-template-columns:repeat(11,minmax(0,1fr));background:#c7c7c7;border-top:1px solid #b7b7b7;pointer-events:auto !important;}
+    .region-nav{position:fixed !important;left:0 !important;right:0 !important;top:auto !important;bottom:0 !important;height:42px;z-index:50000;display:grid;grid-template-columns:repeat(11,minmax(0,1fr));background:#c7c7c7;border-top:1px solid #b7b7b7;pointer-events:auto !important;}
     .region-nav button{appearance:none;border:0;border-right:2px solid #fff;background:#c7c7c7;color:#222;font:700 20px/1 "Noto Sans JP",sans-serif;cursor:pointer;white-space:nowrap;pointer-events:auto !important;touch-action:manipulation;}
     .region-nav button:last-child{border-right:0}.region-nav button:hover{background:#d5d5d5}.region-nav button.active{background:#b5b5b5;}
     @media(max-width:520px){
       .route-list{grid-template-columns:1fr;}
       :root{--region-nav-height:64px;}
-      .region-nav{height:64px;width:960px;left:50%;right:auto;transform:translateX(-50%) scale(calc(100vw / 960px));transform-origin:bottom center;}
+      /* スマホもメニュー自体を画面幅いっぱいに固定。文字サイズ・高さは元設定を維持する。 */
+      .region-nav{position:fixed !important;height:64px;width:100vw;min-width:0;max-width:none;left:0;right:0;margin:0;top:auto !important;bottom:0 !important;transform:none !important;transform-origin:initial;}
+      .region-nav button{min-width:0;font-size:20px;}
     }
     @media(min-width:900px){.region-nav{justify-content:center;}}
   `;
@@ -4325,6 +4798,13 @@ function updateRouteVisuals(){
   root.style.setProperty('--control-border-color',makeLightBorder(titleColor));
   const titleText=document.getElementById('titleText');
   if(titleText) titleText.textContent=activeRouteName||DEFAULT_ROUTE_TITLE;
+  document.title=activeRouteName ? `運用まとめ - ${activeRouteName}` : DEFAULT_ROUTE_TITLE;
+  const ogTitle=document.querySelector('meta[property="og:title"]');
+  if(ogTitle) ogTitle.setAttribute('content',activeRouteName ? `運用まとめ - ${activeRouteName}` : DEFAULT_ROUTE_TITLE);
+  try{
+    const ogUrl=document.querySelector('meta[property="og:url"]');
+    if(ogUrl) ogUrl.setAttribute('content',window.location.href);
+  }catch(e){}
   const title=document.getElementById('title');
   if(title){ title.style.background=titleColor; title.style.borderBottomColor=makeLightBorder(titleColor); }
   // コントロールバーの色はh1の色に統一。
@@ -4373,10 +4853,13 @@ initRegionNavigation();
 /* 広島地区編成登録で全スクリプトから共有する定数・保留書き込み状態。
    Firebaseのイベントコールバックは別IIFEから実行されるため、ローカルスコープに閉じ込めない。 */
 var HIROSHIMA_FORMATION_FAMILY='hiroshima';
-window.pendingHiroshimaRemoteWrites = window.pendingHiroshimaRemoteWrites || {平日:{},休日:{}};
-window.applyPendingHiroshimaWritesToState=function(state,day=currentDay){
+window.hiroshimaFormationStateByDate = window.hiroshimaFormationStateByDate || {};
+window.hiroshimaFormationUpdatedAtByDate = window.hiroshimaFormationUpdatedAtByDate || {};
+window.pendingHiroshimaRemoteWrites = window.pendingHiroshimaRemoteWrites || {};
+window.applyPendingHiroshimaWritesToState=function(state,day){
   const target=state&&typeof state==='object' ? state : {};
-  const pending=window.pendingHiroshimaRemoteWrites?.[day]||{};
+  const dayKey=String(day||selectedDateKey||operationDateKey());
+  const pending=window.pendingHiroshimaRemoteWrites?.[dayKey]||{};
   for(const [no,value] of Object.entries(pending)){
     if(value===null||value===undefined||String(value)==='') delete target[no];
     else target[no]=value;
@@ -4386,155 +4869,288 @@ window.applyPendingHiroshimaWritesToState=function(state,day=currentDay){
 </script>
 
 <script>
-/* 広島地区の編成登録：京浜東北系の2系統Firebase処理を使わず、広島地区Firebaseを1系統として扱う。 */
+/* 編成登録：広島地区は「広島地区 / JR広島 / 日付 / 列車番号」、
+   海岸線は「神戸市営 / 日付 / 列車番号」に保存する。1列車は {f:編成,t:YYMMDDHHMM@登録名} の最小構成。 */
 (function(){
   const HIROSHIMA_FORMATION_FAMILY='hiroshima';
-  const emptyFormationState=()=>({stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}}});
-  if(!formationRemoteByFamily.hiroshima) formationRemoteByFamily.hiroshima=emptyFormationState();
+  const KOBE_FORMATION_FAMILY='kobe';
+  const HIROSHIMA_ROOT='広島地区';
+  const HIROSHIMA_AREA='JR広島';
+  const KOBE_ROOT='神戸市営';
+  const KOBE_INTERNAL_AREA='__ROOT__';
+  const emptyFormationState=()=>({stateByDay:{},formationUpdatedAtByDay:{},formationUpdatedByDate:{},areaStateByDate:{},areaMetaByDate:{}});
+  for(const family of [HIROSHIMA_FORMATION_FAMILY,KOBE_FORMATION_FAMILY]){
+    if(!formationRemoteByFamily[family]) formationRemoteByFamily[family]=emptyFormationState();
+    formationRemoteByFamily[family].stateByDay=formationRemoteByFamily[family].stateByDay||{};
+    formationRemoteByFamily[family].formationUpdatedAtByDay=formationRemoteByFamily[family].formationUpdatedAtByDay||{};
+    formationRemoteByFamily[family].formationUpdatedByDate=formationRemoteByFamily[family].formationUpdatedByDate||{};
+    formationRemoteByFamily[family].areaStateByDate=formationRemoteByFamily[family].areaStateByDate||{};
+  }
+  // 既存の京浜東北/横浜系統参照が来ても、広島地区の状態を共有して壊さない。
   formationRemoteByFamily.keihin=formationRemoteByFamily.hiroshima;
   formationRemoteByFamily.yokohama=formationRemoteByFamily.hiroshima;
 
-  formationFamilyFromType=function(){ return HIROSHIMA_FORMATION_FAMILY; };
-  formationFamily=function(){ return HIROSHIMA_FORMATION_FAMILY; };
-  allowedFormationFamily=function(){ return HIROSHIMA_FORMATION_FAMILY; };
-  formationFamilyForTypeSafe=function(){ return HIROSHIMA_FORMATION_FAMILY; };
-  formationFamilyForTrain=function(){ return HIROSHIMA_FORMATION_FAMILY; };
+  function storageFamilyForTrain(train){ return formationStorageContext(train).family; }
+  function storageRootForFamily(family){ return family===KOBE_FORMATION_FAMILY ? KOBE_ROOT : HIROSHIMA_ROOT; }
+  function storageAreaForFamily(family){ return family===KOBE_FORMATION_FAMILY ? KOBE_INTERNAL_AREA : HIROSHIMA_AREA; }
+  function storageAreaKeyForTrain(train){ return storageAreaForFamily(storageFamilyForTrain(train)); }
+  function storageFamilyForActiveRoute(){ return formationStorageContext(activeRouteName).family; }
+
+  function hiroshimaCanonicalAreaKey(value){ return HIROSHIMA_AREA; }
+  window.hiroshimaCanonicalAreaKey=hiroshimaCanonicalAreaKey;
+  function hiroshimaAreaKey(routeName=activeRouteName){
+    return storageFamilyForActiveRoute()===KOBE_FORMATION_FAMILY ? KOBE_INTERNAL_AREA : HIROSHIMA_AREA;
+  }
+  window.hiroshimaAreaKey=hiroshimaAreaKey;
+
+  function formationDateKey(){
+    const key=String(selectedDateKey||'').trim();
+    return /^\d{4}-\d{2}-\d{2}$/.test(key) ? key : operationDateKey();
+  }
+  window.hiroshimaFormationDateKey=formationDateKey;
+
+  function normalizeCompactMeta(value){
+    if(value===null||value===undefined||String(value)==='') return {time:'',author:''};
+    if(typeof value==='object') return parseStoredMeta(String(value.t??value.time??''));
+    return parseStoredMeta(String(value));
+  }
+  function parseStoredMeta(raw){
+    const text=String(raw||'').trim();
+    if(!text) return {time:'',author:''};
+    const at=text.indexOf('@');
+    const timePart=at>=0?text.slice(0,at):text;
+    const author=at>=0?text.slice(at+1).replace(/^@+/, '').trim():'';
+    const compact=timePart.match(/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/);
+    if(compact){
+      const month=Number(compact[2]),day=Number(compact[3]),hour=Number(compact[4]),minute=Number(compact[5]);
+      if(month>=1&&month<=12&&day>=1&&day<=31&&hour>=0&&hour<=23&&minute>=0&&minute<=59){
+        return {time:String(hour*60+minute),stamp:timePart,author:String(author||'').trim()};
+      }
+    }
+    const n=Number(timePart);
+    if(Number.isFinite(n) && n>=0 && n<=1439) return {time:String(Math.floor(n)),author:String(author||'').trim()};
+    const d=new Date(timePart);
+    if(!Number.isNaN(d.getTime())) return {time:String(d.getHours()*60+d.getMinutes()),author:String(author||'').trim()};
+    const m=text.match(/^(\d{1,2}):(\d{2})(?:\s*@(.+))?$/);
+    if(m) return {time:String(Number(m[1])*60+Number(m[2])),author:String(m[3]||'').trim()};
+    return {time:'',author:''};
+  }
+  window.hiroshimaParseStoredMeta=function(raw,authorFallback=''){
+    const parsed=parseStoredMeta(raw);
+    if(!parsed.author&&authorFallback) parsed.author=String(authorFallback).replace(/^@+/, '').trim();
+    else if(parsed.author) parsed.author=String(parsed.author).replace(/^@+/, '').trim();
+    if(!parsed.time) return null;
+    return parsed;
+  };
+  function makeStoredMeta(){
+    const now=new Date();
+    const stamp=`${String(now.getFullYear()%100).padStart(2,'0')}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+    const name=String(currentUserProfile?.name||currentAuthUser?.displayName||'').trim();
+    return name ? `${stamp}@${name}` : stamp;
+  }
+  function formatStoredMeta(meta){
+    const parsed=parseStoredMeta(meta);
+    if(!parsed.time) return '';
+    const mins=Math.max(0,Math.min(1439,Number(parsed.time)||0));
+    const hh=String(Math.floor(mins/60)).padStart(2,'0');
+    const mm=String(mins%60).padStart(2,'0');
+    return `${hh}:${mm}${parsed.author?` @${parsed.author}`:''}`;
+  }
+  window.hiroshimaFormatStoredMeta=formatStoredMeta;
+
+  formationFamilyFromType=function(){ return storageFamilyForActiveRoute(); };
+  formationFamily=function(){ return storageFamilyForActiveRoute(); };
+  allowedFormationFamily=function(train){ return storageFamilyForTrain(train); };
+  formationFamilyForTypeSafe=function(){ return storageFamilyForActiveRoute(); };
+  formationFamilyForTrain=function(train){ return storageFamilyForTrain(train); };
   formationsForTrain=function(){ return FORMATIONS; };
+
+  function canonicalFormationId(value){
+    if(value===null||value===undefined||String(value).trim()==='') return null;
+    const raw=String(value).trim();
+    const direct=formationById(raw)||formationById(raw.replace(/F$/i,''));
+    if(direct?.id) return String(direct.id);
+    const normalized=raw.toUpperCase().replace(/[Ａ-Ｚ]/g,ch=>String.fromCharCode(ch.charCodeAt(0)-0xFEE0));
+    const normalizedObj=formationById(normalized)||formationById(normalized.replace(/F$/i,''));
+    if(normalizedObj?.id) return String(normalizedObj.id);
+    return null;
+  }
+  window.canonicalHiroshimaFormationId=canonicalFormationId;
+
   formationAllowedForTrain=function(train,id){
-    return !id || id===INITIAL_FORMATION_SELECTION.id || !!formationById(id);
+    if(!id||id===INITIAL_FORMATION_SELECTION.id) return true;
+    const ids=String(id).split('+').map(x=>x.trim()).filter(Boolean);
+    return ids.length>0&&ids.every(one=>!!canonicalFormationId(one));
   };
   trainBelongsToFamily=function(no,family){
-    if(family!==HIROSHIMA_FORMATION_FAMILY) return false;
-    const key=String(no||'');
+    const key=String(no||'').trim();
     if(!key) return false;
-    return [...TRAINS,...HOLIDAY_TRAINS,...ALL_SCHEDULE_TRAINS].some(t=>String(t?.no||'')===key);
+    const source=operationTrainSourceForDay(currentDay);
+    return source.some(t=>String(t?.no||'')===key&&storageFamilyForTrain(t)===family);
   };
-  formationFirebaseConfigForFamily=function(){ return FIREBASE_CONFIG; };
+
+  function normalizeEntry(no,entry){
+    if(entry===null||entry===undefined) return null;
+    const value=typeof entry==='object' ? entry.f??entry.formation : entry;
+    const ids=String(value??'').split('+').map(canonicalFormationId).filter(Boolean);
+    if(!ids.length) return null;
+    const meta=normalizeCompactMeta(typeof entry==='object' ? entry.t??entry.time??'' : '');
+    const out={f:ids.join('+'),t:meta.time ? (meta.stamp ? `${meta.stamp}${meta.author?`@${meta.author}`:''}` : `${meta.time}${meta.author?`@${meta.author}`:''}`) : ''};
+    const role=typeof entry==='object'?String(entry.r||'').trim():'';
+    if(role) out.r=role;
+    return out;
+  }
+  function normalizeStorageRoot(raw,family){
+    const out={};
+    if(!raw||typeof raw!=='object') return out;
+    if(family===KOBE_FORMATION_FAMILY){
+      for(const [date,trains] of Object.entries(raw)){
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date))||!trains||typeof trains!=='object') continue;
+        const areaOut={};
+        for(const [no,entry] of Object.entries(trains)){
+          const normalized=normalizeEntry(no,entry);
+          if(normalized) areaOut[String(no)]=normalized;
+        }
+        if(Object.keys(areaOut).length) out[String(date)]={[KOBE_INTERNAL_AREA]:areaOut};
+      }
+      return out;
+    }
+    for(const [area,value1] of Object.entries(raw)){
+      if(String(area)!==HIROSHIMA_AREA||!value1||typeof value1!=='object') continue;
+      for(const [date,trains] of Object.entries(value1)){
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date))||!trains||typeof trains!=='object') continue;
+        const areaOut={};
+        for(const [no,entry] of Object.entries(trains)){
+          const normalized=normalizeEntry(no,entry);
+          if(normalized) areaOut[String(no)]=normalized;
+        }
+        if(Object.keys(areaOut).length){ out[String(date)]??={}; out[String(date)][HIROSHIMA_AREA]=areaOut; }
+      }
+    }
+    return out;
+  }
+
+  function syncDerivedStateForFamily(family){
+    const remote=formationRemoteByFamily[family];
+    if(!remote) return;
+    const all=remote.areaStateByDate||{};
+    const date=formationDateKey();
+    const area=storageAreaForFamily(family);
+    const areaData=all?.[date]?.[area]||{};
+    const state={},ts={},authors={};
+    for(const [no,entry] of Object.entries(areaData)){
+      if(entry?.f) state[no]=entry.f;
+      const meta=normalizeCompactMeta(entry?.t);
+      if(meta.time){ ts[no]=meta.time; authors[no]=meta.author||''; }
+    }
+    remote.stateByDay[date]=state;
+    remote.formationUpdatedAtByDay[date]=ts;
+    remote.formationUpdatedByDate[date]=authors;
+    if(family===storageFamilyForActiveRoute()){
+      window.hiroshimaFormationUpdatedByDate=remote.formationUpdatedByDate;
+      remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
+      remoteRoot.stateByDay[currentDay]=cloneState(state);
+      remoteRoot.formationUpdatedAtByDay=remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}};
+      remoteRoot.formationUpdatedAtByDay[currentDay]=cloneState(ts);
+    }
+  }
+  function syncDerivedState(){ syncDerivedStateForFamily(storageFamilyForActiveRoute()); }
 
   normalizeFormationState=function(raw,family){
-    if(family!==HIROSHIMA_FORMATION_FAMILY) return {};
     const out={};
-    const src=raw&&typeof raw==='object'?raw:{};
-    for(const [no,value] of Object.entries(src)){
-      if(!trainBelongsToFamily(no,family)) continue;
-      const normalized=normalizeStoredFormationId(value);
-      if(normalized) out[String(no)]=normalized;
+    if(family!==HIROSHIMA_FORMATION_FAMILY&&family!==KOBE_FORMATION_FAMILY) return out;
+    for(const [no,value] of Object.entries(raw||{})){
+      const ids=String(value??'').split('+').map(canonicalFormationId).filter(Boolean);
+      if(ids.length) out[String(no)]=ids.join('+');
     }
     return out;
   };
   normalizeFormationTimestampState=function(raw,family){
-    if(family!==HIROSHIMA_FORMATION_FAMILY) return {};
     const out={};
-    const src=raw&&typeof raw==='object'?raw:{};
-    for(const [no,value] of Object.entries(src)){
-      if(!trainBelongsToFamily(no,family)) continue;
-      if(value!==null&&value!==undefined&&String(value)!=='') out[String(no)]=value;
+    if(family!==HIROSHIMA_FORMATION_FAMILY&&family!==KOBE_FORMATION_FAMILY) return out;
+    for(const [no,value] of Object.entries(raw||{})){
+      const meta=normalizeCompactMeta(value);
+      if(meta.time) out[String(no)]=meta.time;
     }
     return out;
   };
 
-  firebaseDatabaseForFamily=function(family){
-    return family===HIROSHIMA_FORMATION_FAMILY ? (formationFirebaseDbs.hiroshima||firebaseDb||null) : null;
-  };
-  firebaseDatabase=function(){
-    return formationFirebaseDbs.hiroshima||firebaseDb||null;
-  };
+  firebaseDatabaseForFamily=function(family){ return (family===KOBE_FORMATION_FAMILY||family===HIROSHIMA_FORMATION_FAMILY) ? (formationFirebaseDbs.hiroshima||firebaseDb||null) : null; };
+  firebaseDatabase=function(){ return formationFirebaseDbs.hiroshima||firebaseDb||null; };
   firebaseOperationRef=function(){ const db=firebaseDatabase(); return db?db.ref('運用'):null; };
   firebaseHistoryRef=function(){ const db=firebaseDatabase(); return db?db.ref('履歴'):null; };
-  formationOperationRef=function(){ const db=firebaseDatabaseForFamily(HIROSHIMA_FORMATION_FAMILY); return db?db.ref('運用'):null; };
+  formationOperationRef=function(family=storageFamilyForActiveRoute()){
+    const db=firebaseDatabaseForFamily(family); if(!db) return null;
+    return db.ref(storageRootForFamily(family));
+  };
 
   loadFormationFamilyFromFirebase=async function(family){
-    if(family!==HIROSHIMA_FORMATION_FAMILY) return false;
-    const ref=formationOperationRef();
-    if(!ref) return false;
-    const [stateSnap,tsSnap]=await Promise.all([
-      ref.child('stateByDay').once('value'),
-      ref.child('formationUpdatedAtByDay').once('value')
-    ]);
-    const stateRaw=stateSnap.val()||{}, tsRaw=tsSnap.val()||{};
-    formationRemoteByFamily.hiroshima.stateByDay={
-      平日:normalizeFormationState(stateRaw.平日||{},HIROSHIMA_FORMATION_FAMILY),
-      休日:normalizeFormationState(stateRaw.休日||{},HIROSHIMA_FORMATION_FAMILY)
-    };
-    formationRemoteByFamily.hiroshima.formationUpdatedAtByDay={
-      平日:normalizeFormationTimestampState(tsRaw.平日||{},HIROSHIMA_FORMATION_FAMILY),
-      休日:normalizeFormationTimestampState(tsRaw.休日||{},HIROSHIMA_FORMATION_FAMILY)
-    };
+    if(family!==HIROSHIMA_FORMATION_FAMILY&&family!==KOBE_FORMATION_FAMILY) return false;
+    const ref=formationOperationRef(family); if(!ref) return false;
+    const snap=await ref.once('value');
+    const all=normalizeStorageRoot(snap.val()||{},family);
+    formationRemoteByFamily[family].areaStateByDate=all;
+    if(family===HIROSHIMA_FORMATION_FAMILY) window.hiroshimaFormationStateByDate=all;
+    syncDerivedStateForFamily(family);
     return true;
   };
-
-  mergeFormationRemoteIntoLegacyState=function(){
-    const state=formationRemoteByFamily.hiroshima?.stateByDay?.[currentDay]||{};
-    remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
-    remoteRoot.stateByDay[currentDay]=cloneState(state);
-    remoteRoot.formationUpdatedAtByDay=remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}};
-    remoteRoot.formationUpdatedAtByDay[currentDay]=cloneState(formationRemoteByFamily.hiroshima?.formationUpdatedAtByDay?.[currentDay]||{});
-  };
+  mergeFormationRemoteIntoLegacyState=function(){ syncDerivedState(); };
 
   registeredFormationForTrain=function(train){
     if(!train) return null;
-    const state=formationRemoteByFamily.hiroshima?.stateByDay?.[currentDay]||{};
-    return normalizeStoredFormationId(stateForTrain(state,String(train.no||'')));
+    const family=storageFamilyForTrain(train);
+    const date=formationDateKey(),area=storageAreaForFamily(family);
+    const rawNo=String(train.no||'').trim();
+    const storageNo=activeRouteName==='海岸線' ? operationChainFirstNo(currentDay,rawNo) : rawNo;
+    const entry=formationRemoteByFamily[family]?.areaStateByDate?.[date]?.[area]?.[storageNo];
+    return String(entry?.f||'')||null;
   };
   applyRegistrationState=function(){
     const seen=new Set();
     [...TRAINS,...HOLIDAY_TRAINS].forEach(t=>{
       const signature=String(t.no)+'|'+String(t.direction||'');
-      if(seen.has(signature)) return;
-      seen.add(signature);
+      if(seen.has(signature)) return; seen.add(signature);
       t.formation=registeredFormationForTrain(t)||null;
     });
   };
 
   preloadAllFormationFamilies=async function(){
-    const ok=await loadFormationFamilyFromFirebase(HIROSHIMA_FORMATION_FAMILY);
-    formationFirebaseReady=!!ok;
-    mergeFormationRemoteIntoLegacyState();
+    const results=await Promise.allSettled([HIROSHIMA_FORMATION_FAMILY,KOBE_FORMATION_FAMILY].map(loadFormationFamilyFromFirebase));
+    formationFirebaseReady=results.some(r=>r.status==='fulfilled'&&r.value===true);
+    syncDerivedState();
     registrationState=isHistoricalSelectedDate(selectedDateKey)?historicalStateForDate(selectedDateKey):cloneState(remoteRoot.stateByDay[currentDay]||{});
     applyRegistrationState();
     return formationFirebaseReady;
   };
 
+  const firebaseFormationListenerRefs={};
   subscribeAllOperationState=function(){
-    const ref=formationOperationRef();
-    if(!ref) return;
-    ref.child('stateByDay').on('value',snap=>{
-      const all=snap.val()||{};
-      formationRemoteByFamily.hiroshima.stateByDay={
-        平日:applyPendingHiroshimaWritesToState(normalizeFormationState(all.平日||{},HIROSHIMA_FORMATION_FAMILY),'平日'),
-        休日:applyPendingHiroshimaWritesToState(normalizeFormationState(all.休日||{},HIROSHIMA_FORMATION_FAMILY),'休日')
+    for(const family of [HIROSHIMA_FORMATION_FAMILY,KOBE_FORMATION_FAMILY]){
+      const ref=formationOperationRef(family); if(!ref) continue;
+      try{firebaseFormationListenerRefs[family]?.off();}catch(e){}
+      const handler=snap=>{
+        formationRemoteByFamily[family].areaStateByDate=normalizeStorageRoot(snap.val()||{},family);
+        if(family===HIROSHIMA_FORMATION_FAMILY) window.hiroshimaFormationStateByDate=formationRemoteByFamily[family].areaStateByDate;
+        syncDerivedStateForFamily(family);
+        if(family===storageFamilyForActiveRoute()){
+          registrationState=isHistoricalSelectedDate(selectedDateKey)?historicalStateForDate(selectedDateKey):cloneState(remoteRoot.stateByDay[currentDay]||{});
+          applyRegistrationState(); saveLocalState(); refreshAllTrainDataCache();
+          if(!isEditMode){renderTrainPositions();if(currentTrainNo)updateSheetContent();}
+        }
+        syncStatus('Firebaseリアルタイム同期済み');
       };
-      if(!isHistoricalSelectedDate(selectedDateKey)){
-        mergeFormationRemoteIntoLegacyState();
-        registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
-      }
-      applyRegistrationState(); saveLocalState(); refreshAllTrainDataCache();
-      if(!isEditMode){ renderTrainPositions(); if(currentTrainNo) updateSheetContent(); }
-      syncStatus('Firebaseリアルタイム同期済み');
-    },err=>console.warn('Firebase編成状態読込失敗（hiroshima）',err));
-    ref.child('formationUpdatedAtByDay').on('value',snap=>{
-      const all=snap.val()||{};
-      formationRemoteByFamily.hiroshima.formationUpdatedAtByDay={
-        平日:normalizeFormationTimestampState(all.平日||{},HIROSHIMA_FORMATION_FAMILY),
-        休日:normalizeFormationTimestampState(all.休日||{},HIROSHIMA_FORMATION_FAMILY)
-      };
-      mergeFormationRemoteIntoLegacyState(); saveLocalState();
-      if(currentTrainNo&&!isEditMode) updateSheetContent();
-    },err=>console.warn('Firebase編成入力時刻読込失敗（hiroshima）',err));
+      ref.on('value',handler); firebaseFormationListenerRefs[family]=ref;
+    }
   };
 
   saveLocalState=function(){
     try{
       localStorage.setItem(STORAGE_KEY,JSON.stringify({
         operationDate:currentOperationDate,
-        stateByDay:remoteRoot.stateByDay,
-        formationUpdatedAtByDay:remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}},
-        formationStateByFamily:{hiroshima:formationRemoteByFamily.hiroshima.stateByDay},
-        formationUpdatedAtByFamily:{hiroshima:formationRemoteByFamily.hiroshima.formationUpdatedAtByDay},
-        pendingFormationTimestamps:pendingFormationTimestamps||{平日:{},休日:{}},
-        pendingHiroshimaRemoteWrites:pendingHiroshimaRemoteWrites||{平日:{},休日:{}},
-        history:remoteRoot.history||{},
-        updatedAt:new Date().toISOString()
+        hiroshimaFormationStateByDate:formationRemoteByFamily.hiroshima.areaStateByDate||{},
+        kobeFormationStateByDate:formationRemoteByFamily.kobe.areaStateByDate||{},
+        pendingHiroshimaRemoteWrites:window.pendingHiroshimaRemoteWrites||{},
+        history:remoteRoot.history||{}
       }));
     }catch(e){ console.warn('local save failed',e); }
   };
@@ -4542,25 +5158,13 @@ window.applyPendingHiroshimaWritesToState=function(state,day=currentDay){
     try{
       const raw=localStorage.getItem(STORAGE_KEY); if(!raw) return;
       const obj=JSON.parse(raw)||{};
-      remoteRoot.operationDate=obj.operationDate||null;
-      remoteRoot.stateByDay=obj.stateByDay||{平日:{},休日:{}};
-      remoteRoot.formationUpdatedAtByDay=obj.formationUpdatedAtByDay||{平日:{},休日:{}};
-      pendingFormationTimestamps=obj.pendingFormationTimestamps||{平日:{},休日:{}};
-      pendingHiroshimaRemoteWrites=obj.pendingHiroshimaRemoteWrites||{平日:{},休日:{}};
-      const src=obj.formationStateByFamily?.hiroshima||obj.formationStateByFamily?.keihin||obj.stateByDay||{};
-      const ts=obj.formationUpdatedAtByFamily?.hiroshima||obj.formationUpdatedAtByFamily?.keihin||obj.formationUpdatedAtByDay||{};
-      formationRemoteByFamily.hiroshima.stateByDay={
-        平日:normalizeFormationState(src.平日||{},HIROSHIMA_FORMATION_FAMILY),
-        休日:normalizeFormationState(src.休日||{},HIROSHIMA_FORMATION_FAMILY)
-      };
-      formationRemoteByFamily.hiroshima.formationUpdatedAtByDay={
-        平日:normalizeFormationTimestampState(ts.平日||{},HIROSHIMA_FORMATION_FAMILY),
-        休日:normalizeFormationTimestampState(ts.休日||{},HIROSHIMA_FORMATION_FAMILY)
-      };
-      remoteRoot.history=obj.history||{};
-      currentOperationDate=remoteRoot.operationDate;
+      window.pendingHiroshimaRemoteWrites=obj.pendingHiroshimaRemoteWrites||{};
+      formationRemoteByFamily.hiroshima.areaStateByDate=normalizeStorageRoot(obj.hiroshimaFormationStateByDate||{},HIROSHIMA_FORMATION_FAMILY);
+      formationRemoteByFamily.kobe.areaStateByDate=normalizeStorageRoot(obj.kobeFormationStateByDate||{},KOBE_FORMATION_FAMILY);
+      window.hiroshimaFormationStateByDate=formationRemoteByFamily.hiroshima.areaStateByDate;
+      remoteRoot.history=obj.history||{}; currentOperationDate=obj.operationDate||currentOperationDate;
+      syncDerivedStateForFamily(HIROSHIMA_FORMATION_FAMILY); syncDerivedStateForFamily(KOBE_FORMATION_FAMILY);
       operationHistory=historyEntries();
-      mergeFormationRemoteIntoLegacyState();
       registrationState=isHistoricalSelectedDate(selectedDateKey)?historicalStateForDate(selectedDateKey):cloneState(remoteRoot.stateByDay[currentDay]||{});
       applyRegistrationState();
     }catch(e){ console.warn('local load failed',e); }
@@ -4573,50 +5177,91 @@ window.applyPendingHiroshimaWritesToState=function(state,day=currentDay){
       const appName='unyomatomeHiroshima';
       let app=firebase.apps.find(a=>a.name===appName);
       if(!app) app=firebase.initializeApp(FIREBASE_CONFIG,appName);
-      formationFirebaseApps.hiroshima=app;
-      formationFirebaseDbs.hiroshima=firebase.database(app);
+      formationFirebaseApps.hiroshima=app; formationFirebaseApps.kobe=app;
+      formationFirebaseDbs.hiroshima=firebase.database(app); formationFirebaseDbs.kobe=formationFirebaseDbs.hiroshima;
       firebaseApp=app; firebaseDb=formationFirebaseDbs.hiroshima; firebaseReady=true;
+      if(typeof window.initFirebaseAuth==='function') window.initFirebaseAuth(app);
       syncStatus('Firebase接続中');
       const ok=await preloadAllFormationFamilies();
-      if(!ok){ firebaseReady=false; firebaseDb=null; syncStatus('Firebase接続失敗（ローカル動作）'); return false; }
-      subscribeAllOperationState();
-      return true;
+      if(!ok){firebaseReady=false;firebaseDb=null;syncStatus('Firebase接続失敗（ローカル動作）');return false;}
+      subscribeAllOperationState(); return true;
     }catch(e){
       console.warn('Firebase初期化失敗：ローカル動作に切り替えます',e);
-      firebaseReady=false; firebaseDb=null; formationFirebaseReady=false;
-      syncStatus('Firebase接続失敗（ローカル動作）');
-      return false;
+      firebaseReady=false; firebaseDb=null; formationFirebaseReady=false; syncStatus('Firebase接続失敗（ローカル動作）'); return false;
     }
   };
 
   syncRegistrationToRemote=async function(changes={}){
-    const db=firebaseDatabase();
-    if(!db) return true;
-    const entries=Object.entries(changes||{}); if(!entries.length) return true;
-    try{
-      const dayRef=db.ref('運用').child('stateByDay').child(currentDay);
-      const updates={};
-      entries.forEach(([no,formId])=>{ updates[String(no)]=normalizeStoredFormationId(formId)||null; });
-      await dayRef.update(updates);
-      const stateSnap=await dayRef.once('value');
-      formationRemoteByFamily.hiroshima.stateByDay[currentDay]=normalizeFormationState(stateSnap.val()||{},HIROSHIMA_FORMATION_FAMILY);
-      const tsRef=db.ref('運用').child('formationUpdatedAtByDay').child(currentDay);
-      const tsUpdates={};
-      entries.forEach(([no,formId])=>{ tsUpdates[String(no)]=(formId&&formId!==INITIAL_FORMATION_SELECTION.id)?new Date().toISOString():null; });
-      await tsRef.update(tsUpdates);
-      const tsSnap=await tsRef.once('value');
-      formationRemoteByFamily.hiroshima.formationUpdatedAtByDay[currentDay]=normalizeFormationTimestampState(tsSnap.val()||{},HIROSHIMA_FORMATION_FAMILY);
-      mergeFormationRemoteIntoLegacyState(); registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{}); applyRegistrationState(); saveLocalState(); refreshAllTrainDataCache(); syncStatus('Firebase同期済み');
-      return true;
-    }catch(e){ console.error('Firebase書込失敗',e); syncStatus('Firebase書込失敗'); return false; }
+    // 海岸線の運用連結は、Firebaseへはチェーン先頭列車だけを保存する。
+    const normalizedChanges={};
+    for(const [no,formId] of Object.entries(changes||{})){
+      const t=findOperationTrainRecord(no,currentDay);
+      const storageNo=activeRouteName==='海岸線' ? operationChainFirstNo(currentDay,no) : String(no);
+      if(t) normalizedChanges[storageNo]=formId;
+    }
+    const trainByNo={};
+    Object.keys(normalizedChanges).forEach(no=>{ const t=findOperationTrainRecord(no,currentDay); if(t) trainByNo[String(no)]=t; });
+    for(const [no,formId] of Object.entries(normalizedChanges)){
+      const train=trainByNo[String(no)] || findOperationTrainRecord(no,currentDay); if(!train) continue;
+      const family=storageFamilyForTrain(train); const db=firebaseDatabaseForFamily(family); if(!db) continue;
+      const date=formationDateKey(),area=storageAreaForFamily(family);
+      const ref=area===KOBE_INTERNAL_AREA ? db.ref(KOBE_ROOT).child(date).child(String(no)) : db.ref(HIROSHIMA_ROOT).child(HIROSHIMA_AREA).child(date).child(String(no));
+      const ids=String(formId??'').split('+').map(canonicalFormationId).filter(Boolean);
+      if(ids.length) await ref.set({f:ids.join('+'),t:makeStoredMeta()}); else await ref.remove();
+    }
+    return true;
+  };
+
+  recordSelection=async function(train,formId){
+    if(!formationInputAllowed()) return [];
+    const key=String(train?.no||'').trim(); if(!key) return [];
+    const family=storageFamilyForTrain(train);
+    const date=formationDateKey(),area=storageAreaForFamily(family);
+    const remote=formationRemoteByFamily[family];
+    remote.areaStateByDate[date]??={}; remote.areaStateByDate[date][area]??={};
+    const value=(formId&&formId!==INITIAL_FORMATION_SELECTION.id)?normalizeStoredFormationId(formId):null;
+    const storedMeta=value?makeStoredMeta():'';
+    const roleCode=value&&typeof window.currentPermissionCodeForRoute==='function' ? window.currentPermissionCodeForRoute(activeRouteName) : '';
+    // 海岸線は運用連結の先頭列車だけを保存キーにする。
+    const storageKey=activeRouteName==='海岸線' ? operationChainFirstNo(currentDay,key) : key;
+    if(value){
+      const entry={f:value,t:storedMeta};
+      if(roleCode) entry.r=roleCode;
+      remote.areaStateByDate[date][area][storageKey]=entry;
+    }
+    else {
+      delete remote.areaStateByDate[date][area][storageKey];
+      if(!Object.keys(remote.areaStateByDate[date][area]).length) delete remote.areaStateByDate[date][area];
+      if(!Object.keys(remote.areaStateByDate[date]).length) delete remote.areaStateByDate[date];
+    }
+    if(family===HIROSHIMA_FORMATION_FAMILY) window.hiroshimaFormationStateByDate=remote.areaStateByDate;
+    syncDerivedStateForFamily(family);
+    registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
+    pendingFormationState[storageKey]=value;
+    mergeFormationRemoteIntoLegacyState(); applyRegistrationState(); refreshAllTrainDataCache(); saveLocalState();
+    if(currentTrainSnapshot&&String(currentTrainSnapshot.no||'')===key) currentTrainSnapshot={...currentTrainSnapshot,formation:value};
+    syncStatus('登録済み・同期中');
+    const db=firebaseDatabaseForFamily(family);
+    if(db){
+      try{
+        const ref=area===KOBE_INTERNAL_AREA ? db.ref(KOBE_ROOT).child(date).child(storageKey) : db.ref(HIROSHIMA_ROOT).child(HIROSHIMA_AREA).child(date).child(storageKey);
+        if(value){
+          const payload={f:value,t:storedMeta};
+          if(roleCode) payload.r=roleCode;
+          await ref.set(payload);
+        } else await ref.remove();
+        syncStatus('Firebase同期済み');
+      }catch(e){console.error('編成登録Firebase同期失敗',e);saveLocalState();syncStatus('登録済み・Firebase未同期');}
+    }
+    return [key];
   };
 })();
 </script>
 
 <script>
-/* ===== 広島地区：最大6編成・3列車併結対応 =====
+/* ===== 最大6編成・3列車併結対応 =====
    東武スカイツリーラインの地上運用で採用している「+区切りの前寄り→後寄り保存」方式を
-   広島地区へ一般化。JSONの formationCount が省略された場合は1編成、2以上だけ個別指定する。
+   共通処理としてJSONの formationCount が省略された場合は1編成、2以上だけ個別指定する。
 */
 (function(){
   const MAX_FORMATION_SLOTS=6;
@@ -4630,10 +5275,8 @@ window.applyPendingHiroshimaWritesToState=function(state,day=currentDay){
   }
 
   function formationCountForTrain(train){
-    /* 広島地区は全列車を3編成対応とする。
-       列車ごとの formationCount / formationCounts は使用せず、
-       JSONのトップレベル formationCountDefault を系統全体の設定値として扱う。 */
-    return 3;
+    const routeDefault=activeJson?.formationCountDefault ?? activeRouteMeta?.formationCountDefault ?? train?.formationCount ?? DEFAULT_FORMATION_COUNT;
+    return clampFormationCount(routeDefault);
   }
   window.formationCountForTrain=formationCountForTrain;
 
@@ -4649,7 +5292,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day=currentDay){
     const ids=raw.split('+').map(x=>x.trim()).filter(Boolean);
     const normalized=ids.map(one=>{
       const v=oldNormalizeStoredFormationId(one);
-      return v==null?'':String(v);
+      return v==null?'':String(v).replace(/F$/i,'');
     }).filter(Boolean);
     return normalized.length?normalized.join('+'):null;
   };
@@ -4723,15 +5366,29 @@ window.applyPendingHiroshimaWritesToState=function(state,day=currentDay){
   function renderFormationOptions(slot,currentIds,count){
     const current=currentIds[slot]||'';
     const groups=formationsForTrain(currentTrainSnapshot||{});
-    const initial=`<div class="option-item initial-option" onclick="selectFormationAtSlot('${INITIAL_FORMATION_SELECTION.id}',${slot})"><img src="${esc(INITIAL_FORMATION_SELECTION.img)}" class="option-img"><span>${esc(INITIAL_FORMATION_SELECTION.name)}</span></div>`;
+    const initial=`<div class="option-item initial-option" onclick="selectFormationAtSlot(${slot},'${INITIAL_FORMATION_SELECTION.id}')"><img src="${esc(syncInitialFormationImage())}" class="option-img"><span>${esc(INITIAL_FORMATION_SELECTION.name)}</span></div>`;
     const body=groups.map(group=>{
-      const type=`<div class="option-header option-category-header"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(group.type)}</span></div>`;
+      const groupType=String(group.type||'');
+      const isGenericAS=/^[^A-Z]*227系 [AS]編成$/.test(groupType);
+      const declaredType=String(activeJson?.formationType||'').trim();
+      const isGenericDeclared=!!declaredType && groupType===declaredType;
+      const genericId=groupType.includes('S編成')?'S編成':groupType.includes('A編成')?'A編成':(isGenericDeclared?declaredType:'');
+      // 共通の形式指定（A編成/S編成/JSON指定の5000系など）は見出し自体を選択肢にする。
+      const type=(isGenericAS||isGenericDeclared)
+        ? `<div class="option-header option-category-header option-selectable-category" role="button" tabindex="0" onclick="selectFormationAtSlot(${slot},'${escapeJs(genericId)}')"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(genericId)}</span></div>`
+        : `<div class="option-header option-category-header"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(groupType)}</span></div>`;
       const items=(group.items||[]).map(item=>{
-        const id=String(item.id||'');
-        if(!id || item.disabled || UNAVAILABLE_FORMATIONS.has(String(id))) return '';
-        const selectedElsewhere=currentIds.some((v,i)=>i!==slot && v && String(v)===id);
-        const dis=selectedElsewhere?' option-disabled':'';
-        return `<div class="option-item${dis}" ${selectedElsewhere?'aria-disabled="true"':''} onclick="${selectedElsewhere?'void(0)':'selectFormationAtSlot(\''+escapeJs(id)+'\','+slot+')'}"><img src="${esc(item.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src='${escapeJs(LINE_TRAIN_IMG)}'"><span>${esc(item.name||id)}</span></div>`;
+        const id=String(item.id||'').replace(/F$/i,'');
+        if(!id || item.disabled || UNAVAILABLE_FORMATIONS.has(id)) return '';
+        // 重複対象は個別編成だけ。A編成/S編成の共通選択肢はここでは判定しない。
+        const selectedElsewhere=!/^([AS]編成)$/.test(id) && currentIds.some((v,i)=>{
+          if(i===slot || !v) return false;
+          const other=String(v).replace(/F$/i,'');
+          return other===id && !/^([AS]編成)$/.test(other);
+        });
+        // 重複する個別編成は「選択不可」ではなく、候補そのものから除外する。
+        if(selectedElsewhere) return '';
+        return `<div class="option-item" onclick="selectFormationAtSlot(${slot},'${escapeJs(id)}')"><img src="${esc(item.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=defaultTrainImage()"><span>${esc(item.name||id)}</span></div>`;
       }).join('');
       return type+items;
     }).join('');
@@ -4746,32 +5403,43 @@ window.applyPendingHiroshimaWritesToState=function(state,day=currentDay){
       else parent.appendChild(el);
     }
     el.classList.remove('hiro-formation-dropdown-portal','open');
-    el.style.display='';el.style.left='';el.style.top='';el.style.width='';el.style.maxHeight='';el.style.zIndex='';
+    el.style.display='';el.style.position='';el.style.left='';el.style.top='';el.style.width='';el.style.maxHeight='';el.style.zIndex='';
     hiroFormationDropdownState=null;
   }
 
   function positionHiroDropdown(el,trigger){
     const r=trigger.getBoundingClientRect();
     const vv=window.visualViewport;
-    const vw=Number(vv?.width||window.innerWidth), vh=Number(vv?.height||window.innerHeight);
+    const vw=Number(vv?.width||window.innerWidth);
+    const vh=Number(vv?.height||window.innerHeight);
     const ox=Number(vv?.offsetLeft||0), oy=Number(vv?.offsetTop||0);
     const nav=document.getElementById('regionNav');
     const navRect=nav?.getBoundingClientRect();
+    const viewportTop=oy;
     const viewportBottom=oy+vh;
+    // スマホでは「地域メニューの上端から10px手前」をプルダウン下端の基準にする。
     const menuTop=Number.isFinite(Number(navRect?.top)) ? Number(navRect.top) : viewportBottom;
-    const bottomLimit=Math.max(0,Math.min(viewportBottom,menuTop-4));
-    const topBound=oy+4;
+    const bottomLimit=Math.max(viewportTop,Math.min(viewportBottom,menuTop-10));
+    const topBound=viewportTop+4;
     const width=Math.min(Math.max(r.width,250),Math.max(120,vw-12));
     const leftMin=ox+6;
     const leftMax=ox+vw-width-6;
     const left=Math.min(Math.max(leftMin,r.left),Math.max(leftMin,leftMax));
+    const gap=4;
+    const desiredTop=r.bottom+gap;
+    const belowSpace=Math.max(0,bottomLimit-desiredTop);
 
-    // 選択肢は原則として必ずボタンの下に出す。
-    // 下側に残っている高さだけをmax-heightにして、地域メニューへ侵入させない。
-    const top=Math.max(topBound,r.bottom+4);
-    const availableBelow=Math.max(0,bottomLimit-top);
-    const maxH=Math.max(40,Math.min(300,availableBelow));
+    let top=desiredTop;
+    let maxH=Math.min(300,belowSpace);
+    // 下側に40px以上確保できない場合は上側へ開く。
+    if(belowSpace<40){
+      const aboveSpace=Math.max(0,r.top-gap-topBound);
+      maxH=Math.min(300,aboveSpace);
+      top=Math.max(topBound,r.top-gap-maxH);
+    }
+    maxH=Math.max(1,Math.min(maxH,Math.max(1,bottomLimit-top)));
 
+    el.style.position='fixed';
     el.style.left=`${Math.round(left)}px`;
     el.style.top=`${Math.round(top)}px`;
     el.style.width=`${Math.round(width)}px`;
@@ -4779,6 +5447,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day=currentDay){
   }
 
   function toggleFormationSlot(slot,event){
+    if(!formationInputAllowed()) return;
     event?.preventDefault?.(); event?.stopPropagation?.();
     const el=document.getElementById(`hiroFormationOptions${slot}`);
     const trigger=document.getElementById(`hiroFormationTrigger${slot}`);
@@ -4792,6 +5461,18 @@ window.applyPendingHiroshimaWritesToState=function(state,day=currentDay){
     positionHiroDropdown(el,trigger);
   }
   window.toggleFormationSlot=toggleFormationSlot;
+
+  // プルダウンをbody直下へ移動しているため、ページ・シート・VisualViewportの
+  // スクロールでもトリガー位置へ追従させる。地域メニュー自体の処理は変更しない。
+  const syncHiroDropdownPosition=()=>{
+    const st=hiroFormationDropdownState;
+    if(st?.el?.classList.contains('open') && st.trigger) positionHiroDropdown(st.el,st.trigger);
+  };
+  window.addEventListener('scroll',syncHiroDropdownPosition,true);
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('scroll',syncHiroDropdownPosition,{passive:true});
+    window.visualViewport.addEventListener('resize',syncHiroDropdownPosition,{passive:true});
+  }
 
   function buildCompositeSelectors(train){
     const count=formationCountForTrain(train);
@@ -4815,14 +5496,14 @@ window.applyPendingHiroshimaWritesToState=function(state,day=currentDay){
   }
 
   function updateCompositeEditUI(){
-    if(!isEditMode || !currentTrainSnapshot) return false;
+    if(!isEditMode || !formationInputAllowed() || !currentTrainSnapshot) return false;
     const container=document.querySelector('#sheetContent .select-box-container');
     if(!container) return false;
     container.innerHTML=buildCompositeSelectors(currentTrainSnapshot);
     const count=formationCountForTrain(currentTrainSnapshot);
     if(count>1){
       const input=document.getElementById('formationManualInput');
-      if(input){ input.placeholder=`編成番号を「+」で区切って前寄りから入力（最大${count}編成）`; input.value=formationIds(currentTrainSnapshot.formation||'').map(id=>selectionDisplayObject(id)?.name||id).join('+'); }
+      if(input){ input.placeholder=formationInputPlaceholderForTrain(currentTrainSnapshot); input.value=formationIds(currentTrainSnapshot.formation||'').map(id=>selectionDisplayObject(id)?.name||id).join('+'); }
     }
     return true;
   }
@@ -4846,7 +5527,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day=currentDay){
 
   /* 手入力も + 区切りで count 個まで受け付ける。 */
   registerFormationFromInput=async function(){
-    if(isNonCurrentSelectedDate(selectedDateKey)) return;
+    if(!formationInputAllowed()) return;
     const input=document.getElementById('formationManualInput');
     const err=document.getElementById('formationInputError');
     if(err) err.textContent='';
@@ -4868,8 +5549,13 @@ window.applyPendingHiroshimaWritesToState=function(state,day=currentDay){
       if(!id){if(err)err.textContent='編成を特定できません。';input?.focus();return;}
       ids.push(id);
     }
-    const dup=new Set(ids);
-    if(dup.size!==ids.length){ if(err)err.textContent='同じ実編成を重複して登録することはできません。'; input?.focus(); return; }
+    // A編成/S編成は共通選択肢なので重複可。A01/S01などの個別編成だけ重複禁止。
+    const realIds=ids.filter(id=>!/^([AS]編成)$/.test(String(id).replace(/F$/i,'')));
+    if(new Set(realIds).size!==realIds.length){
+      if(err)err.textContent='同じ実編成を重複して登録することはできません。';
+      input?.focus();
+      return;
+    }
     currentTrainSnapshot={...currentTrainSnapshot,formation:ids.join('+')};
     train.formation=ids.join('+');
     await recordSelection(train,ids.join('+'));
@@ -4879,17 +5565,26 @@ window.applyPendingHiroshimaWritesToState=function(state,day=currentDay){
   };
 
   async function saveFormationAtSlot(slot,id){
-    if(isNonCurrentSelectedDate(selectedDateKey)) return;
+    if(!formationInputAllowed()) return;
     const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction||null)||currentTrainSnapshot;
     if(!train) return;
     const count=formationCountForTrain(train);
     if(slot<0||slot>=count)return;
     const ids=selectedIdsForTrain(train);
     const normalized=(id===INITIAL_FORMATION_SELECTION.id)?'':String(normalizeStoredFormationId(id)||'');
-    if(normalized){
-      const duplicate=ids.some((v,i)=>i!==slot && v===normalized);
+    if(normalized && !formationById(normalized)){
+      const err=document.getElementById('formationInputError'); if(err)err.textContent='選択した編成を特定できません。'; return;
+    }
+    if(normalized && !(formationById(normalized)?.generic)){
+      const duplicate=ids.some((v,i)=>{
+        if(i===slot || !v) return false;
+        const other=String(v).replace(/F$/i,'');
+        return other===normalized && !(formationById(other)?.generic);
+      });
       if(duplicate){
-        const err=document.getElementById('formationInputError'); if(err)err.textContent='同じ実編成を重複して登録することはできません。'; return;
+        const err=document.getElementById('formationInputError');
+        if(err) err.textContent='';
+        return;
       }
     }
     if(normalized && slot>0 && !ids.slice(0,slot).every(Boolean)){
@@ -4911,97 +5606,252 @@ window.applyPendingHiroshimaWritesToState=function(state,day=currentDay){
   }
   window.selectFormationAtSlot=saveFormationAtSlot;
 
-  /* 広島地区専用の登録処理。
-     UIへは必ず先に反映し、Firebaseは後から同期する。
-     Firebase側が旧値を返したり、一時的に書き込み失敗した場合でも、
-     pendingHiroshimaRemoteWrites に残した最新値を優先して表示状態を保持する。 */
-  const pendingHiroshimaRemoteWrites=window.pendingHiroshimaRemoteWrites;
 
-  recordSelection=async function(train,formId){
-    if(isNonCurrentSelectedDate(selectedDateKey)) return [];
-    const key=String(train?.no||'').trim();
-    if(!key) return [];
-    const value=(formId && formId!==INITIAL_FORMATION_SELECTION.id)
-      ? normalizeStoredFormationId(formId)
-      : null;
-    const day=currentDay;
-    const familyState=formationRemoteByFamily.hiroshima.stateByDay[day]
-      || (formationRemoteByFamily.hiroshima.stateByDay[day]={});
-    const tsState=formationRemoteByFamily.hiroshima.formationUpdatedAtByDay[day]
-      || (formationRemoteByFamily.hiroshima.formationUpdatedAtByDay[day]={});
+  /* Firebase Authentication + ユーザープロフィール */
+  const USER_PROFILE_ROOT='運用/ユーザー';
+  const USER_ID_INDEX_ROOT='運用/ユーザーIDIndex';
+  const USER_NAME_INDEX_ROOT='運用/ユーザー名Index';
 
-    if(!pendingHiroshimaRemoteWrites[day]) pendingHiroshimaRemoteWrites[day]={};
-    pendingHiroshimaRemoteWrites[day][key]=value;
-
-    if(value) familyState[key]=value;
-    else delete familyState[key];
-    if(value) tsState[key]=new Date().toISOString();
-    else delete tsState[key];
-
-    /* 先に画面・ローカル状態を確定する。Firebaseの通信待ちで登録操作を止めない。 */
-    registrationState[key]=value;
-    pendingFormationState[key]=value;
-    pendingFormationTimestamps[day]=pendingFormationTimestamps[day]||{};
-    if(value) pendingFormationTimestamps[day][key]=tsState[key];
-    else delete pendingFormationTimestamps[day][key];
-
-    mergeFormationRemoteIntoLegacyState();
-    applyRegistrationState();
-    refreshAllTrainDataCache();
-    saveLocalState();
-    if(currentTrainSnapshot && String(currentTrainSnapshot.no||'')===key){
-      currentTrainSnapshot={...currentTrainSnapshot,formation:value};
+  function safeUserKey(value){
+    const bytes=new TextEncoder().encode(String(value||''));
+    let bin='';
+    for(const b of bytes) bin+=String.fromCharCode(b);
+    return 'k_'+btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  }
+  function authErrorMessage(error){
+    const code=String(error?.code||'');
+    if(code==='auth/popup-closed-by-user') return 'ログイン画面が閉じられました。';
+    if(code==='auth/popup-blocked') return 'ポップアップがブロックされました。ブラウザのポップアップを許可してください。';
+    if(code==='auth/cancelled-popup-request') return '別のログイン処理が実行中です。';
+    if(code==='auth/account-exists-with-different-credential') return 'このアカウントは別のログイン方法です。最初に登録した方法でログインしてください。';
+    if(code==='auth/operation-not-allowed') return 'このログイン方法がFirebase側で有効になっていません。';
+    return 'ログインに失敗しました。しばらくしてからもう一度お試しください。';
+  }
+  function setAuthError(text){
+    const a=document.getElementById('authError'); if(a) a.textContent=text||'';
+    const b=document.getElementById('profileSaveError'); if(b) b.textContent=text||'';
+  }
+  function openSiteMenu(){
+    const panel=document.getElementById('siteMenuPanel'),back=document.getElementById('siteMenuBackdrop'),btn=document.getElementById('siteMenuBtn');
+    if(!panel||!back)return;
+    panel.classList.add('active'); back.classList.add('active'); if(btn) btn.setAttribute('aria-expanded','true');
+    updateSiteAccountButton();
+  }
+  function closeSiteMenu(){
+    document.getElementById('siteMenuPanel')?.classList.remove('active');
+    document.getElementById('siteMenuBackdrop')?.classList.remove('active');
+    document.getElementById('siteMenuBtn')?.setAttribute('aria-expanded','false');
+  }
+  function toggleSiteMenu(event){
+    event?.stopPropagation();
+    const panel=document.getElementById('siteMenuPanel');
+    if(panel?.classList.contains('active')) closeSiteMenu(); else openSiteMenu();
+  }
+  function updateSiteAccountButton(){
+    const btn=document.getElementById('siteAccountBtn'); if(!btn)return;
+    if(currentAuthUser){
+      const name=String(currentUserProfile?.name||currentAuthUser.displayName||'ユーザー').trim();
+      btn.textContent=`ユーザー情報（${name}）`;
+    }else btn.textContent='ログイン';
+  }
+  function openAccountFromMenu(){
+    closeSiteMenu();
+    openAuthPanel();
+  }
+  function openAuthPanel(){
+    const p=document.getElementById('authPanel'),b=document.getElementById('authBackdrop');
+    if(!p||!b)return;
+    setAuthError('');
+    p.classList.add('active'); b.classList.add('active');
+    renderAuthPanel();
+  }
+  function closeAuthPanel(){
+    document.getElementById('authPanel')?.classList.remove('active');
+    document.getElementById('authBackdrop')?.classList.remove('active');
+  }
+  function renderAuthPanel(){
+    const title=document.getElementById('authPanelTitle'),login=document.getElementById('loginChoices'),form=document.getElementById('userProfileForm');
+    if(currentAuthUser){
+      if(title) title.textContent='ユーザー情報';
+      if(login) login.hidden=true;
+      if(form){
+        form.hidden=false;
+        const name=String(currentUserProfile?.name||currentAuthUser.displayName||'');
+        const id=String(currentUserProfile?.id||'');
+        const ni=document.getElementById('profileNameInput'),ii=document.getElementById('profileIdInput');
+        if(ni && document.activeElement!==ni) ni.value=name;
+        if(ii && document.activeElement!==ii) ii.value=id;
+        const account=document.getElementById('userProfileAccount');
+        if(account) account.textContent=`${currentAuthUser.providerData?.[0]?.providerId==='twitter.com'?'Twitter':'Google'}アカウントでログイン中`;
+      }
+    }else{
+      if(title) title.textContent='ログイン';
+      if(login) login.hidden=false;
+      if(form) form.hidden=true;
     }
-    syncStatus('登録済み・同期中');
-
-    /* Firebase同期は非同期で行い、UI操作をブロックしない。 */
-    const db=firebaseDatabase();
-    if(db){
-      (async()=>{
-        try{
-          const dayRef=db.ref('運用').child('stateByDay').child(day);
-          const writePromise=dayRef.update({[key]:value});
-          const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('Firebase書込タイムアウト')),5000));
-          await Promise.race([writePromise,timeout]);
-
-          const tsRef=db.ref('運用').child('formationUpdatedAtByDay').child(day);
-          const tsValue=value?new Date().toISOString():null;
-          await Promise.race([tsRef.update({[key]:tsValue}),timeout]);
-
-          try{
-            const snap=await Promise.race([
-              dayRef.once('value'),
-              new Promise((_,reject)=>setTimeout(()=>reject(new Error('Firebase再読込タイムアウト')),3000))
-            ]);
-            const remote=normalizeFormationState(snap.val()||{},HIROSHIMA_FORMATION_FAMILY);
-            applyPendingHiroshimaWritesToState(remote,day);
-            formationRemoteByFamily.hiroshima.stateByDay[day]=remote;
-            mergeFormationRemoteIntoLegacyState();
-            registrationState=cloneState(remoteRoot.stateByDay[day]||{});
-            applyRegistrationState();
-            refreshAllTrainDataCache();
-            const latestPending=pendingHiroshimaRemoteWrites?.[day]?.[key];
-            if(latestPending===value){ delete pendingHiroshimaRemoteWrites[day][key]; }
-          }catch(e){
-            /* 再読込失敗時も既に画面へ反映したローカル登録を維持する。 */
-            console.warn('編成登録後のFirebase再読込失敗',e);
-          }
-          saveLocalState();
-          syncStatus('Firebase同期済み');
-        }catch(e){
-          console.error('広島地区編成登録Firebase同期失敗',e);
-          /* pending値は残す。リアルタイム監視が旧値を受け取っても上書きさせない。 */
-          saveLocalState();
-          syncStatus('登録済み・Firebase未同期');
+  }
+  async function loadUserProfile(user){
+    if(!user || !firebaseAuth) return null;
+    try{
+      const db=firebaseDatabase();
+      if(!db) return null;
+      const snap=await db.ref(USER_PROFILE_ROOT).child(user.uid).once('value');
+      const raw=snap.val();
+      if(raw&&typeof raw==='object') return {uid:user.uid,name:String(raw.n??raw.name??'').trim(),id:String(raw.i??raw.id??'').trim()};
+    }catch(e){ console.warn('ユーザー情報読込失敗',e); }
+    return null;
+  }
+  function makeDefaultUserId(user){
+    const tail=String(user?.uid||'').replace(/[^A-Za-z0-9]/g,'').slice(-8) || Math.random().toString(36).slice(2,10);
+    return tail;
+  }
+  async function ensureUserProfile(user){
+    if(!user){ profileRegistered=false; return null; }
+    const existing=await loadUserProfile(user);
+    if(existing?.name && existing?.id){ profileRegistered=true; currentUserProfile=existing; return existing; }
+    profileRegistered=false;
+    currentUserProfile={uid:user.uid,name:existing?.name||String(user.displayName||'').trim()||'',id:existing?.id||makeDefaultUserId(user)};
+    return currentUserProfile;
+  }
+  async function claimUniqueUserKey(ref,uid){
+    let conflict=false;
+    const result=await ref.transaction(current=>{
+      if(current===null || current===uid) return uid;
+      conflict=true; return;
+    });
+    return {ok:result.committed&&!conflict};
+  }
+  async function releaseUserKey(ref,uid){
+    try{
+      await ref.transaction(current=>current===uid?null:current);
+    }catch(e){ console.warn('ユーザー索引解除失敗',e); }
+  }
+  async function saveUserProfile(){
+    const user=currentAuthUser, db=firebaseDatabase();
+    const err=document.getElementById('profileSaveError'); if(err) err.textContent='';
+    if(!user||!db){ if(err)err.textContent='ログイン情報またはFirebase接続が確認できません。'; return; }
+    const name=String(document.getElementById('profileNameInput')?.value||'').trim();
+    const id=String(document.getElementById('profileIdInput')?.value||'').trim();
+    if(!name){if(err)err.textContent='登録名を入力してください。';return;}
+    if(!id){if(err)err.textContent='IDを入力してください。';return;}
+    if(name.length>30||id.length>30){if(err)err.textContent='登録名とIDは30文字以内で入力してください。';return;}
+    if(/[\u0000-\u001F\u007F]/.test(name+id)){if(err)err.textContent='登録名・IDに使用できない文字が含まれています。';return;}
+    const oldName=String(currentUserProfile?.name||'').trim();
+    const oldId=String(currentUserProfile?.id||'').trim();
+    const nameChanged=safeUserKey(name)!==safeUserKey(oldName);
+    const idChanged=safeUserKey(id)!==safeUserKey(oldId);
+    const claimed=[];
+    try{
+      if(nameChanged){
+        const r=await claimUniqueUserKey(db.ref(USER_NAME_INDEX_ROOT).child(safeUserKey(name)),user.uid);
+        if(!r.ok){if(err)err.textContent='その登録名はすでに使用されています。';return;}
+        claimed.push({type:'name',key:name});
+      }
+      if(idChanged){
+        const r=await claimUniqueUserKey(db.ref(USER_ID_INDEX_ROOT).child(safeUserKey(id)),user.uid);
+        if(!r.ok){
+          if(nameChanged) await releaseUserKey(db.ref(USER_NAME_INDEX_ROOT).child(safeUserKey(name)),user.uid);
+          if(err)err.textContent='そのIDはすでに使用されています。';
+          return;
         }
-      })();
+        claimed.push({type:'id',key:id});
+      }
+      // プロフィール本体は必要な2項目だけを保存して容量を抑える。UIDは親キーで保持。
+      const profile={uid:user.uid,name,id};
+      const compactProfile={n:name,i:id};
+      const updates={};
+      updates[`${USER_PROFILE_ROOT}/${user.uid}`]=compactProfile;
+      if(nameChanged && oldName) updates[`${USER_NAME_INDEX_ROOT}/${safeUserKey(oldName)}`]=null;
+      updates[`${USER_NAME_INDEX_ROOT}/${safeUserKey(name)}`]=user.uid;
+      if(idChanged && oldId) updates[`${USER_ID_INDEX_ROOT}/${safeUserKey(oldId)}`]=null;
+      updates[`${USER_ID_INDEX_ROOT}/${safeUserKey(id)}`]=user.uid;
+      await db.ref().update(updates);
+      currentUserProfile=profile;
+      profileRegistered=true;
+      updateSiteAccountButton();
+      renderAuthPanel();
+      if(currentTrainNo&&!isEditMode) updateSheetContent();
+      syncStatus('ユーザー情報を保存しました');
+    }catch(e){
+      console.error('ユーザー情報保存失敗',e);
+      if(nameChanged) await releaseUserKey(db.ref(USER_NAME_INDEX_ROOT).child(safeUserKey(name)),user.uid);
+      if(idChanged) await releaseUserKey(db.ref(USER_ID_INDEX_ROOT).child(safeUserKey(id)),user.uid);
+      if(err)err.textContent='ユーザー情報の保存に失敗しました。';
     }
-
-    /* 登録処理自体はここで完了。 */
-    return [key];
+  }
+  async function signInWithGoogle(){
+    if(!firebaseAuth){setAuthError('Firebase Authenticationが初期化されていません。ページを再読み込みしてください。');return;}
+    const protocol=String(window.location?.protocol||'');
+    if(!['http:','https:','chrome-extension:'].includes(protocol)){
+      setAuthError('GoogleログインはWeb公開したページ（http/https）で利用できます。HTMLファイルを直接開いた状態（file://）では利用できません。');
+      return;
+    }
+    try{
+      window.localStorage?.setItem('__firebase_auth_check','1');
+      window.localStorage?.removeItem('__firebase_auth_check');
+    }catch(e){
+      setAuthError('ブラウザのWebストレージが無効になっています。Cookie・サイトデータを許可してから再度お試しください。');
+      return;
+    }
+    setAuthError('');
+    try{ await firebaseAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+    catch(e){ console.error('Googleログイン失敗',e); setAuthError(authErrorMessage(e)); }
+  }
+  async function logoutUser(){
+    if(!firebaseAuth)return;
+    try{ await firebaseAuth.signOut(); closeAuthPanel(); updateSiteAccountButton(); }
+    catch(e){ setAuthError('ログアウトに失敗しました。'); }
+  }
+  window.initFirebaseAuth=function(app){
+    if(!window.firebase?.auth || !app) return;
+    try{
+      if(firebaseAuth && firebaseAuth.app===app){ return; }
+      firebaseAuth=firebase.auth(app);
+      firebaseAuth.onAuthStateChanged(async user=>{
+        currentAuthUser=user||null;
+        authStateReady=true;
+        if(user){
+          currentUserProfile=await ensureUserProfile(user);
+        }else{
+          currentUserProfile=null;
+          profileRegistered=false;
+          // ログアウト直後に編成入力中だった場合は強制的に閲覧モードへ戻す。
+          if(isEditMode){
+            isEditMode=false;
+            document.getElementById('bottomSheet')?.classList.remove('editing');
+          }
+        }
+        updateSiteAccountButton();
+        if(user && !profileRegistered){
+          setTimeout(()=>openAuthPanel(),0);
+        }
+        if(document.getElementById('authPanel')?.classList.contains('active')) renderAuthPanel();
+        if(currentTrainNo&&!isEditMode) updateSheetContent();
+      });
+    }catch(e){ console.warn('Firebase Authentication初期化失敗',e); }
   };
+  window.toggleSiteMenu=toggleSiteMenu;
+  window.closeSiteMenu=closeSiteMenu;
+  window.openAccountFromMenu=openAccountFromMenu;
+  window.openAuthPanel=openAuthPanel;
+  window.closeAuthPanel=closeAuthPanel;
+  window.signInWithGoogle=signInWithGoogle;
+  window.saveUserProfile=saveUserProfile;
+  window.logoutUser=logoutUser;
 
-  /* 既存の単一編成選択も count=1 / 初期値解除用に統一。 */
+  // ページ起動時のinitFirebase()がこのIIFEより前に実行されても、
+  // Authenticationの初期化を取りこぼさないよう、定義直後に既存appへ接続する。
+  try{
+    if(typeof firebaseApp!=='undefined' && firebaseApp && window.firebase?.auth){
+      window.initFirebaseAuth(firebaseApp);
+    }
+  }catch(e){
+    console.warn('Firebase Authentication自動初期化失敗',e);
+  }
+
+  /* recordSelection は上のコンパクト保存版を使用する。 */
+
+  /* 単一編成選択APIも3スロット方式と共通の保存処理に統一。 */
   selectFormation=async function(formId){
     return saveFormationAtSlot(0,formId);
   };
@@ -5045,11 +5895,178 @@ window.applyPendingHiroshimaWritesToState=function(state,day=currentDay){
     .hiro-formation-options{display:none;position:fixed !important;right:auto !important;bottom:auto !important;margin:0 !important;z-index:110 !important;pointer-events:auto !important;}
     .hiro-formation-options.open{display:block !important;}
     .hiro-formation-display-line{display:inline-block;}
+    .formation-login-required{font-size:.9rem;color:#666;font-weight:700;}
     @media(max-width:700px){.hiro-formation-grid{grid-template-columns:1fr;}}
   `;
   document.head.appendChild(style);
 })();
 </script>
+
+<script>
+/* ===== 権限・公開路線・管理人タグ =====
+   公開/非公開と路線管理人は各路線の ROUTE_REGISTRY.<route>.access に記載。
+   例: access:{public:false,routeAdmins:['UserID1','UserID2']}
+*/
+(function(){
+  const ADMIN_ID='Minamikaze';
+  const USER_ROOT='運用/ユーザー';
+
+  function normalizeId(v){ return String(v||'').trim(); }
+  function routeAccess(routeName){
+    return ROUTE_REGISTRY?.[normalizeId(routeName)]?.access || {public:false,routeAdmins:[]};
+  }
+  function routeManagerIds(routeName){
+    const ids=routeAccess(routeName).routeAdmins;
+    return Array.isArray(ids)?ids.map(normalizeId).filter(Boolean):[];
+  }
+  function isAdminUser(){ return normalizeId(currentUserProfile?.id)===ADMIN_ID; }
+  function isRouteAdminFor(routeName){
+    const id=normalizeId(currentUserProfile?.id);
+    return !!id && routeManagerIds(routeName).includes(id);
+  }
+  function canViewRoute(routeName){
+    const route=typeof routeNameFromId==='function' ? routeNameFromId(routeName) : normalizeId(routeName);
+    if(!route || !ROUTE_REGISTRY?.[route]) return false;
+    if(isAdminUser()) return true;
+    const access=routeAccess(route);
+    if(!!access.public) return true;
+    if(!authStateReady || !currentAuthUser) return false;
+    return isRouteAdminFor(route);
+  }
+  window.appCanViewRoute=canViewRoute;
+  window.currentPermissionCodeForRoute=function(routeName){
+    const route=typeof routeNameFromId==='function' ? routeNameFromId(routeName) : normalizeId(routeName);
+    if(isAdminUser()) return 'a';
+    return isRouteAdminFor(route)?'l':'';
+  };
+
+  function roleLabel(code){ return code==='a'?'管理人':code==='l'?'路線管理人':''; }
+  function roleTag(code){
+    const label=roleLabel(code);
+    return label?`<span class="permission-tag permission-${code}">${escapeAttr(label)}</span>`:'';
+  }
+  window.routeRoleTagForCurrentUser=function(routeName=activeRouteName){
+    return roleTag(window.currentPermissionCodeForRoute?.(routeName)||'');
+  };
+
+  function updateProfileRoleTag(){
+    const tag=document.getElementById('profileRoleTag');
+    const code=window.currentPermissionCodeForRoute?.(activeRouteName)||'';
+    if(tag){ tag.outerHTML=`<span id="profileRoleTag" class="permission-tag permission-${code}"${code?'':' style="display:none"'}>${escapeAttr(roleLabel(code))}</span>`; }
+    const info=document.getElementById('profilePermissionInfo');
+    if(info){
+      if(isAdminUser()) info.textContent='権限：管理人（全路線）';
+      else if(isRouteAdminFor(activeRouteName)) info.textContent=`権限：路線管理人（${normalizeId(activeRouteName)}）`;
+      else if(ROUTE_REGISTRY?.[activeRouteName]) info.textContent='権限：一般利用者';
+      else info.textContent='';
+    }
+  }
+
+  function ensureProfileRoleUI(){
+    const input=document.getElementById('profileNameInput');
+    if(input&&!document.getElementById('profileRoleTag')){
+      const row=document.createElement('div'); row.className='profile-name-input-row';
+      input.parentNode.insertBefore(row,input); row.appendChild(input);
+      const tag=document.createElement('span'); tag.id='profileRoleTag'; tag.className='permission-tag'; tag.style.display='none';
+      row.appendChild(tag);
+    }
+    const form=document.getElementById('userProfileForm');
+    if(form&&!document.getElementById('profilePermissionInfo')){
+      const info=document.createElement('div'); info.id='profilePermissionInfo'; info.className='profile-permission-info';
+      const idInput=document.getElementById('profileIdInput');
+      (idInput?.closest('.user-profile-field')||form).insertAdjacentElement('afterend',info);
+    }
+    updateProfileRoleTag();
+  }
+
+  function updateRegionNavAccess(){
+    // 下部の地域ボタン自体は残す。地域を開いた時に非公開路線だけを除外する。
+    document.querySelectorAll('#regionNav button[data-region]').forEach(btn=>{ btn.hidden=false; });
+    syncRegionNavLayout();
+  }
+  window.updateRegionNavAccess=updateRegionNavAccess;
+
+  const originalOpenRegionSheet=window.openRegionSheet;
+  if(originalOpenRegionSheet){
+    window.openRegionSheet=function(region){
+      if(String(region)==='利用規約') return originalOpenRegionSheet(region);
+      const defs=REGION_DEFINITIONS[String(region)]||[];
+      const saved=defs.slice();
+      defs.splice(0,defs.length,...saved.map(c=>({...c,routes:(c.routes||[]).filter(r=>canViewRoute(r.name))})).filter(c=>c.routes.length));
+      try{ return originalOpenRegionSheet(region); }
+      finally{ defs.splice(0,defs.length,...saved); }
+    };
+  }
+
+  const originalSelectRoute=window.selectRoute;
+  if(originalSelectRoute){
+    window.selectRoute=async function(routeName){
+      if(!canViewRoute(routeName)) return;
+      return originalSelectRoute(routeName);
+    };
+  }
+
+  window.formatFormationUpdatedAtHtml=function(trainNo){
+    const text=typeof formatFormationUpdatedAt==='function'?formatFormationUpdatedAt(trainNo):'';
+    if(!text) return '';
+    const train=(currentTrainSnapshot&&String(currentTrainSnapshot.no||'')===String(trainNo||''))?currentTrainSnapshot:trainForCurrentDay(String(trainNo||''),currentTrainSnapshot?.direction||null);
+    const entry=typeof formationStorageEntryForTrain==='function'?formationStorageEntryForTrain(train):null;
+    const code=String(entry?.r||'').trim();
+    const showCode=(code==='a'||code==='l')?code:'';
+    const at=text.indexOf(' @');
+    const time=at>=0?text.slice(0,at):text;
+    const author=at>=0?text.slice(at+1).replace(/^@+/, '').trim():'';
+    return `<span class="formation-updated-time">${escapeAttr(time)}</span>${author?`<span class="formation-updated-author">${escapeAttr('@'+author)}</span>`:''}${roleTag(showCode)}`;
+  };
+
+  async function loadAccessProfile(user){
+    if(!user) return;
+    try{
+      const db=firebaseDatabase(); if(!db) return;
+      const snap=await db.ref(USER_ROOT).child(user.uid).once('value');
+      const raw=snap.val()||{};
+      currentUserProfile={
+        ...(currentUserProfile||{uid:user.uid}),
+        uid:user.uid,
+        name:String(raw.n??raw.name??currentUserProfile?.name??'').trim(),
+        id:String(raw.i??raw.id??currentUserProfile?.id??'').trim()
+      };
+    }catch(e){}
+  }
+
+  function refreshAccessUI(){
+    ensureProfileRoleUI();
+    // 旧バージョンの路線管理人設定UIが残っていれば除去。権限はプログラム側で設定する。
+    document.getElementById('routeAdminManager')?.remove();
+    updateProfileRoleTag();
+    updateRegionNavAccess();
+    if(currentTrainNo && !isEditMode && typeof updateSheetContent==='function') updateSheetContent();
+  }
+
+  let accessListenerBound=false;
+  function bindAuthListener(){
+    if(accessListenerBound||!window.firebase||!firebaseAuth?.onAuthStateChanged) return false;
+    accessListenerBound=true;
+    firebaseAuth.onAuthStateChanged(async user=>{
+      if(user) await loadAccessProfile(user);
+      refreshAccessUI();
+      if(activeRouteName && !canViewRoute(activeRouteName)){
+        const fallback='海岸線';
+        if(ROUTE_REGISTRY[fallback] && canViewRoute(fallback)){
+          try{ await originalSelectRoute(fallback); }catch(e){}
+        }else{
+          activeRouteName=''; activeRouteMeta=null; activeJson=null;
+        }
+      }
+    });
+    return true;
+  }
+  const timer=setInterval(()=>{ if(bindAuthListener()) clearInterval(timer); },50);
+  setTimeout(()=>clearInterval(timer),10000);
+  window.addEventListener('load',()=>{ ensureProfileRoleUI(); refreshAccessUI(); bindAuthListener(); });
+})();
+</script>
+
 </body>
 </html>
 
