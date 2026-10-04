@@ -543,6 +543,7 @@ button,input,select,textarea{font-family:inherit}
 .provider-login.google{background:#fff;color:#222;border:1px solid #ddd}.provider-login.twitter{background:#111;color:#fff}
 .provider-icon{font-weight:900;font-size:1.15rem;min-width:20px;text-align:center}
 .user-profile-form{display:flex;flex-direction:column;gap:8px}.user-profile-form[hidden],.login-choices[hidden]{display:none!important}.user-profile-account{font-size:.9rem;color:#555;background:#f5f5f5;border-radius:8px;padding:8px 10px}
+.profile-name-input-row{display:flex;align-items:center;gap:10px;width:100%;}.profile-name-input-row #profileNameInput{flex:1;min-width:0;}.permission-tag{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;background:#999;color:#fff;border-radius:999px;padding:2px 10px;font-size:.86rem;font-weight:800;line-height:1.2;white-space:nowrap;}.permission-a,.permission-l{background:#999;color:#fff;}.profile-permission-info{font-size:.82rem;color:#777;margin-top:-3px;margin-bottom:2px;}
 .user-profile-field{display:flex;flex-direction:column;gap:5px;font-weight:800}.user-profile-field input{width:100%;border:2px solid #ccc;border-radius:8px;padding:10px 11px;font:inherit;background:#fff;color:#111}
 .user-profile-help{font-size:.82rem;color:#777;margin-top:-3px;margin-bottom:3px}
 .profile-save-btn{margin-top:4px;width:100%;border:0;border-radius:9px;padding:11px 14px;background:#808080;color:#fff;font:800 1rem/1 inherit;cursor:pointer}
@@ -794,7 +795,8 @@ const ROUTE_REGISTRY={
     area:'JR広島',
     storageRoot:'広島地区',
     storageArea:'JR広島',
-    company:'JR西日本'
+    company:'JR西日本',
+    access:{public:false,routeAdmins:[]}
   },
   '可部線':{
     json:TRAIN_DATA_URL,
@@ -803,7 +805,8 @@ const ROUTE_REGISTRY={
     area:'JR広島',
     storageRoot:'広島地区',
     storageArea:'JR広島',
-    company:'JR西日本'
+    company:'JR西日本',
+    access:{public:false,routeAdmins:[]}
   },
   '呉線':{
     json:TRAIN_DATA_URL,
@@ -812,7 +815,8 @@ const ROUTE_REGISTRY={
     area:'JR広島',
     storageRoot:'広島地区',
     storageArea:'JR広島',
-    company:'JR西日本'
+    company:'JR西日本',
+    access:{public:false,routeAdmins:[]}
   },
   '海岸線':{
     json:KOBE_KAIGAN_DATA_URL,
@@ -822,7 +826,8 @@ const ROUTE_REGISTRY={
     storageRoot:'神戸市営',
     storageArea:null,
     company:'神戸市営地下鉄',
-    formationCountDefault:1
+    formationCountDefault:1,
+    access:{public:true,routeAdmins:[]}
   }
 };
 function formationStorageContext(routeOrTrain=activeRouteName){
@@ -5473,7 +5478,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
       if(!db) return null;
       const snap=await db.ref(USER_PROFILE_ROOT).child(user.uid).once('value');
       const raw=snap.val();
-      if(raw&&typeof raw==='object') return {uid:user.uid,name:String(raw.n??raw.name??'').trim(),id:String(raw.i??raw.id??'').trim(),routes:Array.isArray(raw.r)?raw.r.map(x=>String(x||'').trim()).filter(Boolean):[]};
+      if(raw&&typeof raw==='object') return {uid:user.uid,name:String(raw.n??raw.name??'').trim(),id:String(raw.i??raw.id??'').trim()};
     }catch(e){ console.warn('ユーザー情報読込失敗',e); }
     return null;
   }
@@ -5486,7 +5491,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     const existing=await loadUserProfile(user);
     if(existing?.name && existing?.id){ profileRegistered=true; currentUserProfile=existing; return existing; }
     profileRegistered=false;
-    currentUserProfile={uid:user.uid,name:existing?.name||String(user.displayName||'').trim()||'',id:existing?.id||makeDefaultUserId(user),routes:Array.isArray(existing?.routes)?existing.routes:[]};
+    currentUserProfile={uid:user.uid,name:existing?.name||String(user.displayName||'').trim()||'',id:existing?.id||makeDefaultUserId(user)};
     return currentUserProfile;
   }
   async function claimUniqueUserKey(ref,uid){
@@ -5533,9 +5538,8 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
         claimed.push({type:'id',key:id});
       }
       // プロフィール本体は必要な2項目だけを保存して容量を抑える。UIDは親キーで保持。
-      const routes=Array.isArray(currentUserProfile?.routes)?currentUserProfile.routes.map(x=>String(x||'').trim()).filter(Boolean):[];
-      const profile={uid:user.uid,name,id,routes};
-      const compactProfile=routes.length?{n:name,i:id,r:routes}:{n:name,i:id};
+      const profile={uid:user.uid,name,id};
+      const compactProfile={n:name,i:id};
       const updates={};
       updates[`${USER_PROFILE_ROOT}/${user.uid}`]=compactProfile;
       if(nameChanged && oldName) updates[`${USER_NAME_INDEX_ROOT}/${safeUserKey(oldName)}`]=null;
@@ -5680,57 +5684,61 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
 </script>
 
 <script>
-/* ===== 権限・公開路線・管理人タグ ===== */
+/* ===== 権限・公開路線・管理人タグ =====
+   公開/非公開と路線管理人は各路線の ROUTE_REGISTRY.<route>.access に記載。
+   例: access:{public:false,routeAdmins:['UserID1','UserID2']}
+*/
 (function(){
   const ADMIN_ID='Minamikaze';
-  const PUBLIC_ROUTES=new Set(['海岸線']);
   const USER_ROOT='運用/ユーザー';
-  const USER_ID_INDEX='運用/ユーザーIDIndex';
-  const ROLE_ADMIN='admin';
-  const ROLE_ROUTE_ADMIN='route';
 
   function normalizeId(v){ return String(v||'').trim(); }
-  function safeKey(value){
-    const bytes=new TextEncoder().encode(String(value||''));
-    let bin=''; for(const b of bytes) bin+=String.fromCharCode(b);
-    return 'k_'+btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  function routeAccess(routeName){
+    return ROUTE_REGISTRY?.[normalizeId(routeName)]?.access || {public:false,routeAdmins:[]};
   }
-  function routeNamesForUser(){
-    return Array.isArray(currentUserProfile?.routes) ? currentUserProfile.routes.map(x=>normalizeId(x)).filter(Boolean) : [];
+  function routeManagerIds(routeName){
+    const ids=routeAccess(routeName).routeAdmins;
+    return Array.isArray(ids)?ids.map(normalizeId).filter(Boolean):[];
   }
   function isAdminUser(){ return normalizeId(currentUserProfile?.id)===ADMIN_ID; }
-  function isRouteAdminFor(routeName){ return routeNamesForUser().includes(normalizeId(routeName)); }
+  function isRouteAdminFor(routeName){
+    const id=normalizeId(currentUserProfile?.id);
+    return !!id && routeManagerIds(routeName).includes(id);
+  }
   function canViewRoute(routeName){
     const route=normalizeId(routeName);
-    if(!route) return false;
-    if(PUBLIC_ROUTES.has(route)) return true;
-    if(!authStateReady || !currentAuthUser) return false;
+    if(!route || !ROUTE_REGISTRY?.[route]) return false;
     if(isAdminUser()) return true;
+    const access=routeAccess(route);
+    if(!!access.public) return true;
+    if(!authStateReady || !currentAuthUser) return false;
     return isRouteAdminFor(route);
   }
   window.appCanViewRoute=canViewRoute;
   window.currentPermissionCodeForRoute=function(routeName){
     if(isAdminUser()) return 'a';
-    if(isRouteAdminFor(routeName)) return 'l';
-    return '';
+    return isRouteAdminFor(routeName)?'l':'';
   };
-  function roleLabel(code){ return code==='a'?'管理人':code==='l'?'路線管理人':''; }
-  function currentRoleCode(){ return isAdminUser()?'a':(isRouteAdminFor(activeRouteName)?'l':''); }
-  window.currentRoleCode=currentRoleCode;
 
+  function roleLabel(code){ return code==='a'?'管理人':code==='l'?'路線管理人':''; }
   function roleTag(code){
     const label=roleLabel(code);
-    return label?`<span class="permission-tag permission-${code}">${label}</span>`:'';
+    return label?`<span class="permission-tag permission-${code}">${escapeAttr(label)}</span>`:'';
   }
+  window.routeRoleTagForCurrentUser=function(routeName=activeRouteName){
+    return roleTag(window.currentPermissionCodeForRoute?.(routeName)||'');
+  };
 
   function updateProfileRoleTag(){
-    const input=document.getElementById('profileNameInput');
     const tag=document.getElementById('profileRoleTag');
-    if(tag){ tag.innerHTML=roleTag(currentRoleCode()); tag.style.display=roleLabel(currentRoleCode())?'inline-flex':'none'; }
+    const code=window.currentPermissionCodeForRoute?.(activeRouteName)||'';
+    if(tag){ tag.outerHTML=`<span id="profileRoleTag" class="permission-tag permission-${code}"${code?'':' style="display:none"'}>${escapeAttr(roleLabel(code))}</span>`; }
     const info=document.getElementById('profilePermissionInfo');
     if(info){
       if(isAdminUser()) info.textContent='権限：管理人（全路線）';
-      else { const routes=routeNamesForUser(); info.textContent=routes.length?`権限：路線管理人（${routes.join('・')}）`:'権限：一般利用者'; }
+      else if(isRouteAdminFor(activeRouteName)) info.textContent=`権限：路線管理人（${normalizeId(activeRouteName)}）`;
+      else if(ROUTE_REGISTRY?.[activeRouteName]) info.textContent='権限：一般利用者';
+      else info.textContent='';
     }
   }
 
@@ -5751,80 +5759,9 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     updateProfileRoleTag();
   }
 
-  function routeChoicesHTML(selected){
-    const names=Object.keys(ROUTE_REGISTRY||{});
-    return names.map(name=>`<label class="route-admin-check"><input type="checkbox" value="${escapeAttr(name)}" ${selected.has(name)?'checked':''}><span>${escapeAttr(name)}</span></label>`).join('');
-  }
-  function ensureAdminPanel(){
-    const form=document.getElementById('userProfileForm');
-    if(!form||document.getElementById('routeAdminManager')) return;
-    const panel=document.createElement('section'); panel.id='routeAdminManager'; panel.className='route-admin-manager'; panel.hidden=true;
-    panel.innerHTML=`<div class="route-admin-title">路線管理人</div>
-      <div class="route-admin-help">ユーザーIDを指定して、担当する路線を割り当てます。</div>
-      <input id="routeAdminTargetId" class="route-admin-target" type="text" maxlength="30" placeholder="対象ユーザーID">
-      <div id="routeAdminRouteChoices" class="route-admin-routes"></div>
-      <div id="routeAdminError" class="auth-error"></div>
-      <button id="routeAdminSaveBtn" type="button" class="profile-save-btn">割り当てを保存</button>`;
-    form.appendChild(panel);
-    panel.querySelector('#routeAdminTargetId')?.addEventListener('change',loadRouteAdminTarget);
-    panel.querySelector('#routeAdminSaveBtn')?.addEventListener('click',saveRouteAdminTarget);
-  }
-
-  async function loadRouteAdminTarget(){
-    const panel=document.getElementById('routeAdminManager');
-    const target=normalizeId(document.getElementById('routeAdminTargetId')?.value);
-    const choices=document.getElementById('routeAdminRouteChoices');
-    const err=document.getElementById('routeAdminError'); if(err)err.textContent='';
-    if(!panel||!choices) return;
-    if(!target){ choices.innerHTML=''; return; }
-    try{
-      const db=firebaseDatabase(); if(!db) throw new Error('Firebase未接続');
-      const uidSnap=await db.ref(USER_ID_INDEX).child(safeKey(target)).once('value');
-      const uid=uidSnap.val();
-      if(!uid){ choices.innerHTML=''; if(err)err.textContent='指定したIDのユーザーが見つかりません。'; return; }
-      const pSnap=await db.ref(USER_ROOT).child(uid).once('value');
-      const raw=pSnap.val()||{};
-      const selected=new Set(Array.isArray(raw.r)?raw.r.map(x=>normalizeId(x)).filter(Boolean):[]);
-      choices.innerHTML=routeChoicesHTML(selected);
-    }catch(e){ choices.innerHTML=''; if(err)err.textContent='路線管理人情報の読み込みに失敗しました。'; }
-  }
-
-  async function saveRouteAdminTarget(){
-    if(!isAdminUser()) return;
-    const target=normalizeId(document.getElementById('routeAdminTargetId')?.value);
-    const err=document.getElementById('routeAdminError'); if(err)err.textContent='';
-    if(!target){ if(err)err.textContent='対象ユーザーIDを入力してください。'; return; }
-    if(target===ADMIN_ID){ if(err)err.textContent='管理人自身には路線管理人の割り当ては不要です。'; return; }
-    const checked=[...document.querySelectorAll('#routeAdminRouteChoices input[type="checkbox"]:checked')].map(x=>String(x.value||'').trim()).filter(Boolean);
-    try{
-      const db=firebaseDatabase(); if(!db) throw new Error('Firebase未接続');
-      const uidSnap=await db.ref(USER_ID_INDEX).child(safeKey(target)).once('value');
-      const uid=uidSnap.val();
-      if(!uid){ if(err)err.textContent='指定したIDのユーザーが見つかりません。'; return; }
-      const ref=db.ref(USER_ROOT).child(uid).child('r');
-      if(checked.length) await ref.set(checked); else await ref.remove();
-      if(currentAuthUser?.uid===uid){
-        currentUserProfile={...currentUserProfile,routes:checked};
-        updateProfileRoleTag();
-        updateRegionNavAccess();
-      }
-      if(err)err.textContent='';
-      syncStatus('路線管理人の割り当てを保存しました');
-    }catch(e){ if(err)err.textContent='路線管理人の割り当て保存に失敗しました。'; }
-  }
-
-  function updateAdminPanelVisibility(){
-    const panel=document.getElementById('routeAdminManager');
-    if(panel) panel.hidden=!isAdminUser();
-  }
-
   function updateRegionNavAccess(){
-    // 下部の地域メニュー自体は権限で削除しない。
-    // 非公開路線だけを地域内の路線一覧から除外する。
-    // そのため北海道～九州、近畿、利用規約を含め、既存のメニュー項目は常に残す。
-    document.querySelectorAll('#regionNav button[data-region]').forEach(btn=>{
-      btn.hidden=false;
-    });
+    // 下部の地域ボタン自体は残す。地域を開いた時に非公開路線だけを除外する。
+    document.querySelectorAll('#regionNav button[data-region]').forEach(btn=>{ btn.hidden=false; });
     syncRegionNavLayout();
   }
   window.updateRegionNavAccess=updateRegionNavAccess;
@@ -5836,7 +5773,6 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
       const defs=REGION_DEFINITIONS[String(region)]||[];
       const saved=defs.slice();
       defs.splice(0,defs.length,...saved.map(c=>({...c,routes:(c.routes||[]).filter(r=>canViewRoute(r.name))})).filter(c=>c.routes.length));
-      if(!defs.length){ defs.push(...saved.filter(c=>c.routes?.some(r=>canViewRoute(r.name))).map(c=>({...c,routes:(c.routes||[]).filter(r=>canViewRoute(r.name))}))); }
       try{ return originalOpenRegionSheet(region); }
       finally{ defs.splice(0,defs.length,...saved); }
     };
@@ -5845,10 +5781,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
   const originalSelectRoute=window.selectRoute;
   if(originalSelectRoute){
     window.selectRoute=async function(routeName){
-      if(!canViewRoute(routeName)){
-        if(PUBLIC_ROUTES.size){ const fallback=[...PUBLIC_ROUTES].find(r=>ROUTE_REGISTRY[r]); if(fallback) return originalSelectRoute(fallback); }
-        return;
-      }
+      if(!canViewRoute(routeName)) return;
       return originalSelectRoute(routeName);
     };
   }
@@ -5856,8 +5789,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
   window.formatFormationUpdatedAtHtml=function(trainNo){
     const text=typeof formatFormationUpdatedAt==='function'?formatFormationUpdatedAt(trainNo):'';
     if(!text) return '';
-    const key=String(trainNo||'');
-    const train=(currentTrainSnapshot&&String(currentTrainSnapshot.no||'')===key)?currentTrainSnapshot:trainForCurrentDay(key,currentTrainSnapshot?.direction||null);
+    const train=(currentTrainSnapshot&&String(currentTrainSnapshot.no||'')===String(trainNo||''))?currentTrainSnapshot:trainForCurrentDay(String(trainNo||''),currentTrainSnapshot?.direction||null);
     const entry=typeof formationStorageEntryForTrain==='function'?formationStorageEntryForTrain(train):null;
     const code=String(entry?.r||'').trim();
     const showCode=(code==='a'||code==='l')?code:'';
@@ -5874,14 +5806,17 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
         ...(currentUserProfile||{uid:user.uid}),
         uid:user.uid,
         name:String(raw.n??raw.name??currentUserProfile?.name??'').trim(),
-        id:String(raw.i??raw.id??currentUserProfile?.id??'').trim(),
-        routes:Array.isArray(raw.r)?raw.r.map(x=>normalizeId(x)).filter(Boolean):[]
+        id:String(raw.i??raw.id??currentUserProfile?.id??'').trim()
       };
     }catch(e){}
   }
 
   function refreshAccessUI(){
-    ensureProfileRoleUI(); ensureAdminPanel(); updateAdminPanelVisibility(); updateProfileRoleTag(); updateRegionNavAccess();
+    ensureProfileRoleUI();
+    // 旧バージョンの路線管理人設定UIが残っていれば除去。権限はプログラム側で設定する。
+    document.getElementById('routeAdminManager')?.remove();
+    updateProfileRoleTag();
+    updateRegionNavAccess();
     if(currentTrainNo && !isEditMode && typeof updateSheetContent==='function') updateSheetContent();
   }
 
@@ -5890,12 +5825,14 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     if(accessListenerBound||!window.firebase||!firebaseAuth?.onAuthStateChanged) return false;
     accessListenerBound=true;
     firebaseAuth.onAuthStateChanged(async user=>{
-      if(user){ await loadAccessProfile(user); }
+      if(user) await loadAccessProfile(user);
       refreshAccessUI();
       if(activeRouteName && !canViewRoute(activeRouteName)){
         const fallback='海岸線';
-        if(ROUTE_REGISTRY[fallback]){
+        if(ROUTE_REGISTRY[fallback] && canViewRoute(fallback)){
           try{ await originalSelectRoute(fallback); }catch(e){}
+        }else{
+          activeRouteName=''; activeRouteMeta=null; activeJson=null;
         }
       }
     });
@@ -5903,7 +5840,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
   }
   const timer=setInterval(()=>{ if(bindAuthListener()) clearInterval(timer); },50);
   setTimeout(()=>clearInterval(timer),10000);
-  window.addEventListener('load',()=>{ ensureProfileRoleUI(); ensureAdminPanel(); refreshAccessUI(); bindAuthListener(); });
+  window.addEventListener('load',()=>{ ensureProfileRoleUI(); refreshAccessUI(); bindAuthListener(); });
 })();
 </script>
 
