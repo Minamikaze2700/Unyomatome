@@ -448,10 +448,9 @@ button,input,select,textarea{font-family:inherit}
 .formation-updated-at .permission-tag{font-size:inherit;font-weight:400;margin-left:8px;vertical-align:middle;} 
 .formation-updated-time,.formation-updated-author{display:inline;}
 @media(max-width:520px){
-  /* スマホでも「編成入力」と「時刻」の間に改行を入れない。
-     ユーザー名と管理人タグも同じ行にする。 */
+  /* 「編成入力：時刻」は同じ行、ユーザー名＋管理人タグは次の行 */
   .formation-updated-time{display:inline;}
-  .formation-updated-author{display:inline;}
+  .formation-updated-author{display:block;}
   .formation-updated-at .permission-tag{display:inline-flex;}
 }
 .input-trigger-btn{
