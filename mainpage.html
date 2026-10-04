@@ -957,6 +957,57 @@ function syncInitialFormationImage(){ INITIAL_FORMATION_SELECTION.img=jsonNoImag
 const UNAVAILABLE_FORMATIONS=new Set();
 const OPERATION_CHAINS={平日:[],休日:[]};
 const CHAIN_INDEX={平日:{},休日:{}};
+
+/* JSONに保存した一日分の運用連結を、位置計算で使える列車オブジェクトへ展開する。
+   JSON側は列車IDだけを持たせ、始発・終着・時刻などは列車本体から参照する。 */
+function rebuildOperationChainIndex(){
+  for(const day of ['平日','休日']){
+    CHAIN_INDEX[day]={};
+    const chains=OPERATION_CHAINS[day]||[];
+    chains.forEach((chain,chainIndex)=>{
+      (chain||[]).forEach((entry,entryIndex)=>{
+        const raw=String(entry?.no||entry||'').trim();
+        const t=entry?.stops ? entry : findOperationTrainRecord(raw,day);
+        const no=String(t?.no||raw).trim();
+        if(!no) return;
+        const info={chainId:`${day}-${String(chainIndex+1).padStart(2,'0')}`,chainIndex,entryIndex,entry:t||{no}};
+        CHAIN_INDEX[day][no]=info;
+        const canonical=no.replace(/A$/i,'');
+        if(!CHAIN_INDEX[day][canonical]) CHAIN_INDEX[day][canonical]=info;
+      });
+    });
+  }
+}
+function loadOperationChainsFromJson(json){
+  for(const day of ['平日','休日']){
+    const rawChains=json?.operationChains?.[day];
+    OPERATION_CHAINS[day]=Array.isArray(rawChains)
+      ? rawChains.map(chain=>(Array.isArray(chain)?chain:[])
+          .map(entry=>{
+            const id=String(entry??'').trim();
+            return id ? findOperationTrainRecord(id,day) : null;
+          })
+          .filter(Boolean)
+          .map(t=>({
+            no:String(t.no||''),
+            type:String(t.type||''),
+            start:String(t.start||t.stops?.[0]?.station||''),
+            startTime:String(t.startTime||t.stops?.[0]?.departure||t.stops?.[0]?.time||''),
+            dest:String(t.dest||t.stops?.[t.stops.length-1]?.station||''),
+            endTime:String(t.endTime||t.stops?.[t.stops.length-1]?.arrival||t.stops?.[t.stops.length-1]?.time||'')
+          }))
+        ).filter(chain=>chain.length)
+      : [];
+  }
+  rebuildOperationChainIndex();
+}
+function operationChainFirstNo(day,trainNo){
+  const info=findChain(day,trainNo);
+  if(!info) return normalizeTrainNo(trainNo);
+  const chain=OPERATION_CHAINS[day]?.[info.chainIndex]||[];
+  return normalizeTrainNo(chain[0]?.no || chain[0] || trainNo);
+}
+const operationChainFirstTrainNo=operationChainFirstNo;
 const VEHICLE_TO_FORMATION={};
 let TYPE_SELECTIONS=[];
 function formationFamilyFromType(){return 'keihin';}
@@ -1210,6 +1261,8 @@ async function loadLineTrainData(routeName=activeRouteName){
   HOLIDAY_UP_TRAINS=HOLIDAY_TRAINS.filter(t=>t.direction==='up');
   TRAIN_INDEX={}; for(const t of TRAINS) if(!TRAIN_INDEX[t.no]) TRAIN_INDEX[t.no]=t;
   HOLIDAY_TRAIN_INDEX={}; for(const t of HOLIDAY_TRAINS) if(!HOLIDAY_TRAIN_INDEX[t.no]) HOLIDAY_TRAIN_INDEX[t.no]=t;
+  // JSONに定義した一日分の運用連結を位置計算・編成連動へ反映する。
+  loadOperationChainsFromJson(json);
   if(typeof TIMETABLE_HTML_CACHE!=='undefined') TIMETABLE_HTML_CACHE=new Map();
   if(typeof TRAIN_DATA_CACHE!=='undefined') TRAIN_DATA_CACHE.clear();
   if(typeof TRAIN_RUNTIME_CACHE!=='undefined') TRAIN_RUNTIME_CACHE.clear();
@@ -5056,7 +5109,9 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     if(!train) return null;
     const family=storageFamilyForTrain(train);
     const date=formationDateKey(),area=storageAreaForFamily(family);
-    const entry=formationRemoteByFamily[family]?.areaStateByDate?.[date]?.[area]?.[String(train.no||'')];
+    const rawNo=String(train.no||'').trim();
+    const storageNo=activeRouteName==='海岸線' ? operationChainFirstNo(currentDay,rawNo) : rawNo;
+    const entry=formationRemoteByFamily[family]?.areaStateByDate?.[date]?.[area]?.[storageNo];
     return String(entry?.f||'')||null;
   };
   applyRegistrationState=function(){
@@ -5146,10 +5201,17 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
   };
 
   syncRegistrationToRemote=async function(changes={}){
-    const trainByNo={};
-    Object.keys(changes||{}).forEach(no=>{ const t=findOperationTrainRecord(no,currentDay); if(t) trainByNo[String(no)]=t; });
+    // 海岸線の運用連結は、Firebaseへはチェーン先頭列車だけを保存する。
+    const normalizedChanges={};
     for(const [no,formId] of Object.entries(changes||{})){
-      const train=trainByNo[String(no)]; if(!train) continue;
+      const t=findOperationTrainRecord(no,currentDay);
+      const storageNo=activeRouteName==='海岸線' ? operationChainFirstNo(currentDay,no) : String(no);
+      if(t) normalizedChanges[storageNo]=formId;
+    }
+    const trainByNo={};
+    Object.keys(normalizedChanges).forEach(no=>{ const t=findOperationTrainRecord(no,currentDay); if(t) trainByNo[String(no)]=t; });
+    for(const [no,formId] of Object.entries(normalizedChanges)){
+      const train=trainByNo[String(no)] || findOperationTrainRecord(no,currentDay); if(!train) continue;
       const family=storageFamilyForTrain(train); const db=firebaseDatabaseForFamily(family); if(!db) continue;
       const date=formationDateKey(),area=storageAreaForFamily(family);
       const ref=area===KOBE_INTERNAL_AREA ? db.ref(KOBE_ROOT).child(date).child(String(no)) : db.ref(HIROSHIMA_ROOT).child(HIROSHIMA_AREA).child(date).child(String(no));
@@ -5169,27 +5231,29 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     const value=(formId&&formId!==INITIAL_FORMATION_SELECTION.id)?normalizeStoredFormationId(formId):null;
     const storedMeta=value?makeStoredMeta():'';
     const roleCode=value&&typeof window.currentPermissionCodeForRoute==='function' ? window.currentPermissionCodeForRoute(activeRouteName) : '';
+    // 海岸線は運用連結の先頭列車だけを保存キーにする。
+    const storageKey=activeRouteName==='海岸線' ? operationChainFirstNo(currentDay,key) : key;
     if(value){
       const entry={f:value,t:storedMeta};
       if(roleCode) entry.r=roleCode;
-      remote.areaStateByDate[date][area][key]=entry;
+      remote.areaStateByDate[date][area][storageKey]=entry;
     }
     else {
-      delete remote.areaStateByDate[date][area][key];
+      delete remote.areaStateByDate[date][area][storageKey];
       if(!Object.keys(remote.areaStateByDate[date][area]).length) delete remote.areaStateByDate[date][area];
       if(!Object.keys(remote.areaStateByDate[date]).length) delete remote.areaStateByDate[date];
     }
     if(family===HIROSHIMA_FORMATION_FAMILY) window.hiroshimaFormationStateByDate=remote.areaStateByDate;
     syncDerivedStateForFamily(family);
     registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
-    pendingFormationState[key]=value;
+    pendingFormationState[storageKey]=value;
     mergeFormationRemoteIntoLegacyState(); applyRegistrationState(); refreshAllTrainDataCache(); saveLocalState();
     if(currentTrainSnapshot&&String(currentTrainSnapshot.no||'')===key) currentTrainSnapshot={...currentTrainSnapshot,formation:value};
     syncStatus('登録済み・同期中');
     const db=firebaseDatabaseForFamily(family);
     if(db){
       try{
-        const ref=area===KOBE_INTERNAL_AREA ? db.ref(KOBE_ROOT).child(date).child(key) : db.ref(HIROSHIMA_ROOT).child(HIROSHIMA_AREA).child(date).child(key);
+        const ref=area===KOBE_INTERNAL_AREA ? db.ref(KOBE_ROOT).child(date).child(storageKey) : db.ref(HIROSHIMA_ROOT).child(HIROSHIMA_AREA).child(date).child(storageKey);
         if(value){
           const payload={f:value,t:storedMeta};
           if(roleCode) payload.r=roleCode;
