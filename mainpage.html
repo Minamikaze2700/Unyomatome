@@ -448,7 +448,10 @@ button,input,select,textarea{font-family:inherit}
 .formation-updated-at .permission-tag{font-size:inherit;font-weight:400;margin-left:8px;vertical-align:middle;} 
 .formation-updated-time,.formation-updated-author{display:inline;}
 @media(max-width:520px){
-  .formation-updated-author{display:block;}
+  /* スマホでは時刻だけ1行目、ユーザー名と管理人タグは同じ行にする */
+  .formation-updated-time{display:block;}
+  .formation-updated-author{display:inline;}
+  .formation-updated-at .permission-tag{display:inline-flex;}
 }
 .input-trigger-btn{
   background:#c62828;color:#fff;padding:4px 8px;border-radius:4px;
