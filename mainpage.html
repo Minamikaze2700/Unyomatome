@@ -2439,20 +2439,54 @@ function getVisibleTrains(){
 }
 function getShortType(type, trainNo=''){
   const value=String(type||'');
-  if(value==='普通' || value==='各駅停車') return '普通';
+  // JR南武線・京浜東北・根岸線・横浜線は旧サイトと同じく
+  // 「普通／各駅停車」→「各停」、区間急行→区急。
+  if(['JR南武線','京浜東北・根岸線','横浜線'].includes(String(activeRouteName||''))){
+    if(value==='普通' || value==='各駅停車') return '各停';
+    if(value==='区間急行') return '区急';
+    return value;
+  }
+  // 長野電鉄長野線は旧サイトの種別略称を復元。
+  if(activeRouteName==='長野電鉄長野線'){
+    if(value.includes('ゆけむり') && value.includes('のんびり')) return 'ゆの';
+    if(value.includes('特急')){
+      const no=String(trainNo||'');
+      if(/A$/i.test(no)) return 'A特';
+      if(/B$/i.test(no)) return 'B特';
+      if(value.includes('ゆけむり')) return 'A特';
+      if(value.includes('スノーモンキー')) return 'B特';
+    }
+    return value==='普通' ? '普通' : value==='回送' ? '回送' : value;
+  }
+  // 広島地区・海岸線は現行サイトの表記を維持。
   if(value==='区間急行') return '区急';
-  return value;
+  return value==='各駅停車' ? '普通' : value;
 }
 function getDetailType(type){
   const value=String(type||'');
-  if(value==='普通' || value==='各停') return '普通';
-  return value;
+  if(['京浜東北・根岸線','横浜線'].includes(String(activeRouteName||'')) && (value==='普通' || value==='各停')) return '各駅停車';
+  if(activeRouteName==='長野電鉄長野線') return value;
+  return value==='各停' ? '普通' : value;
 }
 // 列車番号はJSONの値をそのまま表示する。
 function displayTrainNo(train){ return (train && !train.hideTrainNumber) ? normalizeTrainNo(train.no) : ''; }
-// 略称は元ファイルと同じく「短縮表示用」の関数で処理する。
+// 略称は各旧サイトで使用していた短縮表示を路線ごとに復元する。
 function getShortDest(dest){
   const value=String(dest||'');
+  if(activeRouteName==='長野電鉄長野線'){
+    const map={'信州中野':'中野','湯田中':'湯田','長野':'長野','須坂':'須坂'};
+    return map[value]||value;
+  }
+  if(activeRouteName==='JR南武線'){
+    if(value==='稲城長沼') return '稲城';
+    if(value==='武蔵中原') return '中原';
+    if(value==='武蔵溝ノ口') return '溝口';
+    return value;
+  }
+  if(['京浜東北・根岸線','横浜線'].includes(String(activeRouteName||''))){
+    const map={'南浦和':'南浦','東十条':'東十','東神奈川':'東神','桜木町':'桜木','八王子':'八王'};
+    if(Object.prototype.hasOwnProperty.call(map,value)) return map[value];
+  }
   const aliases=activeJson?.stationAliases;
   if(aliases && typeof aliases==='object' && Object.prototype.hasOwnProperty.call(aliases,value)){
     return String(aliases[value]??value);
