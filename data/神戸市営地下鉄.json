@@ -81083,114 +81083,511 @@
   },
   "formations": [
     {
-      "formation": "5001",
-      "name": "5101F",
-      "cars": [
-        "5101",
-        "5201",
-        "5301",
-        "5401"
+      "type": "5000形",
+      "typeImg": "Kobecity5000",
+      "family": "kobe",
+      "routeNames": [
+        "海岸線"
       ],
-      "image": "Kobecity5101"
+      "items": [
+        {
+          "formation": "5001",
+          "name": "5101F",
+          "cars": [
+            "5101",
+            "5201",
+            "5301",
+            "5401"
+          ],
+          "image": "Kobecity5101"
+        },
+        {
+          "formation": "5002",
+          "name": "5102F",
+          "cars": [
+            "5102",
+            "5202",
+            "5302",
+            "5402"
+          ],
+          "image": "Kobecity5102"
+        },
+        {
+          "formation": "5003",
+          "name": "5103F",
+          "cars": [
+            "5103",
+            "5203",
+            "5303",
+            "5403"
+          ],
+          "image": "Kobecity5103"
+        },
+        {
+          "formation": "5004",
+          "name": "5104F",
+          "cars": [
+            "5104",
+            "5204",
+            "5304",
+            "5404"
+          ],
+          "image": "Kobecity5104"
+        },
+        {
+          "formation": "5005",
+          "name": "5105F",
+          "cars": [
+            "5105",
+            "5205",
+            "5305",
+            "5405"
+          ],
+          "image": "Kobecity5105"
+        },
+        {
+          "formation": "5006",
+          "name": "5106F",
+          "cars": [
+            "5106",
+            "5206",
+            "5306",
+            "5406"
+          ],
+          "image": "Kobecity5106"
+        },
+        {
+          "formation": "5007",
+          "name": "5107F",
+          "cars": [
+            "5107",
+            "5207",
+            "5307",
+            "5407"
+          ],
+          "image": "Kobecity5107"
+        },
+        {
+          "formation": "5008",
+          "name": "5108F",
+          "cars": [
+            "5108",
+            "5208",
+            "5308",
+            "5408"
+          ],
+          "image": "Kobecity5108"
+        },
+        {
+          "formation": "5009",
+          "name": "5109F",
+          "cars": [
+            "5109",
+            "5209",
+            "5309",
+            "5409"
+          ],
+          "image": "Kobecity5109"
+        },
+        {
+          "formation": "5010",
+          "name": "5110F",
+          "cars": [
+            "5110",
+            "5210",
+            "5310",
+            "5410"
+          ],
+          "image": "Kobecity5110"
+        }
+      ]
     },
     {
-      "formation": "5002",
-      "name": "5102F",
-      "cars": [
-        "5102",
-        "5202",
-        "5302",
-        "5402"
+      "type": "6000形",
+      "typeImg": "Kobecity6000",
+      "family": "kobe",
+      "routeNames": [
+        "西神・山手線"
       ],
-      "image": "Kobecity5102"
-    },
-    {
-      "formation": "5003",
-      "name": "5103F",
-      "cars": [
-        "5103",
-        "5203",
-        "5303",
-        "5403"
-      ],
-      "image": "Kobecity5103"
-    },
-    {
-      "formation": "5004",
-      "name": "5104F",
-      "cars": [
-        "5104",
-        "5204",
-        "5304",
-        "5404"
-      ],
-      "image": "Kobecity5104"
-    },
-    {
-      "formation": "5005",
-      "name": "5105F",
-      "cars": [
-        "5105",
-        "5205",
-        "5305",
-        "5405"
-      ],
-      "image": "Kobecity5105"
-    },
-    {
-      "formation": "5006",
-      "name": "5106F",
-      "cars": [
-        "5106",
-        "5206",
-        "5306",
-        "5406"
-      ],
-      "image": "Kobecity5106"
-    },
-    {
-      "formation": "5007",
-      "name": "5107F",
-      "cars": [
-        "5107",
-        "5207",
-        "5307",
-        "5407"
-      ],
-      "image": "Kobecity5107"
-    },
-    {
-      "formation": "5008",
-      "name": "5108F",
-      "cars": [
-        "5108",
-        "5208",
-        "5308",
-        "5408"
-      ],
-      "image": "Kobecity5108"
-    },
-    {
-      "formation": "5009",
-      "name": "5109F",
-      "cars": [
-        "5109",
-        "5209",
-        "5309",
-        "5409"
-      ],
-      "image": "Kobecity5109"
-    },
-    {
-      "formation": "5010",
-      "name": "5110F",
-      "cars": [
-        "5110",
-        "5210",
-        "5310",
-        "5410"
-      ],
-      "image": "Kobecity5110"
+      "items": [
+        {
+          "formation": "6129",
+          "name": "6129F",
+          "cars": [
+            "6129",
+            "6229",
+            "6329",
+            "6429",
+            "6529",
+            "6629"
+          ],
+          "image": "Kobecity6129"
+        },
+        {
+          "formation": "6130",
+          "name": "6130F",
+          "cars": [
+            "6130",
+            "6230",
+            "6330",
+            "6430",
+            "6530",
+            "6630"
+          ],
+          "image": "Kobecity6130"
+        },
+        {
+          "formation": "6131",
+          "name": "6131F",
+          "cars": [
+            "6131",
+            "6231",
+            "6331",
+            "6431",
+            "6531",
+            "6631"
+          ],
+          "image": "Kobecity6131"
+        },
+        {
+          "formation": "6132",
+          "name": "6132F",
+          "cars": [
+            "6132",
+            "6232",
+            "6332",
+            "6432",
+            "6532",
+            "6632"
+          ],
+          "image": "Kobecity6132"
+        },
+        {
+          "formation": "6133",
+          "name": "6133F",
+          "cars": [
+            "6133",
+            "6233",
+            "6333",
+            "6433",
+            "6533",
+            "6633"
+          ],
+          "image": "Kobecity6133"
+        },
+        {
+          "formation": "6134",
+          "name": "6134F",
+          "cars": [
+            "6134",
+            "6234",
+            "6334",
+            "6434",
+            "6534",
+            "6634"
+          ],
+          "image": "Kobecity6134"
+        },
+        {
+          "formation": "6135",
+          "name": "6135F",
+          "cars": [
+            "6135",
+            "6235",
+            "6335",
+            "6435",
+            "6535",
+            "6635"
+          ],
+          "image": "Kobecity6135"
+        },
+        {
+          "formation": "6136",
+          "name": "6136F",
+          "cars": [
+            "6136",
+            "6236",
+            "6336",
+            "6436",
+            "6536",
+            "6636"
+          ],
+          "image": "Kobecity6136"
+        },
+        {
+          "formation": "6137",
+          "name": "6137F",
+          "cars": [
+            "6137",
+            "6237",
+            "6337",
+            "6437",
+            "6537",
+            "6637"
+          ],
+          "image": "Kobecity6137"
+        },
+        {
+          "formation": "6138",
+          "name": "6138F",
+          "cars": [
+            "6138",
+            "6238",
+            "6338",
+            "6438",
+            "6538",
+            "6638"
+          ],
+          "image": "Kobecity6138"
+        },
+        {
+          "formation": "6139",
+          "name": "6139F",
+          "cars": [
+            "6139",
+            "6239",
+            "6339",
+            "6439",
+            "6539",
+            "6639"
+          ],
+          "image": "Kobecity6139"
+        },
+        {
+          "formation": "6140",
+          "name": "6140F",
+          "cars": [
+            "6140",
+            "6240",
+            "6340",
+            "6440",
+            "6540",
+            "6640"
+          ],
+          "image": "Kobecity6140"
+        },
+        {
+          "formation": "6141",
+          "name": "6141F",
+          "cars": [
+            "6141",
+            "6241",
+            "6341",
+            "6441",
+            "6541",
+            "6641"
+          ],
+          "image": "Kobecity6141"
+        },
+        {
+          "formation": "6142",
+          "name": "6142F",
+          "cars": [
+            "6142",
+            "6242",
+            "6342",
+            "6442",
+            "6542",
+            "6642"
+          ],
+          "image": "Kobecity6142"
+        },
+        {
+          "formation": "6143",
+          "name": "6143F",
+          "cars": [
+            "6143",
+            "6243",
+            "6343",
+            "6443",
+            "6543",
+            "6643"
+          ],
+          "image": "Kobecity6143"
+        },
+        {
+          "formation": "6144",
+          "name": "6144F",
+          "cars": [
+            "6144",
+            "6244",
+            "6344",
+            "6444",
+            "6544",
+            "6644"
+          ],
+          "image": "Kobecity6144"
+        },
+        {
+          "formation": "6145",
+          "name": "6145F",
+          "cars": [
+            "6145",
+            "6245",
+            "6345",
+            "6445",
+            "6545",
+            "6645"
+          ],
+          "image": "Kobecity6145"
+        },
+        {
+          "formation": "6146",
+          "name": "6146F",
+          "cars": [
+            "6146",
+            "6246",
+            "6346",
+            "6446",
+            "6546",
+            "6646"
+          ],
+          "image": "Kobecity6146"
+        },
+        {
+          "formation": "6147",
+          "name": "6147F",
+          "cars": [
+            "6147",
+            "6247",
+            "6347",
+            "6447",
+            "6547",
+            "6647"
+          ],
+          "image": "Kobecity6147"
+        },
+        {
+          "formation": "6148",
+          "name": "6148F",
+          "cars": [
+            "6148",
+            "6248",
+            "6348",
+            "6448",
+            "6548",
+            "6648"
+          ],
+          "image": "Kobecity6148"
+        },
+        {
+          "formation": "6149",
+          "name": "6149F",
+          "cars": [
+            "6149",
+            "6249",
+            "6349",
+            "6449",
+            "6549",
+            "6649"
+          ],
+          "image": "Kobecity6149"
+        },
+        {
+          "formation": "6150",
+          "name": "6150F",
+          "cars": [
+            "6150",
+            "6250",
+            "6350",
+            "6450",
+            "6550",
+            "6650"
+          ],
+          "image": "Kobecity6150"
+        },
+        {
+          "formation": "6151",
+          "name": "6151F",
+          "cars": [
+            "6151",
+            "6251",
+            "6351",
+            "6451",
+            "6551",
+            "6651"
+          ],
+          "image": "Kobecity6151"
+        },
+        {
+          "formation": "6152",
+          "name": "6152F",
+          "cars": [
+            "6152",
+            "6252",
+            "6352",
+            "6452",
+            "6552",
+            "6652"
+          ],
+          "image": "Kobecity6152"
+        },
+        {
+          "formation": "6153",
+          "name": "6153F",
+          "cars": [
+            "6153",
+            "6253",
+            "6353",
+            "6453",
+            "6553",
+            "6653"
+          ],
+          "image": "Kobecity6153"
+        },
+        {
+          "formation": "6154",
+          "name": "6154F",
+          "cars": [
+            "6154",
+            "6254",
+            "6354",
+            "6454",
+            "6554",
+            "6654"
+          ],
+          "image": "Kobecity6154"
+        },
+        {
+          "formation": "6155",
+          "name": "6155F",
+          "cars": [
+            "6155",
+            "6255",
+            "6355",
+            "6455",
+            "6555",
+            "6655"
+          ],
+          "image": "Kobecity6155"
+        },
+        {
+          "formation": "6156",
+          "name": "6156F",
+          "cars": [
+            "6156",
+            "6256",
+            "6356",
+            "6456",
+            "6556",
+            "6656"
+          ],
+          "image": "Kobecity6156"
+        },
+        {
+          "formation": "6157",
+          "name": "6157F",
+          "cars": [
+            "6157",
+            "6257",
+            "6357",
+            "6457",
+            "6557",
+            "6657"
+          ],
+          "image": "Kobecity6157"
+        }
+      ]
     }
   ],
   "commonFormationIcon": "Kobekaigan_noimage",
@@ -81619,7 +82016,8 @@
       "formationType": "6000形",
       "formationTypeImage": "https://minamikaze2700.github.io/Unyomatome/images/Kobecity6000.png",
       "formationDefaultImage": "https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png",
-      "noImage": "https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png"
+      "noImage": "https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png",
+      "formationInputExample": "6129 / 6129F / 6000形"
     }
   }
 }
