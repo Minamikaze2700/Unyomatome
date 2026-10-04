@@ -2703,8 +2703,8 @@ function formationById(id){
   if(upper==='A' || upper==='A編成' || key==='227系 A編成') return {id:'A編成',name:'A編成',img:`${base}227-0.png`,kind:'type',type:'A編成',generic:true,family:'hiroshima'};
   if(upper==='S' || upper==='S編成' || key==='227系 S編成') return {id:'S編成',name:'S編成',img:`${base}227-0.png`,kind:'type',type:'S編成',generic:true,family:'hiroshima'};
   // 野田線の「みまモニ有／無」は個別編成ではなく汎用選択肢。画像は80000系と共通。
-  if(canonical==='__NODA_MIMA_MONI_YES__') return {id:canonical,name:'みまモニ有',img:`${base}TB80000.png`,kind:'variant',type:'',family:'noda',generic:true};
-  if(canonical==='__NODA_MIMA_MONI_NO__') return {id:canonical,name:'みまモニ無',img:`${base}TB80000.png`,kind:'variant',type:'',family:'noda',generic:true};
+  if(canonical==='__NODA_MIMA_MONI_YES__') return {id:canonical,name:'80000系みまモニ有',img:`${base}TB80000.png`,kind:'variant',type:'',family:'noda',generic:true};
+  if(canonical==='__NODA_MIMA_MONI_NO__') return {id:canonical,name:'80000系みまモニ無',img:`${base}TB80000.png`,kind:'variant',type:'',family:'noda',generic:true};
 
   // 野田線は「形式」「個体差」自体も選択可能。元ページと同様に、
   // 表示用の形式・個体差を汎用選択肢として解決する。
@@ -2835,8 +2835,8 @@ function formationDisplayGroups(groups){
   const out=[];
   const consumed=new Set();
   const nodaMimaVariants=()=>[
-    {id:'__NODA_MIMA_MONI_YES__',name:'みまモニ有',img:'https://minamikaze2700.github.io/Unyomatome/images/TB80000.png',family:'noda',kind:'variant',type:'MIMA_MONI'},
-    {id:'__NODA_MIMA_MONI_NO__',name:'みまモニ無',img:'https://minamikaze2700.github.io/Unyomatome/images/TB80000.png',family:'noda',kind:'variant',type:'MIMA_MONI'}
+    {id:'__NODA_MIMA_MONI_YES__',name:'80000系みまモニ有',img:'https://minamikaze2700.github.io/Unyomatome/images/TB80000.png',family:'noda',kind:'variant',type:'MIMA_MONI'},
+    {id:'__NODA_MIMA_MONI_NO__',name:'80000系みまモニ無',img:'https://minamikaze2700.github.io/Unyomatome/images/TB80000.png',family:'noda',kind:'variant',type:'MIMA_MONI'}
   ];
   const buildNodaGroup=(baseType, matched)=>{
     if(!matched.length) return false;
@@ -6143,8 +6143,9 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
       const isGenericAS=/^[^A-Z]*227系 [AS]編成$/.test(groupType);
       const declaredType=String(activeJson?.formationType||'').trim();
       const isGenericDeclared=!!declaredType && groupType===declaredType;
-      const genericId=groupType.includes('S編成')?'S編成':groupType.includes('A編成')?'A編成':(isGenericDeclared?declaredType:'');
-      chunks.push((isGenericAS||isGenericDeclared)
+      const isGenericNoda=String(activeRouteMeta?.formationFamily||'')==='noda' && /^(?:8000型|10030型|60000型|80000系)$/.test(groupType);
+      const genericId=groupType.includes('S編成')?'S編成':groupType.includes('A編成')?'A編成':(isGenericDeclared?declaredType:(isGenericNoda?groupType:''));
+      chunks.push((isGenericAS||isGenericDeclared||isGenericNoda)
         ? `<div class="option-header option-category-header option-selectable-category" role="button" tabindex="0" onclick="selectFormationAtSlot(${slot},'${escapeJs(genericId)}')"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(genericId)}</span></div>`
         : `<div class="option-header option-category-header"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(groupType)}</span></div>`);
 
