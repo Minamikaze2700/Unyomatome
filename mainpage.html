@@ -3863,6 +3863,11 @@ function stationTimetableHTML(station, selectedDirection='up'){
     const type=String(obj.type||'').trim();
     const name=String(obj.name||'').trim();
 
+    // 野田線の形式・個体差は、選択肢と同じ完全な名称で表示する。
+    if(String(activeRouteMeta?.formationFamily||'')==='noda' && obj.generic){
+      return [name];
+    }
+
     // 「60000型6両」のようにnameにも形式が入っている場合は、
     // 形式と要素を分離して2行で表示する。
     if(type && name){
@@ -5057,6 +5062,10 @@ function displayedRouteColorForTrainPosition(train,position=null){
 function typeColorForTrain(train,position=null){
   const type=String(train?.type||'').trim();
   const currentRouteColor=displayedRouteColorForTrainPosition(train,position);
+  // 野田線の普通列車は常に灰色。
+  if(String(activeRouteMeta?.formationFamily||'')==='noda' && (!type || type==='普通' || type==='各駅停車')){
+    return '#666';
+  }
   // 普通・各駅停車は種別固定色ではなく、現在走行している線区カラーを使用する。
   if(!type || type==='普通' || type==='各駅停車'){
     return String(currentRouteColor||activeRouteColors()[0]||'#666');
@@ -5078,6 +5087,9 @@ function typeColorForTrain(train,position=null){
 function typeBadgeInlineStyle(train,position=null,stationDirectionColor=null){
   const type=String(train?.type||'普通');
   if(type==='回送') return 'background:#fff;color:#111;border:1px solid #bbb;';
+  if(String(activeRouteMeta?.formationFamily||'')==='noda' && (!type || type==='普通' || type==='各駅停車')){
+    return 'background:#666;color:#fff;';
+  }
   if(type==='普通' && stationDirectionColor){
     return `background:${stationDirectionColor};color:#fff;`;
   }
@@ -6091,13 +6103,18 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
   formationDisplayParts=function(id){
     const ids=formationIds(id);
     const parts=[];
+    const isNoda=String(activeRouteMeta?.formationFamily||'')==='noda';
     for(const one of ids){
       const obj=selectionDisplayObject(one);
       if(!obj || obj.id===INITIAL_FORMATION_SELECTION.id) continue;
       const type=String(obj.type||'').trim();
       const name=String(obj.name||'').trim();
       if(!name) continue;
-      if(type && name.startsWith(type) && name!==type){
+      // 野田線の形式・個体差は、選択肢と同じ完全な名称で表示する。
+      // 例：10030型更新 / 10030型未更新 / 60000型5両 / 60000型6両 / 80000系みまモニ有
+      if(isNoda && obj.generic){
+        parts.push(name);
+      }else if(type && name.startsWith(type) && name!==type){
         const rest=name.slice(type.length).trim();
         parts.push(rest||type);
       }else parts.push(name);
