@@ -933,6 +933,7 @@ const ROUTE_REGISTRY={
     id:'keihin-tohoku',
     json:'https://minamikaze2700.github.io/Unyomatome/data/JRKeihinTohoku.json',
     jsonLines:['京浜東北・根岸線'],
+    relatedJsons:['https://minamikaze2700.github.io/Unyomatome/data/JRYokohama.json'],
     range:'大宮～大船',
     area:'JR東日本',
     storageRoot:'京浜東北・根岸線',
@@ -949,6 +950,7 @@ const ROUTE_REGISTRY={
     id:'yokohama',
     json:'https://minamikaze2700.github.io/Unyomatome/data/JRYokohama.json',
     jsonLines:['横浜線'],
+    relatedJsons:['https://minamikaze2700.github.io/Unyomatome/data/JRKeihinTohoku.json'],
     range:'八王子～大船',
     area:'JR東日本',
     storageRoot:'横浜線',
@@ -1299,10 +1301,12 @@ function normalizeExternalTrain(raw,day,direction,meta){
   // 内部識別子として使い、画面上では列車番号を非表示にする。
   const allowedLineNames=new Set(Array.isArray(meta?.jsonLines)?meta.jsonLines:[]);
   const rawTrainNumbers=(raw?.trainNumbers&&typeof raw.trainNumbers==='object')?raw.trainNumbers:{};
+  const rawNo=normalizeTrainNo(raw?.no??raw?.trainNo??'');
   // 列車番号は「現在表示中の路線」だけでなく、JSONに収録された全線区分を保持する。
   // 可部線・呉線のページでも、山陽本線を走る列車の番号をその列車自身の番号として表示できるようにする。
   const rawNumberEntries=Object.entries(rawTrainNumbers).filter(([,val])=>Array.isArray(val));
-  const hasTrainNumber=rawNumberEntries.some(([,val])=>val.some(n=>String(n??'').trim()));
+  const hasTrainNumberFromObject=rawNumberEntries.some(([,val])=>val.some(n=>String(n??'').trim()));
+  const hasTrainNumber=hasTrainNumberFromObject || !!rawNo;
   const numbersByLine={};
   const allNumbers=[];
   if(hasTrainNumber){
@@ -1316,6 +1320,8 @@ function normalizeExternalTrain(raw,day,direction,meta){
       }
       if(arr.length) numbersByLine[lineName]=arr;
     }
+    if(rawNo && !allNumbers.includes(rawNo)) allNumbers.push(rawNo);
+    if(rawNo && !rawNumberEntries.length) numbersByLine[String(raw?.lineKind||meta?.lineKind||'route')]=[rawNo];
     if(!allNumbers.length) return [];
   }
 
@@ -1335,12 +1341,26 @@ function normalizeExternalTrain(raw,day,direction,meta){
   // 列車が実際に跨っている全線区名を色判定用コンテキストとして保持。
   // 列車番号を持たない単一路線では、現在の路線自体を使用する。
   let servedLineNames=Object.keys(rawTrainNumbers).filter(name=>lineDefByName(name));
-  if(!servedLineNames.length) servedLineNames=[...allowedLineNames];
+  if(!servedLineNames.length){
+    const kind=String(raw?.lineKind||meta?.lineKind||'').trim().toLowerCase();
+    const kindMap={
+      keihin:['京浜東北・根岸線'],
+      yokohama:['横浜線'],
+      nambu:['JR南武線'],
+      nagano:['長野電鉄長野線'],
+      kobe:['海岸線']
+    };
+    servedLineNames=(kindMap[kind]||[...allowedLineNames]).filter(name=>lineDefByName(name));
+  }
   const segmentLineNames=[];
   for(let i=0;i<stops.length-1;i++) segmentLineNames.push(preferredTrainServiceLine(stops[i].station,stops[i+1].station,{servedLineNames})?.name||null);
 
   const explicitChanges=Array.isArray(raw?.numberChanges)?raw.numberChanges:[];
   const numberSegments={};
+  if(rawNo && !rawNumberEntries.length){
+    const segmentKey=servedLineNames[0]||String(raw?.lineKind||meta?.lineKind||'route');
+    numberSegments[segmentKey]=[{no:rawNo,from:0,to:stops.length-1}];
+  }
   if(hasTrainNumber){
     for(const [lineName,nums] of Object.entries(numbersByLine)){
       if(nums.length===1){
@@ -1373,7 +1393,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
   const firstTimed=stops.find(st=>st.isStop) || {};
   const lastTimed=[...stops].reverse().find(st=>st.isStop) || firstTimed;
   const internalNo=hasTrainNumber
-    ? allNumbers[0]
+    ? (allNumbers[0]||rawNo)
     : String(raw?.id||raw?.uid||`${day}-${direction}-${String(firstTimed.station||'')}-${String(firstTimed.time||'')}`);
   const jsonType=String(raw?.type||'').trim();
   const formationFamily=String(meta?.formationFamily||formationStorageContext(meta?.id||activeRouteName).family||'').trim() || (activeRouteName==='海岸線'?'kobe':'hiroshima');
@@ -1397,7 +1417,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
     startTime:String(raw?.startTime||firstTimed.departure||firstTimed.arrival||firstTimed.time||''),
     dest:String(raw?.dest||lastTimed.station||''),
     endTime:String(raw?.endTime||lastTimed.arrival||lastTimed.departure||lastTimed.time||''),
-    trainNumbers:raw?.trainNumbers||{},
+    trainNumbers:(raw?.trainNumbers&&typeof raw.trainNumbers==='object')?raw.trainNumbers:(rawNo?{[String(servedLineNames[0]||raw?.lineKind||meta?.lineKind||'route')]:[rawNo]}:{}),
     servedLineNames,
     stops,
     rawTrain:raw
@@ -1434,6 +1454,50 @@ function displayTrainNoAtTime(train,minutes){
 function trainDisplayNoAtTime(train,minutes){
   return displayTrainNoAtTime(train,minutes);
 }
+async function loadExternalRouteJsons(routeMeta){
+  const urls=[String(routeMeta?.json||'').trim(),...(Array.isArray(routeMeta?.relatedJsons)?routeMeta.relatedJsons:[]).map(x=>String(x||'').trim())].filter(Boolean);
+  const unique=[...new Set(urls)];
+  if(!unique.length) throw new Error('路線JSONの設定がありません');
+  const payloads=await Promise.all(unique.map(async url=>{
+    const res=await fetch(url,{cache:'no-store'});
+    if(!res.ok) throw new Error(`路線JSONの読み込みに失敗しました (${res.status})`);
+    return {url,json:await res.json()};
+  }));
+  const primary=payloads[0]?.json||{};
+  if(payloads.length===1) return primary;
+
+  // 京浜東北・根岸線／横浜線は、共有区間（東神奈川～大船）を相互表示するため、
+  // 両方のJSONを列車データと線区定義だけ統合する。編成・種別色・運用連結は
+  // 現在選択中の路線（primary）をそのまま使用する。
+  const merged={...primary,lines:[],trains:{},stationDirections:{},operationChains:primary?.operationChains||{}};
+  const seenLines=new Set();
+  for(const {json} of payloads){
+    for(const line of (Array.isArray(json?.lines)?json.lines:[])){
+      const key=String(line?.name||'').trim();
+      if(!key || seenLines.has(key)) continue;
+      seenLines.add(key);
+      merged.lines.push(line);
+    }
+    for(const [k,v] of Object.entries(json?.stationDirections||{})){
+      if(!Object.prototype.hasOwnProperty.call(merged.stationDirections,k)) merged.stationDirections[k]=v;
+    }
+  }
+  for(const day of ['平日','休日','土休日']){
+    const sourceDays=payloads.map(x=>x.json?.trains?.[day]).filter(Boolean);
+    if(!sourceDays.length) continue;
+    const out={};
+    for(const direction of ['上り','下り']){
+      out[direction]=[];
+      for(const dayObj of sourceDays){
+        const list=Array.isArray(dayObj?.[direction])?dayObj[direction]:[];
+        out[direction].push(...list);
+      }
+    }
+    merged.trains[day]=out;
+  }
+  return merged;
+}
+
 async function loadLineTrainData(routeName=activeRouteName){
   if(routeName&&ROUTE_REGISTRY[routeName]) activeRouteName=routeName;
   if(activeRouteName&&ROUTE_REGISTRY[activeRouteName]){
@@ -1443,9 +1507,7 @@ async function loadLineTrainData(routeName=activeRouteName){
   if(!activeRouteMeta) throw new Error(`路線設定が見つかりません: ${activeRouteName}`);
   let json=null;
   if(!activeRouteMeta.json) throw new Error(`路線JSONの設定がありません: ${activeRouteName}`);
-  const res=await fetch(activeRouteMeta.json,{cache:'no-store'});
-  if(!res.ok) throw new Error(`路線JSONの読み込みに失敗しました (${res.status})`);
-  json=await res.json();
+  json=await loadExternalRouteJsons(activeRouteMeta);
   activeJson=json;
   STATIONS=buildStationsForRoute(json,activeRouteMeta);
   // 路線ごとの初期編成アイコンを即時反映。海岸線は専用5000形アイコンを使用する。
@@ -3372,6 +3434,9 @@ function renderTrainPositions(){
       // 山陽本線の緑→赤の境界通過時などに以前の色が残らないようにする。
       const trainLabelEl=el.querySelector('.train-label');
       if(trainLabelEl && getMainLabelClass(t.type)==='route-normal'){
+        trainLabelEl.style.display='block';
+        trainLabelEl.style.visibility='visible';
+        trainLabelEl.style.opacity='1';
         trainLabelEl.style.background=currentTrainTypeColor;
         trainLabelEl.style.color='#fff';
       }
@@ -4637,7 +4702,13 @@ function activeRouteColors(){
   return getActiveRouteLineNames().map(name=>String(lineDefByName(name)?.color||'')).filter(Boolean);
 }
 function activeSegmentColors(a,b){
-  const line=preferredTrainServiceLine(a,b,{servedLineNames:getActiveRouteLineNames()});
+  const aa=String(a||''),bb=String(b||'');
+  const shared=['東神奈川','横浜','桜木町','関内','石川町','山手','根岸','磯子','新杉田','洋光台','港南台','本郷台','大船'];
+  if(activeRouteName==='横浜線' && shared.includes(aa) && shared.includes(bb)){
+    const keihin=lineDefByName('京浜東北・根岸線');
+    if(keihin?.color) return [String(keihin.color)];
+  }
+  const line=preferredTrainServiceLine(aa,bb,{servedLineNames:getActiveRouteLineNames()});
   return line?.color?[line.color]:[activeRouteColors()[0]||'#666'];
 }
 function stationLabelColor(index){
@@ -4786,20 +4857,19 @@ function displayedRouteColorForTrainPosition(train,position=null){
 }
 function typeColorForTrain(train,position=null){
   const type=String(train?.type||'').trim();
-  if(!type){
-    const currentRouteColor=displayedRouteColorForTrainPosition(train,position);
+  const currentRouteColor=displayedRouteColorForTrainPosition(train,position);
+  // 普通・各駅停車は種別固定色ではなく、現在走行している線区カラーを使用する。
+  if(!type || type==='普通' || type==='各駅停車'){
     return String(currentRouteColor||activeRouteColors()[0]||'#666');
   }
   const colors=activeJson?.typeColors||{};
-  if(Object.prototype.hasOwnProperty.call(colors,type)){
+  if(Object.prototype.hasOwnProperty.call(colors,type) && typeof colors[type]==='string'){
     return String(colors[type]||'#fff');
   }
   if(type==='回送') return String(colors?.回送||'#fff');
   if(type.includes('快速')) return String(colors?.快速||FAST_TYPE_COLOR||'#f39800');
 
-  // 「普通」は現在走行中の画面上の線路区間カラーをそのまま使用する。
-  // 路線名固定の色を使わないため、路線内の色境界や共有区間にも追従する。
-  const currentRouteColor=displayedRouteColorForTrainPosition(train,position);
+  // 路線固定の色を使わないため、路線内の色境界や共有区間にも追従する。
   if(currentRouteColor) return String(currentRouteColor);
 
   const routeMap=colors?.普通?.byRoute||{};
