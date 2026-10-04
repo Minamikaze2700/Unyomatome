@@ -2826,18 +2826,13 @@ function formationDisplayGroups(groups){
   mergeNodaGroup('10030型', x=>/^10030型（(?:更新|未更新)）$/.test(x), x=>x.includes('未更新')?'10030型未更新':'10030型更新', ['未更新','更新']);
   mergeNodaGroup('60000型', x=>/^60000型（(?:5両|6両)）$/.test(x), x=>x.replace(/[（）]/g,'').replace('60000型','60000型'));
 
-  // 「みまモニ」の有無は、10030型・60000型・80000系の各形式で共通の選択肢として表示。
-  // 画像は80000系の形式画像を使用し、個別編成とは別の汎用選択肢として扱う。
+  // 「みまモニ」の有無は全形式共通の汎用選択肢として1組だけ表示。
+  // 画像は80000系の形式画像を使用する。
   const mimaMoniImg='https://minamikaze2700.github.io/Unyomatome/images/TB80000.png';
-  const withMimaMoni={id:'__NODA_MIMA_MONI_YES__',name:'みまモニ有',img:mimaMoniImg,family:'noda',kind:'variant',type:'MIMA_MONI'};
-  const withoutMimaMoni={id:'__NODA_MIMA_MONI_NO__',name:'みまモニ無',img:mimaMoniImg,family:'noda',kind:'variant',type:'MIMA_MONI'};
-  for(const g of out){
-    if(['10030型','60000型','80000系'].includes(String(g?.type||''))){
-      const variants=Array.isArray(g.variants)?g.variants.slice():[];
-      variants.push(withMimaMoni,withoutMimaMoni);
-      g.variants=variants;
-    }
-  }
+  Object.defineProperty(out,'__nodaMimaMoniVariants',{value:[
+    {id:'__NODA_MIMA_MONI_YES__',name:'みまモニ有',img:mimaMoniImg,family:'noda',kind:'variant',type:'MIMA_MONI'},
+    {id:'__NODA_MIMA_MONI_NO__',name:'みまモニ無',img:mimaMoniImg,family:'noda',kind:'variant',type:'MIMA_MONI'}
+  ],enumerable:false});
 
   for(const g of source){
     if(consumed.has(g)) continue;
@@ -2845,6 +2840,17 @@ function formationDisplayGroups(groups){
     if(existing) continue;
     out.push(g);
   }
+
+  // 野田線の形式順を固定（8000型 → 10030型 → 60000型 → 80000系）。
+  const nodaOrder=['8000型','10030型','60000型','80000系'];
+  out.sort((a,b)=>{
+    const ai=nodaOrder.indexOf(String(a?.type||''));
+    const bi=nodaOrder.indexOf(String(b?.type||''));
+    if(ai>=0 && bi>=0) return ai-bi;
+    if(ai>=0) return -1;
+    if(bi>=0) return 1;
+    return 0;
+  });
   return out;
 }
 
@@ -4851,6 +4857,14 @@ function stationLabelColor(index){
     const h=STATIONS.findIndex(st=>st.nameJa==='広島');
     return (h>=0 && Number(index)>=h) ? (colors[1]||colors[0]||'#666') : (colors[0]||'#666');
   }
+  if(activeRouteName==='横浜線'){
+    const h=STATIONS.findIndex(st=>st.nameJa==='東神奈川');
+    const keihin=lineDefByName('京浜東北・根岸線');
+    const keihinColor=String(keihin?.color||'').trim();
+    if(h>=0 && /^#[0-9a-fA-F]{6}$/.test(keihinColor)){
+      return Number(index)>=h ? keihinColor : (colors[0]||'#666');
+    }
+  }
   if(colors.length) return colors[0];
   // activeRouteColors() がまだ初期化前でも、JSONの線区定義から取得する。
   const names=Array.isArray(ROUTE_REGISTRY[activeRouteName]?.jsonLines) ? ROUTE_REGISTRY[activeRouteName].jsonLines : [];
@@ -6087,6 +6101,13 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
         <img src="${esc(variant.img||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(variant.name||variant.id)}</span>
       </div>
     `)).join('');
+    const sharedMimaVariants=activeRouteMeta?.formationFamily==='noda'
+      ? (groups.__nodaMimaMoniVariants||[]).map(variant=>`
+          <div class="option-header option-subheader" onclick="selectFormationAtSlot(${slot},'${escapeJs(variant.id)}')">
+            <img src="${esc(variant.img||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(variant.name||variant.id)}</span>
+          </div>
+        `).join('')
+      : '';
     const formationItems=groups.map(group=>{
       const allItems=[...(group.variants||[]).flatMap(variant=>variant.items||[]),...(group.items||[])];
       return allItems.map(item=>{
@@ -6103,7 +6124,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
         return `<div class="option-item${cls}" onclick="selectFormationAtSlot(${slot},'${escapeJs(id)}')"><img src="${esc(item.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=defaultTrainImage()"><span>${esc(item.name||id)}</span></div>`;
       }).join('');
     }).join('');
-    return initial+categoryHeaders+variantHeaders+formationItems;
+    return initial+categoryHeaders+variantHeaders+sharedMimaVariants+formationItems;
   }
 
   function restoreHiroDropdown(){
