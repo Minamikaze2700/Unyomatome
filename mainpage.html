@@ -2697,6 +2697,9 @@ function formationById(id){
   // A編成/S編成そのものも選択可能な「個別列車未指定」の共通選択肢。
   if(upper==='A' || upper==='A編成' || key==='227系 A編成') return {id:'A編成',name:'A編成',img:`${base}227-0.png`,kind:'type',type:'A編成',generic:true,family:'hiroshima'};
   if(upper==='S' || upper==='S編成' || key==='227系 S編成') return {id:'S編成',name:'S編成',img:`${base}227-0.png`,kind:'type',type:'S編成',generic:true,family:'hiroshima'};
+  // 野田線の「みまモニ有／無」は個別編成ではなく汎用選択肢。画像は80000系と共通。
+  if(canonical==='__NODA_MIMA_MONI_YES__') return {id:canonical,name:'みまモニ有',img:`${base}TB80000.png`,kind:'variant',type:'',family:'noda',generic:true};
+  if(canonical==='__NODA_MIMA_MONI_NO__') return {id:canonical,name:'みまモニ無',img:`${base}TB80000.png`,kind:'variant',type:'',family:'noda',generic:true};
   const declaredType=String(activeJson?.formationType||'').trim();
   if(declaredType && (canonical===declaredType || upper===declaredType.toUpperCase())){
     const imgRaw=String(activeJson?.formationTypeImage||activeJson?.commonFormationIcon||activeJson?.noImage||'').trim();
@@ -2788,6 +2791,63 @@ function allowedFormationFamily(train){
   if(kind==='kobe') return 'kobe';
   return storageFamilyForTrain(train);
 }
+function formationDisplayGroups(groups){
+  const source=Array.isArray(groups)?groups:[];
+  if(String(activeRouteMeta?.formationFamily||'')!=='noda') return source;
+
+  const out=[];
+  const consumed=new Set();
+  const mergeNodaGroup=(baseType, matcher, variantName, variantOrder=null)=>{
+    let matched=source.filter(g=>matcher(String(g?.type||'')));
+    if(!matched.length) return false;
+    if(Array.isArray(variantOrder)) matched.sort((a,b)=>{
+      const ai=variantOrder.findIndex(x=>matcher(String(a?.type||'')) && String(a?.type||'').includes(x));
+      const bi=variantOrder.findIndex(x=>matcher(String(b?.type||'')) && String(b?.type||'').includes(x));
+      return (ai<0?999:ai)-(bi<0?999:bi);
+    });
+    matched.forEach(g=>consumed.add(g));
+    const variants=matched.map(g=>({
+      id:String(g.id||g.type||baseType),
+      name:variantName(String(g.type||'')),
+      img:g.typeImg||LINE_TRAIN_IMG,
+      items:Array.isArray(g.items)?g.items:[],
+      family:g.family||'noda'
+    }));
+    const first=matched[0];
+    out.push({
+      type:baseType,
+      typeImg:first?.typeImg||LINE_TRAIN_IMG,
+      family:'noda',
+      variants
+    });
+    return true;
+  };
+
+  mergeNodaGroup('10030型', x=>/^10030型（(?:更新|未更新)）$/.test(x), x=>x.includes('未更新')?'10030型未更新':'10030型更新', ['未更新','更新']);
+  mergeNodaGroup('60000型', x=>/^60000型（(?:5両|6両)）$/.test(x), x=>x.replace(/[（）]/g,'').replace('60000型','60000型'));
+
+  // 「みまモニ」の有無は、10030型・60000型・80000系の各形式で共通の選択肢として表示。
+  // 画像は80000系の形式画像を使用し、個別編成とは別の汎用選択肢として扱う。
+  const mimaMoniImg='https://minamikaze2700.github.io/Unyomatome/images/TB80000.png';
+  const withMimaMoni={id:'__NODA_MIMA_MONI_YES__',name:'みまモニ有',img:mimaMoniImg,family:'noda',kind:'variant',type:'MIMA_MONI'};
+  const withoutMimaMoni={id:'__NODA_MIMA_MONI_NO__',name:'みまモニ無',img:mimaMoniImg,family:'noda',kind:'variant',type:'MIMA_MONI'};
+  for(const g of out){
+    if(['10030型','60000型','80000系'].includes(String(g?.type||''))){
+      const variants=Array.isArray(g.variants)?g.variants.slice():[];
+      variants.push(withMimaMoni,withoutMimaMoni);
+      g.variants=variants;
+    }
+  }
+
+  for(const g of source){
+    if(consumed.has(g)) continue;
+    const existing=out.find(x=>x===g);
+    if(existing) continue;
+    out.push(g);
+  }
+  return out;
+}
+
 function formationAllowedForTrain(train,id){
   if(!id || id===INITIAL_FORMATION_SELECTION.id) return true;
   const item=formationById(id);
@@ -3946,7 +4006,7 @@ function updateSheetContent(){
         <div class="custom-select-options" id="dropdownOptions">
           <div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}')"><img src="${syncInitialFormationImage()}" class="option-img"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>
           ${(() => {
-            const groups=formationsForTrain(train);
+            const groups=formationDisplayGroups(formationsForTrain(train));
             const categoryHeaders=groups.map(group=>`
               <div class="option-header option-category-header" ${/227系 [AS]編成$/.test(String(group.type||''))?`onclick="selectFormation('${String(group.type).includes('S編成')?'S編成':'A編成'}')"`:''}>
                 <img src="${group.typeImg}" class="option-img"><span>${String(group.type).replace(/^227系 /,'')}</span>
@@ -6009,7 +6069,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
 
   function renderFormationOptions(slot,currentIds,count){
     const current=currentIds[slot]||'';
-    const groups=formationsForTrain(currentTrainSnapshot||{});
+    const groups=formationDisplayGroups(formationsForTrain(currentTrainSnapshot||{}));
     const initial=`<div class="option-item initial-option" onclick="selectFormationAtSlot(${slot},'${INITIAL_FORMATION_SELECTION.id}')"><img src="${esc(syncInitialFormationImage())}" class="option-img"><span>${esc(INITIAL_FORMATION_SELECTION.name)}</span></div>`;
     const categoryHeaders=groups.map(group=>{
       const groupType=String(group.type||'');
