@@ -2,10 +2,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta property="og:title" content="広島地区 - 運用まとめ">
-<meta property="og:description" content="JR西日本 広島地区の運用を記録しよう">
+<meta property="og:title" content="運用まとめ">
+<meta property="og:description" content="日本各地の鉄道路線の運用を記録・確認できる運用まとめ">
 
-<meta property="og:url" content="https://minamikaze2700.github.io/Unyomatome/広島地区.html">
+<meta property="og:url" content="https://minamikaze2700.github.io/Unyomatome/mainpage.html">
 <meta property="og:type" content="website">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -14,7 +14,7 @@
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>運用まとめ - 広島地区</title>
+<title>運用まとめ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -748,7 +748,7 @@ button,input,select,textarea{font-family:inherit}
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics-compat.js"></script>
 <script>
-/* Firebase設定：広島地区 */
+/* Firebase設定 */
 window.JRELINE_FIREBASE_CONFIG = {
   apiKey: "AIzaSyDjbevyf9NXeBXCi-wrtkvOq_5LWGOPgVI",
   authDomain: "unyomatome-5782e.firebaseapp.com",
@@ -767,7 +767,7 @@ const JRE_KEIHIN_FIREBASE_CONFIG = window.JRELINE_FIREBASE_CONFIG;
 const JRE_YOKOHAMA_FIREBASE_CONFIG = JRE_KEIHIN_FIREBASE_CONFIG;
 </script>
 <script>
-/* 広島地区：路線・時刻表・編成はJSONから外部読み込み */
+/* 路線・時刻表・編成はJSONから外部読み込み */
 let STATIONS=[];
 let FORMATIONS=[];
 let TRAINS=[];
@@ -786,9 +786,10 @@ const TURNBACK_SWITCH_MIN=1;
 const TRAIN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/広島地区.json';
 const KOBE_KAIGAN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/神戸市営地下鉄.json';
 const DEFAULT_ROUTE_TITLE='運用まとめ';
-const LAST_ROUTE_STORAGE_KEY='hiroshimaAreaLastRoute_v1';
+const LAST_ROUTE_STORAGE_KEY='routeLastRoute_v1';
 const ROUTE_REGISTRY={
   '山陽本線（糸崎～岩国）':{
+    id:'sanyo-hiroshima',
     json:TRAIN_DATA_URL,
     jsonLines:['山陽本線（三原～広島）','山陽本線（広島～岩国）'],
     range:'糸崎～岩国',
@@ -799,6 +800,7 @@ const ROUTE_REGISTRY={
     access:{public:false,routeAdmins:[]}
   },
   '可部線':{
+    id:'kabe',
     json:TRAIN_DATA_URL,
     jsonLines:['可部線'],
     range:'広島～あき亀山',
@@ -809,6 +811,7 @@ const ROUTE_REGISTRY={
     access:{public:false,routeAdmins:[]}
   },
   '呉線':{
+    id:'kure',
     json:TRAIN_DATA_URL,
     jsonLines:['呉線'],
     range:'糸崎～広島',
@@ -819,6 +822,7 @@ const ROUTE_REGISTRY={
     access:{public:false,routeAdmins:[]}
   },
   '海岸線':{
+    id:'kobe-kaigan',
     json:KOBE_KAIGAN_DATA_URL,
     jsonLines:['海岸線'],
     range:'新長田～三宮・花時計前',
@@ -830,6 +834,16 @@ const ROUTE_REGISTRY={
     access:{public:true,routeAdmins:[]}
   }
 };
+function routeNameFromId(value){
+  const raw=String(value??'').trim();
+  if(!raw) return '';
+  if(ROUTE_REGISTRY[raw]) return raw;
+  const entry=Object.entries(ROUTE_REGISTRY).find(([,meta])=>String(meta?.id||'')===raw);
+  return entry?entry[0]:'';
+}
+function routeIdFromName(routeName){
+  return String(ROUTE_REGISTRY[String(routeName||'')]?.id||'').trim();
+}
 function formationStorageContext(routeOrTrain=activeRouteName){
   const routeName=typeof routeOrTrain==='string' ? routeOrTrain : String(routeOrTrain?.routeName||activeRouteName||'');
   const meta=ROUTE_REGISTRY[routeName]||{};
@@ -1084,7 +1098,7 @@ async function loadLineTrainData(routeName=activeRouteName){
   activeRouteMeta=ROUTE_REGISTRY[activeRouteName];
   if(!activeRouteMeta) throw new Error(`路線設定が見つかりません: ${activeRouteName}`);
   const res=await fetch(activeRouteMeta.json,{cache:'no-store'});
-  if(!res.ok) throw new Error(`広島地区.json の読み込みに失敗しました (${res.status})`);
+  if(!res.ok) throw new Error(`路線JSONの読み込みに失敗しました (${res.status})`);
   const json=await res.json(); activeJson=json;
   STATIONS=buildStationsForRoute(json,activeRouteMeta);
   // 路線ごとの初期編成アイコンを即時反映。海岸線は専用5000形アイコンを使用する。
@@ -1120,8 +1134,8 @@ async function loadLineTrainData(routeName=activeRouteName){
   updateRouteVisuals();
 }
 
-const STORAGE_KEY='hiroshimaAreaTrainRegistrations_v1';
-const CHANNEL_NAME='hiroshimaAreaTrainRegistrationSync_v1';
+const STORAGE_KEY='routeTrainRegistrations_v2';
+const CHANNEL_NAME='routeTrainRegistrationSync_v2';
 const FIREBASE_CONFIG=(window.JRELINE_FIREBASE_CONFIG||{});
 const FIREBASE_ENABLED=!!(window.firebase && FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId && FIREBASE_CONFIG.databaseURL);
 const FIREBASE_APP_NAME='unyomatomeHiroshima';
@@ -3613,12 +3627,19 @@ async function selectFormation(formId){
   }
 }
 window.addEventListener('load',async ()=>{
-  // 前回選択していた路線を自動復元する。保存値がない/無効なら「運用まとめ」。
+  // URLの ?route=路線ID を最優先し、なければ前回の路線を復元する。
   let restoredRoute='';
   try{
-    const saved=String(localStorage.getItem(LAST_ROUTE_STORAGE_KEY)||'').trim();
-    if(saved && ROUTE_REGISTRY[saved]) restoredRoute=saved;
+    const params=new URLSearchParams(window.location.search||'');
+    const queryRoute=routeNameFromId(params.get('route')||'');
+    if(queryRoute) restoredRoute=queryRoute;
   }catch(e){}
+  if(!restoredRoute){
+    try{
+      const saved=String(localStorage.getItem(LAST_ROUTE_STORAGE_KEY)||'').trim();
+      if(saved && ROUTE_REGISTRY[saved]) restoredRoute=saved;
+    }catch(e){}
+  }
 
   if(restoredRoute){
     try{
@@ -3674,8 +3695,8 @@ window.addEventListener('load',async ()=>{
   },60000);
 });
 
-/* 広島地区・運行情報 */
-const OPERATION_INFO_STORAGE_KEY='hiroshimaAreaOperationInfo_v1';
+/* 運行情報 */
+const OPERATION_INFO_STORAGE_KEY='routeOperationInfo_v2';
 const OPERATION_INFO_REASONS=['人身事故','車両故障・点検','信号・電気設備トラブル','線路内立入り・支障物','踏切・安全確認','天候（大雨・強風・雷・雪）','地震・災害','急病人救護','混雑・その他'];
 let OPERATION_INFO_STATIONS=STATIONS.map(s=>s.nameJa);
 let operationInfoEntries=[];
@@ -4030,7 +4051,7 @@ window.addEventListener('resize',renderOperationInfoZones);
 </nav>
 
 <script>
-/* ===== 広島地区：共通仕様 ===== */
+/* ===== 共通仕様 ===== */
 const JR_WEST_CORPORATE_COLOR='#0072bc';
 const FAST_TYPE_COLOR='#f39800';
 const REGION_DEFINITIONS={
@@ -4043,15 +4064,15 @@ const REGION_DEFINITIONS={
   '近畿':[{
     company:'神戸市営地下鉄',
     routes:[
-      {name:'海岸線'}
+      {name:'海岸線',id:'kobe-kaigan'}
     ]
   }],
   '中国':[{
     company:'JR西日本',
     routes:[
-      {name:'山陽本線（糸崎～岩国）'},
-      {name:'可部線'},
-      {name:'呉線'}
+      {name:'山陽本線（糸崎～岩国）',id:'sanyo-hiroshima'},
+      {name:'可部線',id:'kabe'},
+      {name:'呉線',id:'kure'}
     ]
   }],
   '四国':[],
@@ -4466,7 +4487,7 @@ function openRegionSheet(region){
 <p class="terms-end">以上</p><p class="terms-date">制定日：2026年9月18日</p>
 </div>`
     : (defs.length
-      ? defs.map(c=>`<section class="company-block"><h2 class="company-name">${esc(c.company)}</h2><div class="route-list">${c.routes.map(r=>`<button type="button" class="route-button" onclick="selectRoute('${escapeJs(r.name)}')">${esc(r.name)}</button>`).join('')}</div></section>`).join('')
+      ? defs.map(c=>`<section class="company-block"><h2 class="company-name">${esc(c.company)}</h2><div class="route-list">${c.routes.map(r=>`<button type="button" class="route-button" onclick="selectRoute('${escapeJs(r.id||r.name)}')">${esc(r.name)}</button>`).join('')}</div></section>`).join('')
       : `<section class="company-block"><h2 class="company-name">この地域の路線は未登録です。</h2></section>`);
   content.innerHTML=inner;
   overlay.style.display='block';
@@ -4478,9 +4499,15 @@ function closeRegionSheet(){
   document.querySelectorAll('#regionNav button').forEach(b=>b.classList.remove('active'));
   if(activeSheetMode==='region') closeSheet();
 }
-async function selectRoute(routeName){
-  if(!ROUTE_REGISTRY[routeName]) return;
+async function selectRoute(routeValue){
+  const routeName=routeNameFromId(routeValue);
+  if(!routeName) return;
   try{ localStorage.setItem(LAST_ROUTE_STORAGE_KEY,routeName); }catch(e){}
+  try{
+    const url=new URL(window.location.href);
+    url.searchParams.set('route',routeIdFromName(routeName)||routeName);
+    window.history.replaceState({},'',url.toString());
+  }catch(e){}
   closeRegionSheet();
   try{
     await loadLineTrainData(routeName);
@@ -4621,6 +4648,13 @@ function updateRouteVisuals(){
   root.style.setProperty('--control-border-color',makeLightBorder(titleColor));
   const titleText=document.getElementById('titleText');
   if(titleText) titleText.textContent=activeRouteName||DEFAULT_ROUTE_TITLE;
+  document.title=activeRouteName ? `運用まとめ - ${activeRouteName}` : DEFAULT_ROUTE_TITLE;
+  const ogTitle=document.querySelector('meta[property="og:title"]');
+  if(ogTitle) ogTitle.setAttribute('content',activeRouteName ? `運用まとめ - ${activeRouteName}` : DEFAULT_ROUTE_TITLE);
+  try{
+    const ogUrl=document.querySelector('meta[property="og:url"]');
+    if(ogUrl) ogUrl.setAttribute('content',window.location.href);
+  }catch(e){}
   const title=document.getElementById('title');
   if(title){ title.style.background=titleColor; title.style.borderBottomColor=makeLightBorder(titleColor); }
   // コントロールバーの色はh1の色に統一。
@@ -5063,9 +5097,9 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
 </script>
 
 <script>
-/* ===== 広島地区：最大6編成・3列車併結対応 =====
+/* ===== 最大6編成・3列車併結対応 =====
    東武スカイツリーラインの地上運用で採用している「+区切りの前寄り→後寄り保存」方式を
-   広島地区へ一般化。JSONの formationCount が省略された場合は1編成、2以上だけ個別指定する。
+   共通処理としてJSONの formationCount が省略された場合は1編成、2以上だけ個別指定する。
 */
 (function(){
   const MAX_FORMATION_SLOTS=6;
@@ -5706,7 +5740,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     return !!id && routeManagerIds(routeName).includes(id);
   }
   function canViewRoute(routeName){
-    const route=normalizeId(routeName);
+    const route=typeof routeNameFromId==='function' ? routeNameFromId(routeName) : normalizeId(routeName);
     if(!route || !ROUTE_REGISTRY?.[route]) return false;
     if(isAdminUser()) return true;
     const access=routeAccess(route);
@@ -5716,8 +5750,9 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
   }
   window.appCanViewRoute=canViewRoute;
   window.currentPermissionCodeForRoute=function(routeName){
+    const route=typeof routeNameFromId==='function' ? routeNameFromId(routeName) : normalizeId(routeName);
     if(isAdminUser()) return 'a';
-    return isRouteAdminFor(routeName)?'l':'';
+    return isRouteAdminFor(route)?'l':'';
   };
 
   function roleLabel(code){ return code==='a'?'管理人':code==='l'?'路線管理人':''; }
