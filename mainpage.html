@@ -3945,27 +3945,33 @@ function updateSheetContent(){
         </div>
         <div class="custom-select-options" id="dropdownOptions">
           <div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}')"><img src="${syncInitialFormationImage()}" class="option-img"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>
-          ${formationsForTrain(train).map(group=>`
-            <div class="option-header option-category-header" ${/227系 [AS]編成$/.test(String(group.type||''))?`onclick="selectFormation('${String(group.type).includes('S編成')?'S編成':'A編成'}')"`:''}>
-              <img src="${group.typeImg}" class="option-img"><span>${String(group.type).replace(/^227系 /,'')}</span>
-            </div>
-            ${(group.variants||[]).map(variant=>`
+          ${(() => {
+            const groups=formationsForTrain(train);
+            const categoryHeaders=groups.map(group=>`
+              <div class="option-header option-category-header" ${/227系 [AS]編成$/.test(String(group.type||''))?`onclick="selectFormation('${String(group.type).includes('S編成')?'S編成':'A編成'}')"`:''}>
+                <img src="${group.typeImg}" class="option-img"><span>${String(group.type).replace(/^227系 /,'')}</span>
+              </div>
+            `).join('');
+            const variantHeaders=groups.flatMap(group=>(group.variants||[]).map(variant=>`
               <div class="option-header option-subheader" onclick="selectFormation('${variant.id}')">
                 <img src="${variant.img}" class="option-img"><span>${variant.name}</span>
               </div>
-            `).join('')}
-            ${(group.variants||[]).flatMap(variant=>variant.items||[]).map(item=>`
-              <div class="option-item option-subitem ${item.disabled || UNAVAILABLE_FORMATIONS.has(String(item.id))?'option-disabled':''}" ${item.disabled || UNAVAILABLE_FORMATIONS.has(String(item.id))?'aria-disabled="true"':''} onclick="selectFormation('${item.id}')">
-                <img src="${item.img}" class="option-img"><span>${item.name}</span>
-              </div>
-            `).join('')}
-            ${(group.items||[]).map(item=>{
-              const disabled=!!item.disabled || UNAVAILABLE_FORMATIONS.has(String(item.id));
-              return `<div class="option-item ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':''} onclick="selectFormation('${item.id}')">
-                <img src="${item.img}" class="option-img"><span>${item.name}</span>
-              </div>`;
-            }).join('')}
-          `).join('')}
+            `)).join('');
+            const formationItems=groups.map(group=>`
+              ${(group.variants||[]).flatMap(variant=>variant.items||[]).map(item=>`
+                <div class="option-item option-subitem ${item.disabled || UNAVAILABLE_FORMATIONS.has(String(item.id))?'option-disabled':''}" ${item.disabled || UNAVAILABLE_FORMATIONS.has(String(item.id))?'aria-disabled="true"':''} onclick="selectFormation('${item.id}')">
+                  <img src="${item.img}" class="option-img"><span>${item.name}</span>
+                </div>
+              `).join('')}
+              ${(group.items||[]).map(item=>{
+                const disabled=!!item.disabled || UNAVAILABLE_FORMATIONS.has(String(item.id));
+                return `<div class="option-item ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':''} onclick="selectFormation('${item.id}')">
+                  <img src="${item.img}" class="option-img"><span>${item.name}</span>
+                </div>`;
+              }).join('')}
+            `).join('');
+            return categoryHeaders+variantHeaders+formationItems;
+          })()}
         </div>
       </div>
     `;
@@ -6005,17 +6011,25 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     const current=currentIds[slot]||'';
     const groups=formationsForTrain(currentTrainSnapshot||{});
     const initial=`<div class="option-item initial-option" onclick="selectFormationAtSlot(${slot},'${INITIAL_FORMATION_SELECTION.id}')"><img src="${esc(syncInitialFormationImage())}" class="option-img"><span>${esc(INITIAL_FORMATION_SELECTION.name)}</span></div>`;
-    const body=groups.map(group=>{
+    const categoryHeaders=groups.map(group=>{
       const groupType=String(group.type||'');
       const isGenericAS=/^[^A-Z]*227系 [AS]編成$/.test(groupType);
       const declaredType=String(activeJson?.formationType||'').trim();
       const isGenericDeclared=!!declaredType && groupType===declaredType;
       const genericId=groupType.includes('S編成')?'S編成':groupType.includes('A編成')?'A編成':(isGenericDeclared?declaredType:'');
-      // 共通の形式指定（A編成/S編成/JSON指定の5000系など）は見出し自体を選択肢にする。
-      const type=(isGenericAS||isGenericDeclared)
+      // 形式見出しはすべて先にまとめて表示。
+      return (isGenericAS||isGenericDeclared)
         ? `<div class="option-header option-category-header option-selectable-category" role="button" tabindex="0" onclick="selectFormationAtSlot(${slot},'${escapeJs(genericId)}')"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(genericId)}</span></div>`
         : `<div class="option-header option-category-header"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(groupType)}</span></div>`;
-      const items=(group.items||[]).map(item=>{
+    }).join('');
+    const variantHeaders=groups.flatMap(group=>(group.variants||[]).map(variant=>`
+      <div class="option-header option-subheader" onclick="selectFormationAtSlot(${slot},'${escapeJs(variant.id)}')">
+        <img src="${esc(variant.img||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(variant.name||variant.id)}</span>
+      </div>
+    `)).join('');
+    const formationItems=groups.map(group=>{
+      const allItems=[...(group.variants||[]).flatMap(variant=>variant.items||[]),...(group.items||[])];
+      return allItems.map(item=>{
         const id=String(item.id||'').replace(/F$/i,'');
         if(!id || item.disabled || UNAVAILABLE_FORMATIONS.has(id)) return '';
         // 重複対象は個別編成だけ。A編成/S編成の共通選択肢はここでは判定しない。
@@ -6024,13 +6038,12 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
           const other=String(v).replace(/F$/i,'');
           return other===id && !/^([AS]編成)$/.test(other);
         });
-        // 重複する個別編成は「選択不可」ではなく、候補そのものから除外する。
         if(selectedElsewhere) return '';
-        return `<div class="option-item" onclick="selectFormationAtSlot(${slot},'${escapeJs(id)}')"><img src="${esc(item.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=defaultTrainImage()"><span>${esc(item.name||id)}</span></div>`;
+        const cls=(group.items||[]).some(x=>String(x?.id||'').replace(/F$/i,'')===id)?'':' option-subitem';
+        return `<div class="option-item${cls}" onclick="selectFormationAtSlot(${slot},'${escapeJs(id)}')"><img src="${esc(item.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=defaultTrainImage()"><span>${esc(item.name||id)}</span></div>`;
       }).join('');
-      return type+items;
     }).join('');
-    return initial+body;
+    return initial+categoryHeaders+variantHeaders+formationItems;
   }
 
   function restoreHiroDropdown(){
