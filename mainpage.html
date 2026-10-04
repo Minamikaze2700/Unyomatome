@@ -943,6 +943,26 @@ const ROUTE_REGISTRY={
     access:{public:true,routeAdmins:[]},
     formationInputExample:'5101 / 5101F / 5000系'
   },
+  '西神・山手線':{
+    id:'kobe-seishin-yamate',
+    json:KOBE_KAIGAN_DATA_URL,
+    jsonLines:['西神・山手線'],
+    range:'谷上～西神中央',
+    area:'神戸市営',
+    storageRoot:'神戸市営',
+    storageArea:null,
+    company:'神戸市営地下鉄',
+    formationFamily:'kobe',
+    corporateTitleColor:'#0072bc',
+    formationCountDefault:1,
+    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png',
+    formationType:'6000形',
+    formationTypeImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobecity6000.png',
+    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png',
+    noImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png',
+    access:{public:true,routeAdmins:[]},
+    formationInputExample:'6000形'
+  },
   '京浜東北・根岸線':{
     id:'keihin-tohoku',
     json:'https://minamikaze2700.github.io/Unyomatome/data/JRKeihinTohoku.json',
@@ -1149,8 +1169,25 @@ const LINE_TRAIN_IMG='https://minamikaze2700.github.io/Unyomatome/images/227-0_n
 const KEIHIN_TOHOKU_TRAIN_IMG=LINE_TRAIN_IMG;
 const YOKOHAMA_TRAIN_IMG=LINE_TRAIN_IMG;
 const INITIAL_FORMATION_SELECTION={id:'__INITIAL__',name:'編成未選択',img:LINE_TRAIN_IMG,kind:'placeholder'};
+function activeLineVisuals(json=activeJson,meta=activeRouteMeta){
+  const names=Array.isArray(meta?.jsonLines)?meta.jsonLines.map(String).filter(Boolean):[];
+  const visuals=(json?.lineVisuals&&typeof json.lineVisuals==='object')?json.lineVisuals:{};
+  for(const name of names){
+    if(visuals?.[name]&&typeof visuals[name]==='object') return visuals[name];
+  }
+  return {};
+}
+function activeFormationVisualValue(json=activeJson,meta=activeRouteMeta,key=''){
+  const lineVisual=activeLineVisuals(json,meta);
+  const routeValue=meta?.[key];
+  const jsonValue=json?.[key];
+  const lineValue=lineVisual?.[key];
+  return String(lineValue??routeValue??jsonValue??'').trim();
+}
 function jsonNoImageUrl(json=activeJson){
-  const raw=String(json?.noImage||json?.formationDefaultImage||json?.commonFormationIcon||'').trim();
+  const raw=activeFormationVisualValue(json,activeRouteMeta,'noImage')
+    ||activeFormationVisualValue(json,activeRouteMeta,'formationDefaultImage')
+    ||String(json?.commonFormationIcon||'').trim();
   if(!raw) return LINE_TRAIN_IMG;
   if(/^https?:\/\//i.test(raw)) return raw;
   return `https://minamikaze2700.github.io/Unyomatome/images/${raw.replace(/\.png$/i,'')}.png`;
@@ -1241,8 +1278,8 @@ function buildFormationsForJson(json){
     return `${base}${v.replace(/\.png$/i,'')}.png`;
   };
   const rawFormations=Array.isArray(json?.formations)?json.formations:[];
-  const declaredType=String(json?.formationType||'').trim();
-  const declaredTypeImg=makeImg(json?.formationTypeImage,json?.commonFormationIcon);
+  const declaredType=activeFormationVisualValue(json,activeRouteMeta,'formationType');
+  const declaredTypeImg=makeImg(activeFormationVisualValue(json,activeRouteMeta,'formationTypeImage'),activeFormationVisualValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon);
   const dataFamily=String(json?.formationFamily||activeRouteMeta?.formationFamily||formationStorageContext(activeRouteName).family||'').trim();
 
   // 新形式：JSON側で複数の編成グループを定義。
@@ -1264,7 +1301,7 @@ function buildFormationsForJson(json){
         const item={
           id:displayId,
           name:String(raw?.name||displayId),
-          img:makeImg(raw?.img||raw?.image,json?.formationDefaultImage||json?.commonFormationIcon),
+          img:makeImg(raw?.img||raw?.image,activeFormationVisualValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon),
           cars,
           carNames:carsArr,
           disabled:!!raw?.disabled,
@@ -1280,7 +1317,7 @@ function buildFormationsForJson(json){
       const type=String(rawGroup?.type||'').trim();
       if(items.length) out.push({
         type:type||dataFamily||'編成',
-        typeImg:makeImg(rawGroup?.typeImg||rawGroup?.image,json?.formationDefaultImage||json?.commonFormationIcon),
+        typeImg:makeImg(rawGroup?.typeImg||rawGroup?.image,activeFormationVisualValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon),
         family:groupFamily,
         items
       });
@@ -1293,10 +1330,15 @@ function buildFormationsForJson(json){
     if(out.length) return out;
   }
 
-  // 従来形式：単一の formationType。
+  // 従来形式：単一の formationType。路線別visualが指定されている場合はそれを優先し、
+  // 共有JSON内に別路線の個別編成があっても、現在路線へ誤表示しない。
+  const lineVisual=activeLineVisuals(json,activeRouteMeta);
+  const baseDeclaredType=String(json?.formationType||'').trim();
+  const lineOverridesType=!!String(lineVisual?.formationType||'').trim() && declaredType!==baseDeclaredType;
+  const formationSource=lineOverridesType ? [] : rawFormations;
   if(declaredType){
     const items=[];
-    for(const raw of rawFormations){
+    for(const raw of formationSource){
       const rawId=String(raw?.formation||raw?.id||'').trim();
       if(!rawId) continue;
       const displayId=rawId.replace(/F$/i,'');
@@ -1305,7 +1347,7 @@ function buildFormationsForJson(json){
       const item={
         id:displayId,
         name:String(raw?.name||`${displayId}編成`),
-        img:makeImg(raw?.image,json?.formationDefaultImage||json?.commonFormationIcon),
+        img:makeImg(raw?.image,activeFormationVisualValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon),
         cars,
         carNames:carsArr,
         family:dataFamily
@@ -2292,7 +2334,7 @@ function formationById(id){
   }
 
   // 既存の単一形式JSONで形式名そのものを選択できるようにする。
-  const declaredType=String(activeJson?.formationType||'').trim();
+  const declaredType=activeFormationVisualValue(activeJson,activeRouteMeta,'formationType');
   if(declaredType && canonical===declaredType){
     return {id:declaredType,name:declaredType,img:jsonNoImageUrl(activeJson),kind:'type',type:declaredType,generic:true,displayAsFullName:true,family:activeRouteMeta?.formationFamily||''};
   }
@@ -4210,7 +4252,8 @@ const REGION_DEFINITIONS={
   '近畿':[{
     company:'神戸市営地下鉄',
     routes:[
-      {name:'海岸線',id:'kobe-kaigan'}
+      {name:'海岸線',id:'kobe-kaigan'},
+      {name:'西神・山手線',id:'kobe-seishin-yamate'}
     ]
   }],
   '中国':[{
@@ -5436,7 +5479,7 @@ initRegionNavigation();
     const chunks=[];
     for(const group of groups){
       const groupType=String(group.type||'');
-      const declaredType=String(activeJson?.formationType||'').trim();
+      const declaredType=activeFormationVisualValue(activeJson,activeRouteMeta,'formationType');
       const isGenericDeclared=!!declaredType && groupType===declaredType;
       const selectableCategory=!!group.selectableType || isGenericDeclared;
       const genericId=selectableCategory ? String(group.selectableId||declaredType||groupType) : '';
