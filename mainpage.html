@@ -4956,7 +4956,7 @@ function updateRouteVisuals(){
   const title=document.getElementById('title');
   if(title){ title.style.background=h1Color; title.style.borderBottomColor=makeLightBorder(h1Color); }
   // コントロールバーの色はh1の色に統一。
-  root.style.setProperty('--control-accent',titleColor);
+  root.style.setProperty('--control-accent',h1Color);
   root.style.setProperty('--control-border-color',makeLightBorder(titleColor));
   root.style.setProperty('--formation-hover-bg',mixColor(titleColor,'#ffffff',0.90));
   root.style.setProperty('--control-active-text',stationEnglishTextColor(titleColor));
@@ -4964,7 +4964,7 @@ function updateRouteVisuals(){
   if(bar){
     bar.style.background='#fff';
     bar.style.borderBottomColor='#ddd';
-    bar.style.setProperty('--control-accent',titleColor);
+    bar.style.setProperty('--control-accent',h1Color);
   }
   const op=document.getElementById('operationInfoBtn');
   if(op) op.style.color=titleColor;
@@ -6280,8 +6280,8 @@ initRegionNavigation();
 .control-bar .time-now-btn{
   border-color:var(--control-accent,#808080) !important;
 }
-.control-bar .date-input{color:#111 !important;}
-.control-bar .time-now-btn{color:#111 !important;}
+.control-bar .date-input{color:var(--control-accent,#808080) !important;accent-color:var(--control-accent,#808080);}
+.control-bar .time-now-btn{color:var(--control-accent,#808080) !important;accent-color:var(--control-accent,#808080);}
 .control-bar .time-now-btn.active{
   background:var(--control-accent,#808080) !important;
   color:var(--control-active-text,#fff) !important;
@@ -6289,6 +6289,7 @@ initRegionNavigation();
 .control-bar .time-input{
   border-color:var(--control-accent,#808080) !important;
   color:#111 !important;
+  accent-color:var(--control-accent,#808080);
 }
 .control-bar .schedule-day-label,
 .control-bar .time-label{
