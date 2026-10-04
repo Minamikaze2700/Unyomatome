@@ -965,6 +965,7 @@ const ROUTE_REGISTRY={
   },
   '京浜東北・根岸線':{
     id:'keihin-tohoku',
+    routeColor:'#00adcd',
     json:'https://minamikaze2700.github.io/Unyomatome/data/JRKeihinTohoku.json',
     jsonLines:['京浜東北・根岸線'],
     relatedJsons:['https://minamikaze2700.github.io/Unyomatome/data/JRYokohama.json'],
@@ -986,6 +987,7 @@ const ROUTE_REGISTRY={
   },
   '横浜線':{
     id:'yokohama',
+    routeColor:'#72c11d',
     json:'https://minamikaze2700.github.io/Unyomatome/data/JRYokohama.json',
     jsonLines:['横浜線'],
     relatedJsons:['https://minamikaze2700.github.io/Unyomatome/data/JRKeihinTohoku.json'],
@@ -1008,6 +1010,7 @@ const ROUTE_REGISTRY={
   },
   'JR南武線':{
     id:'nambu',
+    routeColor:'#fdd700',
     json:'https://minamikaze2700.github.io/Unyomatome/data/JRENambu.json',
     jsonLines:['JR南武線'],
     range:'川崎～立川',
@@ -4318,6 +4321,22 @@ function allJsonLines(){
 function lineDefByName(name){
   return allJsonLines().find(x=>String(x?.name||'')===String(name||''))||null;
 }
+
+/* H1の色は路線JSONに登録された基本色だけを使用する。
+   segmentColorRules による特定区間の色はH1には反映しない。 */
+function jsonBaseColorForActiveRoute(){
+  const routeName=String(activeRouteName||'');
+  const exact=lineDefByName(routeName);
+  if(exact?.color) return String(exact.color).trim();
+  const names=getActiveRouteLineNames();
+  for(const name of (Array.isArray(names)?names:[])){
+    const line=lineDefByName(name);
+    const color=String(line?.color||'').trim();
+    if(color) return color;
+  }
+  const first=allJsonLines().find(line=>String(line?.color||'').trim());
+  return String(first?.color||'').trim() || '#808080';
+}
 function lineAdjacent(line,a,b){
   const aa=String(a||''),bb=String(b||'');
   const stations=Array.isArray(line?.stations)?line.stations:[];
@@ -4449,6 +4468,8 @@ function jsonSegmentColorForStations(a,b,lineNames=getActiveRouteLineNames()){
 function trainServiceColorBetweenStations(a,b,trainContext=null){
   const aa=String(a||''),bb=String(b||'');
   if(!aa||!bb||aa===bb) return fallbackTrainServiceColor(trainContext);
+  const routeOverride=String(activeRouteMeta?.routeColor||'').trim();
+  if(routeOverride) return routeOverride;
   const jsonSegment=jsonSegmentColorForStations(aa,bb,getActiveRouteLineNames());
   if(jsonSegment) return jsonSegment;
   const line=preferredTrainServiceLine(aa,bb,trainContext);
@@ -4491,11 +4512,14 @@ function singleColorGradient(color,direction='to right'){
 }
 function getActiveRouteLineNames(){ return ROUTE_REGISTRY[activeRouteName]?.jsonLines||[]; }
 function activeRouteColors(){
+  const override=String(activeRouteMeta?.routeColor||'').trim();
+  if(override) return [override];
   return getActiveRouteLineNames().map(name=>String(lineDefByName(name)?.color||'')).filter(Boolean);
 }
 function activeSegmentColors(a,b){
   const aa=String(a||''),bb=String(b||'');
   const meta=activeRouteMeta||{};
+  const routeOverride=String(meta?.routeColor||'').trim();
   for(const rule of (Array.isArray(meta.segmentColorRules)?meta.segmentColorRules:[])){
     const required=Array.isArray(rule.whenStationsAllPresent)?rule.whenStationsAllPresent.map(String):[];
     if(required.length && required.includes(aa) && required.includes(bb)){
@@ -4511,6 +4535,8 @@ function activeSegmentColors(a,b){
       if(color) return [color];
     }
   }
+  // 現在選択中の路線に固有色が指定されている場合は、それを最優先する。
+  if(routeOverride) return [routeOverride];
   const jsonSegment=jsonSegmentColorForStations(aa,bb,getActiveRouteLineNames());
   if(jsonSegment) return [jsonSegment];
   const line=preferredTrainServiceLine(aa,bb,{servedLineNames:getActiveRouteLineNames()});
@@ -4911,6 +4937,7 @@ function updateRouteVisuals(){
   const colors=activeRouteColors();
   const primary=colors[0]||'#808080';
   const titleColor=String(meta?.corporateTitleColor||colors[0]||'#808080');
+  const h1Color=jsonBaseColorForActiveRoute();
   const root=document.documentElement;
   root.style.setProperty('--route-primary',primary);
   root.style.setProperty('--primary',primary);
@@ -4927,7 +4954,7 @@ function updateRouteVisuals(){
     if(ogUrl) ogUrl.setAttribute('content',window.location.href);
   }catch(e){}
   const title=document.getElementById('title');
-  if(title){ title.style.background=titleColor; title.style.borderBottomColor=makeLightBorder(titleColor); }
+  if(title){ title.style.background=h1Color; title.style.borderBottomColor=makeLightBorder(h1Color); }
   // コントロールバーの色はh1の色に統一。
   root.style.setProperty('--control-accent',titleColor);
   root.style.setProperty('--control-border-color',makeLightBorder(titleColor));
