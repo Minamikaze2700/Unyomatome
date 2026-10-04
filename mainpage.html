@@ -798,7 +798,8 @@ const ROUTE_REGISTRY={
     storageRoot:'広島地区',
     storageArea:'JR広島',
     company:'JR西日本',
-    access:{public:false,routeAdmins:[]}
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '可部線':{
     id:'kabe',
@@ -809,7 +810,8 @@ const ROUTE_REGISTRY={
     storageRoot:'広島地区',
     storageArea:'JR広島',
     company:'JR西日本',
-    access:{public:false,routeAdmins:[]}
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '呉線':{
     id:'kure',
@@ -820,7 +822,8 @@ const ROUTE_REGISTRY={
     storageRoot:'広島地区',
     storageArea:'JR広島',
     company:'JR西日本',
-    access:{public:false,routeAdmins:[]}
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '海岸線':{
     id:'kobe-kaigan',
@@ -832,7 +835,8 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'神戸市営地下鉄',
     formationCountDefault:1,
-    access:{public:true,routeAdmins:[]}
+    access:{public:true,routeAdmins:[]},
+    formationInputExample:'5101 / 5101F / 5000系'
   }
 };
 function routeNameFromId(value){
@@ -2206,6 +2210,17 @@ function initDateControl(){
   if(label) label.textContent=`${currentDay}ダイヤ`;
   input.addEventListener('change',e=>setSelectedDate(e.target.value));
 }
+function formationInputExampleForRoute(routeName=activeRouteName){
+  const meta=ROUTE_REGISTRY[String(routeName||activeRouteName||'')]||activeRouteMeta||{};
+  return String(meta.formationInputExample||'編成番号を入力').trim();
+}
+function formationInputPlaceholderForTrain(train=currentTrainSnapshot){
+  const example=formationInputExampleForRoute(train?.routeName||activeRouteName);
+  const count=typeof formationCountForTrain==='function'?formationCountForTrain(train):Number(activeJson?.formationCountDefault||activeRouteMeta?.formationCountDefault||1);
+  return count>1
+    ? `編成番号を「+」で区切って前寄りから入力（最大${count}編成・例：${example}）`
+    : `車両番号または編成番号（例：${example}）を入力`;
+}
 function formationById(id){
   if(!id || id===INITIAL_FORMATION_SELECTION.id) return null;
   const key=String(id).trim();
@@ -3411,7 +3426,7 @@ function updateSheetContent(){
       </div>
       <div style="text-align:left;font-weight:700;margin:6px 0 4px;font-size:1.1rem;">編成入力</div>
       <div class="formation-manual-input">
-        <input id="formationManualInput" type="text" inputmode="text" autocomplete="off" value="${selectedForm.id===INITIAL_FORMATION_SELECTION.id?'':selectedForm.name}" placeholder="車両番号または編成番号（例：クモハ226-1 / A01 / S01）を入力" onkeydown="if(event.key==='Enter'){event.preventDefault();registerFormationFromInput();}">
+        <input id="formationManualInput" type="text" inputmode="text" autocomplete="off" value="${selectedForm.id===INITIAL_FORMATION_SELECTION.id?'':selectedForm.name}" placeholder="${esc(formationInputPlaceholderForTrain(train))}" onkeydown="if(event.key==='Enter'){event.preventDefault();registerFormationFromInput();}">
         <button type="button" onclick="registerFormationFromInput()">登録</button>
       </div>
       <div id="formationInputError" class="formation-input-error"></div>
@@ -5319,7 +5334,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     const count=formationCountForTrain(currentTrainSnapshot);
     if(count>1){
       const input=document.getElementById('formationManualInput');
-      if(input){ input.placeholder=`編成番号を「+」で区切って前寄りから入力（最大${count}編成）`; input.value=formationIds(currentTrainSnapshot.formation||'').map(id=>selectionDisplayObject(id)?.name||id).join('+'); }
+      if(input){ input.placeholder=formationInputPlaceholderForTrain(currentTrainSnapshot); input.value=formationIds(currentTrainSnapshot.formation||'').map(id=>selectionDisplayObject(id)?.name||id).join('+'); }
     }
     return true;
   }
