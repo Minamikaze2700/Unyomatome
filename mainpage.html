@@ -447,10 +447,12 @@ button,input,select,textarea{font-family:inherit}
 .formation-updated-at{position:absolute;right:12px;bottom:8px;font-size:.78rem;color:#777;text-align:right;white-space:nowrap;z-index:2;}
 .formation-updated-at .permission-tag{font-size:inherit;font-weight:400;margin-left:8px;vertical-align:middle;} 
 .formation-updated-time,.formation-updated-author{display:inline;}
+.formation-updated-author-break{display:none;}
 @media(max-width:520px){
-  /* 「編成入力：時刻」は同じ行、ユーザー名＋管理人タグは次の行 */
+  /* 時刻の後で改行し、ユーザー名と管理人タグは同じ行にする */
   .formation-updated-time{display:inline;}
-  .formation-updated-author{display:block;}
+  .formation-updated-author{display:inline;}
+  .formation-updated-author-break{display:block;}
   .formation-updated-at .permission-tag{display:inline-flex;}
 }
 .input-trigger-btn{
@@ -6015,7 +6017,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     const at=text.indexOf(' @');
     const time=at>=0?text.slice(0,at):text;
     const author=at>=0?text.slice(at+1).replace(/^@+/, '').trim():'';
-    return `<span class="formation-updated-time">${escapeAttr(time)}</span>${author?`<span class="formation-updated-author">${escapeAttr('@'+author)}</span>`:''}${roleTag(showCode)}`;
+    return `<span class="formation-updated-time">${escapeAttr(time)}</span>${author?`<br class="formation-updated-author-break"><span class="formation-updated-author">${escapeAttr('@'+author)}</span>`:''}${roleTag(showCode)}`;
   };
 
   async function loadAccessProfile(user){
