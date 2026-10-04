@@ -42,14 +42,14 @@ button,input,select,textarea{font-family:inherit}
     color: #fff;
     font-weight: 500;
     display: flex;
-    background: #f2c400;
+    background: #808080;
     width: 100%;
     position: fixed;
     top: 0;
     left: 0;
     justify-content: center;
     align-items: center;
-    border-bottom: 8px solid #fff1a8;
+    border-bottom: 8px solid #d9d9d9;
     z-index: 1000;
 }
 
@@ -446,6 +446,10 @@ button,input,select,textarea{font-family:inherit}
 
 .formation-updated-at{position:absolute;right:12px;bottom:8px;font-size:.78rem;color:#777;text-align:right;white-space:nowrap;z-index:2;}
 .formation-updated-at .permission-tag{font-size:inherit;font-weight:400;margin-left:8px;vertical-align:middle;} 
+.formation-updated-time,.formation-updated-author{display:inline;}
+@media(max-width:520px){
+  .formation-updated-author{display:block;}
+}
 .input-trigger-btn{
   background:#c62828;color:#fff;padding:4px 8px;border-radius:4px;
   font-size:.75rem;margin-top:4px;display:inline-block;
@@ -3459,7 +3463,13 @@ function formationStorageEntryForTrain(train){
   const ctx=formationStorageContext(train);
   const area=ctx.area || '__ROOT__';
   const date=String(selectedDateKey||operationDateKey());
-  return formationRemoteByFamily[ctx.family]?.areaStateByDate?.[date]?.[area]?.[String(train.no||'')] || null;
+  const rawNo=String(train.no||'').trim();
+  // 海岸線は運用連結の先頭列車だけをDBへ保存するため、
+  // 後続の折返し列車を表示するときも先頭列車の登録情報を参照する。
+  const storageNo=(activeRouteName==='海岸線' && typeof operationChainFirstNo==='function')
+    ? operationChainFirstNo(currentDay,rawNo)
+    : rawNo;
+  return formationRemoteByFamily[ctx.family]?.areaStateByDate?.[date]?.[area]?.[storageNo] || null;
 }
 function formationUpdatedAuthorForTrain(trainNo){
   const key=String(trainNo||'');
@@ -3646,6 +3656,7 @@ function closeFormationDropdown(){
   if(!el) return;
   el.classList.remove('open');
   el.style.display='';
+  el.style.position='';
   el.style.maxHeight='';
   el.style.left='';el.style.top='';el.style.width='';
   el.style.pointerEvents='';
@@ -3666,39 +3677,14 @@ function positionFormationDropdown(el,trigger){
   const leftBound=Number(vv?.offsetLeft||0)+6;
   const viewportW=Number(vv?.width||window.innerWidth);
   const viewportH=Number(vv?.height||window.innerHeight);
-
-  // 下部の地域メニューはdropdownより常に前面に置く。
-  // さらに、プルダウン自身も地域メニューの高さ分より下へは伸ばさない。
-  const nav=document.getElementById('regionNav');
-  const navRect=nav?.getBoundingClientRect();
-  const navTop=Number(navRect?.top);
-  const visualBottom=Number(vv?.offsetTop||0)+viewportH-6;
-  const menuTop=Number.isFinite(navTop) ? navTop-6 : visualBottom;
-  const bottomBound=Math.min(visualBottom,menuTop);
+  const bottomBound=Number(vv?.offsetTop||0)+viewportH-10;
 
   const width=Math.min(Math.max(rect.width,260),Math.max(120,viewportW-12));
-  const below=Math.max(0,Math.floor(bottomBound-rect.bottom));
-  const above=Math.max(0,Math.floor(rect.top-topBound));
-
-  // 下に十分なスペースがなければ上向きに開く。いずれの場合も
-  // 地域メニューの上端より下へはみ出さない。
-  let maxH=Math.min(250,below);
-  let top=rect.bottom;
-  if(below<140 && above>below){
-    maxH=Math.min(300,above);
-    top=Math.max(topBound,rect.top-maxH);
-  }
-
-  // trigger直下に置いた結果メニュー領域へ入る場合は、上開きへ切り替える。
-  if(top+Math.max(60,maxH)>bottomBound && above>0){
-    maxH=Math.min(300,above);
-    top=Math.max(topBound,rect.top-maxH);
-  }
-
-  // どうしても表示領域が小さい場合も、最低限の高さで表示する。
-  maxH=Math.max(40,Math.min(maxH,Math.max(40,bottomBound-top)));
-
+  const top=Math.max(topBound,rect.bottom+4);
+  const maxH=Math.max(40,Math.floor(bottomBound-top));
   let left=Math.min(Math.max(leftBound,rect.left),leftBound+viewportW-width);
+
+  el.style.position='fixed';
   el.style.left=Math.round(left)+'px';
   el.style.top=Math.round(top)+'px';
   el.style.width=Math.round(width)+'px';
@@ -5412,32 +5398,29 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
       else parent.appendChild(el);
     }
     el.classList.remove('hiro-formation-dropdown-portal','open');
-    el.style.display='';el.style.left='';el.style.top='';el.style.width='';el.style.maxHeight='';el.style.zIndex='';
+    el.style.display='';el.style.position='';el.style.left='';el.style.top='';el.style.width='';el.style.maxHeight='';el.style.zIndex='';
     hiroFormationDropdownState=null;
   }
 
   function positionHiroDropdown(el,trigger){
     const r=trigger.getBoundingClientRect();
     const vv=window.visualViewport;
-    const vw=Number(vv?.width||window.innerWidth), vh=Number(vv?.height||window.innerHeight);
+    const vw=Number(vv?.width||window.innerWidth);
+    const vh=Number(vv?.height||window.innerHeight);
     const ox=Number(vv?.offsetLeft||0), oy=Number(vv?.offsetTop||0);
-    const nav=document.getElementById('regionNav');
-    const navRect=nav?.getBoundingClientRect();
-    const viewportBottom=oy+vh;
-    const menuTop=Number.isFinite(Number(navRect?.top)) ? Number(navRect.top) : viewportBottom;
-    const bottomLimit=Math.max(0,Math.min(viewportBottom,menuTop-4));
-    const topBound=oy+4;
+    const topBound=oy+6;
+    const bottomLimit=oy+vh-10;
     const width=Math.min(Math.max(r.width,250),Math.max(120,vw-12));
     const leftMin=ox+6;
     const leftMax=ox+vw-width-6;
     const left=Math.min(Math.max(leftMin,r.left),Math.max(leftMin,leftMax));
 
-    // 選択肢は原則として必ずボタンの下に出す。
-    // 下側に残っている高さだけをmax-heightにして、地域メニューへ侵入させない。
+    // 添付された基準HTMLと同じく、プルダウン下端は画面下端から10px手前まで許可。
+    // まずトリガー直下に置き、そこから画面下端までをmax-heightとして確保する。
     const top=Math.max(topBound,r.bottom+4);
-    const availableBelow=Math.max(0,bottomLimit-top);
-    const maxH=Math.max(40,Math.min(300,availableBelow));
+    const maxH=Math.max(40,Math.floor(bottomLimit-top));
 
+    el.style.position='fixed';
     el.style.left=`${Math.round(left)}px`;
     el.style.top=`${Math.round(top)}px`;
     el.style.width=`${Math.round(width)}px`;
@@ -5999,7 +5982,10 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     const entry=typeof formationStorageEntryForTrain==='function'?formationStorageEntryForTrain(train):null;
     const code=String(entry?.r||'').trim();
     const showCode=(code==='a'||code==='l')?code:'';
-    return `${escapeAttr(text)}${roleTag(showCode)}`;
+    const at=text.indexOf(' @');
+    const time=at>=0?text.slice(0,at):text;
+    const author=at>=0?text.slice(at+1):'';
+    return `<span class="formation-updated-time">${escapeAttr(time)}</span>${author?`<span class="formation-updated-author">${escapeAttr('@'+author)}</span>`:''}${roleTag(showCode)}`;
   };
 
   async function loadAccessProfile(user){
