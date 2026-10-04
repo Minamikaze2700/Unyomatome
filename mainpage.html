@@ -4424,9 +4424,33 @@ function fallbackTrainServiceColor(trainContext=null){
   const servedColor=served.find(line=>String(line?.color||'').trim());
   return String(servedColor?.color||'#666');
 }
+function jsonSegmentColorForStations(a,b,lineNames=getActiveRouteLineNames()){
+  const aa=String(a||''),bb=String(b||'');
+  if(!aa||!bb||aa===bb) return null;
+  for(const lineName of (Array.isArray(lineNames)?lineNames:[])){
+    const line=lineDefByName(lineName);
+    if(!line) continue;
+    for(const rule of (Array.isArray(line?.segmentColorRules)?line.segmentColorRules:[])){
+      const pairs=Array.isArray(rule?.stationPairs)?rule.stationPairs:[];
+      if(pairs.some(pair=>Array.isArray(pair)&&pair.length>=2&&((String(pair[0])===aa&&String(pair[1])===bb)||(String(pair[1])===aa&&String(pair[0])===bb)))){
+        const color=String(rule?.color||'').trim();
+        if(color) return color;
+        const useLine=String(rule?.useLine||'').trim();
+        if(useLine){
+          const target=lineDefByName(useLine);
+          const targetColor=String(target?.color||'').trim();
+          if(targetColor) return targetColor;
+        }
+      }
+    }
+  }
+  return null;
+}
 function trainServiceColorBetweenStations(a,b,trainContext=null){
   const aa=String(a||''),bb=String(b||'');
   if(!aa||!bb||aa===bb) return fallbackTrainServiceColor(trainContext);
+  const jsonSegment=jsonSegmentColorForStations(aa,bb,getActiveRouteLineNames());
+  if(jsonSegment) return jsonSegment;
   const line=preferredTrainServiceLine(aa,bb,trainContext);
   const direct=String(line?.color||'').trim();
   if(direct) return direct;
@@ -4477,12 +4501,18 @@ function activeSegmentColors(a,b){
     if(required.length && required.includes(aa) && required.includes(bb)){
       const line=lineDefByName(rule.useLine);
       if(line?.color) return [String(line.color)];
+      const color=String(rule?.color||'').trim();
+      if(color) return [color];
     }
     if(Array.isArray(rule.stationPairs) && rule.stationPairs.some(pair=>Array.isArray(pair)&&pair.length>=2&&((String(pair[0])===aa&&String(pair[1])===bb)||(String(pair[1])===aa&&String(pair[0])===bb)))){
       const line=lineDefByName(rule.useLine);
       if(line?.color) return [String(line.color)];
+      const color=String(rule?.color||'').trim();
+      if(color) return [color];
     }
   }
+  const jsonSegment=jsonSegmentColorForStations(aa,bb,getActiveRouteLineNames());
+  if(jsonSegment) return [jsonSegment];
   const line=preferredTrainServiceLine(aa,bb,{servedLineNames:getActiveRouteLineNames()});
   return line?.color?[String(line.color)]:[activeRouteColors()[0]||'#666'];
 }
