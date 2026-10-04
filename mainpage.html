@@ -1269,6 +1269,13 @@ function buildStationsForRoute(json,meta){
   }
   return list;
 }
+function formationRouteNamesFromConfig(value, fallback=[]){
+  const source=value&&typeof value==='object' ? (value.routeNames ?? value.routes ?? value.route ?? null) : value;
+  const list=Array.isArray(source) ? source : (source ? [source] : []);
+  const own=list.map(x=>String(x||'').trim()).filter(Boolean);
+  if(own.length) return [...new Set(own)];
+  return Array.isArray(fallback) ? [...new Set(fallback.map(x=>String(x||'').trim()).filter(Boolean))] : [];
+}
 function buildFormationsForJson(json){
   const base='https://minamikaze2700.github.io/Unyomatome/images/';
   const makeImg=(rawImage, fallback)=>{
@@ -1298,6 +1305,8 @@ function buildFormationsForJson(json){
           : (Array.isArray(raw?.cars) ? raw.cars.map(x=>String(x||'').trim()).filter(Boolean) : []);
         const numericCars=Number(raw?.cars);
         const cars=carsArr.length || (Number.isFinite(numericCars)&&numericCars>0 ? numericCars : Number(raw?.carCount)||0);
+        const groupRouteNames=formationRouteNamesFromConfig(rawGroup);
+        const itemRouteNames=formationRouteNamesFromConfig(raw,groupRouteNames);
         const item={
           id:displayId,
           name:String(raw?.name||displayId),
@@ -1305,7 +1314,8 @@ function buildFormationsForJson(json){
           cars,
           carNames:carsArr,
           disabled:!!raw?.disabled,
-          family:groupFamily
+          family:groupFamily,
+          routeNames:itemRouteNames
         };
         items.push(item);
         for(const car of carsArr){
@@ -1315,10 +1325,12 @@ function buildFormationsForJson(json){
         }
       }
       const type=String(rawGroup?.type||'').trim();
+      const groupRouteNames=formationRouteNamesFromConfig(rawGroup);
       if(items.length) out.push({
         type:type||dataFamily||'編成',
         typeImg:makeImg(rawGroup?.typeImg||rawGroup?.image,activeFormationVisualValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon),
         family:groupFamily,
+        routeNames:groupRouteNames,
         items
       });
     }
@@ -1350,7 +1362,8 @@ function buildFormationsForJson(json){
         img:makeImg(raw?.image,activeFormationVisualValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon),
         cars,
         carNames:carsArr,
-        family:dataFamily
+        family:dataFamily,
+        routeNames:formationRouteNamesFromConfig(raw,formationRouteNamesFromConfig(lineVisual))
       };
       items.push(item);
       for(const car of carsArr){
@@ -1363,7 +1376,8 @@ function buildFormationsForJson(json){
       const c=String(vehicle||'').trim(), f=String(formation||'').replace(/F$/i,'').trim();
       if(c&&f) VEHICLE_TO_FORMATION[c]=f;
     }
-    return items.length?[{type:declaredType,typeImg:declaredTypeImg,family:dataFamily,items}]:[];
+    const groupRouteNames=formationRouteNamesFromConfig(lineVisual);
+    return items.length?[{type:declaredType,typeImg:declaredTypeImg,family:dataFamily,routeNames:groupRouteNames,items}]:[];
   }
 
   // 227系A/S編成の従来データ。
@@ -2313,23 +2327,23 @@ function formationById(id){
   for(const group of (groups||[])){
     const gType=String(group?.type||'').trim();
     if(group?.selectableType && [gType,String(group?.selectableId||'')].some(x=>x.replace(/F$/i,'')===canonical)){
-      return {id:canonical,name:String(group?.selectableId||gType),img:group.typeImg||LINE_TRAIN_IMG,kind:'type',type:String(group?.selectableId||gType),generic:true,displayAsFullName:true,family:formationFamily(group)};
+      return {id:canonical,name:String(group?.selectableId||gType),img:group.typeImg||LINE_TRAIN_IMG,kind:'type',type:String(group?.selectableId||gType),generic:true,displayAsFullName:true,family:formationFamily(group),routeNames:formationRouteNamesFromConfig(group)};
     }
     for(const variant of (group?.variants||[])){
       const vid=String(variant?.id||'').replace(/F$/i,'');
       if(vid===canonical){
-        return {id:vid,name:String(variant?.name||vid),img:variant?.img||group.typeImg||LINE_TRAIN_IMG,kind:'variant',type:gType,family:formationFamily(group),generic:true,displayAsFullName:variant?.displayAsFullName!==false};
+        return {id:vid,name:String(variant?.name||vid),img:variant?.img||group.typeImg||LINE_TRAIN_IMG,kind:'variant',type:gType,family:formationFamily(group),generic:true,displayAsFullName:variant?.displayAsFullName!==false,routeNames:formationRouteNamesFromConfig(variant,formationRouteNamesFromConfig(group))};
       }
       for(const item of (variant?.items||[])){
         const iid=String(item?.id||item?.name||'').replace(/F$/i,'');
         const iname=String(item?.name||iid).replace(/F$/i,'');
-        if(iid===canonical || iname===canonical) return {...item,id:iid,type:gType,family:formationFamily(group)};
+        if(iid===canonical || iname===canonical) return {...item,id:iid,type:gType,family:formationFamily(group),routeNames:formationRouteNamesFromConfig(item,formationRouteNamesFromConfig(variant,formationRouteNamesFromConfig(group)))};
       }
     }
     for(const item of (group?.items||[])){
       const iid=String(item?.id||item?.name||'').replace(/F$/i,'');
       const iname=String(item?.name||iid).replace(/F$/i,'');
-      if(iid===canonical || iname===canonical) return {...item,id:iid,type:gType,family:formationFamily(group)};
+      if(iid===canonical || iname===canonical) return {...item,id:iid,type:gType,family:formationFamily(group),routeNames:formationRouteNamesFromConfig(item,formationRouteNamesFromConfig(group))};
     }
   }
 
@@ -2419,7 +2433,7 @@ function formationDisplayGroups(groups){
       const gType=String(g?.type||'');
       const selectable=g?.selectableType===true || /^[^A-Z]*227系 [AS]編成$/.test(gType);
       const selectableId=g?.selectableId || (gType.includes('A編成')?'A編成':gType.includes('S編成')?'S編成':selectable?gType:'');
-      return {...g,selectableType:selectable,selectableId};
+      return {...g,selectableType:selectable,selectableId,routeNames:formationRouteNamesFromConfig(g)};
     });
   }
 
@@ -2447,6 +2461,7 @@ function formationDisplayGroups(groups){
       family:first?.family||activeRouteMeta?.formationFamily||'',
       selectableType:selectableTypes,
       selectableId:baseType,
+      routeNames:[...new Set(matched.flatMap(g=>formationRouteNamesFromConfig(g)))],
       variants:[],
       items:[]
     };
@@ -2465,7 +2480,8 @@ function formationDisplayGroups(groups){
           items:Array.isArray(g?.items)?g.items:[],
           family:g?.family||group.family,
           kind:'variant',
-          displayAsFullName:config.displayFullVariantNames===true
+          displayAsFullName:config.displayFullVariantNames===true,
+          routeNames:formationRouteNamesFromConfig(g,formationRouteNamesFromConfig(first))
         });
       }
     }else{
@@ -2474,7 +2490,7 @@ function formationDisplayGroups(groups){
     const synthetic=Array.isArray(config.syntheticVariants?.[baseType])?config.syntheticVariants[baseType]:[];
     for(const v of synthetic){
       group.variants.push({
-        id:String(v.id||v.name||''),name:String(v.name||v.id||''),img:String(v.img||first?.typeImg||LINE_TRAIN_IMG),items:Array.isArray(v.items)?v.items:[],family:group.family,kind:'variant',generic:true,displayAsFullName:v.displayAsFullName!==false
+        id:String(v.id||v.name||''),name:String(v.name||v.id||''),img:String(v.img||first?.typeImg||LINE_TRAIN_IMG),items:Array.isArray(v.items)?v.items:[],family:group.family,kind:'variant',generic:true,displayAsFullName:v.displayAsFullName!==false,routeNames:formationRouteNamesFromConfig(v,formationRouteNamesFromConfig(group))
       });
     }
     out.push(group);
@@ -2495,14 +2511,24 @@ function formationDisplayGroups(groups){
   return out;
 }
 
+function formationRouteAllowed(target,train){
+  const routes=formationRouteNamesFromConfig(target);
+  if(!routes.length) return true;
+  const route=String(train?.routeName||activeRouteName||'').trim();
+  return !!route && routes.includes(route);
+}
 function formationAllowedForTrain(train,id){
   if(!id || id===INITIAL_FORMATION_SELECTION.id) return true;
   const item=formationById(id);
-  return !!item && formationFamily(item)===allowedFormationFamily(train);
+  return !!item
+    && formationFamily(item)===allowedFormationFamily(train)
+    && formationRouteAllowed(item,train);
 }
 function formationsForTrain(train){
   const family=allowedFormationFamily(train);
-  return FORMATIONS.filter(group=>formationFamily(group)===family);
+  return FORMATIONS.filter(group=>
+    formationFamily(group)===family && formationRouteAllowed(group,train)
+  );
 }
 function selectionDisplayObjectForTrain(train,id){
   if(!id || id===INITIAL_FORMATION_SELECTION.id) return INITIAL_FORMATION_SELECTION;
@@ -5012,8 +5038,9 @@ initRegionNavigation();
     return formationStorageContext(train).family;
   };
   formationsForTrain=function(train){
-    const family=allowedFormationFamily(train||currentTrainSnapshot||{});
-    return (FORMATIONS||[]).filter(group=>formationFamily(group)===family);
+    const target=train||currentTrainSnapshot||{};
+    const family=allowedFormationFamily(target);
+    return (FORMATIONS||[]).filter(group=>formationFamily(group)===family && formationRouteAllowed(group,target));
   };
 
   function canonicalFormationId(value){
@@ -5032,10 +5059,11 @@ initRegionNavigation();
 
   formationAllowedForTrain=function(train,id){
     if(!id||id===INITIAL_FORMATION_SELECTION.id) return true;
-    const targetFamily=allowedFormationFamily(train||{});
+    const target=train||{};
+    const targetFamily=allowedFormationFamily(target);
     return String(id).split('+').map(x=>x.trim()).filter(Boolean).every(one=>{
       const obj=formationById(one);
-      return !!obj && formationFamily(obj)===targetFamily && !obj.disabled;
+      return !!obj && formationFamily(obj)===targetFamily && formationRouteAllowed(obj,target) && !obj.disabled;
     });
   };
 
