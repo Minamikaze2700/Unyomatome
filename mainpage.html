@@ -857,6 +857,17 @@ window.JRELINE_FIREBASE_CONFIG = {
 <script>
 const JRE_KEIHIN_FIREBASE_CONFIG = window.JRELINE_FIREBASE_CONFIG;
 const JRE_YOKOHAMA_FIREBASE_CONFIG = JRE_KEIHIN_FIREBASE_CONFIG;
+/* 東武野田線の既存Firebase（従来の野田線ページと同じDBを使用） */
+const NODA_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAqSRG43cqo6iwN6IRdPEsf0ol3Cz4u3tA",
+  authDomain: "unyomatome-tobunoda.firebaseapp.com",
+  databaseURL: "https://unyomatome-tobunoda-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "unyomatome-tobunoda",
+  storageBucket: "unyomatome-tobunoda.firebasestorage.app",
+  messagingSenderId: "874572920675",
+  appId: "1:874572920675:web:21b684ad55f6f3cbc54556",
+  measurementId: "G-MBKYQ0JVD0"
+};
 </script>
 <script>
 /* 路線・時刻表・編成はJSONから外部読み込み */
@@ -977,6 +988,22 @@ const ROUTE_REGISTRY={
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Nambu_noimage.png',
     access:{public:false,routeAdmins:[]},
     formationInputExample:'E233系8000番台 / N1',
+    prescribedFormationRule:'common'
+  },
+  '東武野田線':{
+    id:'tobu-noda',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/TobuNoda.json',
+    jsonLines:['東武野田線'],
+    range:'大宮～船橋',
+    area:'東武鉄道',
+    storageRoot:'運用',
+    storageArea:'__ROOT__',
+    company:'東武鉄道',
+    formationFamily:'noda',
+    formationCountDefault:1,
+    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/TD_noimage.png',
+    access:{public:true,routeAdmins:[]},
+    formationInputExample:'81501 / 81501F / 80000系',
     prescribedFormationRule:'common'
   },
   '長野電鉄長野線':{
@@ -1568,7 +1595,7 @@ let currentOperationDate=null;
 let remoteRoot={version:0,operationDate:null,stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}},history:{}};
 // 編成データは列車のJSON由来系統ごとに別Firebaseへ保存する。
 const PRIMARY_FORMATION_FAMILY='keihin';
-const FORMATION_FAMILIES=['hiroshima','kobe','keihin','yokohama','nambu','nagano'];
+const FORMATION_FAMILIES=['hiroshima','kobe','keihin','yokohama','nambu','nagano','noda'];
 let formationRemoteByFamily={};
 for(const family of FORMATION_FAMILIES){
   formationRemoteByFamily[family]={stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}},formationUpdatedByDate:{},areaStateByDate:{},areaMetaByDate:{}};
@@ -4535,6 +4562,11 @@ const REGION_DEFINITIONS={
       {name:'横浜線',id:'yokohama'},
       {name:'JR南武線',id:'nambu'}
     ]
+  },{
+    company:'東武鉄道',
+    routes:[
+      {name:'東武野田線',id:'tobu-noda'}
+    ]
   }],
   '北陸':[],
   '甲信':[{
@@ -5253,7 +5285,8 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     keihin:{root:'京浜東北・根岸線',area:'__ROOT__'},
     yokohama:{root:'横浜線',area:'__ROOT__'},
     nambu:{root:'JR南武線',area:'__ROOT__'},
-    nagano:{root:'長野電鉄長野線',area:'__ROOT__'}
+    nagano:{root:'長野電鉄長野線',area:'__ROOT__'},
+    noda:{root:'運用',area:'__ROOT__'}
   };
   const HIROSHIMA_FORMATION_FAMILY='hiroshima';
   const KOBE_FORMATION_FAMILY='kobe';
@@ -5487,6 +5520,32 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
 
   loadFormationFamilyFromFirebase=async function(family){
     if(!FORMATION_FAMILY_CONFIGS[String(family)]) return false;
+    if(String(family)==='noda'){
+      const db=formationFirebaseDbs.noda||null;
+      if(!db) return false;
+      const ref=db.ref('運用');
+      const [stateSnap,tsSnap]=await Promise.all([
+        ref.child('stateByDay').once('value'),
+        ref.child('formationUpdatedAtByDay').once('value')
+      ]);
+      const stateRoot=stateSnap.val()||{};
+      const tsRoot=tsSnap.val()||{};
+      const date=formationDateKey();
+      const day=currentDay==='休日'?'休日':'平日';
+      const stateDay=stateRoot?.[day]&&typeof stateRoot[day]==='object' ? stateRoot[day] : {};
+      const tsDay=tsRoot?.[day]&&typeof tsRoot[day]==='object' ? tsRoot[day] : {};
+      const areaOut={};
+      for(const [no,value] of Object.entries(stateDay)){
+        const id=normalizeStoredFormationId(value);
+        if(!id) continue;
+        areaOut[String(no)]={f:id,t:String(tsDay?.[no]||'')};
+      }
+      formationRemoteByFamily.noda.areaStateByDate={
+        [date]:{'__ROOT__':areaOut}
+      };
+      syncDerivedStateForFamily('noda');
+      return true;
+    }
     const ref=formationOperationRef(family); if(!ref) return false;
     const snap=await ref.once('value');
     const all=normalizeStorageRoot(snap.val()||{},family);
@@ -5529,6 +5588,45 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     for(const family of FORMATION_FAMILIES){
       const ref=formationOperationRef(family); if(!ref) continue;
       try{firebaseFormationListenerRefs[family]?.off();}catch(e){}
+      if(String(family)==='noda'){
+        const db=formationFirebaseDbs.noda||null;
+        if(!db) continue;
+        const operationRef=db.ref('運用');
+        const applyNodaRemote=async()=>{
+          try{
+            const [stateSnap,tsSnap]=await Promise.all([
+              operationRef.child('stateByDay').once('value'),
+              operationRef.child('formationUpdatedAtByDay').once('value')
+            ]);
+            const stateRoot=stateSnap.val()||{};
+            const tsRoot=tsSnap.val()||{};
+            const date=formationDateKey();
+            const day=currentDay==='休日'?'休日':'平日';
+            const stateDay=stateRoot?.[day]&&typeof stateRoot[day]==='object' ? stateRoot[day] : {};
+            const tsDay=tsRoot?.[day]&&typeof tsRoot[day]==='object' ? tsRoot[day] : {};
+            const areaOut={};
+            for(const [no,value] of Object.entries(stateDay)){
+              const id=normalizeStoredFormationId(value);
+              if(!id) continue;
+              areaOut[String(no)]={f:id,t:String(tsDay?.[no]||'')};
+            }
+            formationRemoteByFamily.noda.areaStateByDate={[date]:{'__ROOT__':areaOut}};
+            syncDerivedStateForFamily('noda');
+            if(storageFamilyForActiveRoute()==='noda'){
+              registrationState=isHistoricalSelectedDate(selectedDateKey)?historicalStateForDate(selectedDateKey):cloneState(remoteRoot.stateByDay[currentDay]||{});
+              applyRegistrationState(); saveLocalState(); refreshAllTrainDataCache();
+              if(!isEditMode){renderTrainPositions();if(currentTrainNo)updateSheetContent();}
+            }
+            syncStatus('Firebaseリアルタイム同期済み');
+          }catch(e){console.warn('Firebase野田線編成状態読込失敗',e);}
+        };
+        const stateRef=operationRef.child('stateByDay');
+        const tsRef=operationRef.child('formationUpdatedAtByDay');
+        stateRef.on('value',applyNodaRemote);
+        tsRef.on('value',applyNodaRemote);
+        firebaseFormationListenerRefs[family]={off:()=>{stateRef.off('value',applyNodaRemote);tsRef.off('value',applyNodaRemote);}};
+        continue;
+      }
       const handler=snap=>{
         formationRemoteByFamily[family].areaStateByDate=normalizeStorageRoot(snap.val()||{},family);
         if(family===HIROSHIMA_FORMATION_FAMILY) window.hiroshimaFormationStateByDate=formationRemoteByFamily[family].areaStateByDate;
@@ -5599,8 +5697,16 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
       let app=firebase.apps.find(a=>a.name===appName);
       if(!app) app=firebase.initializeApp(FIREBASE_CONFIG,appName);
       for(const family of FORMATION_FAMILIES){
+        if(family==='noda') continue;
         formationFirebaseApps[family]=app;
         formationFirebaseDbs[family]=firebase.database(app);
+      }
+      if(NODA_FIREBASE_CONFIG.apiKey && NODA_FIREBASE_CONFIG.projectId && NODA_FIREBASE_CONFIG.databaseURL){
+        const nodaAppName='unyomatomeNoda';
+        let nodaApp=firebase.apps.find(a=>a.name===nodaAppName);
+        if(!nodaApp) nodaApp=firebase.initializeApp(NODA_FIREBASE_CONFIG,nodaAppName);
+        formationFirebaseApps.noda=nodaApp;
+        formationFirebaseDbs.noda=firebase.database(nodaApp);
       }
       firebaseApp=app; firebaseDb=formationFirebaseDbs.hiroshima; firebaseReady=true;
       if(typeof window.initFirebaseAuth==='function') window.initFirebaseAuth(app);
@@ -5679,6 +5785,113 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
       }catch(e){console.error('編成登録Firebase同期失敗',e);saveLocalState();syncStatus('登録済み・Firebase未同期');}
     }
     return [key];
+  };
+})();
+</script>
+
+<script>
+/* ===== 東武野田線：既存Firebase保存形式との互換 =====
+   野田線旧ページは 運用/stateByDay/<平日|休日>/<列車番号> を使用するため、
+   mainpageの共通保存処理を野田線だけこの形式へ切り替える。
+*/
+(function(){
+  const nodaRawFormationSet=new Set(['61509','61510','61618']);
+  for(const id of nodaRawFormationSet) UNAVAILABLE_FORMATIONS.add(id);
+
+  const baseRecordSelection=recordSelection;
+  recordSelection=async function(train,formId){
+    if(String(storageFamilyForTrain(train))!=='noda'){
+      return baseRecordSelection(train,formId);
+    }
+    if(!formationInputAllowed()) return [];
+    const key=String(train?.no||'').trim();
+    if(!key) return [];
+
+    const linked = (typeof formationLinkedTrainNos==='function')
+      ? formationLinkedTrainNos(currentDay,key,String(train?.direction||''))
+      : new Set([key]);
+    const assigned=[];
+    const changes={};
+    for(const requested of linked){
+      const dayIndex=currentDay==='休日' ? HOLIDAY_TRAIN_INDEX : TRAIN_INDEX;
+      const actual=dayIndex?.[requested]
+        ? String(requested)
+        : Object.keys(dayIndex||{}).find(k=>k.replace(/A$/i,'')===String(requested).replace(/A$/i,''))||null;
+      if(!actual || assigned.includes(actual)) continue;
+      const value=(formId && formId!==INITIAL_FORMATION_SELECTION.id)
+        ? String(formId).replace(/F$/i,'')
+        : null;
+      if(value) registrationState[actual]=value;
+      else delete registrationState[actual];
+      assigned.push(actual);
+      changes[actual]=value;
+      pendingFormationState[actual]=value;
+      pendingFormationTimestamps[currentDay]=pendingFormationTimestamps[currentDay]||{};
+      if(value) pendingFormationTimestamps[currentDay][actual]=new Date().toISOString();
+      else delete pendingFormationTimestamps[currentDay][actual];
+    }
+
+    applyRegistrationState();
+    refreshAllTrainDataCache();
+    saveLocalState();
+
+    const db=formationFirebaseDbs.noda||null;
+    if(!db){
+      syncStatus('Firebase未接続');
+      return assigned;
+    }
+    try{
+      const dayRef=db.ref('運用').child('stateByDay').child(currentDay);
+      const stateUpdates={};
+      for(const [no,value] of Object.entries(changes)) stateUpdates[String(no)]=value||null;
+      await dayRef.update(stateUpdates);
+
+      const committed=await dayRef.once('value');
+      const committedState=committed.val()||{};
+      const currentDate=formationDateKey();
+      const areaOut={};
+      for(const [no,value] of Object.entries(committedState)){
+        const id=normalizeStoredFormationId(value);
+        if(id) areaOut[String(no)]={f:id,t:String(formationRemoteByFamily.noda?.areaStateByDate?.[currentDate]?.__ROOT__?.[no]?.t||'')};
+      }
+      formationRemoteByFamily.noda.areaStateByDate={[currentDate]:{'__ROOT__':areaOut}};
+
+      const tsRef=db.ref('運用').child('formationUpdatedAtByDay').child(currentDay);
+      const tsUpdates={};
+      for(const [no,value] of Object.entries(changes)){
+        tsUpdates[String(no)]=value
+          ? (pendingFormationTimestamps[currentDay]?.[String(no)]||new Date().toISOString())
+          : null;
+      }
+      await tsRef.update(tsUpdates);
+      const tsSnap=await tsRef.once('value');
+      const tsState=tsSnap.val()||{};
+      for(const no of Object.keys(areaOut)){
+        areaOut[no].t=String(tsState?.[no]||areaOut[no].t||'');
+      }
+      formationRemoteByFamily.noda.areaStateByDate={[currentDate]:{'__ROOT__':areaOut}};
+      syncDerivedStateForFamily('noda');
+      registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
+      applyRegistrationState();
+      saveLocalState();
+      for(const no of Object.keys(changes)){
+        if(String(registrationState[no]||'')===String(changes[no]||'')) delete pendingFormationState[no];
+        if(!changes[no] && pendingFormationTimestamps[currentDay]) delete pendingFormationTimestamps[currentDay][no];
+      }
+      refreshAllTrainDataCache();
+      syncStatus('Firebase同期済み');
+    }catch(e){
+      console.error('野田線Firebase書込失敗',e);
+      syncStatus('Firebase書込失敗');
+    }
+    return assigned;
+  };
+
+  const originalGetMainLabelClass=window.getMainLabelClass||getMainLabelClass;
+  window.getMainLabelClass=function(type){
+    const v=String(type||'').trim();
+    if(String(activeRouteName)==='東武野田線' && v==='区間急行') return 'express';
+    return originalGetMainLabelClass(type);
   };
 })();
 </script>
