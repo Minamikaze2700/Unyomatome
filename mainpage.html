@@ -1117,6 +1117,8 @@ function formationStorageContext(routeOrTrain=activeRouteName){
   return {family,root,area};
 }
 function formationStorageFamilyForTrain(train){ return formationStorageContext(train).family; }
+// 編成登録処理からも参照できる共通の保存先判定。
+function storageFamilyForTrain(train){ return formationStorageContext(train).family; }
 let activeRouteName='';
 let activeRouteMeta=null;
 let activeJson=null;
@@ -2797,51 +2799,53 @@ function formationDisplayGroups(groups){
 
   const out=[];
   const consumed=new Set();
-  const mergeNodaGroup=(baseType, matcher, variantName, variantOrder=null)=>{
-    let matched=source.filter(g=>matcher(String(g?.type||'')));
+  const nodaMimaVariants=()=>[
+    {id:'__NODA_MIMA_MONI_YES__',name:'みまモニ有',img:'https://minamikaze2700.github.io/Unyomatome/images/TB80000.png',family:'noda',kind:'variant',type:'MIMA_MONI'},
+    {id:'__NODA_MIMA_MONI_NO__',name:'みまモニ無',img:'https://minamikaze2700.github.io/Unyomatome/images/TB80000.png',family:'noda',kind:'variant',type:'MIMA_MONI'}
+  ];
+  const buildNodaGroup=(baseType, matched)=>{
     if(!matched.length) return false;
-    if(Array.isArray(variantOrder)) matched.sort((a,b)=>{
-      const ai=variantOrder.findIndex(x=>matcher(String(a?.type||'')) && String(a?.type||'').includes(x));
-      const bi=variantOrder.findIndex(x=>matcher(String(b?.type||'')) && String(b?.type||'').includes(x));
-      return (ai<0?999:ai)-(bi<0?999:bi);
-    });
     matched.forEach(g=>consumed.add(g));
-    const variants=matched.map(g=>({
-      id:String(g.id||g.type||baseType),
-      name:variantName(String(g.type||'')),
-      img:g.typeImg||LINE_TRAIN_IMG,
-      items:Array.isArray(g.items)?g.items:[],
-      family:g.family||'noda'
-    }));
     const first=matched[0];
-    out.push({
+    const group={
       type:baseType,
       typeImg:first?.typeImg||LINE_TRAIN_IMG,
       family:'noda',
-      variants
-    });
+      variants:[],
+      items:[]
+    };
+    if(baseType==='8000型' || baseType==='80000系') {
+      // この2形式は個体差のない形式なので、形式見出しの直下に個別編成を並べる。
+      group.items=matched.flatMap(g=>Array.isArray(g.items)?g.items:[]);
+    } else {
+      group.variants=matched.map(g=>({
+        id:String(g.id||g.type||baseType),
+        name:String(g.type||'').includes('（未更新）')?'10030型未更新':String(g.type||'').includes('（更新）')?'10030型更新':String(g.type||'').replace(/^60000型（/,'60000型').replace('）',''),
+        img:g.typeImg||LINE_TRAIN_IMG,
+        items:Array.isArray(g.items)?g.items:[],
+        family:g.family||'noda'
+      }));
+      // みまモニは10030型・60000型・80000系の各形式で選択可能。
+      if(['10030型','60000型','80000系'].includes(baseType)) group.variants.push(...nodaMimaVariants());
+    }
+    out.push(group);
     return true;
   };
 
-  mergeNodaGroup('10030型', x=>/^10030型（(?:更新|未更新)）$/.test(x), x=>x.includes('未更新')?'10030型未更新':'10030型更新', ['未更新','更新']);
-  mergeNodaGroup('60000型', x=>/^60000型（(?:5両|6両)）$/.test(x), x=>x.replace(/[（）]/g,'').replace('60000型','60000型'));
+  const g8000=source.filter(g=>String(g?.type||'')==='8000型');
+  if(g8000.length) buildNodaGroup('8000型',g8000);
+  buildNodaGroup('10030型',source.filter(g=>/^10030型（(?:更新|未更新)）$/.test(String(g?.type||''))));
+  buildNodaGroup('60000型',source.filter(g=>/^60000型（(?:5両|6両)）$/.test(String(g?.type||''))).sort((a,b)=>String(a.type).includes('5両')? -1 : String(b.type).includes('5両') ? 1 : 0));
+  buildNodaGroup('80000系',source.filter(g=>String(g?.type||'')==='80000系'));
+  const noda80000=out.find(g=>String(g?.type||'')==='80000系');
+  if(noda80000) noda80000.variants.push(...nodaMimaVariants());
 
-  // 「みまモニ」の有無は全形式共通の汎用選択肢として1組だけ表示。
-  // 画像は80000系の形式画像を使用する。
-  const mimaMoniImg='https://minamikaze2700.github.io/Unyomatome/images/TB80000.png';
-  Object.defineProperty(out,'__nodaMimaMoniVariants',{value:[
-    {id:'__NODA_MIMA_MONI_YES__',name:'みまモニ有',img:mimaMoniImg,family:'noda',kind:'variant',type:'MIMA_MONI'},
-    {id:'__NODA_MIMA_MONI_NO__',name:'みまモニ無',img:mimaMoniImg,family:'noda',kind:'variant',type:'MIMA_MONI'}
-  ],enumerable:false});
-
+  // 変換対象外の野田線グループは最後に保持。
   for(const g of source){
     if(consumed.has(g)) continue;
-    const existing=out.find(x=>x===g);
-    if(existing) continue;
-    out.push(g);
+    if(!out.some(x=>String(x?.type||'')===String(g?.type||''))) out.push(g);
   }
 
-  // 野田線の形式順を固定（8000型 → 10030型 → 60000型 → 80000系）。
   const nodaOrder=['8000型','10030型','60000型','80000系'];
   out.sort((a,b)=>{
     const ai=nodaOrder.indexOf(String(a?.type||''));
@@ -2853,7 +2857,6 @@ function formationDisplayGroups(groups){
   });
   return out;
 }
-
 function formationAllowedForTrain(train,id){
   if(!id || id===INITIAL_FORMATION_SELECTION.id) return true;
   const item=formationById(id);
@@ -5384,7 +5387,6 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     formationRemoteByFamily[family].areaMetaByDate=formationRemoteByFamily[family].areaMetaByDate||{};
   }
 
-  function storageFamilyForTrain(train){ return formationStorageContext(train).family; }
   function storageRootForFamily(family){
     const cfg=FORMATION_FAMILY_CONFIGS[String(family)]||FORMATION_FAMILY_CONFIGS.hiroshima;
     return cfg.root;
@@ -6085,48 +6087,47 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     const current=currentIds[slot]||'';
     const groups=formationDisplayGroups(formationsForTrain(currentTrainSnapshot||{}));
     const initial=`<div class="option-item initial-option" onclick="selectFormationAtSlot(${slot},'${INITIAL_FORMATION_SELECTION.id}')"><img src="${esc(syncInitialFormationImage())}" class="option-img"><span>${esc(INITIAL_FORMATION_SELECTION.name)}</span></div>`;
-    const categoryHeaders=groups.map(group=>{
+    const chunks=[];
+    for(const group of groups){
       const groupType=String(group.type||'');
       const isGenericAS=/^[^A-Z]*227系 [AS]編成$/.test(groupType);
       const declaredType=String(activeJson?.formationType||'').trim();
       const isGenericDeclared=!!declaredType && groupType===declaredType;
       const genericId=groupType.includes('S編成')?'S編成':groupType.includes('A編成')?'A編成':(isGenericDeclared?declaredType:'');
-      // 形式見出しはすべて先にまとめて表示。
-      return (isGenericAS||isGenericDeclared)
+      chunks.push((isGenericAS||isGenericDeclared)
         ? `<div class="option-header option-category-header option-selectable-category" role="button" tabindex="0" onclick="selectFormationAtSlot(${slot},'${escapeJs(genericId)}')"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(genericId)}</span></div>`
-        : `<div class="option-header option-category-header"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(groupType)}</span></div>`;
-    }).join('');
-    const variantHeaders=groups.flatMap(group=>(group.variants||[]).map(variant=>`
-      <div class="option-header option-subheader" onclick="selectFormationAtSlot(${slot},'${escapeJs(variant.id)}')">
-        <img src="${esc(variant.img||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(variant.name||variant.id)}</span>
-      </div>
-    `)).join('');
-    const sharedMimaVariants=activeRouteMeta?.formationFamily==='noda'
-      ? (groups.__nodaMimaMoniVariants||[]).map(variant=>`
-          <div class="option-header option-subheader" onclick="selectFormationAtSlot(${slot},'${escapeJs(variant.id)}')">
-            <img src="${esc(variant.img||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(variant.name||variant.id)}</span>
-          </div>
-        `).join('')
-      : '';
-    const formationItems=groups.map(group=>{
-      const allItems=[...(group.variants||[]).flatMap(variant=>variant.items||[]),...(group.items||[])];
-      return allItems.map(item=>{
+        : `<div class="option-header option-category-header"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(groupType)}</span></div>`);
+
+      for(const variant of (group.variants||[])){
+        chunks.push(`<div class="option-header option-subheader" onclick="selectFormationAtSlot(${slot},'${escapeJs(variant.id)}')"><img src="${esc(variant.img||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(variant.name||variant.id)}</span></div>`);
+        for(const item of (variant.items||[])){
+          const id=String(item.id||'').replace(/F$/i,'');
+          if(!id || item.disabled || UNAVAILABLE_FORMATIONS.has(id)) continue;
+          const selectedElsewhere=currentIds.some((v,i)=>{
+            if(i===slot || !v) return false;
+            const other=String(v).replace(/F$/i,'');
+            return other===id && !/^([AS]編成)$/.test(other);
+          });
+          if(selectedElsewhere) continue;
+          chunks.push(`<div class="option-item option-subitem" onclick="selectFormationAtSlot(${slot},'${escapeJs(id)}')"><img src="${esc(item.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=defaultTrainImage()"><span>${esc(item.name||id)}</span></div>`);
+        }
+      }
+
+      // variantを持たない形式でも、group.items を個別編成としてその直後に表示。
+      for(const item of (group.items||[])){
         const id=String(item.id||'').replace(/F$/i,'');
-        if(!id || item.disabled || UNAVAILABLE_FORMATIONS.has(id)) return '';
-        // 重複対象は個別編成だけ。A編成/S編成の共通選択肢はここでは判定しない。
-        const selectedElsewhere=!/^([AS]編成)$/.test(id) && currentIds.some((v,i)=>{
+        if(!id || item.disabled || UNAVAILABLE_FORMATIONS.has(id)) continue;
+        const selectedElsewhere=currentIds.some((v,i)=>{
           if(i===slot || !v) return false;
           const other=String(v).replace(/F$/i,'');
           return other===id && !/^([AS]編成)$/.test(other);
         });
-        if(selectedElsewhere) return '';
-        const cls=(group.items||[]).some(x=>String(x?.id||'').replace(/F$/i,'')===id)?'':' option-subitem';
-        return `<div class="option-item${cls}" onclick="selectFormationAtSlot(${slot},'${escapeJs(id)}')"><img src="${esc(item.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=defaultTrainImage()"><span>${esc(item.name||id)}</span></div>`;
-      }).join('');
-    }).join('');
-    return initial+categoryHeaders+variantHeaders+sharedMimaVariants+formationItems;
+        if(selectedElsewhere) continue;
+        chunks.push(`<div class="option-item" onclick="selectFormationAtSlot(${slot},'${escapeJs(id)}')"><img src="${esc(item.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=defaultTrainImage()"><span>${esc(item.name||id)}</span></div>`);
+      }
+    }
+    return initial+chunks.join('');
   }
-
   function restoreHiroDropdown(){
     if(!hiroFormationDropdownState) return;
     const {el,parent,nextSibling}=hiroFormationDropdownState;
