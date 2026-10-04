@@ -2705,6 +2705,38 @@ function formationById(id){
   // 野田線の「みまモニ有／無」は個別編成ではなく汎用選択肢。画像は80000系と共通。
   if(canonical==='__NODA_MIMA_MONI_YES__') return {id:canonical,name:'みまモニ有',img:`${base}TB80000.png`,kind:'variant',type:'',family:'noda',generic:true};
   if(canonical==='__NODA_MIMA_MONI_NO__') return {id:canonical,name:'みまモニ無',img:`${base}TB80000.png`,kind:'variant',type:'',family:'noda',generic:true};
+
+  // 野田線は「形式」「個体差」自体も選択可能。元ページと同様に、
+  // 表示用の形式・個体差を汎用選択肢として解決する。
+  if(String(activeRouteMeta?.formationFamily||'')==='noda') {
+    const groups=Array.isArray(FORMATIONS)?FORMATIONS:[];
+    const typeGroupName={
+      '8000型':'8000型',
+      '10030型':'10030型',
+      '60000型':'60000型',
+      '80000系':'80000系'
+    };
+    if(Object.prototype.hasOwnProperty.call(typeGroupName,canonical)) {
+      const hit=groups.find(g=>String(g?.type||'')===canonical ||
+        (canonical==='10030型' && /^10030型（(?:更新|未更新)）$/.test(String(g?.type||''))) ||
+        (canonical==='60000型' && /^60000型（(?:5両|6両)）$/.test(String(g?.type||''))));
+      return {id:canonical,name:canonical,img:hit?.typeImg||LINE_TRAIN_IMG,kind:'type',type:canonical,family:'noda',generic:true};
+    }
+    const variantAliases={
+      '10030型更新':{name:'10030型更新',match:/^10030型（更新）$/},
+      '10030型未更新':{name:'10030型未更新',match:/^10030型（未更新）$/},
+      '60000型5両':{name:'60000型5両',match:/^60000型（5両）$/},
+      '60000型6両':{name:'60000型6両',match:/^60000型（6両）$/}
+    };
+    const va=variantAliases[canonical];
+    if(va) {
+      const hit=groups.find(g=>va.match.test(String(g?.type||'')));
+      return {id:canonical,name:va.name,img:hit?.typeImg||LINE_TRAIN_IMG,kind:'variant',type:va.name.replace(/(?:更新|未更新|5両|6両)$/,''),family:'noda',generic:true};
+    }
+    // 表示グループ側で使う元データの形式名も直接解決できるようにする。
+    const rawNodaGroup=groups.find(g=>String(g?.type||'')===canonical);
+    if(rawNodaGroup) return {id:canonical,name:canonical,img:rawNodaGroup.typeImg||LINE_TRAIN_IMG,kind:'variant',type:canonical,family:'noda',generic:true};
+  }
   const declaredType=String(activeJson?.formationType||'').trim();
   if(declaredType && (canonical===declaredType || upper===declaredType.toUpperCase())){
     const imgRaw=String(activeJson?.formationTypeImage||activeJson?.commonFormationIcon||activeJson?.noImage||'').trim();
@@ -2822,16 +2854,21 @@ function formationDisplayGroups(groups){
       // 個体差のない形式は、形式見出しの直後に個別編成を表示。
       group.items=matched.flatMap(g=>Array.isArray(g.items)?g.items:[]);
     } else {
-      group.variants=matched.map(g=>({
-        id:String(g.id||g.type||baseType),
-        name:String(g.type||'').includes('（未更新）')?'10030型未更新':String(g.type||'').includes('（更新）')?'10030型更新':String(g.type||'').replace(/^60000型（/,'60000型').replace('）',''),
+      group.variants=matched.map(g=>{
+        const rawType=String(g.type||'');
+        const displayName=rawType.includes('（未更新）')?'10030型未更新'
+          :rawType.includes('（更新）')?'10030型更新'
+          :rawType.replace(/^60000型（/,'60000型').replace('）','');
+        return {
+        id:displayName,
+        name:displayName,
         img:g.typeImg||LINE_TRAIN_IMG,
         items:Array.isArray(g.items)?g.items:[],
         family:g.family||'noda'
-      }));
+        };
+      });
 
-      // みまモニは60000型・80000系の選択肢として表示する。10030型側には追加しない。
-      if(['60000型'].includes(baseType)) group.variants.push(...nodaMimaVariants());
+      // みまモニは80000系側だけに表示する。60000型側には追加しない。
     }
     out.push(group);
     return true;
@@ -4022,11 +4059,18 @@ function updateSheetContent(){
           <div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}')"><img src="${syncInitialFormationImage()}" class="option-img"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>
           ${(() => {
             const groups=formationDisplayGroups(formationsForTrain(train));
-            const categoryHeaders=groups.map(group=>`
-              <div class="option-header option-category-header" ${/227系 [AS]編成$/.test(String(group.type||''))?`onclick="selectFormation('${String(group.type).includes('S編成')?'S編成':'A編成'}')"`:''}>
-                <img src="${group.typeImg}" class="option-img"><span>${String(group.type).replace(/^227系 /,'')}</span>
-              </div>
-            `).join('');
+            const categoryHeaders=groups.map(group=>{
+              const groupType=String(group.type||'');
+              const selectableNoda=String(activeRouteMeta?.formationFamily||'')==='noda';
+              const selectableGeneric=/^(?:8000型|10030型|60000型|80000系)$/.test(groupType);
+              const clickAttr=/227系 [AS]編成$/.test(groupType)
+                ? `onclick="selectFormation('${groupType.includes('S編成')?'S編成':'A編成'}')"`
+                : (selectableNoda && selectableGeneric ? `onclick="selectFormation('${groupType}')"` : '');
+              return `
+              <div class="option-header option-category-header ${clickAttr?'option-selectable-category':''}" ${clickAttr}>
+                <img src="${group.typeImg}" class="option-img"><span>${groupType.replace(/^227系 /,'')}</span>
+              </div>`;
+            }).join('');
             const variantHeaders=groups.flatMap(group=>(group.variants||[]).map(variant=>`
               <div class="option-header option-subheader" onclick="selectFormation('${variant.id}')">
                 <img src="${variant.img}" class="option-img"><span>${variant.name}</span>
@@ -6113,14 +6157,16 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
       const variantItems=(group.variants||[]).flatMap(variant=>Array.isArray(variant.items)?variant.items:[]);
       for(const item of [...variantItems,...(group.items||[])]){
         const id=String(item.id||'').replace(/F$/i,'');
-        if(!id || item.disabled || UNAVAILABLE_FORMATIONS.has(id)) continue;
+        if(!id) continue;
+        const disabled=!!item.disabled || UNAVAILABLE_FORMATIONS.has(id);
         const selectedElsewhere=currentIds.some((v,i)=>{
           if(i===slot || !v) return false;
           const other=String(v).replace(/F$/i,'');
           return other===id && !/^([AS]編成)$/.test(other);
         });
         if(selectedElsewhere) continue;
-        chunks.push(`<div class="option-item" onclick="selectFormationAtSlot(${slot},'${escapeJs(id)}')"><img src="${esc(item.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=defaultTrainImage()"><span>${esc(item.name||id)}</span></div>`);
+        const clickAttr=disabled ? '' : `onclick="selectFormationAtSlot(${slot},'${escapeJs(id)}')"`;
+        chunks.push(`<div class="option-item ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':''} ${clickAttr}><img src="${esc(item.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=defaultTrainImage()"><span>${esc(item.name||id)}</span></div>`);
       }
     }
     return initial+chunks.join('');
@@ -6302,6 +6348,10 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     if(slot<0||slot>=count)return;
     const ids=selectedIdsForTrain(train);
     const normalized=(id===INITIAL_FORMATION_SELECTION.id)?'':String(normalizeStoredFormationId(id)||'');
+    if(normalized && UNAVAILABLE_FORMATIONS.has(normalized)){
+      const err=document.getElementById('formationInputError'); if(err)err.textContent='この編成は入力できません。';
+      return;
+    }
     if(normalized && !formationById(normalized)){
       const err=document.getElementById('formationInputError'); if(err)err.textContent='選択した編成を特定できません。'; return;
     }
