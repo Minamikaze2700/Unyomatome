@@ -63,7 +63,7 @@
     },
     {
       "name": "西神・山手線",
-      "color": "#00AE8F",
+      "color": "#009a78",
       "stations": [
         {
           "name": "谷上",
@@ -159,7 +159,18 @@
       "formationType": "6000形",
       "formationTypeImage": "https://minamikaze2700.github.io/Unyomatome/images/Kobecity6000.png",
       "formationDefaultImage": "https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png",
-      "noImage": "https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png"
+      "noImage": "https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png",
+      "segmentColorRules": [
+        {
+          "stationPairs": [
+            [
+              "谷上",
+              "新神戸"
+            ]
+          ],
+          "color": "#9f7301"
+        }
+      ]
     }
   ],
   "stationAliases": {},
