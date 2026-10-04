@@ -4915,7 +4915,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     if(!text) return {time:'',author:''};
     const at=text.indexOf('@');
     const timePart=at>=0?text.slice(0,at):text;
-    const author=at>=0?text.slice(at+1):'';
+    const author=at>=0?text.slice(at+1).replace(/^@+/, '').trim():'';
     const compact=timePart.match(/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/);
     if(compact){
       const month=Number(compact[2]),day=Number(compact[3]),hour=Number(compact[4]),minute=Number(compact[5]);
@@ -4933,7 +4933,8 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
   }
   window.hiroshimaParseStoredMeta=function(raw,authorFallback=''){
     const parsed=parseStoredMeta(raw);
-    if(!parsed.author&&authorFallback) parsed.author=String(authorFallback).trim();
+    if(!parsed.author&&authorFallback) parsed.author=String(authorFallback).replace(/^@+/, '').trim();
+    else if(parsed.author) parsed.author=String(parsed.author).replace(/^@+/, '').trim();
     if(!parsed.time) return null;
     return parsed;
   };
@@ -5408,17 +5409,31 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     const vw=Number(vv?.width||window.innerWidth);
     const vh=Number(vv?.height||window.innerHeight);
     const ox=Number(vv?.offsetLeft||0), oy=Number(vv?.offsetTop||0);
-    const topBound=oy+6;
-    const bottomLimit=oy+vh-10;
+    const nav=document.getElementById('regionNav');
+    const navRect=nav?.getBoundingClientRect();
+    const viewportTop=oy;
+    const viewportBottom=oy+vh;
+    // スマホでは「地域メニューの上端から10px手前」をプルダウン下端の基準にする。
+    const menuTop=Number.isFinite(Number(navRect?.top)) ? Number(navRect.top) : viewportBottom;
+    const bottomLimit=Math.max(viewportTop,Math.min(viewportBottom,menuTop-10));
+    const topBound=viewportTop+4;
     const width=Math.min(Math.max(r.width,250),Math.max(120,vw-12));
     const leftMin=ox+6;
     const leftMax=ox+vw-width-6;
     const left=Math.min(Math.max(leftMin,r.left),Math.max(leftMin,leftMax));
+    const gap=4;
+    const desiredTop=r.bottom+gap;
+    const belowSpace=Math.max(0,bottomLimit-desiredTop);
 
-    // 添付された基準HTMLと同じく、プルダウン下端は画面下端から10px手前まで許可。
-    // まずトリガー直下に置き、そこから画面下端までをmax-heightとして確保する。
-    const top=Math.max(topBound,r.bottom+4);
-    const maxH=Math.max(40,Math.floor(bottomLimit-top));
+    let top=desiredTop;
+    let maxH=Math.min(300,belowSpace);
+    // 下側に40px以上確保できない場合は上側へ開く。
+    if(belowSpace<40){
+      const aboveSpace=Math.max(0,r.top-gap-topBound);
+      maxH=Math.min(300,aboveSpace);
+      top=Math.max(topBound,r.top-gap-maxH);
+    }
+    maxH=Math.max(1,Math.min(maxH,Math.max(1,bottomLimit-top)));
 
     el.style.position='fixed';
     el.style.left=`${Math.round(left)}px`;
@@ -5442,6 +5457,18 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     positionHiroDropdown(el,trigger);
   }
   window.toggleFormationSlot=toggleFormationSlot;
+
+  // プルダウンをbody直下へ移動しているため、ページ・シート・VisualViewportの
+  // スクロールでもトリガー位置へ追従させる。地域メニュー自体の処理は変更しない。
+  const syncHiroDropdownPosition=()=>{
+    const st=hiroFormationDropdownState;
+    if(st?.el?.classList.contains('open') && st.trigger) positionHiroDropdown(st.el,st.trigger);
+  };
+  window.addEventListener('scroll',syncHiroDropdownPosition,true);
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('scroll',syncHiroDropdownPosition,{passive:true});
+    window.visualViewport.addEventListener('resize',syncHiroDropdownPosition,{passive:true});
+  }
 
   function buildCompositeSelectors(train){
     const count=formationCountForTrain(train);
@@ -5984,7 +6011,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     const showCode=(code==='a'||code==='l')?code:'';
     const at=text.indexOf(' @');
     const time=at>=0?text.slice(0,at):text;
-    const author=at>=0?text.slice(at+1):'';
+    const author=at>=0?text.slice(at+1).replace(/^@+/, '').trim():'';
     return `<span class="formation-updated-time">${escapeAttr(time)}</span>${author?`<span class="formation-updated-author">${escapeAttr('@'+author)}</span>`:''}${roleTag(showCode)}`;
   };
 
