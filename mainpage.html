@@ -505,6 +505,9 @@ button,input,select,textarea{font-family:inherit}
   align-items:center;gap:10px;border-bottom:1px solid #e0e0e0;cursor:pointer;
 }
 .option-header:hover{background:var(--formation-hover-bg,#f0f0f0)}
+/* 個体差の見出しは形式見出しより薄い灰色。 */
+.option-subheader{background:#f8f8f8 !important;}
+.option-subheader:hover{background:#f2f2f2 !important;}
 .option-item{
   padding-left:16px;display:flex;align-items:center;gap:10px;
   cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:1.25rem;
@@ -2814,8 +2817,9 @@ function formationDisplayGroups(groups){
       variants:[],
       items:[]
     };
+
     if(baseType==='8000型' || baseType==='80000系') {
-      // この2形式は個体差のない形式なので、形式見出しの直下に個別編成を並べる。
+      // 個体差のない形式は、形式見出しの直後に個別編成を表示。
       group.items=matched.flatMap(g=>Array.isArray(g.items)?g.items:[]);
     } else {
       group.variants=matched.map(g=>({
@@ -2825,8 +2829,9 @@ function formationDisplayGroups(groups){
         items:Array.isArray(g.items)?g.items:[],
         family:g.family||'noda'
       }));
-      // みまモニは10030型・60000型・80000系の各形式で選択可能。
-      if(['10030型','60000型','80000系'].includes(baseType)) group.variants.push(...nodaMimaVariants());
+
+      // みまモニは60000型・80000系の選択肢として表示する。10030型側には追加しない。
+      if(['60000型'].includes(baseType)) group.variants.push(...nodaMimaVariants());
     }
     out.push(group);
     return true;
@@ -2857,6 +2862,7 @@ function formationDisplayGroups(groups){
   });
   return out;
 }
+
 function formationAllowedForTrain(train,id){
   if(!id || id===INITIAL_FORMATION_SELECTION.id) return true;
   const item=formationById(id);
@@ -6098,23 +6104,14 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
         ? `<div class="option-header option-category-header option-selectable-category" role="button" tabindex="0" onclick="selectFormationAtSlot(${slot},'${escapeJs(genericId)}')"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(genericId)}</span></div>`
         : `<div class="option-header option-category-header"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(groupType)}</span></div>`);
 
+      // 個体差をすべて先に並べ、その後に形式全体の個別編成をまとめて表示。
       for(const variant of (group.variants||[])){
         chunks.push(`<div class="option-header option-subheader" onclick="selectFormationAtSlot(${slot},'${escapeJs(variant.id)}')"><img src="${esc(variant.img||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(variant.name||variant.id)}</span></div>`);
-        for(const item of (variant.items||[])){
-          const id=String(item.id||'').replace(/F$/i,'');
-          if(!id || item.disabled || UNAVAILABLE_FORMATIONS.has(id)) continue;
-          const selectedElsewhere=currentIds.some((v,i)=>{
-            if(i===slot || !v) return false;
-            const other=String(v).replace(/F$/i,'');
-            return other===id && !/^([AS]編成)$/.test(other);
-          });
-          if(selectedElsewhere) continue;
-          chunks.push(`<div class="option-item option-subitem" onclick="selectFormationAtSlot(${slot},'${escapeJs(id)}')"><img src="${esc(item.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=defaultTrainImage()"><span>${esc(item.name||id)}</span></div>`);
-        }
       }
 
-      // variantを持たない形式でも、group.items を個別編成としてその直後に表示。
-      for(const item of (group.items||[])){
+      // すべての個体差に属する個別編成をまとめて表示。
+      const variantItems=(group.variants||[]).flatMap(variant=>Array.isArray(variant.items)?variant.items:[]);
+      for(const item of [...variantItems,...(group.items||[])]){
         const id=String(item.id||'').replace(/F$/i,'');
         if(!id || item.disabled || UNAVAILABLE_FORMATIONS.has(id)) continue;
         const selectedElsewhere=currentIds.some((v,i)=>{
