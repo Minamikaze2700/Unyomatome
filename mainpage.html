@@ -546,7 +546,7 @@ button,input,select,textarea{font-family:inherit}
 #title > span:first-child{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap;}
 .control-bar{position:fixed;top:58px;left:0;right:0;width:100vw;max-width:none;z-index:999;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;}
 #lineContainer{margin-top:calc(58px + var(--control-bar-height, 69px));}
-/* スマホではh1とcontrol-barも元ファイルと同じ960px基準で縮小表示する。
+/* スマホではh1とcontrol-barも960px基準で縮小表示する。
    画面中央を基準に縮小することで、文字サイズ・入力欄・ボタンの位置関係を維持する。 */
 @media(max-width:959.98px){
   #title{
@@ -873,7 +873,7 @@ let HOLIDAY_UP_TRAINS=[];
 let HOLIDAY_TRAINS=[];
 let HOLIDAY_TRAIN_INDEX={};
 let TRAIN_INDEX={};
-/* 共通ユーティリティ：元ファイルの時刻処理で使用する定数・HTMLエスケープ */
+/* 共通ユーティリティ：時刻処理とHTMLエスケープ */
 function esc(value){
   return String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;');
 }
@@ -894,6 +894,9 @@ const ROUTE_REGISTRY={
     storageRoot:'広島地区',
     storageArea:'JR広島',
     company:'JR西日本',
+    formationFamily:'hiroshima',
+    prependStations:[{nameJa:'糸崎',nameEn:'Itozaki'}],
+    corporateTitleColor:'#0072bc',
     access:{public:false,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
@@ -906,6 +909,8 @@ const ROUTE_REGISTRY={
     storageRoot:'広島地区',
     storageArea:'JR広島',
     company:'JR西日本',
+    formationFamily:'hiroshima',
+    corporateTitleColor:'#0072bc',
     access:{public:false,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
@@ -918,6 +923,8 @@ const ROUTE_REGISTRY={
     storageRoot:'広島地区',
     storageArea:'JR広島',
     company:'JR西日本',
+    formationFamily:'hiroshima',
+    corporateTitleColor:'#0072bc',
     access:{public:false,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
@@ -930,6 +937,8 @@ const ROUTE_REGISTRY={
     storageRoot:'神戸市営',
     storageArea:null,
     company:'神戸市営地下鉄',
+    formationFamily:'kobe',
+    corporateTitleColor:'#0072bc',
     formationCountDefault:1,
     access:{public:true,routeAdmins:[]},
     formationInputExample:'5101 / 5101F / 5000系'
@@ -946,6 +955,10 @@ const ROUTE_REGISTRY={
     company:'JR東日本',
     formationFamily:'keihin',
     formationCountDefault:1,
+    typeShortMap:{'普通':'各停','各駅停車':'各停','区間急行':'区急'},
+    typeDetailMap:{'普通':'各駅停車','各停':'各駅停車'},
+    typeClassMap:{'快速':'keihin-express','普通':'keihin-local','各停':'keihin-local'},
+    destinationAliases:{'南浦和':'南浦','東十条':'東十','東神奈川':'東神','桜木町':'桜木','八王子':'八王'},
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Keihin-Tohoku_noimage.png',
     access:{public:false,routeAdmins:[]},
     formationInputExample:'E233系1000番台 / 101 / 101F',
@@ -963,6 +976,11 @@ const ROUTE_REGISTRY={
     company:'JR東日本',
     formationFamily:'yokohama',
     formationCountDefault:1,
+    typeShortMap:{'普通':'各停','各駅停車':'各停','区間急行':'区急'},
+    typeDetailMap:{'普通':'各駅停車','各停':'各駅停車'},
+    typeClassMap:{'快速':'yokohama-express','普通':'yokohama-local','各停':'yokohama-local'},
+    destinationAliases:{'南浦和':'南浦','東十条':'東十','東神奈川':'東神','桜木町':'桜木','八王子':'八王'},
+    segmentColorRules:[{whenStationsAllPresent:['東神奈川','横浜','桜木町','関内','石川町','山手','根岸','磯子','新杉田','洋光台','港南台','本郷台','大船'],useLine:'京浜東北・根岸線'}],
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Yokohama_noimage.png',
     access:{public:false,routeAdmins:[]},
     formationInputExample:'E233系6000番台 / H001 / H001F',
@@ -979,6 +997,7 @@ const ROUTE_REGISTRY={
     company:'JR東日本',
     formationFamily:'nambu',
     formationCountDefault:1,
+    destinationAliases:{'稲城長沼':'稲城','武蔵中原':'中原','武蔵溝ノ口':'溝口'},
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Nambu_noimage.png',
     access:{public:false,routeAdmins:[]},
     formationInputExample:'E233系8000番台 / N1',
@@ -990,11 +1009,12 @@ const ROUTE_REGISTRY={
     jsonLines:['東武野田線'],
     range:'大宮～船橋',
     area:'東武鉄道',
-    storageRoot:'運用',
+    storageRoot:'東武野田線',
     storageArea:'__ROOT__',
     company:'東武鉄道',
     formationFamily:'noda',
     formationCountDefault:1,
+    typeColors:{'普通':'#666'},
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/TD_noimage.png',
     access:{public:true,routeAdmins:[]},
     formationInputExample:'81501 / 81501F / 80000系',
@@ -1011,6 +1031,14 @@ const ROUTE_REGISTRY={
     company:'長野電鉄',
     formationFamily:'nagano',
     formationCountDefault:1,
+    destinationAliases:{'信州中野':'中野','湯田中':'湯田','長野':'長野','須坂':'須坂'},
+    typeShortRules:[
+      {containsAll:['ゆけむり','のんびり'],result:'ゆの'},
+      {contains:'特急',trainNoSuffix:'A',result:'A特'},
+      {contains:'特急',trainNoSuffix:'B',result:'B特'},
+      {containsAll:['特急','ゆけむり'],result:'A特'},
+      {containsAll:['特急','スノーモンキー'],result:'B特'}
+    ],
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Nagano_noimage.png',
     access:{public:false,routeAdmins:[]},
     formationInputExample:'8500系 / T1',
@@ -1105,9 +1133,9 @@ function formationStorageContext(routeOrTrain=activeRouteName){
   const routeName=typeof routeOrTrain==='string' ? routeOrTrain : String(routeOrTrain?.routeName||activeRouteName||'');
   const meta=ROUTE_REGISTRY[routeName]||{};
   const explicitFamily=typeof routeOrTrain==='object' ? String(routeOrTrain?.formationFamily||'').trim() : '';
-  const family=explicitFamily || String(meta?.formationFamily||'').trim() || (routeName==='海岸線'?'kobe':'hiroshima');
-  const root=String(meta?.storageRoot || (family==='kobe'?'神戸市営':'広島地区')).trim();
-  const area=meta?.storageArea===null ? null : String(meta?.storageArea || (family==='hiroshima'?'JR広島':'__ROOT__'));
+  const family=explicitFamily || String(meta?.formationFamily||'').trim();
+  const root=String(meta?.storageRoot||'').trim();
+  const area=meta?.storageArea===null ? '__ROOT__' : String(meta?.storageArea||'__ROOT__');
   return {family,root,area};
 }
 function formationStorageFamilyForTrain(train){ return formationStorageContext(train).family; }
@@ -1195,8 +1223,10 @@ function buildStationsForRoute(json,meta){
       seen.add(name); list.push({id:`st${list.length+1}`,nameJa:name,nameEn:String(st?.nameEn||'')});
     }
   }
-  if(activeRouteName==='山陽本線（糸崎～岩国）' && list.length && list[0].nameJa==='三原'){
-    list.unshift({id:'st1',nameJa:'糸崎',nameEn:'Itozaki'});
+  const prepend=Array.isArray(meta?.prependStations)?meta.prependStations:[];
+  if(prepend.length){
+    const extra=prepend.map(st=>({id:`st${st.nameJa}`,nameJa:String(st.nameJa||''),nameEn:String(st.nameEn||'')})).filter(st=>st.nameJa&& !list.some(x=>x.nameJa===st.nameJa));
+    list.unshift(...extra);
     list.forEach((x,i)=>x.id=`st${i+1}`);
   }
   return list;
@@ -1365,15 +1395,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
   // 列車番号を持たない単一路線では、現在の路線自体を使用する。
   let servedLineNames=Object.keys(rawTrainNumbers).filter(name=>lineDefByName(name));
   if(!servedLineNames.length){
-    const kind=String(raw?.lineKind||meta?.lineKind||'').trim().toLowerCase();
-    const kindMap={
-      keihin:['京浜東北・根岸線'],
-      yokohama:['横浜線'],
-      nambu:['JR南武線'],
-      nagano:['長野電鉄長野線'],
-      kobe:['海岸線']
-    };
-    servedLineNames=(kindMap[kind]||[...allowedLineNames]).filter(name=>lineDefByName(name));
+    servedLineNames=[...allowedLineNames].filter(name=>lineDefByName(name));
   }
   const segmentLineNames=[];
   for(let i=0;i<stops.length-1;i++) segmentLineNames.push(preferredTrainServiceLine(stops[i].station,stops[i+1].station,{servedLineNames})?.name||null);
@@ -1419,7 +1441,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
     ? (allNumbers[0]||rawNo)
     : String(raw?.id||raw?.uid||`${day}-${direction}-${String(firstTimed.station||'')}-${String(firstTimed.time||'')}`);
   const jsonType=String(raw?.type||'').trim();
-  const formationFamily=String(meta?.formationFamily||formationStorageContext(meta?.id||activeRouteName).family||'').trim() || (activeRouteName==='海岸線'?'kobe':'hiroshima');
+  const formationFamily=String(meta?.formationFamily||formationStorageContext(meta?.id||activeRouteName).family||'').trim();
   const parsedDefaultCars=Number(raw?.cars);
   const fallbackCars=Number(String(raw?.defaultCars||'').match(/\d+/)?.[0]||0);
   return [{
@@ -1473,7 +1495,7 @@ function displayTrainNoAtTime(train,minutes){
   const pos=positionForTrain(train,minutes);
   return trainDisplayNoAtPosition(train,pos?.pos);
 }
-// 元ファイル互換：列車情報側から参照される関数名も公開する。
+// 列車情報側から参照される共通関数を公開する。
 function trainDisplayNoAtTime(train,minutes){
   return displayTrainNoAtTime(train,minutes);
 }
@@ -1572,7 +1594,7 @@ const STORAGE_KEY='routeTrainRegistrations_v2';
 const CHANNEL_NAME='routeTrainRegistrationSync_v2';
 const FIREBASE_CONFIG=(window.JRELINE_FIREBASE_CONFIG||{});
 const FIREBASE_ENABLED=!!(window.firebase && FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId && FIREBASE_CONFIG.databaseURL);
-const FIREBASE_APP_NAME='unyomatomeHiroshima';
+const FIREBASE_APP_NAME='unyomatomeMainpage';
 let firebaseApp=null;
 let firebaseDb=null;
 let currentTrainNo=null;
@@ -1589,9 +1611,9 @@ let registrationState={};
 let operationHistory=[];
 let currentOperationDate=null;
 let remoteRoot={version:0,operationDate:null,stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}},history:{}};
-// 編成データは列車のJSON由来系統ごとに別Firebaseへ保存する。
-const PRIMARY_FORMATION_FAMILY='keihin';
-const FORMATION_FAMILIES=['hiroshima','kobe','keihin','yokohama','nambu','nagano','noda'];
+// 編成データは路線メタデータで定義した保存先へ、共通処理で保存する。
+const FORMATION_FAMILIES=[...new Set(Object.values(ROUTE_REGISTRY).map(m=>String(m?.formationFamily||'').trim()).filter(Boolean))];
+const PRIMARY_FORMATION_FAMILY=FORMATION_FAMILIES[0]||'';
 let formationRemoteByFamily={};
 for(const family of FORMATION_FAMILIES){
   formationRemoteByFamily[family]={stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}},formationUpdatedByDate:{},areaStateByDate:{},areaMetaByDate:{}};
@@ -1734,166 +1756,6 @@ function stateFingerprint(root=remoteRoot){
     });
   }catch(e){ return ''; }
 }
-function saveLocalState(){
-  try{
-    localStorage.setItem(STORAGE_KEY,JSON.stringify({
-      operationDate:currentOperationDate,
-      stateByDay:remoteRoot.stateByDay,
-      formationUpdatedAtByDay:remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}},
-      formationStateByFamily:{
-        keihin:formationRemoteByFamily.keihin.stateByDay,
-        yokohama:formationRemoteByFamily.yokohama.stateByDay
-      },
-      formationUpdatedAtByFamily:{
-        keihin:formationRemoteByFamily.keihin.formationUpdatedAtByDay,
-        yokohama:formationRemoteByFamily.yokohama.formationUpdatedAtByDay
-      },
-      pendingFormationTimestamps:pendingFormationTimestamps||{平日:{},休日:{}},
-      history:remoteRoot.history,
-      updatedAt:new Date().toISOString()
-    }));
-  }catch(e){ console.warn('local save failed',e); }
-}
-function loadLocalState(){
-  try{
-    const raw=localStorage.getItem(STORAGE_KEY);
-    if(!raw) return;
-    const obj=JSON.parse(raw);
-    remoteRoot.operationDate=obj.operationDate||null;
-    remoteRoot.stateByDay=obj.stateByDay||{平日:{},休日:{}};
-    remoteRoot.formationUpdatedAtByDay=obj.formationUpdatedAtByDay||{平日:{},休日:{}};
-    pendingFormationTimestamps=obj.pendingFormationTimestamps||{平日:{},休日:{}};
-    const savedFamilies=obj.formationStateByFamily||null;
-    if(savedFamilies&&typeof savedFamilies==='object'){
-      for(const family of ['keihin','yokohama']){
-        const src=savedFamilies[family]||{};
-        formationRemoteByFamily[family].stateByDay={
-          平日:normalizeFormationState(src.平日||src.stateByDay?.平日||{},family),
-          休日:normalizeFormationState(src.休日||src.stateByDay?.休日||{},family)
-        };
-        const savedTs=src.formationUpdatedAtByDay || obj.formationUpdatedAtByFamily?.[family] || {};
-        formationRemoteByFamily[family].formationUpdatedAtByDay={
-          平日:cloneState(savedTs.平日||{}),
-          休日:cloneState(savedTs.休日||{})
-        };
-      }
-    }else{
-      // 旧localStorageからの移行。旧stateByDayは系統混在の可能性があるため、
-      // 現在の列車JSONのlineKindで正しい系統DBへ振り分ける。
-      for(const day of ['平日','休日']){
-        const legacy=obj.stateByDay?.[day]||{};
-        for(const [no,value] of Object.entries(legacy)){
-          const train=[...TRAINS,...HOLIDAY_TRAINS].find(t=>String(t.no||'')===String(no));
-          if(!train) continue;
-          const family=formationFamilyForTrain(train);
-          const normalized=normalizeStoredFormationId(value);
-          if(normalized) formationRemoteByFamily[family].stateByDay[day][String(no)]=normalized;
-        }
-      }
-    }
-    mergeFormationRemoteIntoLegacyState();
-    remoteRoot.history=obj.history||{};
-    currentOperationDate=remoteRoot.operationDate;
-    operationHistory=historyEntries();
-    registrationState=isHistoricalSelectedDate(selectedDateKey)
-      ? historicalStateForDate(selectedDateKey)
-      : cloneState(remoteRoot.stateByDay[currentDay]||{});
-    applyRegistrationState();
-  }catch(e){ console.warn('local load failed',e); }
-}
-function reconcilePendingFormationState(){
-  // 編成状態はFirebaseの各系統DBを正とする。旧pending状態は表示へ介入させない。
-  pendingFormationState={};
-}
-function registeredFormationForTrain(train){
-  if(!train) return null;
-  const family=allowedFormationFamily(train);
-  const state=formationRemoteByFamily[family]?.stateByDay?.[currentDay]||{};
-  return normalizeStoredFormationId(stateForTrain(state,String(train.no||'')));
-}
-function mergeFormationRemoteIntoLegacyState(){
-  const merged={};
-  for(const family of ['keihin','yokohama']){
-    const state=formationRemoteByFamily[family]?.stateByDay?.[currentDay]||{};
-    for(const [no,value] of Object.entries(state)){
-      merged[String(no)]=normalizeStoredFormationId(value)||null;
-    }
-  }
-  remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
-  remoteRoot.stateByDay[currentDay]=merged;
-  remoteRoot.formationUpdatedAtByDay=remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}};
-  const mergedTs={};
-  for(const family of ['keihin','yokohama']){
-    const ts=formationRemoteByFamily[family]?.formationUpdatedAtByDay?.[currentDay]||{};
-    Object.assign(mergedTs,ts);
-  }
-  remoteRoot.formationUpdatedAtByDay[currentDay]=mergedTs;
-}
-function applyRegistrationState(){
-  const seen=new Set();
-  [...TRAINS,...HOLIDAY_TRAINS].forEach(t=>{
-    const key=String(t.no);
-    const signature=`${key}|${String(t.direction||'')}`;
-    if(seen.has(signature)) return;
-    seen.add(signature);
-    t.formation=registeredFormationForTrain(t)||null;
-  });
-}
-
-function broadcastState(){
-  if(!channel) return;
-  // 送信はローカルで変更を確定した側だけが行う。
-  // 受信側からの再送は絶対に行わない。
-  channel.postMessage({source:'train-app',type:'state',root:cloneState(remoteRoot),ts:Date.now()});
-}
-function hydrateFromRoot(data){
-  const next=data||{version:0,operationDate:null,stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}},history:{}};
-  const normalized={
-    ...next,
-    stateByDay:{平日:cloneState(next.stateByDay?.平日||{}),休日:cloneState(next.stateByDay?.休日||{})},
-    formationUpdatedAtByDay:{平日:cloneState(next.formationUpdatedAtByDay?.平日||{}),休日:cloneState(next.formationUpdatedAtByDay?.休日||{})},
-    history:cloneState(next.history||{})
-  };
-  if(stateFingerprint(normalized)===stateFingerprint(remoteRoot)) return false;
-  remoteRoot=normalized;
-  currentOperationDate=remoteRoot.operationDate||currentOperationDate||operationDateKey();
-  operationHistory=historyEntries();
-  registrationState=isHistoricalSelectedDate(selectedDateKey)
-    ? historicalStateForDate(selectedDateKey)
-    : cloneState(remoteRoot.stateByDay[currentDay]||{});
-  applyRegistrationState();
-  // 受信した状態を再保存・再送しない。これが同期ループ防止の重要点。
-  return true;
-}
-function firebaseDatabase(){
-  if(firebaseDb) return firebaseDb;
-  const db=formationFirebaseDbs[PRIMARY_FORMATION_FAMILY];
-  if(db) return db;
-  if(window.firebase?.apps?.length) return firebase.database();
-  return null;
-}
-function firebaseDatabaseForFamily(family){
-  const key=family==='yokohama'?'yokohama':'keihin';
-  return formationFirebaseDbs[key]||null;
-}
-function firebaseOperationRef(){ const db=firebaseDatabase(); return db?db.ref('運用'):null; }
-function firebaseHistoryRef(){ const db=firebaseDatabase(); return db?db.ref('履歴'):null; }
-function formationOperationRef(family){ const db=firebaseDatabaseForFamily(family); return db?db.ref('運用'):null; }
-function formationFamilyForTrain(train){ return allowedFormationFamily(train); }
-function formationFirebaseConfigForFamily(family){
-  return family==='yokohama'?JRE_YOKOHAMA_FIREBASE_CONFIG:JRE_KEIHIN_FIREBASE_CONFIG;
-}
-function normalizeStoredFormationId(value){
-  if(value===null||value===undefined||String(value).trim()==='') return null;
-  const raw=String(value).trim();
-  const ids=raw.split('+').map(x=>x.trim()).filter(Boolean);
-  const normalized=ids.map(one=>{
-    const obj=formationById(one) || formationById(one.replace(/F$/i,''));
-    return obj?.id ? String(obj.id).replace(/F$/i,'') : String(one).replace(/F$/i,'');
-  }).filter(Boolean);
-  return normalized.length?normalized.join('+'):null;
-}
-
 function trainBelongsToFamily(no,family){
   const key=String(no||'');
   if(!key) return false;
@@ -1917,32 +1779,6 @@ function normalizeFormationTimestampState(raw,family){
     if(value!==null&&value!==undefined&&String(value)!=='') out[String(no)]=value;
   }
   return out;
-}
-async function loadFormationFamilyFromFirebase(family){
-  const ref=formationOperationRef(family);
-  if(!ref) return false;
-  const [stateSnap,tsSnap]=await Promise.all([
-    ref.child('stateByDay').once('value'),
-    ref.child('formationUpdatedAtByDay').once('value')
-  ]);
-  const stateRaw=stateSnap.val()||{}, tsRaw=tsSnap.val()||{};
-  formationRemoteByFamily[family].stateByDay={
-    平日:normalizeFormationState(stateRaw.平日||{},family),
-    休日:normalizeFormationState(stateRaw.休日||{},family)
-  };
-  formationRemoteByFamily[family].formationUpdatedAtByDay={
-    平日:normalizeFormationTimestampState(tsRaw.平日||{},family),
-    休日:normalizeFormationTimestampState(tsRaw.休日||{},family)
-  };
-  return true;
-}
-async function preloadAllFormationFamilies(){
-  const results=await Promise.allSettled(['keihin','yokohama'].map(loadFormationFamilyFromFirebase));
-  formationFirebaseReady=results.some(r=>r.status==='fulfilled'&&r.value===true);
-  mergeFormationRemoteIntoLegacyState();
-  registrationState=isHistoricalSelectedDate(selectedDateKey)?historicalStateForDate(selectedDateKey):cloneState(remoteRoot.stateByDay[currentDay]||{});
-  applyRegistrationState();
-  return formationFirebaseReady;
 }
 
 const LIVE_TRAIN_CACHE = new Map();
@@ -1984,56 +1820,6 @@ function refreshVisibleUI(){
   if(currentTrainNo) updateSheetContent();
 }
 
-function subscribeAllOperationState(){
-  if(!formationFirebaseReady) return;
-  for(const family of ['keihin','yokohama']){
-    const ref=formationOperationRef(family);
-    if(!ref) continue;
-    ref.child('stateByDay').on('value',snap=>{
-      const all=snap.val()||{};
-      formationRemoteByFamily[family].stateByDay={
-        平日:normalizeFormationState(all.平日||{},family),
-        休日:normalizeFormationState(all.休日||{},family)
-      };
-      if(!isHistoricalSelectedDate(selectedDateKey)){
-        mergeFormationRemoteIntoLegacyState();
-        registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
-      }
-      applyRegistrationState();
-      saveLocalState();
-      refreshAllTrainDataCache();
-      if(!isEditMode){
-        renderTrainPositions();
-        if(currentTrainNo) updateSheetContent();
-      }
-      syncStatus('Firebaseリアルタイム同期済み');
-    },err=>console.warn(`Firebase編成状態読込失敗（${family}）`,err));
-
-    ref.child('formationUpdatedAtByDay').on('value',snap=>{
-      const all=snap.val()||{};
-      formationRemoteByFamily[family].formationUpdatedAtByDay={
-        平日:normalizeFormationTimestampState(all.平日||{},family),
-        休日:normalizeFormationTimestampState(all.休日||{},family)
-      };
-      mergeFormationRemoteIntoLegacyState();
-      saveLocalState();
-      if(currentTrainNo&&!isEditMode) updateSheetContent();
-    },err=>console.warn(`Firebase編成入力時刻読込失敗（${family}）`,err));
-  }
-
-  // 運用日だけはページの主系統DBを監視する（運行情報・日付管理用）。
-  const operationRef=firebaseOperationRef();
-  if(operationRef){
-    operationRef.child('operationDate').on('value',snap=>{
-      const value=snap.val();
-      if(!value) return;
-      remoteRoot.operationDate=String(value);
-      currentOperationDate=String(value);
-      saveLocalState();
-    },err=>console.warn('Firebase運用日読込失敗',err));
-  }
-}
-
 function prefetchTrainImages(){
   const urls=new Set([KEIHIN_TOHOKU_TRAIN_IMG,YOKOHAMA_TRAIN_IMG]);
   for(const group of FORMATIONS){
@@ -2043,137 +1829,9 @@ function prefetchTrainImages(){
   for(const url of urls){const img=new Image();img.decoding='async';img.src=url;}
 }
 
-async function preloadFirebaseState(){
-  if(!firebaseReady||!firebaseDb){return false;}
-  try{
-    const operationRef=firebaseOperationRef(), historyRef=firebaseHistoryRef();
-    const [operationSnap,historySnap]=await Promise.all([
-      operationRef?.once('value'),
-      historyRef?.once('value')
-    ]);
-    const root=operationSnap?.val()||{};
-    remoteRoot.operationDate=root.operationDate||remoteRoot.operationDate||null;
-    currentOperationDate=remoteRoot.operationDate||currentOperationDate||operationDateKey();
-    const historyRaw=historySnap?.val()||{};
-    remoteRoot.history=historyRaw?.履歴||historyRaw?.history||historyRaw;
-    await preloadAllFormationFamilies();
-    registrationState=isHistoricalSelectedDate(selectedDateKey)?historicalStateForDate(selectedDateKey):cloneState(remoteRoot.stateByDay[currentDay]||{});
-    applyRegistrationState();
-    operationHistory=historyEntries();
-    saveLocalState();
-    refreshVisibleUI();
-    return true;
-  }catch(e){
-    console.warn('Firebase初期データ取得失敗',e);
-    return false;
-  }
-}
-
 function warmAllTrainData(){
   for(const t of [...TRAINS,...HOLIDAY_TRAINS]) TRAIN_DATA_CACHE.set(String(t.no),t);
   prefetchTrainImages();
-}
-
-async function initFirebase(){
-  loadLocalState();
-  if(!FIREBASE_ENABLED||!window.firebase?.initializeApp) return false;
-  try{
-    const configs={keihin:JRE_KEIHIN_FIREBASE_CONFIG,yokohama:JRE_YOKOHAMA_FIREBASE_CONFIG};
-    for(const family of ['keihin','yokohama']){
-      const appName=family==='keihin'?'jreKeihinTohoku':'jreYokohama';
-      const cfg=configs[family];
-      let app=firebase.apps.find(a=>a.name===appName);
-      if(!app) app=firebase.initializeApp(cfg,appName);
-      formationFirebaseApps[family]=app;
-      formationFirebaseDbs[family]=firebase.database(app);
-    }
-    firebaseApp=formationFirebaseApps[PRIMARY_FORMATION_FAMILY];
-    firebaseDb=formationFirebaseDbs[PRIMARY_FORMATION_FAMILY];
-    // AuthenticationはDatabaseとは別に明示的に初期化する。
-    // これを行わないとログイン押下時にfirebaseAuthがnullのままとなる。
-    if(typeof window.initFirebaseAuth==='function' && firebaseApp){
-      window.initFirebaseAuth(firebaseApp);
-    }
-    firebaseReady=true;
-    syncStatus('Firebase接続中');
-
-    const preloadOk=await preloadFirebaseState();
-    if(!preloadOk){
-      firebaseReady=false;
-      firebaseDb=null;
-      syncStatus('Firebase接続失敗（ローカル動作）');
-      warmAllTrainData();
-      return false;
-    }
-
-    await loadOperationInfoFromFirebase();
-    attachOperationInfoFirebaseListener();
-    subscribeAllOperationState();
-
-    const historyRef=firebaseHistoryRef();
-    if(historyRef){
-      historyRef.on('value',snap=>{
-        const raw=snap.val()||{};
-        remoteRoot.history=raw?.履歴||raw?.history||raw;
-        operationHistory=historyEntries();
-        if(isHistoricalSelectedDate(selectedDateKey)){
-          registrationState=historicalStateForDate(selectedDateKey);
-          applyRegistrationState();
-          refreshVisibleUI();
-        }
-        saveLocalState();
-        if(currentTrainNo&&!isEditMode) updateSheetContent();
-      },err=>console.warn('Firebase履歴読込失敗',err));
-    }
-    warmAllTrainData();
-    return true;
-  }catch(e){
-    console.warn('Firebase初期化失敗：ローカル動作に切り替えます',e);
-    syncStatus('Firebase接続失敗（ローカル動作）');
-    firebaseReady=false;
-    firebaseDb=null;
-    return false;
-  }
-}
-
-async function syncRegistrationToRemoteByFamilySingle(changes={},family='keihin'){
-  const db=firebaseDatabaseForFamily(family);
-  if(!db){syncStatus('Firebase未接続');return false;}
-  const entries=Object.entries(changes||{});
-  if(!entries.length){syncStatus('Firebase同期済み');return true;}
-  try{
-    const dayRef=db.ref('運用').child('stateByDay').child(currentDay);
-    const updates={};
-    entries.forEach(([no,formId])=>{
-      const canonical=normalizeStoredFormationId(formId);
-      updates[String(no)]=canonical||null;
-    });
-    await dayRef.update(updates);
-    const committed=await dayRef.once('value');
-    formationRemoteByFamily[family].stateByDay[currentDay]=normalizeFormationState(committed.val()||{},family);
-
-    const timestampRef=db.ref('運用').child('formationUpdatedAtByDay').child(currentDay);
-    const timestampUpdates={};
-    entries.forEach(([no,formId])=>{
-      const key=String(no);
-      timestampUpdates[key]=formId&&formId!==INITIAL_FORMATION_SELECTION.id?(new Date().toISOString()):null;
-    });
-    await timestampRef.update(timestampUpdates);
-    const tsSnap=await timestampRef.once('value');
-    formationRemoteByFamily[family].formationUpdatedAtByDay[currentDay]=normalizeFormationTimestampState(tsSnap.val()||{},family);
-
-    mergeFormationRemoteIntoLegacyState();
-    registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
-    applyRegistrationState();
-    saveLocalState();
-    refreshAllTrainDataCache();
-    syncStatus('Firebase同期済み');
-    return true;
-  }catch(e){
-    console.error('Firebase書込失敗',e);
-    syncStatus('Firebase書込失敗');
-    return false;
-  }
 }
 
 function findChain(day,trainNo){
@@ -2240,62 +1898,7 @@ function findOperationTrainRecord(no,day=currentDay){
   return source.find(t=>String(t?.no||'').replace(/A$/i,'')===key.replace(/A$/i,''))||null;
 }
 
-async function syncRegistrationToRemote(changes={}){
-  const changesByFamily={keihin:{},yokohama:{}};
-  Object.entries(changes||{}).forEach(([no,formId])=>{
-    const train=findOperationTrainRecord(no,currentDay);
-    if(!train) return;
-    const family=formationFamilyForTrain(train);
-    if(family==='keihin' || family==='yokohama') changesByFamily[family][String(train.no)]=formId;
-  });
-  return syncRegistrationToRemoteByFamily(changesByFamily);
-}
-async function syncRegistrationToRemoteByFamily(changesByFamily){
-  const families=['keihin','yokohama'];
-  const results=await Promise.all(families.map(async family=>{
-    const changes=changesByFamily[family]||{};
-    if(!Object.keys(changes).length) return true;
-    return syncRegistrationToRemoteByFamilySingle(changes,family);
-  }));
-  return results.every(Boolean);
-}
 
-async function recordSelection(train,formId){
-  if(isNonCurrentSelectedDate(selectedDateKey)) return [];
-  const linkedTrainNos=formationLinkedTrainNos(currentDay,train.no);
-  const assigned=[];
-  const changes={};
-
-  linkedTrainNos.forEach(requested=>{
-    // 表示中の路線だけでなく、両路線を含む運用データから解決する。
-    // そのため、どちらのHTMLから登録しても同じ運用グループ全体へ反映される。
-    const train=findOperationTrainRecord(requested,currentDay);
-    const actual=train ? String(train.no) : null;
-    if(!actual || assigned.includes(actual)) return;
-
-    const value=(formId && formId!==INITIAL_FORMATION_SELECTION.id) ? String(formId) : null;
-    if(value) registrationState[actual]=value;
-    else delete registrationState[actual];
-    assigned.push(actual);
-    changes[actual]=value;
-
-    pendingFormationState[actual]=value;
-    pendingFormationTimestamps[currentDay]=pendingFormationTimestamps[currentDay]||{};
-    if(value) pendingFormationTimestamps[currentDay][actual]=new Date().toISOString();
-    else delete pendingFormationTimestamps[currentDay][actual];
-  });
-
-  applyRegistrationState();
-  refreshAllTrainDataCache();
-  saveLocalState();
-
-  const ok=await syncRegistrationToRemote(changes);
-  if(!ok){
-    saveLocalState();
-    syncStatus('同期失敗（再試行待ち）');
-  }
-  return assigned;
-}
 
 function snapshotForCurrentRegistrations(day, state, dateKey, familyFilter=null){
   const ops=[];
@@ -2446,7 +2049,6 @@ function syncCurrentScheduleDay(){
   }
   return currentDay;
 }
-const DISPLAY_LINE_KIND = 'hiroshima';
 function getDisplayedTrainSource(){
   const day=syncCurrentScheduleDay();
   // 東神奈川～横浜～大船の共用区間では、両路線の列車を同じ画面に表示する。
@@ -2462,58 +2064,32 @@ function getVisibleTrains(){
 }
 function getShortType(type, trainNo=''){
   const value=String(type||'');
-  // JR南武線・京浜東北・根岸線・横浜線は旧サイトと同じく
-  // 「普通／各駅停車」→「各停」、区間急行→区急。
-  if(['JR南武線','京浜東北・根岸線','横浜線'].includes(String(activeRouteName||''))){
-    if(value==='普通' || value==='各駅停車') return '各停';
-    if(value==='区間急行') return '区急';
-    return value;
+  const meta=activeRouteMeta||{};
+  const direct=meta.typeShortMap?.[value];
+  if(direct!==undefined) return String(direct);
+  for(const rule of (Array.isArray(meta.typeShortRules)?meta.typeShortRules:[])){
+    const containsAll=Array.isArray(rule.containsAll)?rule.containsAll:[];
+    if(containsAll.length && !containsAll.every(x=>value.includes(String(x)))) continue;
+    if(rule.contains && !value.includes(String(rule.contains))) continue;
+    if(rule.trainNoSuffix && !String(trainNo||'').toUpperCase().endsWith(String(rule.trainNoSuffix).toUpperCase())) continue;
+    if(rule.result!==undefined) return String(rule.result);
   }
-  // 長野電鉄長野線は旧サイトの種別略称を復元。
-  if(activeRouteName==='長野電鉄長野線'){
-    if(value.includes('ゆけむり') && value.includes('のんびり')) return 'ゆの';
-    if(value.includes('特急')){
-      const no=String(trainNo||'');
-      if(/A$/i.test(no)) return 'A特';
-      if(/B$/i.test(no)) return 'B特';
-      if(value.includes('ゆけむり')) return 'A特';
-      if(value.includes('スノーモンキー')) return 'B特';
-    }
-    return value==='普通' ? '普通' : value==='回送' ? '回送' : value;
-  }
-  // 広島地区・海岸線は現行サイトの表記を維持。
   if(value==='区間急行') return '区急';
   return value==='各駅停車' ? '普通' : value;
 }
 function getDetailType(type){
   const value=String(type||'');
-  if(['京浜東北・根岸線','横浜線'].includes(String(activeRouteName||'')) && (value==='普通' || value==='各停')) return '各駅停車';
-  if(activeRouteName==='長野電鉄長野線') return value;
+  const mapped=activeRouteMeta?.typeDetailMap?.[value];
+  if(mapped!==undefined) return String(mapped);
   return value==='各停' ? '普通' : value;
 }
-// 列車番号はJSONの値をそのまま表示する。
 function displayTrainNo(train){ return (train && !train.hideTrainNumber) ? normalizeTrainNo(train.no) : ''; }
-// 略称は各旧サイトで使用していた短縮表示を路線ごとに復元する。
 function getShortDest(dest){
   const value=String(dest||'');
-  if(activeRouteName==='長野電鉄長野線'){
-    const map={'信州中野':'中野','湯田中':'湯田','長野':'長野','須坂':'須坂'};
-    return map[value]||value;
-  }
-  if(activeRouteName==='JR南武線'){
-    if(value==='稲城長沼') return '稲城';
-    if(value==='武蔵中原') return '中原';
-    if(value==='武蔵溝ノ口') return '溝口';
-    return value;
-  }
-  if(['京浜東北・根岸線','横浜線'].includes(String(activeRouteName||''))){
-    const map={'南浦和':'南浦','東十条':'東十','東神奈川':'東神','桜木町':'桜木','八王子':'八王'};
-    if(Object.prototype.hasOwnProperty.call(map,value)) return map[value];
-  }
-  const aliases=activeJson?.stationAliases;
-  if(aliases && typeof aliases==='object' && Object.prototype.hasOwnProperty.call(aliases,value)){
-    return String(aliases[value]??value);
-  }
+  const aliases=activeRouteMeta?.destinationAliases;
+  if(aliases && Object.prototype.hasOwnProperty.call(aliases,value)) return String(aliases[value]??value);
+  const jsonAliases=activeJson?.stationAliases;
+  if(jsonAliases && typeof jsonAliases==='object' && Object.prototype.hasOwnProperty.call(jsonAliases,value)) return String(jsonAliases[value]??value);
   return value;
 }
 function nthMondayDateKey(year,month,nth){
@@ -2686,67 +2262,38 @@ function formationInputPlaceholderForTrain(train=currentTrainSnapshot){
 }
 function formationById(id){
   if(!id || id===INITIAL_FORMATION_SELECTION.id) return null;
-  const key=String(id).trim();
-  const canonical=key.replace(/F$/i,'');
-  const upper=canonical.toUpperCase();
+  const canonical=String(id).trim().replace(/F$/i,'');
   const base='https://minamikaze2700.github.io/Unyomatome/images/';
-  // A編成/S編成そのものも選択可能な「個別列車未指定」の共通選択肢。
-  if(upper==='A' || upper==='A編成' || key==='227系 A編成') return {id:'A編成',name:'A編成',img:`${base}227-0.png`,kind:'type',type:'A編成',generic:true,family:'hiroshima'};
-  if(upper==='S' || upper==='S編成' || key==='227系 S編成') return {id:'S編成',name:'S編成',img:`${base}227-0.png`,kind:'type',type:'S編成',generic:true,family:'hiroshima'};
-  // 野田線の「みまモニ有／無」は個別編成ではなく汎用選択肢。画像は80000系と共通。
-  if(canonical==='__NODA_MIMA_MONI_YES__') return {id:canonical,name:'80000系みまモニ有',img:`${base}TB80000.png`,kind:'variant',type:'',family:'noda',generic:true};
-  if(canonical==='__NODA_MIMA_MONI_NO__') return {id:canonical,name:'80000系みまモニ無',img:`${base}TB80000.png`,kind:'variant',type:'',family:'noda',generic:true};
 
-  // 野田線は「形式」「個体差」自体も選択可能。元ページと同様に、
-  // 表示用の形式・個体差を汎用選択肢として解決する。
-  if(String(activeRouteMeta?.formationFamily||'')==='noda') {
-    const groups=Array.isArray(FORMATIONS)?FORMATIONS:[];
-    const typeGroupName={
-      '8000型':'8000型',
-      '10030型':'10030型',
-      '60000型':'60000型',
-      '80000系':'80000系'
-    };
-    if(Object.prototype.hasOwnProperty.call(typeGroupName,canonical)) {
-      const hit=groups.find(g=>String(g?.type||'')===canonical ||
-        (canonical==='10030型' && /^10030型（(?:更新|未更新)）$/.test(String(g?.type||''))) ||
-        (canonical==='60000型' && /^60000型（(?:5両|6両)）$/.test(String(g?.type||''))));
-      return {id:canonical,name:canonical,img:hit?.typeImg||LINE_TRAIN_IMG,kind:'type',type:canonical,family:'noda',generic:true};
+  // 共通JSONの「選択可能な形式・個体差・合成選択肢」を同じID体系で解決する。
+  const groups=formationDisplayGroups(FORMATIONS);
+  for(const group of (groups||[])){
+    const gType=String(group?.type||'').trim();
+    if(group?.selectableType && [gType,String(group?.selectableId||'')].some(x=>x.replace(/F$/i,'')===canonical)){
+      return {id:canonical,name:String(group?.selectableId||gType),img:group.typeImg||LINE_TRAIN_IMG,kind:'type',type:String(group?.selectableId||gType),generic:true,displayAsFullName:true,family:formationFamily(group)};
     }
-    const variantAliases={
-      '10030型更新':{name:'10030型更新',match:/^10030型（更新）$/},
-      '10030型未更新':{name:'10030型未更新',match:/^10030型（未更新）$/},
-      '60000型5両':{name:'60000型5両',match:/^60000型（5両）$/},
-      '60000型6両':{name:'60000型6両',match:/^60000型（6両）$/}
-    };
-    const va=variantAliases[canonical];
-    if(va) {
-      const hit=groups.find(g=>va.match.test(String(g?.type||'')));
-      return {id:canonical,name:va.name,img:hit?.typeImg||LINE_TRAIN_IMG,kind:'variant',type:va.name.replace(/(?:更新|未更新|5両|6両)$/,''),family:'noda',generic:true};
+    for(const variant of (group?.variants||[])){
+      const vid=String(variant?.id||'').replace(/F$/i,'');
+      if(vid===canonical){
+        return {id:vid,name:String(variant?.name||vid),img:variant?.img||group.typeImg||LINE_TRAIN_IMG,kind:'variant',type:gType,family:formationFamily(group),generic:true,displayAsFullName:variant?.displayAsFullName!==false};
+      }
+      for(const item of (variant?.items||[])){
+        const iid=String(item?.id||item?.name||'').replace(/F$/i,'');
+        const iname=String(item?.name||iid).replace(/F$/i,'');
+        if(iid===canonical || iname===canonical) return {...item,id:iid,type:gType,family:formationFamily(group)};
+      }
     }
-    // 表示グループ側で使う元データの形式名も直接解決できるようにする。
-    const rawNodaGroup=groups.find(g=>String(g?.type||'')===canonical);
-    if(rawNodaGroup) return {id:canonical,name:canonical,img:rawNodaGroup.typeImg||LINE_TRAIN_IMG,kind:'variant',type:canonical,family:'noda',generic:true};
+    for(const item of (group?.items||[])){
+      const iid=String(item?.id||item?.name||'').replace(/F$/i,'');
+      const iname=String(item?.name||iid).replace(/F$/i,'');
+      if(iid===canonical || iname===canonical) return {...item,id:iid,type:gType,family:formationFamily(group)};
+    }
   }
+
+  // 既存の単一形式JSONで形式名そのものを選択できるようにする。
   const declaredType=String(activeJson?.formationType||'').trim();
-  if(declaredType && (canonical===declaredType || upper===declaredType.toUpperCase())){
-    const imgRaw=String(activeJson?.formationTypeImage||activeJson?.commonFormationIcon||activeJson?.noImage||'').trim();
-    const img=/^https?:\/\//i.test(imgRaw) ? imgRaw : `${base}${imgRaw.replace(/\.png$/i,'')}.png`;
-    return {id:declaredType,name:declaredType,img,kind:'type',type:declaredType,generic:true,family:activeRouteMeta?.formationFamily||formationStorageContext(activeRouteName).family};
-  }
-  for(const group of FORMATIONS){
-    const groupType=String(group.type||'');
-    const direct=(group.items||[]).find(i=>{
-      const iid=String(i.id||'').replace(/F$/i,'');
-      const iname=String(i.name||'').replace(/F$/i,'');
-      return iid===canonical || iname===canonical;
-    });
-    if(direct) return {...direct,id:String(direct.id).replace(/F$/i,''),type:groupType,family:String(group.family||direct.family||formationStorageContext(activeRouteName).family)};
-    for(const variant of (group.variants||[])){
-      if(String(variant.id||'').replace(/F$/i,'')===canonical) return {...variant,id:String(variant.id).replace(/F$/i,''),kind:'variant',type:groupType};
-      const found=(variant.items||[]).find(i=>String(i.id||'').replace(/F$/i,'')===canonical || String(i.name||'').replace(/F$/i,'')===canonical);
-      if(found) return {...found,id:String(found.id).replace(/F$/i,''),type:groupType};
-    }
+  if(declaredType && canonical===declaredType){
+    return {id:declaredType,name:declaredType,img:jsonNoImageUrl(activeJson),kind:'type',type:declaredType,generic:true,displayAsFullName:true,family:activeRouteMeta?.formationFamily||''};
   }
   return null;
 }
@@ -2821,73 +2368,87 @@ function allowedFormationFamily(train){
 }
 function formationDisplayGroups(groups){
   const source=Array.isArray(groups)?groups:[];
-  if(String(activeRouteMeta?.formationFamily||'')!=='noda') return source;
+  const config=activeJson?.formationDisplay||{};
+  const useMerge=config.mergeParentheticalGroups===true;
+  const selectableTypes=config.selectableTypes!==false;
+  if(!useMerge){
+    return source.map(g=>{
+      const gType=String(g?.type||'');
+      const selectable=g?.selectableType===true || /^[^A-Z]*227系 [AS]編成$/.test(gType);
+      const selectableId=g?.selectableId || (gType.includes('A編成')?'A編成':gType.includes('S編成')?'S編成':selectable?gType:'');
+      return {...g,selectableType:selectable,selectableId};
+    });
+  }
 
-  const out=[];
+  const order=Array.isArray(config.order)?config.order.map(String):[];
   const consumed=new Set();
-  const nodaMimaVariants=()=>[
-    {id:'__NODA_MIMA_MONI_YES__',name:'80000系みまモニ有',img:'https://minamikaze2700.github.io/Unyomatome/images/TB80000.png',family:'noda',kind:'variant',type:'MIMA_MONI'},
-    {id:'__NODA_MIMA_MONI_NO__',name:'80000系みまモニ無',img:'https://minamikaze2700.github.io/Unyomatome/images/TB80000.png',family:'noda',kind:'variant',type:'MIMA_MONI'}
-  ];
-  const buildNodaGroup=(baseType, matched)=>{
-    if(!matched.length) return false;
+  const out=[];
+  const variantLabel=(rawType)=>{
+    const m=String(rawType||'').match(/^(.*?)(?:（(.+)）)$/);
+    if(!m) return String(rawType||'');
+    return `${m[1]}${m[2]}`;
+  };
+  for(const baseType of order){
+    const direct=source.filter(g=>String(g?.type||'')===baseType);
+    const parenthetical=source.filter(g=>{
+      const m=String(g?.type||'').match(/^(.*?)(?:（(.+)）)$/);
+      return !!m && m[1]===baseType;
+    });
+    const matched=[...direct,...parenthetical.filter(g=>!direct.includes(g))];
+    if(!matched.length) continue;
     matched.forEach(g=>consumed.add(g));
     const first=matched[0];
     const group={
       type:baseType,
       typeImg:first?.typeImg||LINE_TRAIN_IMG,
-      family:'noda',
+      family:first?.family||activeRouteMeta?.formationFamily||'',
+      selectableType:selectableTypes,
+      selectableId:baseType,
       variants:[],
       items:[]
     };
-
-    if(baseType==='8000型' || baseType==='80000系') {
-      // 個体差のない形式は、形式見出しの直後に個別編成を表示。
-      group.items=matched.flatMap(g=>Array.isArray(g.items)?g.items:[]);
-    } else {
-      group.variants=matched.map(g=>{
-        const rawType=String(g.type||'');
-        const displayName=rawType.includes('（未更新）')?'10030型未更新'
-          :rawType.includes('（更新）')?'10030型更新'
-          :rawType.replace(/^60000型（/,'60000型').replace('）','');
-        return {
-        id:displayName,
-        name:displayName,
-        img:g.typeImg||LINE_TRAIN_IMG,
-        items:Array.isArray(g.items)?g.items:[],
-        family:g.family||'noda'
-        };
+    const hasParenthetical=parenthetical.length>0;
+    if(hasParenthetical){
+      for(const g of matched){
+        const rawType=String(g?.type||'');
+        if(rawType===baseType){
+          group.items.push(...(Array.isArray(g?.items)?g.items:[]));
+          continue;
+        }
+        group.variants.push({
+          id:variantLabel(rawType),
+          name:config.displayFullVariantNames===true?variantLabel(rawType):rawType.match(/^(.*?)(?:（(.+)）)$/)?.[2]||rawType,
+          img:g?.typeImg||LINE_TRAIN_IMG,
+          items:Array.isArray(g?.items)?g.items:[],
+          family:g?.family||group.family,
+          kind:'variant',
+          displayAsFullName:config.displayFullVariantNames===true
+        });
+      }
+    }else{
+      group.items=matched.flatMap(g=>Array.isArray(g?.items)?g.items:[]);
+    }
+    const synthetic=Array.isArray(config.syntheticVariants?.[baseType])?config.syntheticVariants[baseType]:[];
+    for(const v of synthetic){
+      group.variants.push({
+        id:String(v.id||v.name||''),name:String(v.name||v.id||''),img:String(v.img||first?.typeImg||LINE_TRAIN_IMG),items:Array.isArray(v.items)?v.items:[],family:group.family,kind:'variant',generic:true,displayAsFullName:v.displayAsFullName!==false
       });
-
-      // みまモニは80000系側だけに表示する。60000型側には追加しない。
     }
     out.push(group);
-    return true;
-  };
-
-  const g8000=source.filter(g=>String(g?.type||'')==='8000型');
-  if(g8000.length) buildNodaGroup('8000型',g8000);
-  buildNodaGroup('10030型',source.filter(g=>/^10030型（(?:更新|未更新)）$/.test(String(g?.type||''))));
-  buildNodaGroup('60000型',source.filter(g=>/^60000型（(?:5両|6両)）$/.test(String(g?.type||''))).sort((a,b)=>String(a.type).includes('5両')? -1 : String(b.type).includes('5両') ? 1 : 0));
-  buildNodaGroup('80000系',source.filter(g=>String(g?.type||'')==='80000系'));
-  const noda80000=out.find(g=>String(g?.type||'')==='80000系');
-  if(noda80000) noda80000.variants.push(...nodaMimaVariants());
-
-  // 変換対象外の野田線グループは最後に保持。
+  }
   for(const g of source){
     if(consumed.has(g)) continue;
-    if(!out.some(x=>String(x?.type||'')===String(g?.type||''))) out.push(g);
+    out.push({...g,selectableType:selectableTypes && (g?.selectableType===true || /^[^A-Z]*227系 [AS]編成$/.test(String(g?.type||'')))});
   }
-
-  const nodaOrder=['8000型','10030型','60000型','80000系'];
-  out.sort((a,b)=>{
-    const ai=nodaOrder.indexOf(String(a?.type||''));
-    const bi=nodaOrder.indexOf(String(b?.type||''));
-    if(ai>=0 && bi>=0) return ai-bi;
-    if(ai>=0) return -1;
-    if(bi>=0) return 1;
-    return 0;
-  });
+  if(order.length){
+    out.sort((a,b)=>{
+      const ai=order.indexOf(String(a?.type||'')), bi=order.indexOf(String(b?.type||''));
+      if(ai>=0&&bi>=0) return ai-bi;
+      if(ai>=0) return -1;
+      if(bi>=0) return 1;
+      return 0;
+    });
+  }
   return out;
 }
 
@@ -2982,30 +2543,9 @@ function stationIndex(name){
 }
 
 function routeColorBetweenStations(aName,bName){
-  const a=String(aName||''), b=String(bName||'');
-  if(!a || !b || a===b) return null;
-  const yokohamaRoute=['八王子','片倉','八王子みなみ野','相原','橋本','相模原','矢部','淵野辺','古淵','町田','成瀬','長津田','十日市場','中山','鴨居','小机','新横浜','菊名','大口','東神奈川'];
-  const keihinRoute=['大宮','さいたま新都心','与野','北浦和','浦和','南浦和','蕨','西川口','川口','赤羽','東十条','王子','上中里','田端','西日暮里','日暮里','鶯谷','上野','御徒町','秋葉原','神田','東京','有楽町','新橋','浜松町','田町','高輪ゲートウェイ','品川','大井町','大森','蒲田','川崎','鶴見','新子安','東神奈川','横浜','桜木町','関内','石川町','山手','根岸','磯子','新杉田','洋光台','港南台','本郷台','大船'];
-  const ySet=new Set(yokohamaRoute), kSet=new Set(keihinRoute);
-  const aY=ySet.has(a), bY=ySet.has(b), aK=kSet.has(a), bK=kSet.has(b);
-
-  // 通常の同一路線区間。
-  if(aY && bY && !(aK || bK)) return 'var(--yokohama-route)';
-  if(aK && bK && !(aY || bY)) return 'var(--keihin-route)';
-
-  // 東神奈川などの共有駅を含む区間は、共有駅ではない側の駅で路線を確定する。
-  if(a==='東神奈川' && bY && !bK) return 'var(--yokohama-route)';
-  if(b==='東神奈川' && aY && !aK) return 'var(--yokohama-route)';
-  if(a==='東神奈川' && bK && !bY) return 'var(--keihin-route)';
-  if(b==='東神奈川' && aK && !aY) return 'var(--keihin-route)';
-
-  // 停車駅を飛ばして路線境界をまたぐ列車でも、端側の駅の近くが
-  // 別路線色になるのを防ぐため、相手側の固有路線カラーを優先する。
-  if(bY && !bK) return 'var(--yokohama-route)';
-  if(bK && !bY) return 'var(--keihin-route)';
-  if(aY && !aK) return 'var(--yokohama-route)';
-  if(aK && !aY) return 'var(--keihin-route)';
-  return null;
+  const colors=activeSegmentColors(String(aName||''),String(bName||''));
+  const color=String(colors?.[0]||'').trim();
+  return color?`linear-gradient(to right,${color},${color})`:null;
 }
 function routeColorForStopIndex(rows,index,trainContext=null){
   // 停車駅案内は列車が実際に走行する線区の色を使用する。
@@ -3096,17 +2636,11 @@ function trainVisualKind(t){
   return expressClassForTrain(t);
 }
 function expressClassForTrain(t){
-  const type=String(t?.type||'');
-  const lineKind=String(t?.lineKind||'');
+  const type=String(t?.type||'').trim();
   if(type==='回送') return 'deadhead';
-  if(type==='快速'){
-    if(lineKind==='yokohama') return 'yokohama-express';
-    if(lineKind==='keihin') return 'keihin-express';
-    return Number(t?.cars)===8 ? 'yokohama-express' : 'keihin-express';
-  }
-  if(lineKind==='yokohama') return 'yokohama-local';
-  if(lineKind==='keihin') return 'keihin-local';
-  return Number(t?.cars)===8 ? 'yokohama-local' : 'keihin-local';
+  const mapped=activeRouteMeta?.typeClassMap?.[type];
+  if(mapped) return String(mapped);
+  return (type.includes('快速')||type.includes('特急'))?'express':'route-normal';
 }
 function getExpressClass(train){
   return expressClassForTrain(train);
@@ -3295,8 +2829,7 @@ function positionForTrain(t,minutes){
   const next=connectionNext(t);
   const nextStart=next?timeToMinutes(next.startTime)+0.75:null;
 
-  // 野田線版と同じく、運用連結されていない列車だけを通常の始発・終着停車として扱う。
-  // 連結運用の先頭列車は先頭側の始発停車、末尾列車は末尾側の終着停車を担当する。
+    // 連結運用の先頭列車は先頭側の始発停車、末尾列車は末尾側の終着停車を担当する。
   if(!chain){
     if(firstIndex>=0 && isStartDwellMinute(minutes,Number(first._departure))){
       return {pos:firstIndex,side,visualTrain:t,mode:'start-dwell'};
@@ -3338,8 +2871,7 @@ function positionForTrain(t,minutes){
   }
 
   if(next && !isChainLast && Number.isFinite(nextStart)){
-    // 運用連結されている折り返し列車は、野田線版と同じ処理にする。
-    // 到着後1分までは到着側、その後は次列車の発車時刻まで反対側で待機表示する。
+        // 到着後1分までは到着側、その後は次列車の発車時刻まで反対側で待機表示する。
     // 大船で30分以上空く運用は、OPERATION_CHAINS側で連結自体を分割しているため、
     // この処理には入らず、次列車は発車2分前から通常の始発表示になる。
     if(minutes>lastArr && minutes<nextStart){
@@ -3735,7 +3267,7 @@ function getStationDirectionLabels(stationName){
     const d=line?.directions;
     if(d && typeof d==='object') return {up:String(d.up||''),down:String(d.down||'')};
   }
-  // 元ファイル由来のデフォルト方面は引き継がず、JSONにない場合は空欄。
+  // デフォルト方面はJSONの定義を使用し、未定義の場合は空欄。
   return {up:'',down:''};
 }
 
@@ -3853,13 +3385,9 @@ function stationTimetableHTML(station, selectedDirection='up'){
     if(!obj || obj.id===INITIAL_FORMATION_SELECTION.id) return ['—'];
     const type=String(obj.type||'').trim();
     const name=String(obj.name||'').trim();
+    if(obj.displayAsFullName) return [name];
 
-    // 野田線の形式・個体差は、選択肢と同じ完全な名称で表示する。
-    if(String(activeRouteMeta?.formationFamily||'')==='noda' && obj.generic){
-      return [name];
-    }
-
-    // 「60000型6両」のようにnameにも形式が入っている場合は、
+    // 形式名を含む選択肢は、形式と個体差を2行で表示する。
     // 形式と要素を分離して2行で表示する。
     if(type && name){
       if(name===type) return [type];
@@ -3933,12 +3461,7 @@ function formationStorageEntryForTrain(train){
   const area=ctx.area || '__ROOT__';
   const date=String(selectedDateKey||operationDateKey());
   const rawNo=String(train.no||'').trim();
-  // 海岸線は運用連結の先頭列車だけをDBへ保存するため、
-  // 後続の折返し列車を表示するときも先頭列車の登録情報を参照する。
-  const storageNo=(activeRouteName==='海岸線' && typeof operationChainFirstNo==='function')
-    ? operationChainFirstNo(currentDay,rawNo)
-    : rawNo;
-  return formationRemoteByFamily[ctx.family]?.areaStateByDate?.[date]?.[area]?.[storageNo] || null;
+  return formationRemoteByFamily[ctx.family]?.areaStateByDate?.[date]?.[area]?.[rawNo] || null;
 }
 function formationUpdatedAuthorForTrain(trainNo){
   const key=String(trainNo||'');
@@ -3962,15 +3485,13 @@ function formatFormationUpdatedAt(trainNo){
   if(!entry?.f) return '';
   // 新形式 t=「分@登録名」を優先し、将来のaフィールドや旧形式にも対応する。
   const rawMeta=entry.t??entry.time??'';
-  const parsed=typeof hiroshimaParseStoredMeta==='function'
-    ? hiroshimaParseStoredMeta(rawMeta, entry.a)
-    : null;
+  const parsed=parseStoredMeta(rawMeta);
   if(parsed){
     const hh=String(Math.floor(Number(parsed.time)/60)).padStart(2,'0');
     const mm=String(Number(parsed.time)%60).padStart(2,'0');
     return `${hh}:${mm}${parsed.author?` @${parsed.author}`:''}`;
   }
-  return typeof hiroshimaFormatStoredMeta==='function'?hiroshimaFormatStoredMeta(rawMeta):'';
+  return formatStoredMeta(rawMeta);
 }
 function sheetBack(){
   if(previousSheetContext?.type==='station-timetable'){
@@ -4057,34 +3578,22 @@ function updateSheetContent(){
             const groups=formationDisplayGroups(formationsForTrain(train));
             const categoryHeaders=groups.map(group=>{
               const groupType=String(group.type||'');
-              const selectableNoda=String(activeRouteMeta?.formationFamily||'')==='noda';
-              const selectableGeneric=/^(?:8000型|10030型|60000型|80000系)$/.test(groupType);
-              const clickAttr=/227系 [AS]編成$/.test(groupType)
-                ? `onclick="selectFormation('${groupType.includes('S編成')?'S編成':'A編成'}')"`
-                : (selectableNoda && selectableGeneric ? `onclick="selectFormation('${groupType}')"` : '');
-              return `
-              <div class="option-header option-category-header ${clickAttr?'option-selectable-category':''}" ${clickAttr}>
-                <img src="${group.typeImg}" class="option-img"><span>${groupType.replace(/^227系 /,'')}</span>
-              </div>`;
+              const selectable=!!group.selectableType;
+              const id=String(group.selectableId||groupType);
+              const clickAttr=selectable ? `onclick=\"selectFormation('${escapeJs(id)}')\"` : '';
+              return `<div class=\"option-header option-category-header ${selectable?'option-selectable-category':''}\" ${clickAttr}><img src=\"${esc(group.typeImg||LINE_TRAIN_IMG)}\" class=\"option-img\"><span>${esc(id)}</span></div>`;
             }).join('');
-            const variantHeaders=groups.flatMap(group=>(group.variants||[]).map(variant=>`
-              <div class="option-header option-subheader" onclick="selectFormation('${variant.id}')">
-                <img src="${variant.img}" class="option-img"><span>${variant.name}</span>
-              </div>
-            `)).join('');
-            const formationItems=groups.map(group=>`
-              ${(group.variants||[]).flatMap(variant=>variant.items||[]).map(item=>`
-                <div class="option-item option-subitem ${item.disabled || UNAVAILABLE_FORMATIONS.has(String(item.id))?'option-disabled':''}" ${item.disabled || UNAVAILABLE_FORMATIONS.has(String(item.id))?'aria-disabled="true"':''} onclick="selectFormation('${item.id}')">
-                  <img src="${item.img}" class="option-img"><span>${item.name}</span>
-                </div>
-              `).join('')}
-              ${(group.items||[]).map(item=>{
+            const variantHeaders=groups.flatMap(group=>(group.variants||[]).map(variant=>{
+              const disabled=!!variant.disabled;
+              return `<div class=\"option-header option-subheader ${disabled?'option-disabled':''}\" ${disabled?'aria-disabled=\"true\"':`onclick=\"selectFormation('${escapeJs(variant.id)}')\"`}><img src=\"${esc(variant.img||LINE_TRAIN_IMG)}\" class=\"option-img\"><span>${esc(variant.name||variant.id)}</span></div>`;
+            })).join('');
+            const formationItems=groups.map(group=>{
+              const items=[...(group.variants||[]).flatMap(variant=>variant.items||[]),...(group.items||[])];
+              return items.map(item=>{
                 const disabled=!!item.disabled || UNAVAILABLE_FORMATIONS.has(String(item.id));
-                return `<div class="option-item ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':''} onclick="selectFormation('${item.id}')">
-                  <img src="${item.img}" class="option-img"><span>${item.name}</span>
-                </div>`;
-              }).join('')}
-            `).join('');
+                return `<div class=\"option-item ${disabled?'option-disabled':''}\" ${disabled?'aria-disabled=\"true\"':`onclick=\"selectFormation('${escapeJs(item.id)}')\"`}><img src=\"${esc(item.img||LINE_TRAIN_IMG)}\" class=\"option-img\"><span>${esc(item.name||item.id)}</span></div>`;
+              }).join('');
+            }).join('');
             return categoryHeaders+variantHeaders+formationItems;
           })()}
         </div>
@@ -4215,7 +3724,7 @@ async function selectFormation(formId){
   }
   const currentSelectableTrain=liveTrain(currentTrainNo) || currentTrainSnapshot || trainForCurrentDay(currentTrainNo);
   if(!formationAllowedForTrain(currentSelectableTrain,formId)){
-    syncStatus(allowedFormationFamily(currentSelectableTrain)==='yokohama' ? 'この列車は横浜線系統の編成のみ登録できます' : 'この列車は京浜東北線系統の編成のみ登録できます');
+    syncStatus('この列車に対応する路線系統の編成のみ登録できます');
     return;
   }
   if(isHistoricalSelectedDate(selectedDateKey)) return;
@@ -4746,15 +4255,18 @@ function lineAdjacent(line,a,b){
     const x=String(stations[i]?.name||''),y=String(stations[i+1]?.name||'');
     if((x===aa&&y===bb)||(x===bb&&y===aa)) return true;
   }
-  // 画面上の山陽本線は糸崎まで表示するが、JSONの線区定義は三原起点。
-  if(String(line?.name||'')==='山陽本線（三原～広島）' && ((aa==='糸崎'&&bb==='三原')||(aa==='三原'&&bb==='糸崎'))) return true;
-  if(String(line?.name||'')==='呉線' && ((aa==='糸崎'&&bb==='三原')||(aa==='三原'&&bb==='糸崎'))) return true;
+  const prepended=Array.isArray(activeRouteMeta?.prependStations)?activeRouteMeta.prependStations.map(x=>String(x?.nameJa||'')).filter(Boolean):[];
+  const first=stations[0]?.name;
+  if(prepended.includes(aa) && first===bb) return true;
+  if(prepended.includes(bb) && first===aa) return true;
   return false;
 }
 function lineContainsOrderedPair(line,a,b){
   const aa=String(a||''),bb=String(b||'');
-  if(String(line?.name||'')==='山陽本線（三原～広島）' && ((aa==='糸崎'&&bb==='三原')||(aa==='三原'&&bb==='糸崎'))) return true;
   const stations=Array.isArray(line?.stations)?line.stations:[];
+  const prepended=Array.isArray(activeRouteMeta?.prependStations)?activeRouteMeta.prependStations.map(x=>String(x?.nameJa||'')).filter(Boolean):[];
+  const first=stations[0]?.name;
+  if((prepended.includes(aa)&&first===bb)||(prepended.includes(bb)&&first===aa)) return true;
   let ia=-1,ib=-1;
   for(let i=0;i<stations.length;i++){
     const n=String(stations[i]?.name||'');
@@ -4781,7 +4293,6 @@ function lineContainsStops(line,a,b){
   if(!aa||!bb||aa===bb) return false;
   if(lineAdjacent(line,aa,bb)) return true;
   // 快速などで途中停車駅を飛ばしていても、両駅が同一線区上にあればその線区色を使用する。
-  if(String(line?.name||'')==='山陽本線（三原～広島）' && ((aa==='糸崎'&&bb==='三原')||(aa==='三原'&&bb==='糸崎'))) return true;
   return lineContainsOrderedPair(line,aa,bb);
 }
 function trainServiceLineCandidates(a,b,trainContext=null){
@@ -4890,38 +4401,29 @@ function activeRouteColors(){
 }
 function activeSegmentColors(a,b){
   const aa=String(a||''),bb=String(b||'');
-  const shared=['東神奈川','横浜','桜木町','関内','石川町','山手','根岸','磯子','新杉田','洋光台','港南台','本郷台','大船'];
-  if(activeRouteName==='横浜線' && shared.includes(aa) && shared.includes(bb)){
-    const keihin=lineDefByName('京浜東北・根岸線');
-    if(keihin?.color) return [String(keihin.color)];
-  }
-  const line=preferredTrainServiceLine(aa,bb,{servedLineNames:getActiveRouteLineNames()});
-  return line?.color?[line.color]:[activeRouteColors()[0]||'#666'];
-}
-function stationLabelColor(index){
-  // 駅名ラベルは「現在表示している路線」のJSON線区カラーを直接参照する。
-  // CSSの既定値（旧デザインの #00a3d9）には依存しない。
-  const colors=activeRouteColors();
-  if(activeRouteName==='山陽本線（糸崎～岩国）' && colors.length>=2){
-    const h=STATIONS.findIndex(st=>st.nameJa==='広島');
-    return (h>=0 && Number(index)>=h) ? (colors[1]||colors[0]||'#666') : (colors[0]||'#666');
-  }
-  if(activeRouteName==='横浜線'){
-    const h=STATIONS.findIndex(st=>st.nameJa==='東神奈川');
-    const keihin=lineDefByName('京浜東北・根岸線');
-    const keihinColor=String(keihin?.color||'').trim();
-    if(h>=0 && /^#[0-9a-fA-F]{6}$/.test(keihinColor)){
-      return Number(index)>=h ? keihinColor : (colors[0]||'#666');
+  const meta=activeRouteMeta||{};
+  for(const rule of (Array.isArray(meta.segmentColorRules)?meta.segmentColorRules:[])){
+    const required=Array.isArray(rule.whenStationsAllPresent)?rule.whenStationsAllPresent.map(String):[];
+    if(required.length && required.includes(aa) && required.includes(bb)){
+      const line=lineDefByName(rule.useLine);
+      if(line?.color) return [String(line.color)];
+    }
+    if(Array.isArray(rule.stationPairs) && rule.stationPairs.some(pair=>Array.isArray(pair)&&pair.length>=2&&((String(pair[0])===aa&&String(pair[1])===bb)||(String(pair[1])===aa&&String(pair[0])===bb)))){
+      const line=lineDefByName(rule.useLine);
+      if(line?.color) return [String(line.color)];
     }
   }
-  if(colors.length) return colors[0];
-  // activeRouteColors() がまだ初期化前でも、JSONの線区定義から取得する。
-  const names=Array.isArray(ROUTE_REGISTRY[activeRouteName]?.jsonLines) ? ROUTE_REGISTRY[activeRouteName].jsonLines : [];
-  for(const name of names){
-    const color=String((activeJson?.lines||[]).find(x=>String(x?.name||'')===String(name||''))?.color||'').trim();
-    if(/^#[0-9a-fA-F]{6}$/.test(color)) return color;
-  }
-  return '#666';
+  const line=preferredTrainServiceLine(aa,bb,{servedLineNames:getActiveRouteLineNames()});
+  return line?.color?[String(line.color)]:[activeRouteColors()[0]||'#666'];
+}
+function stationLabelColor(index){
+  const i=Math.max(0,Math.min(STATIONS.length-1,Number(index)||0));
+  const prev=i>0?STATIONS[i-1]?.nameJa:null;
+  const cur=STATIONS[i]?.nameJa;
+  const next=i<STATIONS.length-1?STATIONS[i+1]?.nameJa:null;
+  const prevColor=prev&&cur?activeSegmentColors(prev,cur)[0]:null;
+  const nextColor=cur&&next?activeSegmentColors(cur,next)[0]:null;
+  return nextColor||prevColor||activeRouteColors()[0]||'#666';
 }
 function stationLabelBackground(index){ return stationLabelColor(index); }
 
@@ -5052,38 +4554,22 @@ function displayedRouteColorForTrainPosition(train,position=null){
 }
 function typeColorForTrain(train,position=null){
   const type=String(train?.type||'').trim();
-  const currentRouteColor=displayedRouteColorForTrainPosition(train,position);
-  // 野田線の普通列車は常に灰色。
-  if(String(activeRouteMeta?.formationFamily||'')==='noda' && (!type || type==='普通' || type==='各駅停車')){
-    return '#666';
-  }
-  // 普通・各駅停車は種別固定色ではなく、現在走行している線区カラーを使用する。
-  if(!type || type==='普通' || type==='各駅停車'){
-    return String(currentRouteColor||activeRouteColors()[0]||'#666');
-  }
-  const colors=activeJson?.typeColors||{};
-  if(Object.prototype.hasOwnProperty.call(colors,type) && typeof colors[type]==='string'){
-    return String(colors[type]||'#fff');
-  }
+  const colors={...(activeRouteMeta?.typeColors||{}),...(activeJson?.typeColors||{})};
+  if(Object.prototype.hasOwnProperty.call(colors,type) && typeof colors[type]==='string') return String(colors[type]);
   if(type==='回送') return String(colors?.回送||'#fff');
   if(type.includes('快速')) return String(colors?.快速||FAST_TYPE_COLOR||'#f39800');
-
-  // 路線固定の色を使わないため、路線内の色境界や共有区間にも追従する。
+  const currentRouteColor=displayedRouteColorForTrainPosition(train,position);
+  if(!type || type==='普通' || type==='各駅停車') return String(currentRouteColor||activeRouteColors()[0]||'#666');
   if(currentRouteColor) return String(currentRouteColor);
-
-  const routeMap=colors?.普通?.byRoute||{};
   const fallback=String(fallbackTrainServiceColor(train)||activeRouteColors()[0]||'#666');
-  return String(routeMap[activeRouteName]||fallback);
+  return fallback;
 }
 function typeBadgeInlineStyle(train,position=null,stationDirectionColor=null){
   const type=String(train?.type||'普通');
   if(type==='回送') return 'background:#fff;color:#111;border:1px solid #bbb;';
-  if(String(activeRouteMeta?.formationFamily||'')==='noda' && (!type || type==='普通' || type==='各駅停車')){
-    return 'background:#666;color:#fff;';
-  }
-  if(type==='普通' && stationDirectionColor){
-    return `background:${stationDirectionColor};color:#fff;`;
-  }
+  const configured={...(activeRouteMeta?.typeColors||{}),...(activeJson?.typeColors||{})};
+  if(Object.prototype.hasOwnProperty.call(configured,type)) return `background:${typeColorForTrain(train,position)};color:#fff;`;
+  if(type==='普通' && stationDirectionColor) return `background:${stationDirectionColor};color:#fff;`;
   const resolvedPosition = position!=null ? position : (train ? positionForTrain(train,currentMinutes())?.pos : null);
   return `background:${typeColorForTrain(train,resolvedPosition)};color:#fff;`;
 }
@@ -5102,14 +4588,6 @@ function defaultTrainImage(){
   if(activeRouteMeta?.trainImage) return String(activeRouteMeta.trainImage);
   return jsonNoImageUrl();
 }
-function formationsForTrain(){ return FORMATIONS; }
-function allowedFormationFamily(){ return 'hiroshima'; }
-function formationFamilyForTypeSafe(){ return 'hiroshima'; }
-function formationAllowedForTrain(train,id){ return !id || id===INITIAL_FORMATION_SELECTION.id || !!formationById(id); }
-function trainBelongsToFamily(no,family){ return family==='hiroshima' && !!findOperationTrainRecord(no,currentDay); }
-function formationFirebaseConfigForFamily(){ return FIREBASE_CONFIG; }
-function firebaseDatabaseForFamily(){ return firebaseDatabase(); }
-
 /* 現在選択している日付の土休日列車を常に優先する。JSONのキーは土休日/休日どちらでも可。 */
 function sourceTrainsForCurrentDay(){
   syncCurrentScheduleDay();
@@ -5332,7 +4810,7 @@ function updateRouteVisuals(){
   const meta=ROUTE_REGISTRY[activeRouteName]||{};
   const colors=activeRouteColors();
   const primary=colors[0]||'#808080';
-  const titleColor=activeRouteName==='山陽本線（糸崎～岩国）' ? JR_WEST_CORPORATE_COLOR : (colors[0]||'#808080');
+  const titleColor=String(meta?.corporateTitleColor||colors[0]||'#808080');
   const root=document.documentElement;
   root.style.setProperty('--route-primary',primary);
   root.style.setProperty('--primary',primary);
@@ -5392,134 +4870,105 @@ function mixColor(a,b,ratio=0.5){
 initRegionNavigation();
 </script>
 
-<script>
-/* 広島地区編成登録で全スクリプトから共有する定数・保留書き込み状態。
-   Firebaseのイベントコールバックは別IIFEから実行されるため、ローカルスコープに閉じ込めない。 */
-var HIROSHIMA_FORMATION_FAMILY='hiroshima';
-window.hiroshimaFormationStateByDate = window.hiroshimaFormationStateByDate || {};
-window.hiroshimaFormationUpdatedAtByDate = window.hiroshimaFormationUpdatedAtByDate || {};
-window.pendingHiroshimaRemoteWrites = window.pendingHiroshimaRemoteWrites || {};
-window.applyPendingHiroshimaWritesToState=function(state,day){
-  const target=state&&typeof state==='object' ? state : {};
-  const dayKey=String(day||selectedDateKey||operationDateKey());
-  const pending=window.pendingHiroshimaRemoteWrites?.[dayKey]||{};
-  for(const [no,value] of Object.entries(pending)){
-    if(value===null||value===undefined||String(value)==='') delete target[no];
-    else target[no]=value;
-  }
-  return target;
-}
-</script>
+
+
 
 <script>
-/* 編成登録：広島地区は「広島地区 / JR広島 / 日付 / 列車番号」、
-   海岸線は「神戸市営 / 日付 / 列車番号」に保存する。1列車は {f:編成,t:YYMMDDHHMM@登録名} の最小構成。 */
+/* ===== mainpage共通：編成・Firebase処理 =====
+   路線ごとの差はROUTE_REGISTRY / 外部JSONのデータだけで決定し、
+   路線別HTMLから移植した個別保存処理は使用しない。 */
 (function(){
-  const FORMATION_FAMILY_CONFIGS={
-    hiroshima:{root:'広島地区',area:'JR広島'},
-    kobe:{root:'神戸市営',area:'__ROOT__'},
-    keihin:{root:'京浜東北・根岸線',area:'__ROOT__'},
-    yokohama:{root:'横浜線',area:'__ROOT__'},
-    nambu:{root:'JR南武線',area:'__ROOT__'},
-    nagano:{root:'長野電鉄長野線',area:'__ROOT__'},
-    noda:{root:'東武野田線',area:'__ROOT__'}
-  };
-  const HIROSHIMA_FORMATION_FAMILY='hiroshima';
-  const KOBE_FORMATION_FAMILY='kobe';
-  const HIROSHIMA_ROOT='広島地区';
-  const HIROSHIMA_AREA='JR広島';
-  const KOBE_ROOT='神戸市営';
-  const KOBE_INTERNAL_AREA='__ROOT__';
-  const emptyFormationState=()=>({stateByDay:{},formationUpdatedAtByDay:{},formationUpdatedByDate:{},areaStateByDate:{},areaMetaByDate:{}});
+  function routeMetaForFamily(family){
+    const key=String(family||'').trim();
+    return Object.values(ROUTE_REGISTRY).find(meta=>String(meta?.formationFamily||'').trim()===key)||null;
+  }
+
   for(const family of FORMATION_FAMILIES){
-    if(!formationRemoteByFamily[family]) formationRemoteByFamily[family]=emptyFormationState();
-    formationRemoteByFamily[family].stateByDay=formationRemoteByFamily[family].stateByDay||{};
-    formationRemoteByFamily[family].formationUpdatedAtByDay=formationRemoteByFamily[family].formationUpdatedAtByDay||{};
-    formationRemoteByFamily[family].formationUpdatedByDate=formationRemoteByFamily[family].formationUpdatedByDate||{};
-    formationRemoteByFamily[family].areaStateByDate=formationRemoteByFamily[family].areaStateByDate||{};
-    formationRemoteByFamily[family].areaMetaByDate=formationRemoteByFamily[family].areaMetaByDate||{};
+    if(!formationRemoteByFamily[family]) formationRemoteByFamily[family]={};
+    Object.assign(formationRemoteByFamily[family],{
+      stateByDay:formationRemoteByFamily[family].stateByDay||{平日:{},休日:{}},
+      formationUpdatedAtByDay:formationRemoteByFamily[family].formationUpdatedAtByDay||{平日:{},休日:{}},
+      formationUpdatedByDate:formationRemoteByFamily[family].formationUpdatedByDate||{},
+      areaStateByDate:formationRemoteByFamily[family].areaStateByDate||{},
+      areaMetaByDate:formationRemoteByFamily[family].areaMetaByDate||{}
+    });
   }
 
   function storageRootForFamily(family){
-    const cfg=FORMATION_FAMILY_CONFIGS[String(family)]||FORMATION_FAMILY_CONFIGS.hiroshima;
-    return cfg.root;
+    return String(routeMetaForFamily(family)?.storageRoot||'').trim();
   }
   function storageAreaForFamily(family){
-    const cfg=FORMATION_FAMILY_CONFIGS[String(family)]||FORMATION_FAMILY_CONFIGS.hiroshima;
-    return cfg.area;
+    const meta=routeMetaForFamily(family);
+    return meta?.storageArea===null ? '__ROOT__' : String(meta?.storageArea||'__ROOT__').trim()||'__ROOT__';
   }
-  function storageAreaKeyForTrain(train){ return storageAreaForFamily(storageFamilyForTrain(train)); }
-  function storageFamilyForActiveRoute(){ return formationStorageContext(activeRouteName).family; }
-
-  function hiroshimaCanonicalAreaKey(value){ return HIROSHIMA_AREA; }
-  window.hiroshimaCanonicalAreaKey=hiroshimaCanonicalAreaKey;
-  function hiroshimaAreaKey(routeName=activeRouteName){
-    return storageFamilyForActiveRoute()===KOBE_FORMATION_FAMILY ? KOBE_INTERNAL_AREA : HIROSHIMA_AREA;
+  function storageFamilyForActiveRoute(){
+    return formationStorageContext(activeRouteName).family;
   }
-  window.hiroshimaAreaKey=hiroshimaAreaKey;
+  window.storageRootForFamily=storageRootForFamily;
+  window.storageAreaForFamily=storageAreaForFamily;
+  window.storageFamilyForActiveRoute=storageFamilyForActiveRoute;
 
   function formationDateKey(){
     const key=String(selectedDateKey||'').trim();
-    return /^\d{4}-\d{2}-\d{2}$/.test(key) ? key : operationDateKey();
+    return /^\d{4}-\d{2}-\d{2}$/.test(key)?key:operationDateKey();
   }
-  window.hiroshimaFormationDateKey=formationDateKey;
+  window.formationDateKey=formationDateKey;
 
-  function normalizeCompactMeta(value){
-    if(value===null||value===undefined||String(value)==='') return {time:'',author:''};
-    if(typeof value==='object') return parseStoredMeta(String(value.t??value.time??''));
-    return parseStoredMeta(String(value));
-  }
-  function parseStoredMeta(raw){
-    const text=String(raw||'').trim();
-    if(!text) return {time:'',author:''};
-    const at=text.indexOf('@');
-    const timePart=at>=0?text.slice(0,at):text;
-    const author=at>=0?text.slice(at+1).replace(/^@+/, '').trim():'';
-    const compact=timePart.match(/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/);
-    if(compact){
-      const month=Number(compact[2]),day=Number(compact[3]),hour=Number(compact[4]),minute=Number(compact[5]);
-      if(month>=1&&month<=12&&day>=1&&day<=31&&hour>=0&&hour<=23&&minute>=0&&minute<=59){
-        return {time:String(hour*60+minute),stamp:timePart,author:String(author||'').trim()};
-      }
-    }
-    const n=Number(timePart);
-    if(Number.isFinite(n) && n>=0 && n<=1439) return {time:String(Math.floor(n)),author:String(author||'').trim()};
-    const d=new Date(timePart);
-    if(!Number.isNaN(d.getTime())) return {time:String(d.getHours()*60+d.getMinutes()),author:String(author||'').trim()};
-    const m=text.match(/^(\d{1,2}):(\d{2})(?:\s*@(.+))?$/);
-    if(m) return {time:String(Number(m[1])*60+Number(m[2])),author:String(m[3]||'').trim()};
-    return {time:'',author:''};
-  }
-  window.hiroshimaParseStoredMeta=function(raw,authorFallback=''){
-    const parsed=parseStoredMeta(raw);
-    if(!parsed.author&&authorFallback) parsed.author=String(authorFallback).replace(/^@+/, '').trim();
-    else if(parsed.author) parsed.author=String(parsed.author).replace(/^@+/, '').trim();
-    if(!parsed.time) return null;
-    return parsed;
-  };
   function makeStoredMeta(){
     const now=new Date();
     const stamp=`${String(now.getFullYear()%100).padStart(2,'0')}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
     const name=String(currentUserProfile?.name||currentAuthUser?.displayName||'').trim();
-    return name ? `${stamp}@${name}` : stamp;
+    return name?`${stamp}@${name}`:stamp;
   }
-  function formatStoredMeta(meta){
-    const parsed=parseStoredMeta(meta);
-    if(!parsed.time) return '';
-    const mins=Math.max(0,Math.min(1439,Number(parsed.time)||0));
-    const hh=String(Math.floor(mins/60)).padStart(2,'0');
-    const mm=String(mins%60).padStart(2,'0');
-    return `${hh}:${mm}${parsed.author?` @${parsed.author}`:''}`;
+  function parseStoredMeta(raw){
+    if(raw===null||raw===undefined||String(raw)==='') return {time:'',stamp:'',author:''};
+    const text=String(raw).trim();
+    const at=text.indexOf('@');
+    const timePart=at>=0?text.slice(0,at):text;
+    const author=at>=0?text.slice(at+1).replace(/^@+/,'').trim():'';
+    const compact=timePart.match(/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/);
+    if(compact){
+      const month=Number(compact[2]),day=Number(compact[3]),hour=Number(compact[4]),minute=Number(compact[5]);
+      if(month>=1&&month<=12&&day>=1&&day<=31&&hour>=0&&hour<=23&&minute>=0&&minute<=59){
+        return {time:String(hour*60+minute),stamp:timePart,author};
+      }
+    }
+    const minuteValue=Number(timePart);
+    if(Number.isFinite(minuteValue)&&minuteValue>=0&&minuteValue<=1439){
+      return {time:String(Math.floor(minuteValue)),stamp:'',author};
+    }
+    const hm=text.match(/^(\d{1,2}):(\d{2})(?:\s*@(.+))?$/);
+    if(hm) return {time:String(Number(hm[1])*60+Number(hm[2])),stamp:'',author:String(hm[3]||'').trim()};
+    const d=new Date(timePart);
+    if(!Number.isNaN(d.getTime())) return {time:String(d.getHours()*60+d.getMinutes()),stamp:'',author};
+    return {time:'',stamp:'',author:''};
   }
-  window.hiroshimaFormatStoredMeta=formatStoredMeta;
+  function formatStoredMeta(raw){
+    const meta=parseStoredMeta(raw);
+    if(!meta.time) return '';
+    const mins=Math.max(0,Math.min(1439,Number(meta.time)||0));
+    return `${String(Math.floor(mins/60)).padStart(2,'0')}:${String(mins%60).padStart(2,'0')}${meta.author?` @${meta.author}`:''}`;
+  }
+  window.parseStoredMeta=parseStoredMeta;
+  window.formatStoredMeta=formatStoredMeta;
 
-  formationFamilyFromType=function(group){ return String(group?.family||group?.formationFamily||storageFamilyForActiveRoute()); };
-  formationFamily=function(group){ return String(group?.family||group?.formationFamily||formationFamilyFromType(group?.type)); };
-  allowedFormationFamily=function(train){ return storageFamilyForTrain(train); };
-  formationFamilyForTypeSafe=function(group){ return String(group?.family||group?.formationFamily||storageFamilyForActiveRoute()); };
-  formationFamilyForTrain=function(train){ return storageFamilyForTrain(train); };
-  formationsForTrain=function(){ 
-    const family=storageFamilyForActiveRoute();
+  formationFamilyFromType=function(group){
+    return String(group?.family||group?.formationFamily||activeRouteMeta?.formationFamily||'').trim();
+  };
+  formationFamily=function(group){
+    return formationFamilyFromType(group);
+  };
+  allowedFormationFamily=function(train){
+    return formationStorageContext(train).family;
+  };
+  formationFamilyForTypeSafe=function(group){
+    return formationFamily(group);
+  };
+  formationFamilyForTrain=function(train){
+    return formationStorageContext(train).family;
+  };
+  formationsForTrain=function(train){
+    const family=allowedFormationFamily(train||currentTrainSnapshot||{});
     return (FORMATIONS||[]).filter(group=>formationFamily(group)===family);
   };
 
@@ -5527,166 +4976,150 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     if(value===null||value===undefined||String(value).trim()==='') return null;
     const raw=String(value).trim();
     const direct=formationById(raw)||formationById(raw.replace(/F$/i,''));
-    if(direct?.id) return String(direct.id);
-    const normalized=raw.toUpperCase().replace(/[Ａ-Ｚ]/g,ch=>String.fromCharCode(ch.charCodeAt(0)-0xFEE0));
-    const normalizedObj=formationById(normalized)||formationById(normalized.replace(/F$/i,''));
-    if(normalizedObj?.id) return String(normalizedObj.id);
-    return null;
+    return direct?.id ? String(direct.id).replace(/F$/i,'') : null;
   }
-  window.canonicalHiroshimaFormationId=canonicalFormationId;
+  window.canonicalFormationId=canonicalFormationId;
+
+  normalizeStoredFormationId=function(value){
+    if(value===null||value===undefined||String(value).trim()==='') return null;
+    const ids=String(value).split('+').map(x=>canonicalFormationId(x)||String(x).replace(/F$/i,'').trim()).filter(Boolean);
+    return ids.length?ids.join('+'):null;
+  };
 
   formationAllowedForTrain=function(train,id){
     if(!id||id===INITIAL_FORMATION_SELECTION.id) return true;
-    const targetFamily=storageFamilyForTrain(train);
-    const ids=String(id).split('+').map(x=>x.trim()).filter(Boolean);
-    if(!ids.length) return false;
-    return ids.every(one=>{
-      const canonical=canonicalFormationId(one);
-      if(!canonical) return false;
-      const obj=formationById(canonical);
-      return !!obj && formationFamily(obj)===targetFamily;
+    const targetFamily=allowedFormationFamily(train||{});
+    return String(id).split('+').map(x=>x.trim()).filter(Boolean).every(one=>{
+      const obj=formationById(one);
+      return !!obj && formationFamily(obj)===targetFamily && !obj.disabled;
     });
   };
+
   trainBelongsToFamily=function(no,family){
     const key=String(no||'').trim();
     if(!key) return false;
-    const source=operationTrainSourceForDay(currentDay);
-    return source.some(t=>String(t?.no||'')===key&&storageFamilyForTrain(t)===family);
+    return operationTrainSourceForDay(currentDay).some(t=>String(t?.no||'').trim()===key&&formationFamilyForTrain(t)===String(family||''));
   };
 
-  function normalizeEntry(no,entry){
+  function normalizeEntry(entry){
     if(entry===null||entry===undefined) return null;
-    const value=typeof entry==='object' ? entry.f??entry.formation : entry;
-    const ids=String(value??'').split('+').map(canonicalFormationId).filter(Boolean);
+    const rawValue=typeof entry==='object' ? (entry.f??entry.formation??'') : entry;
+    const ids=String(rawValue??'').split('+').map(x=>canonicalFormationId(x)||String(x).replace(/F$/i,'').trim()).filter(Boolean);
     if(!ids.length) return null;
-    const meta=normalizeCompactMeta(typeof entry==='object' ? entry.t??entry.time??'' : '');
+    const meta=parseStoredMeta(typeof entry==='object' ? (entry.t??entry.time??'') : '');
     const out={f:ids.join('+'),t:meta.time ? (meta.stamp ? `${meta.stamp}${meta.author?`@${meta.author}`:''}` : `${meta.time}${meta.author?`@${meta.author}`:''}`) : ''};
     const role=typeof entry==='object'?String(entry.r||'').trim():'';
     if(role) out.r=role;
     return out;
   }
+
   function normalizeStorageRoot(raw,family){
     const out={};
     if(!raw||typeof raw!=='object') return out;
     const area=storageAreaForFamily(family);
-    // ルート直下保存（海岸線・京浜東北・横浜・南武・長野）。
-    if(area===KOBE_INTERNAL_AREA || area==='__ROOT__'){
+    if(area==='__ROOT__'){
       for(const [date,value] of Object.entries(raw)){
         if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date))) continue;
-        const trains=value&&typeof value==='object' ? (
-          value[area]&&typeof value[area]==='object' ? value[area] : value
-        ) : null;
+        const trains=value&&typeof value==='object'&&value.__ROOT__&&typeof value.__ROOT__==='object' ? value.__ROOT__ : value;
         if(!trains||typeof trains!=='object') continue;
         const areaOut={};
         for(const [no,entry] of Object.entries(trains)){
-          const normalized=normalizeEntry(no,entry);
+          const normalized=normalizeEntry(entry);
           if(normalized) areaOut[String(no)]=normalized;
         }
-        if(Object.keys(areaOut).length) out[String(date)]={[area]:areaOut};
+        if(Object.keys(areaOut).length) out[String(date)]={__ROOT__:areaOut};
       }
       return out;
     }
-    // 広島地区のように root/area/date/no の形。
-    for(const [rootArea,value1] of Object.entries(raw)){
-      if(String(rootArea)!==String(area)||!value1||typeof value1!=='object') continue;
-      for(const [date,trains] of Object.entries(value1)){
-        if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date))||!trains||typeof trains!=='object') continue;
-        const areaOut={};
-        for(const [no,entry] of Object.entries(trains)){
-          const normalized=normalizeEntry(no,entry);
-          if(normalized) areaOut[String(no)]=normalized;
-        }
-        if(Object.keys(areaOut).length){ out[String(date)]??={}; out[String(date)][String(area)]=areaOut; }
+    const areaObj=raw?.[area];
+    if(!areaObj||typeof areaObj!=='object') return out;
+    for(const [date,trains] of Object.entries(areaObj)){
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date))||!trains||typeof trains!=='object') continue;
+      const areaOut={};
+      for(const [no,entry] of Object.entries(trains)){
+        const normalized=normalizeEntry(entry);
+        if(normalized) areaOut[String(no)]=normalized;
       }
+      if(Object.keys(areaOut).length) out[String(date)]={[area]:areaOut};
     }
     return out;
   }
+  window.normalizeStorageRoot=normalizeStorageRoot;
+
   function syncDerivedStateForFamily(family){
     const remote=formationRemoteByFamily[family];
     if(!remote) return;
-    const all=remote.areaStateByDate||{};
     const date=formationDateKey();
     const area=storageAreaForFamily(family);
-    const areaData=all?.[date]?.[area]||{};
+    const areaData=remote.areaStateByDate?.[date]?.[area]||{};
     const state={},ts={},authors={};
     for(const [no,entry] of Object.entries(areaData)){
-      if(entry?.f) state[no]=entry.f;
-      const meta=normalizeCompactMeta(entry?.t);
-      if(meta.time){ ts[no]=meta.time; authors[no]=meta.author||''; }
+      if(entry?.f) state[String(no)]=entry.f;
+      const meta=parseStoredMeta(entry?.t);
+      if(meta.time){ ts[String(no)]=meta.time; authors[String(no)]=meta.author||''; }
     }
     remote.stateByDay[date]=state;
     remote.formationUpdatedAtByDay[date]=ts;
     remote.formationUpdatedByDate[date]=authors;
     if(family===storageFamilyForActiveRoute()){
-      window.hiroshimaFormationUpdatedByDate=remote.formationUpdatedByDate;
       remoteRoot.stateByDay=remoteRoot.stateByDay||{平日:{},休日:{}};
       remoteRoot.stateByDay[currentDay]=cloneState(state);
       remoteRoot.formationUpdatedAtByDay=remoteRoot.formationUpdatedAtByDay||{平日:{},休日:{}};
       remoteRoot.formationUpdatedAtByDay[currentDay]=cloneState(ts);
     }
   }
-  function syncDerivedState(){ syncDerivedStateForFamily(storageFamilyForActiveRoute()); }
+  window.syncDerivedStateForFamily=syncDerivedStateForFamily;
+  window.syncDerivedState=function(){syncDerivedStateForFamily(storageFamilyForActiveRoute());};
 
-  normalizeFormationState=function(raw,family){
-    const out={};
-    for(const [no,value] of Object.entries(raw||{})){
-      const ids=String(value??'').split('+').map(canonicalFormationId).filter(Boolean);
-      if(ids.length) out[String(no)]=ids.join('+');
-    }
-    return out;
-  };
-  normalizeFormationTimestampState=function(raw,family){
-    const out={};
-    for(const [no,value] of Object.entries(raw||{})){
-      const meta=normalizeCompactMeta(value);
-      if(meta.time) out[String(no)]=meta.time;
-    }
-    return out;
-  };
-
-  firebaseDatabaseForFamily=function(family){ return formationFirebaseDbs[String(family||'')]||formationFirebaseDbs.hiroshima||firebaseDb||null; };
-  firebaseDatabase=function(){ return formationFirebaseDbs.hiroshima||firebaseDb||null; };
+  firebaseDatabaseForFamily=function(){ return firebaseDb||null; };
+  firebaseDatabase=function(){ return firebaseDb||null; };
   firebaseOperationRef=function(){ const db=firebaseDatabase(); return db?db.ref('運用'):null; };
   firebaseHistoryRef=function(){ const db=firebaseDatabase(); return db?db.ref('履歴'):null; };
-  formationOperationRef=function(family=storageFamilyForActiveRoute()){
-    const db=firebaseDatabaseForFamily(family); if(!db) return null;
-    return db.ref(storageRootForFamily(family));
+  formationOperationRef=function(family){
+    const db=firebaseDatabaseForFamily(family);
+    const root=storageRootForFamily(family);
+    return db&&root ? db.ref(root) : null;
   };
-
-  loadFormationFamilyFromFirebase=async function(family){
-    if(!FORMATION_FAMILY_CONFIGS[String(family)]) return false;
-    const ref=formationOperationRef(family); if(!ref) return false;
-    const snap=await ref.once('value');
-    const all=normalizeStorageRoot(snap.val()||{},family);
-    formationRemoteByFamily[family].areaStateByDate=all;
-    if(family===HIROSHIMA_FORMATION_FAMILY) window.hiroshimaFormationStateByDate=all;
-    syncDerivedStateForFamily(family);
-    return true;
-  };
-  mergeFormationRemoteIntoLegacyState=function(){ syncDerivedState(); };
 
   registeredFormationForTrain=function(train){
     if(!train) return null;
-    const family=storageFamilyForTrain(train);
-    const date=formationDateKey(),area=storageAreaForFamily(family);
-    const rawNo=String(train.no||'').trim();
-    const storageNo=activeRouteName==='海岸線' ? operationChainFirstNo(currentDay,rawNo) : rawNo;
-    const entry=formationRemoteByFamily[family]?.areaStateByDate?.[date]?.[area]?.[storageNo];
-    return String(entry?.f||'')||null;
+    const family=formationFamilyForTrain(train);
+    const date=formationDateKey();
+    const area=storageAreaForFamily(family);
+    const no=String(train.no||'').trim();
+    if(!no) return null;
+    return String(formationRemoteByFamily[family]?.areaStateByDate?.[date]?.[area]?.[no]?.f||'')||null;
   };
+
   applyRegistrationState=function(){
     const seen=new Set();
     [...TRAINS,...HOLIDAY_TRAINS].forEach(t=>{
-      const signature=String(t.no)+'|'+String(t.direction||'');
-      if(seen.has(signature)) return; seen.add(signature);
+      const signature=`${String(t.no||'')}|${String(t.direction||'')}`;
+      if(seen.has(signature)) return;
+      seen.add(signature);
       t.formation=registeredFormationForTrain(t)||null;
     });
+  };
+
+  loadFormationFamilyFromFirebase=async function(family){
+    if(!routeMetaForFamily(family)) return false;
+    const ref=formationOperationRef(family);
+    if(!ref) return false;
+    const snap=await ref.once('value');
+    formationRemoteByFamily[family].areaStateByDate=normalizeStorageRoot(snap.val()||{},family);
+    syncDerivedStateForFamily(family);
+    return true;
+  };
+
+  mergeFormationRemoteIntoLegacyState=function(){
+    syncDerivedStateForFamily(storageFamilyForActiveRoute());
+    registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
   };
 
   preloadAllFormationFamilies=async function(){
     const results=await Promise.allSettled(FORMATION_FAMILIES.map(loadFormationFamilyFromFirebase));
     formationFirebaseReady=results.some(r=>r.status==='fulfilled'&&r.value===true);
-    syncDerivedState();
+    mergeFormationRemoteIntoLegacyState();
     registrationState=isHistoricalSelectedDate(selectedDateKey)?historicalStateForDate(selectedDateKey):cloneState(remoteRoot.stateByDay[currentDay]||{});
     applyRegistrationState();
     return formationFirebaseReady;
@@ -5695,26 +5128,28 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
   const firebaseFormationListenerRefs={};
   subscribeAllOperationState=function(){
     for(const family of FORMATION_FAMILIES){
-      const ref=formationOperationRef(family); if(!ref) continue;
+      const ref=formationOperationRef(family);
+      if(!ref) continue;
       try{firebaseFormationListenerRefs[family]?.off();}catch(e){}
       const handler=snap=>{
         formationRemoteByFamily[family].areaStateByDate=normalizeStorageRoot(snap.val()||{},family);
-        if(family===HIROSHIMA_FORMATION_FAMILY) window.hiroshimaFormationStateByDate=formationRemoteByFamily[family].areaStateByDate;
         syncDerivedStateForFamily(family);
         if(family===storageFamilyForActiveRoute()){
           registrationState=isHistoricalSelectedDate(selectedDateKey)?historicalStateForDate(selectedDateKey):cloneState(remoteRoot.stateByDay[currentDay]||{});
-          applyRegistrationState(); saveLocalState(); refreshAllTrainDataCache();
+          applyRegistrationState();
+          saveLocalState();
+          refreshAllTrainDataCache();
           if(!isEditMode){renderTrainPositions();if(currentTrainNo)updateSheetContent();}
         }
-        syncStatus('Firebaseリアルタイム同期済み');
       };
-      ref.on('value',handler); firebaseFormationListenerRefs[family]=ref;
+      ref.on('value',handler);
+      firebaseFormationListenerRefs[family]=ref;
     }
   };
 
   saveLocalState=function(){
     try{
-      const formationStateByFamily={}, formationUpdatedAtByFamily={};
+      const formationStateByFamily={},formationUpdatedAtByFamily={};
       for(const family of FORMATION_FAMILIES){
         formationStateByFamily[family]=formationRemoteByFamily[family]?.areaStateByDate||{};
         formationUpdatedAtByFamily[family]=formationRemoteByFamily[family]?.formationUpdatedAtByDay||{};
@@ -5723,250 +5158,178 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
         operationDate:currentOperationDate,
         formationStateByFamily,
         formationUpdatedAtByFamily,
-        hiroshimaFormationStateByDate:formationRemoteByFamily.hiroshima?.areaStateByDate||{},
-        kobeFormationStateByDate:formationRemoteByFamily.kobe?.areaStateByDate||{},
-        pendingHiroshimaRemoteWrites:window.pendingHiroshimaRemoteWrites||{},
         history:remoteRoot.history||{}
       }));
-    }catch(e){ console.warn('local save failed',e); }
+    }catch(e){console.warn('local save failed',e);}
   };
+
   loadLocalState=function(){
     try{
-      const raw=localStorage.getItem(STORAGE_KEY); if(!raw) return;
+      const raw=localStorage.getItem(STORAGE_KEY);if(!raw)return;
       const obj=JSON.parse(raw)||{};
-      window.pendingHiroshimaRemoteWrites=obj.pendingHiroshimaRemoteWrites||{};
-      const saved=obj.formationStateByFamily||null;
+      const saved=obj.formationStateByFamily;
       if(saved&&typeof saved==='object'){
         for(const family of FORMATION_FAMILIES){
           formationRemoteByFamily[family].areaStateByDate=normalizeStorageRoot(saved[family]||{},family);
-          const savedTs=obj.formationUpdatedAtByFamily?.[family]||{};
-          formationRemoteByFamily[family].formationUpdatedAtByDay={
-            平日:cloneState(savedTs.平日||{}),
-            休日:cloneState(savedTs.休日||{})
-          };
+          const ts=obj.formationUpdatedAtByFamily?.[family]||{};
+          formationRemoteByFamily[family].formationUpdatedAtByDay={平日:cloneState(ts.平日||{}),休日:cloneState(ts.休日||{})};
+          syncDerivedStateForFamily(family);
         }
-      }else{
-        formationRemoteByFamily.hiroshima.areaStateByDate=normalizeStorageRoot(obj.hiroshimaFormationStateByDate||{},HIROSHIMA_FORMATION_FAMILY);
-        formationRemoteByFamily.kobe.areaStateByDate=normalizeStorageRoot(obj.kobeFormationStateByDate||{},KOBE_FORMATION_FAMILY);
       }
-      window.hiroshimaFormationStateByDate=formationRemoteByFamily.hiroshima.areaStateByDate;
       remoteRoot.history=obj.history||{};
       currentOperationDate=obj.operationDate||currentOperationDate;
-      for(const family of FORMATION_FAMILIES) syncDerivedStateForFamily(family);
       operationHistory=historyEntries();
       registrationState=isHistoricalSelectedDate(selectedDateKey)?historicalStateForDate(selectedDateKey):cloneState(remoteRoot.stateByDay[currentDay]||{});
       applyRegistrationState();
-    }catch(e){ console.warn('local load failed',e); }
+    }catch(e){console.warn('local load failed',e);}
   };
 
   initFirebase=async function(){
     loadLocalState();
     if(!FIREBASE_ENABLED||!window.firebase?.initializeApp) return false;
     try{
-      const appName='unyomatomeHiroshima';
+      const appName=FIREBASE_APP_NAME;
       let app=firebase.apps.find(a=>a.name===appName);
       if(!app) app=firebase.initializeApp(FIREBASE_CONFIG,appName);
+      firebaseApp=app;
+      firebaseDb=firebase.database(app);
       for(const family of FORMATION_FAMILIES){
         formationFirebaseApps[family]=app;
-        formationFirebaseDbs[family]=firebase.database(app);
+        formationFirebaseDbs[family]=firebaseDb;
       }
-      firebaseApp=app; firebaseDb=formationFirebaseDbs.hiroshima; firebaseReady=true;
       if(typeof window.initFirebaseAuth==='function') window.initFirebaseAuth(app);
+      firebaseReady=true;
       syncStatus('Firebase接続中');
       const ok=await preloadAllFormationFamilies();
-      if(!ok){firebaseReady=false;firebaseDb=null;syncStatus('Firebase接続失敗（ローカル動作）');return false;}
-      subscribeAllOperationState(); return true;
+      if(!ok){syncStatus('Firebase接続失敗（ローカル動作）');return false;}
+      subscribeAllOperationState();
+      return true;
     }catch(e){
-      console.warn('Firebase初期化失敗：ローカル動作に切り替えます',e);
-      firebaseReady=false; firebaseDb=null; formationFirebaseReady=false; syncStatus('Firebase接続失敗（ローカル動作）'); return false;
+      console.warn('Firebase初期化失敗',e);
+      firebaseReady=false;firebaseDb=null;formationFirebaseReady=false;
+      syncStatus('Firebase接続失敗（ローカル動作）');
+      return false;
     }
   };
 
-  syncRegistrationToRemote=async function(changes={}){
-    // 海岸線の運用連結は、Firebaseへはチェーン先頭列車だけを保存する。
-    const normalizedChanges={};
-    for(const [no,formId] of Object.entries(changes||{})){
-      const t=findOperationTrainRecord(no,currentDay);
-      const storageNo=activeRouteName==='海岸線' ? operationChainFirstNo(currentDay,no) : String(no);
-      if(t) normalizedChanges[storageNo]=formId;
-    }
-    const trainByNo={};
-    Object.keys(normalizedChanges).forEach(no=>{ const t=findOperationTrainRecord(no,currentDay); if(t) trainByNo[String(no)]=t; });
-    for(const [no,formId] of Object.entries(normalizedChanges)){
-      const train=trainByNo[String(no)] || findOperationTrainRecord(no,currentDay); if(!train) continue;
-      const family=storageFamilyForTrain(train); const db=firebaseDatabaseForFamily(family); if(!db) continue;
-      const date=formationDateKey(),area=storageAreaForFamily(family);
-      const root=storageRootForFamily(family);
-      const ref=area==='__ROOT__' ? db.ref(root).child(date).child(String(no)) : db.ref(root).child(area).child(date).child(String(no));
-      const ids=String(formId??'').split('+').map(canonicalFormationId).filter(Boolean);
-      if(ids.length) await ref.set({f:ids.join('+'),t:makeStoredMeta()}); else await ref.remove();
-    }
-    return true;
-  };
-
-  recordSelection=async function(train,formId){
-    if(!formationInputAllowed()) return [];
-    const key=String(train?.no||'').trim(); if(!key) return [];
-    const family=storageFamilyForTrain(train);
-    const date=formationDateKey(),area=storageAreaForFamily(family);
-    const remote=formationRemoteByFamily[family];
-    remote.areaStateByDate[date]??={}; remote.areaStateByDate[date][area]??={};
-    const value=(formId&&formId!==INITIAL_FORMATION_SELECTION.id)?normalizeStoredFormationId(formId):null;
-    const storedMeta=value?makeStoredMeta():'';
-    const roleCode=value&&typeof window.currentPermissionCodeForRoute==='function' ? window.currentPermissionCodeForRoute(activeRouteName) : '';
-    // 海岸線は運用連結の先頭列車だけを保存キーにする。
-    const storageKey=activeRouteName==='海岸線' ? operationChainFirstNo(currentDay,key) : key;
-    if(value){
-      const entry={f:value,t:storedMeta};
-      if(roleCode) entry.r=roleCode;
-      remote.areaStateByDate[date][area][storageKey]=entry;
-    }
-    else {
-      delete remote.areaStateByDate[date][area][storageKey];
-      if(!Object.keys(remote.areaStateByDate[date][area]).length) delete remote.areaStateByDate[date][area];
-      if(!Object.keys(remote.areaStateByDate[date]).length) delete remote.areaStateByDate[date];
-    }
-    if(family===HIROSHIMA_FORMATION_FAMILY) window.hiroshimaFormationStateByDate=remote.areaStateByDate;
-    syncDerivedStateForFamily(family);
-    registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
-    pendingFormationState[storageKey]=value;
-    mergeFormationRemoteIntoLegacyState(); applyRegistrationState(); refreshAllTrainDataCache(); saveLocalState();
-    if(currentTrainSnapshot&&String(currentTrainSnapshot.no||'')===key) currentTrainSnapshot={...currentTrainSnapshot,formation:value};
-    syncStatus('登録済み・同期中');
-    const db=firebaseDatabaseForFamily(family);
-    if(db){
-      try{
-        const root=storageRootForFamily(family);
-        const ref=area==='__ROOT__' ? db.ref(root).child(date).child(storageKey) : db.ref(root).child(area).child(date).child(storageKey);
-        if(value){
-          const payload={f:value,t:storedMeta};
-          if(roleCode) payload.r=roleCode;
-          await ref.set(payload);
-        } else await ref.remove();
-        syncStatus('Firebase同期済み');
-      }catch(e){console.error('編成登録Firebase同期失敗',e);saveLocalState();syncStatus('登録済み・Firebase未同期');}
-    }
-    return [key];
-  };
-})();
-</script>
-
-<script>
-/* ===== 東武野田線：既存Firebase保存形式との互換 =====
-   野田線旧ページは 運用/stateByDay/<平日|休日>/<列車番号> を使用するため、
-   mainpageの共通保存処理を野田線だけこの形式へ切り替える。
-*/
-(function(){
-  const nodaRawFormationSet=new Set(['61509','61510','61618']);
-  for(const id of nodaRawFormationSet) UNAVAILABLE_FORMATIONS.add(id);
-
-  const baseRecordSelection=recordSelection;
-  recordSelection=async function(train,formId){
-    if(String(storageFamilyForTrain(train))!=='noda'){
-      return baseRecordSelection(train,formId);
-    }
-    if(!formationInputAllowed()) return [];
-    const key=String(train?.no||'').trim();
-    if(!key) return [];
-
-    const linked = (typeof formationLinkedTrainNos==='function')
-      ? formationLinkedTrainNos(currentDay,key,String(train?.direction||''))
-      : new Set([key]);
-    const assigned=[];
-    const changes={};
-    for(const requested of linked){
-      const dayIndex=currentDay==='休日' ? HOLIDAY_TRAIN_INDEX : TRAIN_INDEX;
-      const actual=dayIndex?.[requested]
-        ? String(requested)
-        : Object.keys(dayIndex||{}).find(k=>k.replace(/A$/i,'')===String(requested).replace(/A$/i,''))||null;
-      if(!actual || assigned.includes(actual)) continue;
-      const value=(formId && formId!==INITIAL_FORMATION_SELECTION.id)
-        ? String(formId).replace(/F$/i,'')
-        : null;
-      if(value) registrationState[actual]=value;
-      else delete registrationState[actual];
-      assigned.push(actual);
-      changes[actual]=value;
-      pendingFormationState[actual]=value;
-      pendingFormationTimestamps[currentDay]=pendingFormationTimestamps[currentDay]||{};
-      if(value) pendingFormationTimestamps[currentDay][actual]=new Date().toISOString();
-      else delete pendingFormationTimestamps[currentDay][actual];
-    }
-
-    applyRegistrationState();
-    refreshAllTrainDataCache();
-    saveLocalState();
-
-    const db=formationFirebaseDbs.noda||null;
-    if(!db){
-      syncStatus('Firebase未接続');
-      return assigned;
-    }
+  async function syncRegistrationToRemoteByFamily(changesByFamily){
+    const families=Object.keys(changesByFamily||{}).filter(f=>Object.keys(changesByFamily[f]||{}).length);
+    if(!families.length) return true;
+    if(!firebaseReady||!firebaseDb){syncStatus('Firebase未接続');return false;}
     try{
-      const dayRef=db.ref('運用').child('stateByDay').child(currentDay);
-      const stateUpdates={};
-      for(const [no,value] of Object.entries(changes)) stateUpdates[String(no)]=value||null;
-      await dayRef.update(stateUpdates);
-
-      const committed=await dayRef.once('value');
-      const committedState=committed.val()||{};
-      const currentDate=formationDateKey();
-      const areaOut={};
-      for(const [no,value] of Object.entries(committedState)){
-        const id=normalizeStoredFormationId(value);
-        if(id) areaOut[String(no)]={f:id,t:String(formationRemoteByFamily.noda?.areaStateByDate?.[currentDate]?.__ROOT__?.[no]?.t||'')};
+      const date=formationDateKey();
+      const roleCode=typeof window.currentPermissionCodeForRoute==='function' ? window.currentPermissionCodeForRoute(activeRouteName) : '';
+      for(const family of families){
+        const db=firebaseDatabaseForFamily(family);
+        const root=storageRootForFamily(family),area=storageAreaForFamily(family);
+        if(!db||!root) continue;
+        const updates=changesByFamily[family]||{};
+        const stamp=makeStoredMeta();
+        for(const [no,formId] of Object.entries(updates)){
+          const ref=area==='__ROOT__'
+            ? db.ref(root).child(date).child(String(no))
+            : db.ref(root).child(area).child(date).child(String(no));
+          const normalized=normalizeStoredFormationId(formId);
+          if(normalized){
+            const payload={f:normalized,t:stamp};
+            if(roleCode) payload.r=roleCode;
+            await ref.set(payload);
+          }else await ref.remove();
+        }
+        await loadFormationFamilyFromFirebase(family);
       }
-      formationRemoteByFamily.noda.areaStateByDate={[currentDate]:{'__ROOT__':areaOut}};
-
-      const tsRef=db.ref('運用').child('formationUpdatedAtByDay').child(currentDay);
-      const tsUpdates={};
-      for(const [no,value] of Object.entries(changes)){
-        tsUpdates[String(no)]=value
-          ? (pendingFormationTimestamps[currentDay]?.[String(no)]||new Date().toISOString())
-          : null;
-      }
-      await tsRef.update(tsUpdates);
-      const tsSnap=await tsRef.once('value');
-      const tsState=tsSnap.val()||{};
-      for(const no of Object.keys(areaOut)){
-        areaOut[no].t=String(tsState?.[no]||areaOut[no].t||'');
-      }
-      formationRemoteByFamily.noda.areaStateByDate={[currentDate]:{'__ROOT__':areaOut}};
-      syncDerivedStateForFamily('noda');
+      mergeFormationRemoteIntoLegacyState();
       registrationState=cloneState(remoteRoot.stateByDay[currentDay]||{});
       applyRegistrationState();
       saveLocalState();
-      for(const no of Object.keys(changes)){
-        if(String(registrationState[no]||'')===String(changes[no]||'')) delete pendingFormationState[no];
-        if(!changes[no] && pendingFormationTimestamps[currentDay]) delete pendingFormationTimestamps[currentDay][no];
-      }
       refreshAllTrainDataCache();
       syncStatus('Firebase同期済み');
+      return true;
     }catch(e){
-      console.error('野田線Firebase書込失敗',e);
+      console.error('編成登録Firebase同期失敗',e);
       syncStatus('Firebase書込失敗');
+      return false;
+    }
+  }
+  window.syncRegistrationToRemoteByFamily=syncRegistrationToRemoteByFamily;
+
+  syncRegistrationToRemote=async function(changes={}){
+    const grouped={};
+    for(const [no,formId] of Object.entries(changes||{})){
+      const train=findOperationTrainRecord(no,currentDay);
+      if(!train) continue;
+      const family=formationFamilyForTrain(train);
+      grouped[family]??={};
+      grouped[family][String(no)]=formId;
+    }
+    return syncRegistrationToRemoteByFamily(grouped);
+  };
+
+  recordSelection=async function(train,formId){
+    if(isNonCurrentSelectedDate(selectedDateKey)||!train) return [];
+    const startNo=String(train.no||'').trim();
+    if(!startNo) return [];
+    const linked=formationLinkedTrainNos(currentDay,startNo,String(train.direction||''));
+    const changes={};
+    const assigned=[];
+    const value=(formId&&formId!==INITIAL_FORMATION_SELECTION.id)?normalizeStoredFormationId(formId):null;
+    if(value && !formationAllowedForTrain(train,value)) return [];
+
+    for(const requested of linked){
+      const actualTrain=findOperationTrainRecord(requested,currentDay);
+      const actual=String(actualTrain?.no||requested||'').trim();
+      if(!actual||assigned.includes(actual)) continue;
+      if(value && !formationAllowedForTrain(actualTrain,value)) continue;
+      const family=actualTrain?formationFamilyForTrain(actualTrain):storageFamilyForActiveRoute();
+      const date=formationDateKey();
+      const area=storageAreaForFamily(family);
+      formationRemoteByFamily[family].areaStateByDate[date]??={};
+      formationRemoteByFamily[family].areaStateByDate[date][area]??={};
+      const areaState=formationRemoteByFamily[family].areaStateByDate[date][area];
+      if(value){
+        areaState[actual]={f:value,t:makeStoredMeta()};
+        const roleCode=typeof window.currentPermissionCodeForRoute==='function' ? window.currentPermissionCodeForRoute(activeRouteName) : '';
+        if(roleCode) areaState[actual].r=roleCode;
+      }else delete areaState[actual];
+      if(!Object.keys(areaState).length) delete formationRemoteByFamily[family].areaStateByDate[date][area];
+      if(!Object.keys(formationRemoteByFamily[family].areaStateByDate[date]).length) delete formationRemoteByFamily[family].areaStateByDate[date];
+      assigned.push(actual);
+      changes[actual]=value;
+      pendingFormationState[actual]=value;
+      pendingFormationTimestamps[currentDay]??={};
+      if(value) pendingFormationTimestamps[currentDay][actual]=new Date().toISOString();
+      else delete pendingFormationTimestamps[currentDay][actual];
+      syncDerivedStateForFamily(family);
+    }
+
+    mergeFormationRemoteIntoLegacyState();
+    applyRegistrationState();
+    refreshAllTrainDataCache();
+    saveLocalState();
+    const ok=await syncRegistrationToRemote(changes);
+    if(ok){
+      for(const no of assigned){
+        delete pendingFormationState[no];
+      }
+    }
+    if(currentTrainSnapshot&&String(currentTrainSnapshot.no||'')===startNo){
+      currentTrainSnapshot={...currentTrainSnapshot,formation:value};
     }
     return assigned;
   };
-
-  const originalGetMainLabelClass=window.getMainLabelClass||getMainLabelClass;
-  window.getMainLabelClass=function(type){
-    const v=String(type||'').trim();
-    if(String(activeRouteName)==='東武野田線' && v==='区間急行') return 'express';
-    return originalGetMainLabelClass(type);
-  };
 })();
+
 </script>
 
 <script>
 /* ===== 最大6編成・3列車併結対応 =====
-   東武スカイツリーラインの地上運用で採用している「+区切りの前寄り→後寄り保存」方式を
-   共通処理としてJSONの formationCount が省略された場合は1編成、2以上だけ個別指定する。
+   +区切りの前寄り→後寄り保存方式を
+   全路線共通処理としてJSONの formationCount が省略された場合は1編成、2以上だけ個別指定する。
 */
 (function(){
   const MAX_FORMATION_SLOTS=6;
   const DEFAULT_FORMATION_COUNT=3;
-  let hiroFormationDropdownState=null;
+  let formationDropdownState=null;
 
   function clampFormationCount(v){
     const n=Number(v);
@@ -6021,16 +5384,13 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
   formationDisplayParts=function(id){
     const ids=formationIds(id);
     const parts=[];
-    const isNoda=String(activeRouteMeta?.formationFamily||'')==='noda';
     for(const one of ids){
       const obj=selectionDisplayObject(one);
       if(!obj || obj.id===INITIAL_FORMATION_SELECTION.id) continue;
       const type=String(obj.type||'').trim();
       const name=String(obj.name||'').trim();
       if(!name) continue;
-      // 野田線の形式・個体差は、選択肢と同じ完全な名称で表示する。
-      // 例：10030型更新 / 10030型未更新 / 60000型5両 / 60000型6両 / 80000系みまモニ有
-      if(isNoda && obj.generic){
+      if(obj.displayAsFullName){
         parts.push(name);
       }else if(type && name.startsWith(type) && name!==type){
         const rest=name.slice(type.length).trim();
@@ -6075,18 +5435,17 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     const chunks=[];
     for(const group of groups){
       const groupType=String(group.type||'');
-      const isGenericAS=/^[^A-Z]*227系 [AS]編成$/.test(groupType);
       const declaredType=String(activeJson?.formationType||'').trim();
       const isGenericDeclared=!!declaredType && groupType===declaredType;
-      const isGenericNoda=String(activeRouteMeta?.formationFamily||'')==='noda' && /^(?:8000型|10030型|60000型|80000系)$/.test(groupType);
-      const genericId=groupType.includes('S編成')?'S編成':groupType.includes('A編成')?'A編成':(isGenericDeclared?declaredType:(isGenericNoda?groupType:''));
-      chunks.push((isGenericAS||isGenericDeclared||isGenericNoda)
+      const selectableCategory=!!group.selectableType || isGenericDeclared;
+      const genericId=selectableCategory ? String(group.selectableId||declaredType||groupType) : '';
+      chunks.push(selectableCategory
         ? `<div class="option-header option-category-header option-selectable-category" role="button" tabindex="0" onclick="selectFormationAtSlot(${slot},'${escapeJs(genericId)}')"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(genericId)}</span></div>`
         : `<div class="option-header option-category-header"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(groupType)}</span></div>`);
 
       // 個体差をすべて先に並べ、その後に形式全体の個別編成をまとめて表示。
       for(const variant of (group.variants||[])){
-        chunks.push(`<div class="option-header option-subheader" onclick="selectFormationAtSlot(${slot},'${escapeJs(variant.id)}')"><img src="${esc(variant.img||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(variant.name||variant.id)}</span></div>`);
+        chunks.push(`<div class="option-header option-subheader option-selectable-category" role="button" tabindex="0" onclick="selectFormationAtSlot(${slot},'${escapeJs(variant.id)}')"><img src="${esc(variant.img||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(variant.name||variant.id)}</span></div>`);
       }
 
       // すべての個体差に属する個別編成をまとめて表示。
@@ -6108,15 +5467,15 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     return initial+chunks.join('');
   }
   function restoreHiroDropdown(){
-    if(!hiroFormationDropdownState) return;
-    const {el,parent,nextSibling}=hiroFormationDropdownState;
+    if(!formationDropdownState) return;
+    const {el,parent,nextSibling}=formationDropdownState;
     if(parent?.isConnected){
       if(nextSibling && nextSibling.parentNode===parent) parent.insertBefore(el,nextSibling);
       else parent.appendChild(el);
     }
     el.classList.remove('hiro-formation-dropdown-portal','open');
     el.style.display='';el.style.position='';el.style.left='';el.style.top='';el.style.width='';el.style.maxHeight='';el.style.zIndex='';
-    hiroFormationDropdownState=null;
+    formationDropdownState=null;
   }
 
   function positionHiroDropdown(el,trigger){
@@ -6166,7 +5525,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
     if(!el||!trigger) return;
     if(el.classList.contains('open')){restoreHiroDropdown();return;}
     restoreHiroDropdown();
-    hiroFormationDropdownState={el,parent:el.parentNode,nextSibling:el.nextSibling,trigger,slot};
+    formationDropdownState={el,parent:el.parentNode,nextSibling:el.nextSibling,trigger,slot};
     document.body.appendChild(el);
     el.classList.add('hiro-formation-dropdown-portal','open');
     el.style.display='block';el.style.pointerEvents='auto';el.style.zIndex='110';
@@ -6177,7 +5536,7 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
   // プルダウンをbody直下へ移動しているため、ページ・シート・VisualViewportの
   // スクロールでもトリガー位置へ追従させる。地域メニュー自体の処理は変更しない。
   const syncHiroDropdownPosition=()=>{
-    const st=hiroFormationDropdownState;
+    const st=formationDropdownState;
     if(st?.el?.classList.contains('open') && st.trigger) positionHiroDropdown(st.el,st.trigger);
   };
   window.addEventListener('scroll',syncHiroDropdownPosition,true);
@@ -6583,17 +5942,17 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
   trainImageFor= imageForTrain;
 
   window.addEventListener('resize',()=>{
-    const st=hiroFormationDropdownState;
+    const st=formationDropdownState;
     if(st?.el?.classList.contains('open') && st.trigger) positionHiroDropdown(st.el,st.trigger);
   });
   if(window.visualViewport){
     window.visualViewport.addEventListener('resize',()=>{
-      const st=hiroFormationDropdownState;
+      const st=formationDropdownState;
       if(st?.el?.classList.contains('open') && st.trigger) positionHiroDropdown(st.el,st.trigger);
     });
   }
   document.addEventListener('pointerdown',event=>{
-    const st=hiroFormationDropdownState;
+    const st=formationDropdownState;
     if(!st) return;
     if(st.el.contains(event.target) || st.trigger?.contains(event.target)) return;
     restoreHiroDropdown();
@@ -6767,8 +6126,8 @@ window.applyPendingHiroshimaWritesToState=function(state,day){
       if(user) await loadAccessProfile(user);
       refreshAccessUI();
       if(activeRouteName && !canViewRoute(activeRouteName)){
-        const fallback='海岸線';
-        if(ROUTE_REGISTRY[fallback] && canViewRoute(fallback)){
+        const fallback=Object.keys(ROUTE_REGISTRY).find(name=>canViewRoute(name));
+        if(fallback){
           try{ await originalSelectRoute(fallback); }catch(e){}
         }else{
           activeRouteName=''; activeRouteMeta=null; activeJson=null;
