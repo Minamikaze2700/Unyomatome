@@ -940,6 +940,80 @@ function routeNameFromId(value){
 function routeIdFromName(routeName){
   return String(ROUTE_REGISTRY[String(routeName||'')]?.id||'').trim();
 }
+
+
+/* 路線一覧のナンバリング画像は各路線JSONの lines[].numberingImage を参照する。 */
+const routeNumberingJsonCache=new Map();
+function routeNumberingImageValue(raw){
+  const value=String(raw??'').trim();
+  if(!value) return '';
+  if(/^https?:\/\//i.test(value) || value.startsWith('/') || value.startsWith('./')) return value;
+  return `https://minamikaze2700.github.io/Unyomatome/images/${value.replace(/^\/+/, '').replace(/\.png$/i,'')}.png`;
+}
+function loadRouteNumberingJson(jsonUrl){
+  const url=String(jsonUrl||'').trim();
+  if(!url) return Promise.resolve(null);
+  if(routeNumberingJsonCache.has(url)) return routeNumberingJsonCache.get(url);
+  const promise=new Promise((resolve,reject)=>{
+    const xhr=new XMLHttpRequest();
+    xhr.open('GET',url,true);
+    xhr.responseType='text';
+    xhr.onreadystatechange=()=>{
+      if(xhr.readyState!==4) return;
+      if(xhr.status>=200 && xhr.status<300){
+        try{resolve(JSON.parse(xhr.responseText));}
+        catch(e){reject(e);}
+      }else{
+        reject(new Error(`HTTP ${xhr.status}`));
+      }
+    };
+    xhr.onerror=()=>reject(new Error('JSON読み込み失敗'));
+    xhr.send();
+  }).catch(err=>{
+    routeNumberingJsonCache.delete(url);
+    throw err;
+  });
+  routeNumberingJsonCache.set(url,promise);
+  return promise;
+}
+function getRouteNumberingImagesFromJson(json,routeMeta){
+  const names=Array.isArray(routeMeta?.jsonLines) ? routeMeta.jsonLines.map(String).filter(Boolean) : [];
+  const lines=Array.isArray(json?.lines) ? json.lines : [];
+  const images=[];
+  for(const lineName of names){
+    const line=lines.find(x=>String(x?.name||'')===lineName);
+    const image=routeNumberingImageValue(line?.numberingImage);
+    if(image && !images.includes(image)) images.push(image);
+  }
+  return images;
+}
+async function hydrateRouteNumberingImages(defs){
+  const jobs=[];
+  for(const company of (defs||[])){
+    for(const route of (company?.routes||[])){
+      jobs.push((async()=>{
+        const routeName=routeNameFromId(route?.id||route?.name||'');
+        const meta=ROUTE_REGISTRY[routeName]||{};
+        let json=null;
+        try{
+          const sameJson=!!activeJson && String(activeRouteMeta?.json||'')===String(meta?.json||'');
+          json=sameJson ? activeJson : await loadRouteNumberingJson(meta?.json||'');
+        }catch(err){
+          console.warn('ナンバリング画像情報のJSON読込失敗',routeName,err);
+          return;
+        }
+        const images=getRouteNumberingImagesFromJson(json,meta);
+        const routeId=String(route?.id||routeName||'');
+        const btn=Array.from(document.querySelectorAll('.route-button[data-route-id]')).find(el=>el.getAttribute('data-route-id')===routeId);
+        if(!btn) return;
+        const box=btn.querySelector('.route-numbering');
+        if(!box) return;
+        box.innerHTML=images.map(src=>`<img class="route-numbering-image" src="${escapeAttr(src)}" alt="" aria-hidden="true" loading="eager">`).join('');
+      })());
+    }
+  }
+  await Promise.all(jobs);
+}
 function formationStorageContext(routeOrTrain=activeRouteName){
   const routeName=typeof routeOrTrain==='string' ? routeOrTrain : String(routeOrTrain?.routeName||activeRouteName||'');
   const meta=ROUTE_REGISTRY[routeName]||{};
@@ -4629,9 +4703,10 @@ function openRegionSheet(region){
 <p class="terms-end">以上</p><p class="terms-date">制定日：2026年9月18日</p>
 </div>`
     : (defs.length
-      ? defs.map(c=>`<section class="company-block"><h2 class="company-name">${esc(c.company)}</h2><div class="route-list">${c.routes.map(r=>`<button type="button" class="route-button" onclick="selectRoute('${escapeJs(r.id||r.name)}')">${esc(r.name)}</button>`).join('')}</div></section>`).join('')
+      ? defs.map(c=>`<section class="company-block"><h2 class="company-name">${esc(c.company)}</h2><div class="route-list">${c.routes.map(r=>`<button type="button" class="route-button" data-route-id="${esc(r.id||r.name)}" onclick="selectRoute('${escapeJs(r.id||r.name)}')"><span class="route-numbering" aria-hidden="true"></span><span class="route-label">${esc(r.name)}</span></button>`).join('')}</div></section>`).join('')
       : `<section class="company-block"><h2 class="company-name">この地域の路線は未登録です。</h2></section>`);
   content.innerHTML=inner;
+  if(region!=='利用規約' && defs.length) hydrateRouteNumberingImages(defs);
   overlay.style.display='block';
   sheet.classList.remove('editing');
   sheet.classList.add('active');
@@ -4745,7 +4820,31 @@ function initRegionNavigation(){
       font-weight:600;
       text-align:left;
       cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:8px;
       transition:background .15s ease,border-color .15s ease;
+    }
+    .route-numbering{
+      flex:0 0 auto;
+      display:inline-flex;
+      align-items:center;
+      justify-content:flex-start;
+      gap:2px;
+      min-width:0;
+      line-height:0;
+    }
+    .route-numbering-image{
+      width:auto;
+      height:28px;
+      max-width:34px;
+      display:block;
+      object-fit:contain;
+    }
+    .route-label{
+      flex:1 1 auto;
+      min-width:0;
+      line-height:1.35;
     }
     .route-button:hover,
     .route-button:focus-visible{
