@@ -2652,6 +2652,42 @@ function prescribedFormationName(t){
   return String(meta?.defaultFormationName||t?.defaultCars||t?.rawTrain?.defaultCars||activeJson?.formationDefaultName||'普通共通');
 }
 function defaultTrainImage(){
+  // 未登録時の既定画像も、まず現在のJSONに記載された画像を使う。
+  // routeMetaの固定画像はJSON側に画像指定がない場合だけフォールバックする。
+  const lineVisual=activeLineVisuals(activeJson,activeRouteMeta);
+  const toUrl=value=>{
+    const raw=String(value||'').trim();
+    if(!raw) return '';
+    if(/^https?:\/\//i.test(raw)) return raw;
+    return `https://minamikaze2700.github.io/Unyomatome/images/${raw.replace(/\.png$/i,'')}.png`;
+  };
+
+  const lineTypeImage=toUrl(lineVisual?.formationTypeImage);
+  if(lineTypeImage) return lineTypeImage;
+
+  const wantedType=String(lineVisual?.formationType || activeJson?.formationType || '').trim();
+  if(wantedType && Array.isArray(activeJson?.formations)) {
+    const group=activeJson.formations.find(g=>String(g?.type||'').trim()===wantedType);
+    const groupImage=toUrl(group?.typeImg || group?.image);
+    if(groupImage) return groupImage;
+  }
+
+  const jsonTypeImage=toUrl(activeJson?.formationTypeImage);
+  if(jsonTypeImage) return jsonTypeImage;
+
+  if(Array.isArray(activeJson?.formations)) {
+    const route=String(activeRouteName||'').trim();
+    const routeGroup=activeJson.formations.find(g=>
+      Array.isArray(g?.routeNames) && g.routeNames.map(x=>String(x||'').trim()).includes(route)
+    );
+    const routeImage=toUrl(routeGroup?.typeImg || routeGroup?.image);
+    if(routeImage) return routeImage;
+    if(activeJson.formations.length===1) {
+      const onlyImage=toUrl(activeJson.formations[0]?.typeImg || activeJson.formations[0]?.image);
+      if(onlyImage) return onlyImage;
+    }
+  }
+
   if(activeRouteMeta?.trainImage) return String(activeRouteMeta.trainImage);
   return jsonNoImageUrl();
 }
@@ -3545,8 +3581,9 @@ function stationTimetableHTML(station, selectedDirection='up'){
 
     const rows=data.entries.map((item,index)=>{
       const train=item.train;
-      const selectedForm=selectionDisplayObjectForTrain(train,train.formation);
-      const imgSrc=(train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id)?selectedForm.img:defaultTrainImage(train);
+      const effectiveFormationId=registeredFormationForTrain(train)||train.formation||'';
+      const selectedForm=selectionDisplayObjectForTrain(train,effectiveFormationId);
+      const imgSrc=imageForTrain(train);
       const destination=`${getDetailDest(train.dest)} 行`;
       const isNext=index===nextIndex;
 
@@ -3636,10 +3673,11 @@ function updateSheetContent(){
   if(currentStationId){ updateStationSheetContent(); return; }
   const train=currentTrainSnapshot || trainForCurrentDay(currentTrainNo);
   if(!train) return;
-  const formObj=formationById(train.formation);
-  const selectedForm=selectionDisplayObjectForTrain(train,train.formation);
+  const effectiveFormationId=registeredFormationForTrain(train)||train.formation||'';
+  const formObj=formationById(effectiveFormationId);
+  const selectedForm=selectionDisplayObjectForTrain(train,effectiveFormationId);
   const content=document.getElementById('sheetContent');
-  const imgSrc=(train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id)?selectedForm.img:defaultTrainImage(train);
+  const imgSrc=imageForTrain(train);
   const readonly=!formationInputAllowed();
   const cardClass=readonly?' historical-readonly':'';
   const cardClick=readonly?'':'onclick="switchToEditMode()"';
@@ -4770,6 +4808,42 @@ function getMainLabelClass(type){
 }
 function trainVisualKind(t){ return expressClassForTrain(t); }
 function defaultTrainImage(){
+  // 未登録時の既定画像も、まず現在のJSONに記載された画像を使う。
+  // routeMetaの固定画像はJSON側に画像指定がない場合だけフォールバックする。
+  const lineVisual=activeLineVisuals(activeJson,activeRouteMeta);
+  const toUrl=value=>{
+    const raw=String(value||'').trim();
+    if(!raw) return '';
+    if(/^https?:\/\//i.test(raw)) return raw;
+    return `https://minamikaze2700.github.io/Unyomatome/images/${raw.replace(/\.png$/i,'')}.png`;
+  };
+
+  const lineTypeImage=toUrl(lineVisual?.formationTypeImage);
+  if(lineTypeImage) return lineTypeImage;
+
+  const wantedType=String(lineVisual?.formationType || activeJson?.formationType || '').trim();
+  if(wantedType && Array.isArray(activeJson?.formations)) {
+    const group=activeJson.formations.find(g=>String(g?.type||'').trim()===wantedType);
+    const groupImage=toUrl(group?.typeImg || group?.image);
+    if(groupImage) return groupImage;
+  }
+
+  const jsonTypeImage=toUrl(activeJson?.formationTypeImage);
+  if(jsonTypeImage) return jsonTypeImage;
+
+  if(Array.isArray(activeJson?.formations)) {
+    const route=String(activeRouteName||'').trim();
+    const routeGroup=activeJson.formations.find(g=>
+      Array.isArray(g?.routeNames) && g.routeNames.map(x=>String(x||'').trim()).includes(route)
+    );
+    const routeImage=toUrl(routeGroup?.typeImg || routeGroup?.image);
+    if(routeImage) return routeImage;
+    if(activeJson.formations.length===1) {
+      const onlyImage=toUrl(activeJson.formations[0]?.typeImg || activeJson.formations[0]?.image);
+      if(onlyImage) return onlyImage;
+    }
+  }
+
   if(activeRouteMeta?.trainImage) return String(activeRouteMeta.trainImage);
   return jsonNoImageUrl();
 }
