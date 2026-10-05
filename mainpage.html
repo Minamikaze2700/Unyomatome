@@ -1189,16 +1189,24 @@ function activeLineVisuals(json=activeJson,meta=activeRouteMeta){
   }
   return {};
 }
+function jsonImageValue(json=activeJson,meta=activeRouteMeta,key=''){
+  const lineVisual=activeLineVisuals(json,meta);
+  const lineValue=lineVisual?.[key];
+  const jsonValue=json?.[key];
+  return String(lineValue??jsonValue??'').trim();
+}
 function activeFormationVisualValue(json=activeJson,meta=activeRouteMeta,key=''){
   const lineVisual=activeLineVisuals(json,meta);
   const routeValue=meta?.[key];
   const jsonValue=json?.[key];
   const lineValue=lineVisual?.[key];
-  return String(lineValue??routeValue??jsonValue??'').trim();
+  // 画像関連はJSONを唯一の正として扱い、HTML側の固定画像へ戻さない。
+  const isImageKey=['formationTypeImage','formationDefaultImage','noImage'].includes(String(key));
+  return String(lineValue??(isImageKey?jsonValue:routeValue??jsonValue)??'').trim();
 }
 function jsonNoImageUrl(json=activeJson){
-  const raw=activeFormationVisualValue(json,activeRouteMeta,'noImage')
-    ||activeFormationVisualValue(json,activeRouteMeta,'formationDefaultImage')
+  const raw=jsonImageValue(json,activeRouteMeta,'noImage')
+    ||jsonImageValue(json,activeRouteMeta,'formationDefaultImage')
     ||String(json?.commonFormationIcon||'').trim();
   if(!raw) return LINE_TRAIN_IMG;
   if(/^https?:\/\//i.test(raw)) return raw;
@@ -1298,7 +1306,7 @@ function buildFormationsForJson(json){
   };
   const rawFormations=Array.isArray(json?.formations)?json.formations:[];
   const declaredType=activeFormationVisualValue(json,activeRouteMeta,'formationType');
-  const declaredTypeImg=makeImg(activeFormationVisualValue(json,activeRouteMeta,'formationTypeImage'),activeFormationVisualValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon);
+  const declaredTypeImg=makeImg(jsonImageValue(json,activeRouteMeta,'formationTypeImage'),jsonImageValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon);
   const dataFamily=String(json?.formationFamily||activeRouteMeta?.formationFamily||formationStorageContext(activeRouteName).family||'').trim();
 
   // 新形式：JSON側で複数の編成グループを定義。
@@ -1322,7 +1330,7 @@ function buildFormationsForJson(json){
         const item={
           id:displayId,
           name:String(raw?.name||displayId),
-          img:makeImg(raw?.img||raw?.image,activeFormationVisualValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon),
+          img:makeImg(raw?.img||raw?.image,jsonImageValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon),
           cars,
           carNames:carsArr,
           disabled:!!raw?.disabled,
@@ -1340,7 +1348,7 @@ function buildFormationsForJson(json){
       const groupRouteNames=formationRouteNamesFromConfig(rawGroup);
       if(items.length) out.push({
         type:type||dataFamily||'編成',
-        typeImg:makeImg(rawGroup?.typeImg||rawGroup?.image,activeFormationVisualValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon),
+        typeImg:makeImg(rawGroup?.typeImg||rawGroup?.image,jsonImageValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon),
         family:groupFamily,
         routeNames:groupRouteNames,
         items
@@ -1371,7 +1379,7 @@ function buildFormationsForJson(json){
       const item={
         id:displayId,
         name:String(raw?.name||`${displayId}編成`),
-        img:makeImg(raw?.image,activeFormationVisualValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon),
+        img:makeImg(raw?.image,jsonImageValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon),
         cars,
         carNames:carsArr,
         family:dataFamily,
@@ -2401,9 +2409,9 @@ function formationById(id){
   if(declaredType && canonical===declaredType){
     // 形式そのものを選択した場合も、プルダウン・列車情報・列車アイコンで
     // 同じ「形式画像」を使う。noImageへフォールバックさせない。
-    const rawTypeImage=activeFormationVisualValue(activeJson,activeRouteMeta,'formationTypeImage')
-      ||activeFormationVisualValue(activeJson,activeRouteMeta,'formationDefaultImage')
-      ||activeFormationVisualValue(activeJson,activeRouteMeta,'noImage');
+    const rawTypeImage=jsonImageValue(activeJson,activeRouteMeta,'formationTypeImage')
+      ||jsonImageValue(activeJson,activeRouteMeta,'formationDefaultImage')
+      ||jsonImageValue(activeJson,activeRouteMeta,'noImage');
     const img=/^https?:\/\//i.test(rawTypeImage)
       ? rawTypeImage
       : `https://minamikaze2700.github.io/Unyomatome/images/${String(rawTypeImage||'').replace(/\.png$/i,'')}.png`;
@@ -2652,8 +2660,7 @@ function prescribedFormationName(t){
   return String(meta?.defaultFormationName||t?.defaultCars||t?.rawTrain?.defaultCars||activeJson?.formationDefaultName||'普通共通');
 }
 function defaultTrainImage(){
-  // 未登録時の既定画像も、まず現在のJSONに記載された画像を使う。
-  // routeMetaの固定画像はJSON側に画像指定がない場合だけフォールバックする。
+  // 未登録時もHTMLの固定画像は使わず、現在のJSONだけから既定画像を決める。
   const lineVisual=activeLineVisuals(activeJson,activeRouteMeta);
   const toUrl=value=>{
     const raw=String(value||'').trim();
@@ -2688,7 +2695,6 @@ function defaultTrainImage(){
     }
   }
 
-  if(activeRouteMeta?.trainImage) return String(activeRouteMeta.trainImage);
   return jsonNoImageUrl();
 }
 function imageForTrain(t){
@@ -4808,8 +4814,7 @@ function getMainLabelClass(type){
 }
 function trainVisualKind(t){ return expressClassForTrain(t); }
 function defaultTrainImage(){
-  // 未登録時の既定画像も、まず現在のJSONに記載された画像を使う。
-  // routeMetaの固定画像はJSON側に画像指定がない場合だけフォールバックする。
+  // 未登録時もHTMLの固定画像は使わず、現在のJSONだけから既定画像を決める。
   const lineVisual=activeLineVisuals(activeJson,activeRouteMeta);
   const toUrl=value=>{
     const raw=String(value||'').trim();
@@ -4844,7 +4849,6 @@ function defaultTrainImage(){
     }
   }
 
-  if(activeRouteMeta?.trainImage) return String(activeRouteMeta.trainImage);
   return jsonNoImageUrl();
 }
 /* 現在選択している日付の土休日列車を常に優先する。JSONのキーは土休日/休日どちらでも可。 */
@@ -5724,7 +5728,7 @@ initRegionNavigation();
         });
         if(selectedElsewhere) continue;
         const clickAttr=disabled ? '' : `onclick="selectFormationAtSlot(${slot},'${escapeJs(id)}')"`;
-        chunks.push(`<div class="option-item ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':''} ${clickAttr}><img src="${esc(item.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=defaultTrainImage()"><span>${esc(item.name||id)}</span></div>`);
+        chunks.push(`<div class="option-item ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':''} ${clickAttr}><img src="${esc(item.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${esc(item.name||id)}</span></div>`);
       }
     }
     return initial+chunks.join('');
