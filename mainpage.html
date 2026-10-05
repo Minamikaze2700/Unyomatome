@@ -1669,10 +1669,10 @@ async function loadLineTrainData(routeName=activeRouteName){
   json=await loadExternalRouteJsons(activeRouteMeta);
   activeJson=json;
   STATIONS=buildStationsForRoute(json,activeRouteMeta);
-  // 路線ごとの初期編成アイコンを即時反映。海岸線は専用5000形アイコンを使用する。
-  if(typeof defaultTrainImage==='function') INITIAL_FORMATION_SELECTION.img=defaultTrainImage();
   for(const key of Object.keys(VEHICLE_TO_FORMATION)) delete VEHICLE_TO_FORMATION[key];
   FORMATIONS=buildFormationsForJson(json);
+  // 「編成未選択」は必ずJSONのnoImage。形式画像をnoImageとして流用しない。
+  INITIAL_FORMATION_SELECTION.img=jsonNoImageUrl(json);
   TYPE_SELECTIONS=FORMATIONS.map(g=>({id:g.type,name:g.type,img:g.typeImg,kind:'type',type:g.type}));
   const built=[];
   const jsonDayKeys=day=>day==='休日'?['土休日','休日']:['平日'];
@@ -2597,8 +2597,12 @@ function formationsForTrain(train){
 }
 function selectionDisplayObjectForTrain(train,id){
   if(!id || id===INITIAL_FORMATION_SELECTION.id) return INITIAL_FORMATION_SELECTION;
-  if(!formationAllowedForTrain(train,id)) return INITIAL_FORMATION_SELECTION;
-  return selectionDisplayObject(id);
+  // 選択された編成はJSONの編成定義をそのまま使用する。
+  // ここでHTML側の既定画像へフォールバックすると、正しい個別画像がnoImageに置き換わるため、
+  // JSONに存在する編成はroute/family判定より先に返す。
+  const known=formationById(id);
+  if(known) return known;
+  return INITIAL_FORMATION_SELECTION;
 }
 
 function selectionDisplayObject(id){
@@ -2660,41 +2664,8 @@ function prescribedFormationName(t){
   return String(meta?.defaultFormationName||t?.defaultCars||t?.rawTrain?.defaultCars||activeJson?.formationDefaultName||'普通共通');
 }
 function defaultTrainImage(){
-  // 未登録時もHTMLの固定画像は使わず、現在のJSONだけから既定画像を決める。
-  const lineVisual=activeLineVisuals(activeJson,activeRouteMeta);
-  const toUrl=value=>{
-    const raw=String(value||'').trim();
-    if(!raw) return '';
-    if(/^https?:\/\//i.test(raw)) return raw;
-    return `https://minamikaze2700.github.io/Unyomatome/images/${raw.replace(/\.png$/i,'')}.png`;
-  };
-
-  const lineTypeImage=toUrl(lineVisual?.formationTypeImage);
-  if(lineTypeImage) return lineTypeImage;
-
-  const wantedType=String(lineVisual?.formationType || activeJson?.formationType || '').trim();
-  if(wantedType && Array.isArray(activeJson?.formations)) {
-    const group=activeJson.formations.find(g=>String(g?.type||'').trim()===wantedType);
-    const groupImage=toUrl(group?.typeImg || group?.image);
-    if(groupImage) return groupImage;
-  }
-
-  const jsonTypeImage=toUrl(activeJson?.formationTypeImage);
-  if(jsonTypeImage) return jsonTypeImage;
-
-  if(Array.isArray(activeJson?.formations)) {
-    const route=String(activeRouteName||'').trim();
-    const routeGroup=activeJson.formations.find(g=>
-      Array.isArray(g?.routeNames) && g.routeNames.map(x=>String(x||'').trim()).includes(route)
-    );
-    const routeImage=toUrl(routeGroup?.typeImg || routeGroup?.image);
-    if(routeImage) return routeImage;
-    if(activeJson.formations.length===1) {
-      const onlyImage=toUrl(activeJson.formations[0]?.typeImg || activeJson.formations[0]?.image);
-      if(onlyImage) return onlyImage;
-    }
-  }
-
+  // 未登録・編成未選択時は、JSONのnoImageだけを使用する。
+  // formationTypeImageは「形式そのもの」を選択した場合にだけformationById()から使用する。
   return jsonNoImageUrl();
 }
 function imageForTrain(t){
@@ -4814,41 +4785,8 @@ function getMainLabelClass(type){
 }
 function trainVisualKind(t){ return expressClassForTrain(t); }
 function defaultTrainImage(){
-  // 未登録時もHTMLの固定画像は使わず、現在のJSONだけから既定画像を決める。
-  const lineVisual=activeLineVisuals(activeJson,activeRouteMeta);
-  const toUrl=value=>{
-    const raw=String(value||'').trim();
-    if(!raw) return '';
-    if(/^https?:\/\//i.test(raw)) return raw;
-    return `https://minamikaze2700.github.io/Unyomatome/images/${raw.replace(/\.png$/i,'')}.png`;
-  };
-
-  const lineTypeImage=toUrl(lineVisual?.formationTypeImage);
-  if(lineTypeImage) return lineTypeImage;
-
-  const wantedType=String(lineVisual?.formationType || activeJson?.formationType || '').trim();
-  if(wantedType && Array.isArray(activeJson?.formations)) {
-    const group=activeJson.formations.find(g=>String(g?.type||'').trim()===wantedType);
-    const groupImage=toUrl(group?.typeImg || group?.image);
-    if(groupImage) return groupImage;
-  }
-
-  const jsonTypeImage=toUrl(activeJson?.formationTypeImage);
-  if(jsonTypeImage) return jsonTypeImage;
-
-  if(Array.isArray(activeJson?.formations)) {
-    const route=String(activeRouteName||'').trim();
-    const routeGroup=activeJson.formations.find(g=>
-      Array.isArray(g?.routeNames) && g.routeNames.map(x=>String(x||'').trim()).includes(route)
-    );
-    const routeImage=toUrl(routeGroup?.typeImg || routeGroup?.image);
-    if(routeImage) return routeImage;
-    if(activeJson.formations.length===1) {
-      const onlyImage=toUrl(activeJson.formations[0]?.typeImg || activeJson.formations[0]?.image);
-      if(onlyImage) return onlyImage;
-    }
-  }
-
+  // 未登録・編成未選択時は、JSONのnoImageだけを使用する。
+  // formationTypeImageは「形式そのもの」を選択した場合にだけformationById()から使用する。
   return jsonNoImageUrl();
 }
 /* 現在選択している日付の土休日列車を常に優先する。JSONのキーは土休日/休日どちらでも可。 */
