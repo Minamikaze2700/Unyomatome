@@ -1223,91 +1223,37 @@ function rebuildOperationChainIndex(){
         if(!no) return;
         const info={chainId:`${day}-${String(chainIndex+1).padStart(2,'0')}`,chainIndex,entryIndex,entry:t||{no}};
         CHAIN_INDEX[day][no]=info;
-        const direction=String(t?.direction||'').toLowerCase();
-        if(direction) CHAIN_INDEX[day][`${no}::${direction}`]=info;
         const canonical=no.replace(/A$/i,'');
         if(!CHAIN_INDEX[day][canonical]) CHAIN_INDEX[day][canonical]=info;
-        if(direction && !CHAIN_INDEX[day][`${canonical}::${direction}`]){
-          CHAIN_INDEX[day][`${canonical}::${direction}`]=info;
-        }
       });
     });
   }
 }
-function operationEntriesConnected(prev,next){
-  if(!prev||!next) return false;
-  const prevDest=String(prev.dest||'').trim();
-  const nextStart=String(next.start||'').trim();
-  if(!prevDest||!nextStart||prevDest!==nextStart) return false;
-
-  const prevEnd=timeToMinutes(prev.endTime||prev.stops?.[prev.stops.length-1]?.arrival||prev.stops?.[prev.stops.length-1]?.time||'');
-  const nextDep=timeToMinutes(next.startTime||next.stops?.[0]?.departure||next.stops?.[0]?.time||'');
-  if(Number.isFinite(prevEnd)&&Number.isFinite(nextDep)&&nextDep<prevEnd) return false;
-  return true;
-}
-function splitOperationChainByConnectivity(chain){
-  const source=Array.isArray(chain)?chain.filter(Boolean):[];
-  if(!source.length) return [];
-  const segments=[];
-  let current=[source[0]];
-  for(let i=1;i<source.length;i++){
-    const entry=source[i];
-    if(operationEntriesConnected(current[current.length-1],entry)){
-      current.push(entry);
-    }else{
-      if(current.length) segments.push(current);
-      current=[entry];
-    }
-  }
-  if(current.length) segments.push(current);
-  return segments.filter(x=>x.length);
-}
 function loadOperationChainsFromJson(json){
   for(const day of ['平日','休日']){
     const rawChains=json?.operationChains?.[day];
-    const resolvedChains=[];
-    if(Array.isArray(rawChains)){
-      for(const rawChain of rawChains){
-        const resolved=(Array.isArray(rawChain)?rawChain:[])
+    OPERATION_CHAINS[day]=Array.isArray(rawChains)
+      ? rawChains.map(chain=>(Array.isArray(chain)?chain:[])
           .map(entry=>{
-            const rawNo=entry && typeof entry==='object'
-              ? String(entry.no??entry.trainNo??entry.id??'').trim()
-              : String(entry??'').trim();
-            if(!rawNo) return null;
-            const found=findOperationTrainRecord(rawNo,day);
-            if(found) return {
-              no:String(found.no||rawNo),
-              type:String(found.type||entry?.type||''),
-              start:String(found.start||entry?.start||found.stops?.[0]?.station||''),
-              startTime:String(found.startTime||entry?.startTime||found.stops?.[0]?.departure||found.stops?.[0]?.time||''),
-              dest:String(found.dest||entry?.dest||found.stops?.[found.stops.length-1]?.station||''),
-              endTime:String(found.endTime||entry?.endTime||found.stops?.[found.stops.length-1]?.arrival||found.stops?.[found.stops.length-1]?.time||''),
-              direction:String(found.direction||entry?.direction||''),
-              stops:Array.isArray(found.stops)?found.stops:[]
-            };
-            // 列車本体が見つからなくても、JSON側の連結情報は捨てずに保持する。
-            if(entry && typeof entry==='object') return {
-              no:rawNo,
-              type:String(entry.type||''),
-              start:String(entry.start||''),
-              startTime:String(entry.startTime||''),
-              dest:String(entry.dest||''),
-              endTime:String(entry.endTime||''),
-              direction:String(entry.direction||''),
-              stops:Array.isArray(entry.stops)?entry.stops:[]
-            };
-            return null;
+            const id=String(entry??'').trim();
+            return id ? findOperationTrainRecord(id,day) : null;
           })
-          .filter(Boolean);
-        resolvedChains.push(...splitOperationChainByConnectivity(resolved));
-      }
-    }
-    OPERATION_CHAINS[day]=resolvedChains;
+          .filter(Boolean)
+          .map(t=>({
+            no:String(t.no||''),
+            type:String(t.type||''),
+            start:String(t.start||t.stops?.[0]?.station||''),
+            startTime:String(t.startTime||t.stops?.[0]?.departure||t.stops?.[0]?.time||''),
+            dest:String(t.dest||t.stops?.[t.stops.length-1]?.station||''),
+            endTime:String(t.endTime||t.stops?.[t.stops.length-1]?.arrival||t.stops?.[t.stops.length-1]?.time||'')
+          }))
+        ).filter(chain=>chain.length)
+      : [];
   }
   rebuildOperationChainIndex();
 }
-function operationChainFirstNo(day,trainNo,direction=null){
-  const info=findChain(day,trainNo,direction);
+function operationChainFirstNo(day,trainNo){
+  const info=findChain(day,trainNo);
   if(!info) return normalizeTrainNo(trainNo);
   const chain=OPERATION_CHAINS[day]?.[info.chainIndex]||[];
   return normalizeTrainNo(chain[0]?.no || chain[0] || trainNo);
@@ -1994,18 +1940,9 @@ function warmAllTrainData(){
   prefetchTrainImages();
 }
 
-function findChain(day,trainNo,direction=null){
+function findChain(day,trainNo){
   const raw=normalizeTrainNo(trainNo);
-  const dir=String(direction||'').toLowerCase();
-  const canonical=raw.replace(/A$/i,'');
-  if(dir){
-    return CHAIN_INDEX[day]?.[`${raw}::${dir}`]
-      || CHAIN_INDEX[day]?.[`${canonical}::${dir}`]
-      || CHAIN_INDEX[day]?.[raw]
-      || CHAIN_INDEX[day]?.[canonical]
-      || null;
-  }
-  return CHAIN_INDEX[day]?.[raw] || CHAIN_INDEX[day]?.[canonical] || null;
+  return CHAIN_INDEX[day]?.[raw] || CHAIN_INDEX[day]?.[raw.replace(/A$/i,'')] || null;
 }
 function chainEntries(day,trainNo){
   const info=findChain(day,trainNo);
@@ -2462,7 +2399,15 @@ function formationById(id){
   // 既存の単一形式JSONで形式名そのものを選択できるようにする。
   const declaredType=activeFormationVisualValue(activeJson,activeRouteMeta,'formationType');
   if(declaredType && canonical===declaredType){
-    return {id:declaredType,name:declaredType,img:jsonNoImageUrl(activeJson),kind:'type',type:declaredType,generic:true,displayAsFullName:true,family:activeRouteMeta?.formationFamily||''};
+    // 形式そのものを選択した場合も、プルダウン・列車情報・列車アイコンで
+    // 同じ「形式画像」を使う。noImageへフォールバックさせない。
+    const rawTypeImage=activeFormationVisualValue(activeJson,activeRouteMeta,'formationTypeImage')
+      ||activeFormationVisualValue(activeJson,activeRouteMeta,'formationDefaultImage')
+      ||activeFormationVisualValue(activeJson,activeRouteMeta,'noImage');
+    const img=/^https?:\/\//i.test(rawTypeImage)
+      ? rawTypeImage
+      : `https://minamikaze2700.github.io/Unyomatome/images/${String(rawTypeImage||'').replace(/\.png$/i,'')}.png`;
+    return {id:declaredType,name:declaredType,img:img||jsonNoImageUrl(activeJson),kind:'type',type:declaredType,generic:true,displayAsFullName:true,family:activeRouteMeta?.formationFamily||''};
   }
   return null;
 }
@@ -2706,35 +2651,7 @@ function prescribedFormationName(t){
   }
   return String(meta?.defaultFormationName||t?.defaultCars||t?.rawTrain?.defaultCars||activeJson?.formationDefaultName||'普通共通');
 }
-function imageRefToUrl(value){
-  const v=String(value||'').trim();
-  if(!v) return '';
-  if(/^https?:\/\//i.test(v)) return v;
-  return `https://minamikaze2700.github.io/Unyomatome/images/${v.replace(/\.png$/i,'')}.png`;
-}
 function defaultTrainImage(){
-  // 路線ごとに形式画像が指定されている場合は、それを未登録列車の既定画像にする。
-  // 共有JSONを使う路線でも、routeMetaの形式指定を最優先する。
-  const metaTypeImage=imageRefToUrl(activeRouteMeta?.formationTypeImage);
-  if(metaTypeImage) return metaTypeImage;
-
-  const wantedType=String(activeRouteMeta?.formationType||'').trim();
-  if(wantedType && Array.isArray(activeJson?.formations)) {
-    const group=activeJson.formations.find(g=>String(g?.type||'').trim()===wantedType);
-    const groupImage=imageRefToUrl(group?.typeImg||group?.image);
-    if(groupImage) return groupImage;
-  }
-
-  const jsonTypeImage=imageRefToUrl(activeJson?.formationTypeImage);
-  if(jsonTypeImage) return jsonTypeImage;
-
-  // 形式が1種類しかないJSONなら、その形式画像を未登録列車にも使用する。
-  if(Array.isArray(activeJson?.formations) && activeJson.formations.length===1){
-    const onlyGroup=activeJson.formations[0];
-    const onlyImage=imageRefToUrl(onlyGroup?.typeImg||onlyGroup?.image);
-    if(onlyImage) return onlyImage;
-  }
-
   if(activeRouteMeta?.trainImage) return String(activeRouteMeta.trainImage);
   return jsonNoImageUrl();
 }
@@ -2941,14 +2858,14 @@ function inferDirectionFromStations(a,b){
   return ia>ib?'up':'down';
 }
 function linkedEntries(t){
-  const info=findChain(currentDay,t.no,t.direction);
+  const info=findChain(currentDay,t.no);
   if(!info) return {prev:null,next:null,chain:null,index:-1};
   const chain=OPERATION_CHAINS[currentDay][info.chainIndex];
   return {prev:chain[info.entryIndex-1]||null,next:chain[info.entryIndex+1]||null,chain,index:info.entryIndex};
 }
 function trainEntryNo(entry){ return entry?normalizeTrainNo(entry.no):''; }
 function connectionPrev(t){
-  const info=findChain(currentDay,t.no,t.direction);
+  const info=findChain(currentDay,t.no);
   if(!info) return null;
   const chain=OPERATION_CHAINS[currentDay][info.chainIndex];
   const prev=chain[info.entryIndex-1];
@@ -2956,21 +2873,13 @@ function connectionPrev(t){
   if(timeToMinutes(prev.endTime)>timeToMinutes(t.stops[0].time)) return null;
   return prev;
 }
-function connectionNextStartMinutes(t,next){
-  if(!t||!next) return null;
-  const last=timeToMinutes(t.stops?.[t.stops.length-1]?.time||t.endTime||'');
-  const start=timeToMinutes(next.startTime||'');
-  if(!Number.isFinite(last)||!Number.isFinite(start)||start<last) return null;
-  return start;
-}
 function connectionNext(t){
-  const info=findChain(currentDay,t.no,t.direction);
+  const info=findChain(currentDay,t.no);
   if(!info) return null;
   const chain=OPERATION_CHAINS[currentDay][info.chainIndex];
   const next=chain[info.entryIndex+1];
   if(!next || String(t.dest)!==String(next.start)) return null;
-  const nextStart=connectionNextStartMinutes(t,next);
-  if(!Number.isFinite(nextStart)) return null;
+  if(timeToMinutes(t.stops[t.stops.length-1].time)>timeToMinutes(next.startTime)) return null;
   return next;
 }
 function normalizeLineStopTimes(stops){
@@ -3006,8 +2915,7 @@ function findTerminalNextTrain(t,lastArr,terminalStation){
     || baseTrainForDay(nextNo,nextDirection,currentDay)
     || (currentDay==='休日' ? HOLIDAY_TRAIN_INDEX[nextNo] : TRAIN_INDEX[nextNo])
     || null;
-  const nextStart=connectionNextStartMinutes(t,next);
-  const dep=Number.isFinite(nextStart)?nextStart+0.75:null;
+  const dep=timeToMinutes(next.startTime)+0.75;
   if(!nextTrain || !Number.isFinite(dep)) return null;
   return {train:nextTrain,dep};
 }
@@ -3040,13 +2948,12 @@ function positionForTrain(t,minutes){
   const {stops,first,last,firstIndex,lastIndex,side,firstDep,lastArr}=meta;
   if(!Number.isFinite(firstDep)||!Number.isFinite(lastArr)) return null;
 
-  const chainInfo=findChain(currentDay,t.no,t.direction);
+  const chainInfo=findChain(currentDay,t.no);
   const chain=chainInfo ? OPERATION_CHAINS[currentDay][chainInfo.chainIndex] : null;
   const isChainFirst=!!chain && chainInfo.entryIndex===0;
   const isChainLast=!!chain && chainInfo.entryIndex===chain.length-1;
   const next=connectionNext(t);
-  const nextStartRaw=next?connectionNextStartMinutes(t,next):null;
-  const nextStart=Number.isFinite(nextStartRaw)?nextStartRaw+0.75:null;
+  const nextStart=next?timeToMinutes(next.startTime)+0.75:null;
 
     // 連結運用の先頭列車は先頭側の始発停車、末尾列車は末尾側の終着停車を担当する。
   if(!chain){
@@ -3094,28 +3001,13 @@ function positionForTrain(t,minutes){
     // 大船で30分以上空く運用は、OPERATION_CHAINS側で連結自体を分割しているため、
     // この処理には入らず、次列車は発車2分前から通常の始発表示になる。
     if(minutes>lastArr && minutes<nextStart){
-      // 折り返し待ちは、終着駅と次列車の始発駅が完全に一致し、
-      // 次列車の方向が現在列車と反対の場合だけ表示する。
-      // 運用連結データに存在するだけで待機表示されないようにする。
-      const terminalStation=String(last?.station||t?.dest||'').trim();
-      const nextStartStation=String(next?.start||'').trim();
-      const currentDirection=String(t?.direction||'').toLowerCase();
-      const nextDirection=(next&&next.start&&next.dest)
-        ? (stationIndex(next.start)>stationIndex(next.dest)?'up':'down')
-        : null;
-      const isActualTurnback=!!terminalStation && !!nextStartStation
-        && terminalStation===nextStartStation
-        && !!nextDirection
-        && !!currentDirection
-        && nextDirection!==currentDirection;
-      if(!isActualTurnback) return null;
-
       if(minutes<=lastArr+TURNBACK_SWITCH_MIN){
         return {pos:lastIndex,side,visualTrain:t,mode:'turn-arrival'};
       }
       const nextNo=trainEntryNo(next);
+      const nextDirection=(next&&next.start&&next.dest)?(stationIndex(next.start)>stationIndex(next.dest)?'up':'down'):null;
       const nextTrain=liveTrain(nextNo,nextDirection)||baseTrainForDay(nextNo,nextDirection,currentDay)||(currentDay==='休日'?HOLIDAY_TRAIN_INDEX[nextNo]:TRAIN_INDEX[nextNo])||null;
-      const nextSide=nextTrain?(nextTrain.direction==='down'?'right':'left'):(nextDirection==='down'?'right':'left');
+      const nextSide=nextTrain?(nextTrain.direction==='down'?'right':'left'):(inferDirectionFromStations(next.start,next.dest)==='down'?'right':'left');
       return {pos:lastIndex,side:nextSide,visualTrain:nextTrain||t,mode:'turn-wait'};
     }
   }
@@ -5005,8 +4897,9 @@ function initRegionNavigation(){
     .train-label.route-normal,.station-timetable-type.route-normal,.type-badge.route-normal{background:var(--train-type-color,#666);color:#fff;}
     .train-label.express,.station-timetable-type.express,.type-badge.express{background:${FAST_TYPE_COLOR};color:#fff;}
     .train-label.deadhead,.station-timetable-type.deadhead,.type-badge.deadhead{background:#fff;color:#111;border:1px solid #bbb;}
-    .operation-info-header{background:var(--corporate-title-color,#0072bc) !important;color:#fff !important;}
+    .operation-info-header{background:var(--control-accent,#808080) !important;color:#fff !important;}
     .operation-info-header button{color:#fff !important;}
+    .operation-info-add{background:var(--control-accent,#808080) !important;color:#fff !important;}
     /* 路線一覧：メインページ (5).html のデザインをそのまま使用 */
     .company-block{
       margin:0 0 18px;
