@@ -1533,6 +1533,8 @@ function normalizeExternalTrain(raw,day,direction,meta){
     endTime:String(raw?.endTime||lastTimed.arrival||lastTimed.departure||lastTimed.time||''),
     trainNumbers:(raw?.trainNumbers&&typeof raw.trainNumbers==='object')?raw.trainNumbers:(rawNo?{[String(servedLineNames[0]||raw?.lineKind||meta?.lineKind||'route')]:[rawNo]}:{}),
     servedLineNames,
+    sourceTypeColors:(raw?.__sourceTypeColors&&typeof raw.__sourceTypeColors==='object')?{...raw.__sourceTypeColors}:{},
+    sourceJsonUrl:String(raw?.__sourceJsonUrl||''),
     stops,
     rawTrain:raw
   }];
@@ -1575,9 +1577,44 @@ async function loadExternalRouteJsons(routeMeta){
   const payloads=await Promise.all(unique.map(async url=>{
     const res=await fetch(url,{cache:'no-store'});
     if(!res.ok) throw new Error(`路線JSONの読み込みに失敗しました (${res.status})`);
-    return {url,json:await res.json()};
+    const json=await res.json();
+    return {url,json};
   }));
   const primary=payloads[0]?.json||{};
+
+  // 各JSONごとの種別色を、そこから読み込んだ列車自身に保持させる。
+  // 複数JSONを統合する場合も、種別色までprimaryだけに寄せない。
+  // lineVisuals.<路線名>.typeColors がある場合は、そのJSON内の路線別設定を優先する。
+  const annotateSourceTypeColors=(rawTrain,json)=>{
+    const rawLineNames=[];
+    if(rawTrain?.lineKind) rawLineNames.push(String(rawTrain.lineKind));
+    if(rawTrain?.lineName) rawLineNames.push(String(rawTrain.lineName));
+    if(rawTrain?.line) rawLineNames.push(String(rawTrain.line));
+    const lineVisuals=(json?.lineVisuals&&typeof json.lineVisuals==='object')?json.lineVisuals:{};
+    let sourceColors=null;
+    for(const name of rawLineNames){
+      const tc=lineVisuals?.[name]?.typeColors;
+      if(tc&&typeof tc==='object'){ sourceColors={...tc}; break; }
+    }
+    if(!sourceColors){
+      const rootColors=(json?.typeColors&&typeof json.typeColors==='object')?json.typeColors:{};
+      sourceColors={...rootColors};
+    }
+    return {...rawTrain,__sourceTypeColors:sourceColors,__sourceJsonUrl:String(json?._sourceJsonUrl||'')};
+  };
+  for(const payload of payloads){
+    try{ if(payload.json) payload.json._sourceJsonUrl=payload.url; }catch(e){}
+    const days=payload.json?.trains;
+    if(days&&typeof days==='object'){
+      for(const dayObj of Object.values(days)){
+        if(!dayObj||typeof dayObj!=='object') continue;
+        for(const direction of ['上り','下り']){
+          const list=Array.isArray(dayObj?.[direction])?dayObj[direction]:[];
+          dayObj[direction]=list.map(raw=>annotateSourceTypeColors(raw,payload.json));
+        }
+      }
+    }
+  }
   if(payloads.length===1) return primary;
 
   // 京浜東北・根岸線／横浜線は、共有区間（東神奈川～大船）を相互表示するため、
@@ -4689,7 +4726,11 @@ function displayedRouteColorForTrainPosition(train,position=null){
 }
 function typeColorForTrain(train,position=null){
   const type=String(train?.type||'').trim();
-  const colors={...(activeRouteMeta?.typeColors||{}),...(activeJson?.typeColors||{})};
+  // 種別色は、列車を読み込んだJSON側の設定を最優先する。
+  // 複数JSONを統合している場合も、primary側の色で全列車を上書きしない。
+  const sourceColors=(train?.sourceTypeColors&&typeof train.sourceTypeColors==='object')?train.sourceTypeColors:{};
+  const colors={...sourceColors,...(activeJson?.typeColors||{}),...(activeRouteMeta?.typeColors||{})};
+  if(Object.prototype.hasOwnProperty.call(sourceColors,type) && typeof sourceColors[type]==='string') return String(sourceColors[type]);
   if(Object.prototype.hasOwnProperty.call(colors,type) && typeof colors[type]==='string') return String(colors[type]);
   if(type==='回送') return String(colors?.回送||'#fff');
   if(type.includes('快速')) return String(colors?.快速||FAST_TYPE_COLOR||'#f39800');
@@ -4702,8 +4743,9 @@ function typeColorForTrain(train,position=null){
 function typeBadgeInlineStyle(train,position=null,stationDirectionColor=null){
   const type=String(train?.type||'普通');
   if(type==='回送') return 'background:#fff;color:#111;border:1px solid #bbb;';
-  const configured={...(activeRouteMeta?.typeColors||{}),...(activeJson?.typeColors||{})};
-  if(Object.prototype.hasOwnProperty.call(configured,type)) return `background:${typeColorForTrain(train,position)};color:#fff;`;
+  const sourceColors=(train?.sourceTypeColors&&typeof train.sourceTypeColors==='object')?train.sourceTypeColors:{};
+  const configured={...sourceColors,...(activeJson?.typeColors||{}),...(activeRouteMeta?.typeColors||{})};
+  if(Object.prototype.hasOwnProperty.call(sourceColors,type) || Object.prototype.hasOwnProperty.call(configured,type)) return `background:${typeColorForTrain(train,position)};color:#fff;`;
   if(type==='普通' && stationDirectionColor) return `background:${stationDirectionColor};color:#fff;`;
   const resolvedPosition = position!=null ? position : (train ? positionForTrain(train,currentMinutes())?.pos : null);
   return `background:${typeColorForTrain(train,resolvedPosition)};color:#fff;`;
