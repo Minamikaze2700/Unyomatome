@@ -3653,7 +3653,26 @@ function formatFormationUpdatedAt(trainNo){
   if(parsed){
     const hh=String(Math.floor(Number(parsed.time)/60)).padStart(2,'0');
     const mm=String(Number(parsed.time)%60).padStart(2,'0');
-    return `${hh}:${mm}${parsed.author?` @${parsed.author}`:''}`;
+    let datePrefix='';
+    // 登録日時が保存されている場合、今日なら時刻のみ、今年の過去日ならMM/DD、
+    // 去年以前ならYYYY/MM/DDを時刻の前に表示する。
+    if(parsed.stamp && /^\d{10}$/.test(parsed.stamp)){
+      const yy=Number(parsed.stamp.slice(0,2));
+      const year=2000+yy;
+      const month=Number(parsed.stamp.slice(2,4));
+      const day=Number(parsed.stamp.slice(4,6));
+      const now=new Date();
+      const todayYear=now.getFullYear();
+      const todayMonth=now.getMonth()+1;
+      const todayDay=now.getDate();
+      const isBeforeToday=(year<todayYear)||(year===todayYear&&(month<todayMonth||(month===todayMonth&&day<todayDay)));
+      if(year<todayYear){
+        datePrefix=`${year}/${String(month).padStart(2,'0')}/${String(day).padStart(2,'0')} `;
+      }else if(year===todayYear && isBeforeToday){
+        datePrefix=`${String(month).padStart(2,'0')}/${String(day).padStart(2,'0')} `;
+      }
+    }
+    return `${datePrefix}${hh}:${mm}${parsed.author?` @${parsed.author}`:''}`;
   }
   return formatStoredMeta(rawMeta);
 }
