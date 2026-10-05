@@ -1223,76 +1223,91 @@ function rebuildOperationChainIndex(){
         if(!no) return;
         const info={chainId:`${day}-${String(chainIndex+1).padStart(2,'0')}`,chainIndex,entryIndex,entry:t||{no}};
         CHAIN_INDEX[day][no]=info;
+        const direction=String(t?.direction||'').toLowerCase();
+        if(direction) CHAIN_INDEX[day][`${no}::${direction}`]=info;
         const canonical=no.replace(/A$/i,'');
         if(!CHAIN_INDEX[day][canonical]) CHAIN_INDEX[day][canonical]=info;
+        if(direction && !CHAIN_INDEX[day][`${canonical}::${direction}`]){
+          CHAIN_INDEX[day][`${canonical}::${direction}`]=info;
+        }
       });
     });
   }
 }
-function operationChainLinkGapMinutes(prev,next){
-  const prevEnd=timeToMinutes(prev?.endTime);
-  const nextStart=timeToMinutes(next?.startTime);
-  if(!Number.isFinite(prevEnd)||!Number.isFinite(nextStart)) return null;
-  let gap=nextStart-prevEnd;
-  while(gap<0) gap+=1440;
-  return gap;
-}
-function isUsableOperationChainLink(prev,next){
+function operationEntriesConnected(prev,next){
   if(!prev||!next) return false;
   const prevDest=String(prev.dest||'').trim();
   const nextStart=String(next.start||'').trim();
   if(!prevDest||!nextStart||prevDest!==nextStart) return false;
-  const gap=operationChainLinkGapMinutes(prev,next);
-  // 30分以上空く運用は、この画面では折り返し連結として扱わない。
-  // 長時間停車・留置を誤って「同一編成の折り返し」として表示するのを防ぐ。
-  if(Number.isFinite(gap)&&gap>=30) return false;
+
+  const prevEnd=timeToMinutes(prev.endTime||prev.stops?.[prev.stops.length-1]?.arrival||prev.stops?.[prev.stops.length-1]?.time||'');
+  const nextDep=timeToMinutes(next.startTime||next.stops?.[0]?.departure||next.stops?.[0]?.time||'');
+  if(Number.isFinite(prevEnd)&&Number.isFinite(nextDep)&&nextDep<prevEnd) return false;
   return true;
 }
-function sanitizeOperationChains(chains){
-  const out=[];
-  for(const rawChain of (Array.isArray(chains)?chains:[])){
-    const chain=Array.isArray(rawChain)?rawChain.filter(Boolean):[];
-    if(!chain.length) continue;
-    let current=[chain[0]];
-    for(let i=1;i<chain.length;i++){
-      const prev=chain[i-1], next=chain[i];
-      if(isUsableOperationChainLink(prev,next)){
-        current.push(next);
-      }else{
-        out.push(current);
-        current=[next];
-      }
+function splitOperationChainByConnectivity(chain){
+  const source=Array.isArray(chain)?chain.filter(Boolean):[];
+  if(!source.length) return [];
+  const segments=[];
+  let current=[source[0]];
+  for(let i=1;i<source.length;i++){
+    const entry=source[i];
+    if(operationEntriesConnected(current[current.length-1],entry)){
+      current.push(entry);
+    }else{
+      if(current.length) segments.push(current);
+      current=[entry];
     }
-    if(current.length) out.push(current);
   }
-  return out;
+  if(current.length) segments.push(current);
+  return segments.filter(x=>x.length);
 }
 function loadOperationChainsFromJson(json){
   for(const day of ['平日','休日']){
     const rawChains=json?.operationChains?.[day];
-    const built=Array.isArray(rawChains)
-      ? rawChains.map(chain=>(Array.isArray(chain)?chain:[])
+    const resolvedChains=[];
+    if(Array.isArray(rawChains)){
+      for(const rawChain of rawChains){
+        const resolved=(Array.isArray(rawChain)?rawChain:[])
           .map(entry=>{
-            const id=String(entry??'').trim();
-            return id ? findOperationTrainRecord(id,day) : null;
+            const rawNo=entry && typeof entry==='object'
+              ? String(entry.no??entry.trainNo??entry.id??'').trim()
+              : String(entry??'').trim();
+            if(!rawNo) return null;
+            const found=findOperationTrainRecord(rawNo,day);
+            if(found) return {
+              no:String(found.no||rawNo),
+              type:String(found.type||entry?.type||''),
+              start:String(found.start||entry?.start||found.stops?.[0]?.station||''),
+              startTime:String(found.startTime||entry?.startTime||found.stops?.[0]?.departure||found.stops?.[0]?.time||''),
+              dest:String(found.dest||entry?.dest||found.stops?.[found.stops.length-1]?.station||''),
+              endTime:String(found.endTime||entry?.endTime||found.stops?.[found.stops.length-1]?.arrival||found.stops?.[found.stops.length-1]?.time||''),
+              direction:String(found.direction||entry?.direction||''),
+              stops:Array.isArray(found.stops)?found.stops:[]
+            };
+            // 列車本体が見つからなくても、JSON側の連結情報は捨てずに保持する。
+            if(entry && typeof entry==='object') return {
+              no:rawNo,
+              type:String(entry.type||''),
+              start:String(entry.start||''),
+              startTime:String(entry.startTime||''),
+              dest:String(entry.dest||''),
+              endTime:String(entry.endTime||''),
+              direction:String(entry.direction||''),
+              stops:Array.isArray(entry.stops)?entry.stops:[]
+            };
+            return null;
           })
-          .filter(Boolean)
-          .map(t=>({
-            no:String(t.no||''),
-            type:String(t.type||''),
-            start:String(t.start||t.stops?.[0]?.station||''),
-            startTime:String(t.startTime||t.stops?.[0]?.departure||t.stops?.[0]?.time||''),
-            dest:String(t.dest||t.stops?.[t.stops.length-1]?.station||''),
-            endTime:String(t.endTime||t.stops?.[t.stops.length-1]?.arrival||t.stops?.[t.stops.length-1]?.time||'')
-          }))
-        ).filter(chain=>chain.length)
-      : [];
-    OPERATION_CHAINS[day]=sanitizeOperationChains(built);
+          .filter(Boolean);
+        resolvedChains.push(...splitOperationChainByConnectivity(resolved));
+      }
+    }
+    OPERATION_CHAINS[day]=resolvedChains;
   }
   rebuildOperationChainIndex();
 }
-function operationChainFirstNo(day,trainNo){
-  const info=findChain(day,trainNo);
+function operationChainFirstNo(day,trainNo,direction=null){
+  const info=findChain(day,trainNo,direction);
   if(!info) return normalizeTrainNo(trainNo);
   const chain=OPERATION_CHAINS[day]?.[info.chainIndex]||[];
   return normalizeTrainNo(chain[0]?.no || chain[0] || trainNo);
@@ -1979,9 +1994,18 @@ function warmAllTrainData(){
   prefetchTrainImages();
 }
 
-function findChain(day,trainNo){
+function findChain(day,trainNo,direction=null){
   const raw=normalizeTrainNo(trainNo);
-  return CHAIN_INDEX[day]?.[raw] || CHAIN_INDEX[day]?.[raw.replace(/A$/i,'')] || null;
+  const dir=String(direction||'').toLowerCase();
+  const canonical=raw.replace(/A$/i,'');
+  if(dir){
+    return CHAIN_INDEX[day]?.[`${raw}::${dir}`]
+      || CHAIN_INDEX[day]?.[`${canonical}::${dir}`]
+      || CHAIN_INDEX[day]?.[raw]
+      || CHAIN_INDEX[day]?.[canonical]
+      || null;
+  }
+  return CHAIN_INDEX[day]?.[raw] || CHAIN_INDEX[day]?.[canonical] || null;
 }
 function chainEntries(day,trainNo){
   const info=findChain(day,trainNo);
@@ -2682,14 +2706,35 @@ function prescribedFormationName(t){
   }
   return String(meta?.defaultFormationName||t?.defaultCars||t?.rawTrain?.defaultCars||activeJson?.formationDefaultName||'普通共通');
 }
+function imageRefToUrl(value){
+  const v=String(value||'').trim();
+  if(!v) return '';
+  if(/^https?:\/\//i.test(v)) return v;
+  return `https://minamikaze2700.github.io/Unyomatome/images/${v.replace(/\.png$/i,'')}.png`;
+}
 function defaultTrainImage(){
-  // 未選択時は「noimage」ではなく、路線に設定された所定形式の代表画像を優先する。
-  // 例：神戸市営西神・山手線は6000形の画像を使用する。
-  const typeImage=String(activeFormationVisualValue(activeJson,activeRouteMeta,'formationTypeImage')||'').trim();
-  if(typeImage){
-    if(/^https?:\/\//i.test(typeImage)) return typeImage;
-    return `https://minamikaze2700.github.io/Unyomatome/images/${typeImage.replace(/\.png$/i,'')}.png`;
+  // 路線ごとに形式画像が指定されている場合は、それを未登録列車の既定画像にする。
+  // 共有JSONを使う路線でも、routeMetaの形式指定を最優先する。
+  const metaTypeImage=imageRefToUrl(activeRouteMeta?.formationTypeImage);
+  if(metaTypeImage) return metaTypeImage;
+
+  const wantedType=String(activeRouteMeta?.formationType||'').trim();
+  if(wantedType && Array.isArray(activeJson?.formations)) {
+    const group=activeJson.formations.find(g=>String(g?.type||'').trim()===wantedType);
+    const groupImage=imageRefToUrl(group?.typeImg||group?.image);
+    if(groupImage) return groupImage;
   }
+
+  const jsonTypeImage=imageRefToUrl(activeJson?.formationTypeImage);
+  if(jsonTypeImage) return jsonTypeImage;
+
+  // 形式が1種類しかないJSONなら、その形式画像を未登録列車にも使用する。
+  if(Array.isArray(activeJson?.formations) && activeJson.formations.length===1){
+    const onlyGroup=activeJson.formations[0];
+    const onlyImage=imageRefToUrl(onlyGroup?.typeImg||onlyGroup?.image);
+    if(onlyImage) return onlyImage;
+  }
+
   if(activeRouteMeta?.trainImage) return String(activeRouteMeta.trainImage);
   return jsonNoImageUrl();
 }
@@ -2896,30 +2941,36 @@ function inferDirectionFromStations(a,b){
   return ia>ib?'up':'down';
 }
 function linkedEntries(t){
-  const info=findChain(currentDay,t.no);
+  const info=findChain(currentDay,t.no,t.direction);
   if(!info) return {prev:null,next:null,chain:null,index:-1};
   const chain=OPERATION_CHAINS[currentDay][info.chainIndex];
   return {prev:chain[info.entryIndex-1]||null,next:chain[info.entryIndex+1]||null,chain,index:info.entryIndex};
 }
 function trainEntryNo(entry){ return entry?normalizeTrainNo(entry.no):''; }
 function connectionPrev(t){
-  const info=findChain(currentDay,t.no);
+  const info=findChain(currentDay,t.no,t.direction);
   if(!info) return null;
   const chain=OPERATION_CHAINS[currentDay][info.chainIndex];
   const prev=chain[info.entryIndex-1];
   if(!prev || String(prev.dest)!==String(t.start)) return null;
   if(timeToMinutes(prev.endTime)>timeToMinutes(t.stops[0].time)) return null;
-  if(!isUsableOperationChainLink(prev,{start:t.start,startTime:t.stops[0]?.time||t.startTime})) return null;
   return prev;
 }
+function connectionNextStartMinutes(t,next){
+  if(!t||!next) return null;
+  const last=timeToMinutes(t.stops?.[t.stops.length-1]?.time||t.endTime||'');
+  const start=timeToMinutes(next.startTime||'');
+  if(!Number.isFinite(last)||!Number.isFinite(start)||start<last) return null;
+  return start;
+}
 function connectionNext(t){
-  const info=findChain(currentDay,t.no);
+  const info=findChain(currentDay,t.no,t.direction);
   if(!info) return null;
   const chain=OPERATION_CHAINS[currentDay][info.chainIndex];
   const next=chain[info.entryIndex+1];
   if(!next || String(t.dest)!==String(next.start)) return null;
-  if(timeToMinutes(t.stops[t.stops.length-1].time)>timeToMinutes(next.startTime)) return null;
-  if(!isUsableOperationChainLink({dest:t.dest,endTime:t.stops[t.stops.length-1]?.time},{start:next.start,startTime:next.startTime})) return null;
+  const nextStart=connectionNextStartMinutes(t,next);
+  if(!Number.isFinite(nextStart)) return null;
   return next;
 }
 function normalizeLineStopTimes(stops){
@@ -2955,7 +3006,8 @@ function findTerminalNextTrain(t,lastArr,terminalStation){
     || baseTrainForDay(nextNo,nextDirection,currentDay)
     || (currentDay==='休日' ? HOLIDAY_TRAIN_INDEX[nextNo] : TRAIN_INDEX[nextNo])
     || null;
-  const dep=timeToMinutes(next.startTime)+0.75;
+  const nextStart=connectionNextStartMinutes(t,next);
+  const dep=Number.isFinite(nextStart)?nextStart+0.75:null;
   if(!nextTrain || !Number.isFinite(dep)) return null;
   return {train:nextTrain,dep};
 }
@@ -2988,12 +3040,13 @@ function positionForTrain(t,minutes){
   const {stops,first,last,firstIndex,lastIndex,side,firstDep,lastArr}=meta;
   if(!Number.isFinite(firstDep)||!Number.isFinite(lastArr)) return null;
 
-  const chainInfo=findChain(currentDay,t.no);
+  const chainInfo=findChain(currentDay,t.no,t.direction);
   const chain=chainInfo ? OPERATION_CHAINS[currentDay][chainInfo.chainIndex] : null;
   const isChainFirst=!!chain && chainInfo.entryIndex===0;
   const isChainLast=!!chain && chainInfo.entryIndex===chain.length-1;
   const next=connectionNext(t);
-  const nextStart=next?timeToMinutes(next.startTime)+0.75:null;
+  const nextStartRaw=next?connectionNextStartMinutes(t,next):null;
+  const nextStart=Number.isFinite(nextStartRaw)?nextStartRaw+0.75:null;
 
     // 連結運用の先頭列車は先頭側の始発停車、末尾列車は末尾側の終着停車を担当する。
   if(!chain){
@@ -3187,6 +3240,7 @@ function renderTrainPositions(){
     if(minutes<entry.visibleFrom || minutes>entry.visibleUntil) continue;
     const {train:base,meta,next:nextInfo}=entry;
     if(meta.lastIndex<0) continue;
+    if(!nextInfo||!nextInfo.train) continue;
     const oldSignature=`${String(base.no||'')}|${String(base.direction||'')}`;
     const nextSignature=`${String(nextInfo.train.no||'')}|${String(nextInfo.train.direction||'')}`;
     terminalHandoffs.set(oldSignature,{nextTrain:nextInfo.train,nextSignature,dep:nextInfo.dep,lastArr:meta.lastArr});
@@ -4824,12 +4878,6 @@ function getMainLabelClass(type){
 }
 function trainVisualKind(t){ return expressClassForTrain(t); }
 function defaultTrainImage(){
-  // 未選択時は「noimage」ではなく、路線に設定された所定形式の代表画像を優先する。
-  const typeImage=String(activeFormationVisualValue(activeJson,activeRouteMeta,'formationTypeImage')||'').trim();
-  if(typeImage){
-    if(/^https?:\/\//i.test(typeImage)) return typeImage;
-    return `https://minamikaze2700.github.io/Unyomatome/images/${typeImage.replace(/\.png$/i,'')}.png`;
-  }
   if(activeRouteMeta?.trainImage) return String(activeRouteMeta.trainImage);
   return jsonNoImageUrl();
 }
