@@ -1229,10 +1229,48 @@ function rebuildOperationChainIndex(){
     });
   }
 }
+function operationChainLinkGapMinutes(prev,next){
+  const prevEnd=timeToMinutes(prev?.endTime);
+  const nextStart=timeToMinutes(next?.startTime);
+  if(!Number.isFinite(prevEnd)||!Number.isFinite(nextStart)) return null;
+  let gap=nextStart-prevEnd;
+  while(gap<0) gap+=1440;
+  return gap;
+}
+function isUsableOperationChainLink(prev,next){
+  if(!prev||!next) return false;
+  const prevDest=String(prev.dest||'').trim();
+  const nextStart=String(next.start||'').trim();
+  if(!prevDest||!nextStart||prevDest!==nextStart) return false;
+  const gap=operationChainLinkGapMinutes(prev,next);
+  // 30分以上空く運用は、この画面では折り返し連結として扱わない。
+  // 長時間停車・留置を誤って「同一編成の折り返し」として表示するのを防ぐ。
+  if(Number.isFinite(gap)&&gap>=30) return false;
+  return true;
+}
+function sanitizeOperationChains(chains){
+  const out=[];
+  for(const rawChain of (Array.isArray(chains)?chains:[])){
+    const chain=Array.isArray(rawChain)?rawChain.filter(Boolean):[];
+    if(!chain.length) continue;
+    let current=[chain[0]];
+    for(let i=1;i<chain.length;i++){
+      const prev=chain[i-1], next=chain[i];
+      if(isUsableOperationChainLink(prev,next)){
+        current.push(next);
+      }else{
+        out.push(current);
+        current=[next];
+      }
+    }
+    if(current.length) out.push(current);
+  }
+  return out;
+}
 function loadOperationChainsFromJson(json){
   for(const day of ['平日','休日']){
     const rawChains=json?.operationChains?.[day];
-    OPERATION_CHAINS[day]=Array.isArray(rawChains)
+    const built=Array.isArray(rawChains)
       ? rawChains.map(chain=>(Array.isArray(chain)?chain:[])
           .map(entry=>{
             const id=String(entry??'').trim();
@@ -1249,6 +1287,7 @@ function loadOperationChainsFromJson(json){
           }))
         ).filter(chain=>chain.length)
       : [];
+    OPERATION_CHAINS[day]=sanitizeOperationChains(built);
   }
   rebuildOperationChainIndex();
 }
@@ -2644,6 +2683,13 @@ function prescribedFormationName(t){
   return String(meta?.defaultFormationName||t?.defaultCars||t?.rawTrain?.defaultCars||activeJson?.formationDefaultName||'普通共通');
 }
 function defaultTrainImage(){
+  // 未選択時は「noimage」ではなく、路線に設定された所定形式の代表画像を優先する。
+  // 例：神戸市営西神・山手線は6000形の画像を使用する。
+  const typeImage=String(activeFormationVisualValue(activeJson,activeRouteMeta,'formationTypeImage')||'').trim();
+  if(typeImage){
+    if(/^https?:\/\//i.test(typeImage)) return typeImage;
+    return `https://minamikaze2700.github.io/Unyomatome/images/${typeImage.replace(/\.png$/i,'')}.png`;
+  }
   if(activeRouteMeta?.trainImage) return String(activeRouteMeta.trainImage);
   return jsonNoImageUrl();
 }
@@ -2863,6 +2909,7 @@ function connectionPrev(t){
   const prev=chain[info.entryIndex-1];
   if(!prev || String(prev.dest)!==String(t.start)) return null;
   if(timeToMinutes(prev.endTime)>timeToMinutes(t.stops[0].time)) return null;
+  if(!isUsableOperationChainLink(prev,{start:t.start,startTime:t.stops[0]?.time||t.startTime})) return null;
   return prev;
 }
 function connectionNext(t){
@@ -2872,6 +2919,7 @@ function connectionNext(t){
   const next=chain[info.entryIndex+1];
   if(!next || String(t.dest)!==String(next.start)) return null;
   if(timeToMinutes(t.stops[t.stops.length-1].time)>timeToMinutes(next.startTime)) return null;
+  if(!isUsableOperationChainLink({dest:t.dest,endTime:t.stops[t.stops.length-1]?.time},{start:next.start,startTime:next.startTime})) return null;
   return next;
 }
 function normalizeLineStopTimes(stops){
@@ -2993,13 +3041,28 @@ function positionForTrain(t,minutes){
     // 大船で30分以上空く運用は、OPERATION_CHAINS側で連結自体を分割しているため、
     // この処理には入らず、次列車は発車2分前から通常の始発表示になる。
     if(minutes>lastArr && minutes<nextStart){
+      // 折り返し待ちは、終着駅と次列車の始発駅が完全に一致し、
+      // 次列車の方向が現在列車と反対の場合だけ表示する。
+      // 運用連結データに存在するだけで待機表示されないようにする。
+      const terminalStation=String(last?.station||t?.dest||'').trim();
+      const nextStartStation=String(next?.start||'').trim();
+      const currentDirection=String(t?.direction||'').toLowerCase();
+      const nextDirection=(next&&next.start&&next.dest)
+        ? (stationIndex(next.start)>stationIndex(next.dest)?'up':'down')
+        : null;
+      const isActualTurnback=!!terminalStation && !!nextStartStation
+        && terminalStation===nextStartStation
+        && !!nextDirection
+        && !!currentDirection
+        && nextDirection!==currentDirection;
+      if(!isActualTurnback) return null;
+
       if(minutes<=lastArr+TURNBACK_SWITCH_MIN){
         return {pos:lastIndex,side,visualTrain:t,mode:'turn-arrival'};
       }
       const nextNo=trainEntryNo(next);
-      const nextDirection=(next&&next.start&&next.dest)?(stationIndex(next.start)>stationIndex(next.dest)?'up':'down'):null;
       const nextTrain=liveTrain(nextNo,nextDirection)||baseTrainForDay(nextNo,nextDirection,currentDay)||(currentDay==='休日'?HOLIDAY_TRAIN_INDEX[nextNo]:TRAIN_INDEX[nextNo])||null;
-      const nextSide=nextTrain?(nextTrain.direction==='down'?'right':'left'):(inferDirectionFromStations(next.start,next.dest)==='down'?'right':'left');
+      const nextSide=nextTrain?(nextTrain.direction==='down'?'right':'left'):(nextDirection==='down'?'right':'left');
       return {pos:lastIndex,side:nextSide,visualTrain:nextTrain||t,mode:'turn-wait'};
     }
   }
@@ -3124,7 +3187,6 @@ function renderTrainPositions(){
     if(minutes<entry.visibleFrom || minutes>entry.visibleUntil) continue;
     const {train:base,meta,next:nextInfo}=entry;
     if(meta.lastIndex<0) continue;
-    if(!nextInfo||!nextInfo.train) continue;
     const oldSignature=`${String(base.no||'')}|${String(base.direction||'')}`;
     const nextSignature=`${String(nextInfo.train.no||'')}|${String(nextInfo.train.direction||'')}`;
     terminalHandoffs.set(oldSignature,{nextTrain:nextInfo.train,nextSignature,dep:nextInfo.dep,lastArr:meta.lastArr});
@@ -4762,6 +4824,12 @@ function getMainLabelClass(type){
 }
 function trainVisualKind(t){ return expressClassForTrain(t); }
 function defaultTrainImage(){
+  // 未選択時は「noimage」ではなく、路線に設定された所定形式の代表画像を優先する。
+  const typeImage=String(activeFormationVisualValue(activeJson,activeRouteMeta,'formationTypeImage')||'').trim();
+  if(typeImage){
+    if(/^https?:\/\//i.test(typeImage)) return typeImage;
+    return `https://minamikaze2700.github.io/Unyomatome/images/${typeImage.replace(/\.png$/i,'')}.png`;
+  }
   if(activeRouteMeta?.trainImage) return String(activeRouteMeta.trainImage);
   return jsonNoImageUrl();
 }
@@ -4889,9 +4957,8 @@ function initRegionNavigation(){
     .train-label.route-normal,.station-timetable-type.route-normal,.type-badge.route-normal{background:var(--train-type-color,#666);color:#fff;}
     .train-label.express,.station-timetable-type.express,.type-badge.express{background:${FAST_TYPE_COLOR};color:#fff;}
     .train-label.deadhead,.station-timetable-type.deadhead,.type-badge.deadhead{background:#fff;color:#111;border:1px solid #bbb;}
-    .operation-info-header{background:var(--control-accent,#808080) !important;color:#fff !important;}
+    .operation-info-header{background:var(--corporate-title-color,#0072bc) !important;color:#fff !important;}
     .operation-info-header button{color:#fff !important;}
-    .operation-info-add{background:var(--control-accent,#808080) !important;color:#fff !important;}
     /* 路線一覧：メインページ (5).html のデザインをそのまま使用 */
     .company-block{
       margin:0 0 18px;
