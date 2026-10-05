@@ -897,7 +897,7 @@ const ROUTE_REGISTRY={
     formationFamily:'hiroshima',
     prependStations:[{nameJa:'糸崎',nameEn:'Itozaki'}],
     corporateTitleColor:'#0072bc',
-    access:{public:true,routeAdmins:[]},
+    access:{public:false,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '可部線':{
@@ -911,7 +911,7 @@ const ROUTE_REGISTRY={
     company:'JR西日本',
     formationFamily:'hiroshima',
     corporateTitleColor:'#0072bc',
-    access:{public:treu,routeAdmins:[]},
+    access:{public:false,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '呉線':{
@@ -925,7 +925,7 @@ const ROUTE_REGISTRY={
     company:'JR西日本',
     formationFamily:'hiroshima',
     corporateTitleColor:'#0072bc',
-    access:{public:true,routeAdmins:[]},
+    access:{public:false,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '海岸線':{
@@ -960,7 +960,7 @@ const ROUTE_REGISTRY={
     formationTypeImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobecity6000.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png',
-    access:{public:true,routeAdmins:[]},
+    access:{public:false,routeAdmins:[]},
     formationInputExample:'6000形'
   },
   '京浜東北・根岸線':{
@@ -2058,7 +2058,7 @@ async function maybeResetForNewOperationDay(remoteCheck=false){
   const opDate=operationDateKey();
   // 「現在時刻」モードでは、3:00を跨いだ時点で表示日付も新しい運用日に切り替える。
   if(followNow && selectedDateKey!==opDate){
-    setSelectedDate(opDate);
+    setSelectedDate(opDate,{preserveNow:true});
   }else if(!followNow && isHistoricalSelectedDate(selectedDateKey)){
     // 手動で過去日を選択している場合は、過去データ表示を維持する。
     return;
@@ -2321,11 +2321,22 @@ function historicalStateForDate(dateKey){
   });
   return state;
 }
-function setSelectedDate(dateKey){
+function setSelectedDate(dateKey,options={}){
   const value=String(dateKey||'');
   if(!/^\d{4}-\d{2}-\d{2}$/.test(value)) return;
   const d=new Date(`${value}T00:00:00`);
   if(Number.isNaN(d.getTime())) return;
+  const preserveNow=options?.preserveNow===true;
+  // 日付を手動で変更した場合は「現在時刻」モードを解除する。
+  // 過去日でも実時間で位置計算してしまうと、選択した日付ではなく
+  // 今日の時刻に連動した列車が表示されるため、時刻は固定する。
+  followNow=preserveNow;
+  const nowBtn=document.getElementById('nowBtn');
+  if(nowBtn) nowBtn.classList.toggle('active',followNow);
+  if(preserveNow){
+    const timeInput=document.getElementById('timeInput');
+    if(timeInput) timeInput.value=formatTimeNow();
+  }
   selectedDateKey=value;
   const nextDay=getScheduleDayForDate(d);
   if(nextDay!==currentDay){
@@ -2710,7 +2721,7 @@ function currentMinutes(){
   // 時刻入力・現在時刻とも、03:00を境とする「運用日」の分数で扱う。
   // 0:00～2:59は1440分台にすることで、前日の23時台から続く列車が
   // 日付変更後もそのまま位置計算へ入れる。
-  if(followNow){
+  if(followNow && !isNonCurrentSelectedDate(selectedDateKey)){
     const d=new Date();
     const base=d.getHours()*60+d.getMinutes()+d.getSeconds()/60+d.getMilliseconds()/60000;
     return d.getHours()<RESET_HOUR ? base+1440 : base;
@@ -2747,6 +2758,14 @@ function setNowTime(){
 
 function updateCurrentTimeOnly(){
   // 現在時刻モードの自動更新では、選択中の日付を変更しない。
+  // 過去日を選択中は現在時刻モードへ戻さず、選択日の時刻で固定する。
+  if(isNonCurrentSelectedDate(selectedDateKey)){
+    followNow=false;
+    const btn=document.getElementById('nowBtn');
+    if(btn) btn.classList.remove('active');
+    renderTrainPositions();
+    return;
+  }
   followNow=true;
   const input=document.getElementById('timeInput');
   if(input) input.value=formatTimeNow();
