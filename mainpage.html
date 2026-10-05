@@ -3601,7 +3601,12 @@ function formationStorageEntryForTrain(train){
   const area=ctx.area || '__ROOT__';
   const date=String(selectedDateKey||operationDateKey());
   const rawNo=String(train.no||'').trim();
-  return formationRemoteByFamily[ctx.family]?.areaStateByDate?.[date]?.[area]?.[rawNo] || null;
+  if(!rawNo) return null;
+  // 編成・入力時刻・ユーザー名も、運用先頭列車の登録情報を
+  // 同じ運用チェーン内の後続列車へ引き継ぐ。
+  const firstNo=operationChainFirstNo(currentDay,rawNo);
+  const stored=formationRemoteByFamily[ctx.family]?.areaStateByDate?.[date]?.[area]||{};
+  return stored[firstNo] || stored[rawNo] || null;
 }
 function formationUpdatedAuthorForTrain(trainNo){
   const key=String(trainNo||'');
