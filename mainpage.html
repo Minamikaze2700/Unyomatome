@@ -5293,7 +5293,12 @@ initRegionNavigation();
     const area=storageAreaForFamily(family);
     const no=String(train.no||'').trim();
     if(!no) return null;
-    return String(formationRemoteByFamily[family]?.areaStateByDate?.[date]?.[area]?.[no]?.f||'')||null;
+
+    // データベースには「その日の運用チェーンの先頭列車番号」だけを保存する。
+    // 表示時は現在の列車番号から先頭列車番号へ遡って、先頭に登録された編成を割り当てる。
+    const firstNo=operationChainFirstNo(currentDay,no);
+    const stored=formationRemoteByFamily[family]?.areaStateByDate?.[date]?.[area]||{};
+    return String(stored?.[firstNo]?.f||'')||null;
   };
 
   applyRegistrationState=function(){
@@ -5472,55 +5477,52 @@ initRegionNavigation();
 
   recordSelection=async function(train,formId){
     if(isNonCurrentSelectedDate(selectedDateKey)||!train) return [];
-    const startNo=String(train.no||'').trim();
-    if(!startNo) return [];
-    const linked=formationLinkedTrainNos(currentDay,startNo,String(train.direction||''));
-    const changes={};
-    const assigned=[];
-    const value=(formId&&formId!==INITIAL_FORMATION_SELECTION.id)?normalizeStoredFormationId(formId):null;
-    if(value && !formationAllowedForTrain(train,value)) return [];
+    const selectedNo=String(train.no||'').trim();
+    if(!selectedNo) return [];
 
-    for(const requested of linked){
-      const actualTrain=findOperationTrainRecord(requested,currentDay);
-      const actual=String(actualTrain?.no||requested||'').trim();
-      if(!actual||assigned.includes(actual)) continue;
-      if(value && !formationAllowedForTrain(actualTrain,value)) continue;
-      const family=actualTrain?formationFamilyForTrain(actualTrain):storageFamilyForActiveRoute();
-      const date=formationDateKey();
-      const area=storageAreaForFamily(family);
-      formationRemoteByFamily[family].areaStateByDate[date]??={};
-      formationRemoteByFamily[family].areaStateByDate[date][area]??={};
-      const areaState=formationRemoteByFamily[family].areaStateByDate[date][area];
-      if(value){
-        areaState[actual]={f:value,t:makeStoredMeta()};
-        const roleCode=typeof window.currentPermissionCodeForRoute==='function' ? window.currentPermissionCodeForRoute(activeRouteName) : '';
-        if(roleCode) areaState[actual].r=roleCode;
-      }else delete areaState[actual];
-      if(!Object.keys(areaState).length) delete formationRemoteByFamily[family].areaStateByDate[date][area];
-      if(!Object.keys(formationRemoteByFamily[family].areaStateByDate[date]).length) delete formationRemoteByFamily[family].areaStateByDate[date];
-      assigned.push(actual);
-      changes[actual]=value;
-      pendingFormationState[actual]=value;
-      pendingFormationTimestamps[currentDay]??={};
-      if(value) pendingFormationTimestamps[currentDay][actual]=new Date().toISOString();
-      else delete pendingFormationTimestamps[currentDay][actual];
-      syncDerivedStateForFamily(family);
+    // 1日の運用チェーン単位で編成を管理する。
+    // DBへ保存するキーは、必ずそのチェーンの一番最初の列車番号だけにする。
+    const firstNo=operationChainFirstNo(currentDay,selectedNo);
+    const firstTrain=findOperationTrainRecord(firstNo,currentDay) || train;
+    const value=(formId&&formId!==INITIAL_FORMATION_SELECTION.id)?normalizeStoredFormationId(formId):null;
+    if(value && !formationAllowedForTrain(firstTrain,value)) return [];
+
+    const family=formationFamilyForTrain(firstTrain);
+    const date=formationDateKey();
+    const area=storageAreaForFamily(family);
+    formationRemoteByFamily[family].areaStateByDate[date]??={};
+    formationRemoteByFamily[family].areaStateByDate[date][area]??={};
+    const areaState=formationRemoteByFamily[family].areaStateByDate[date];
+
+    if(value){
+      areaState[firstNo]={f:value,t:makeStoredMeta()};
+      const roleCode=typeof window.currentPermissionCodeForRoute==='function' ? window.currentPermissionCodeForRoute(activeRouteName) : '';
+      if(roleCode) areaState[firstNo].r=roleCode;
+    }else{
+      delete areaState[firstNo];
     }
+
+    if(!Object.keys(areaState).length) delete formationRemoteByFamily[family].areaStateByDate[date][area];
+    if(!Object.keys(formationRemoteByFamily[family].areaStateByDate[date]).length) delete formationRemoteByFamily[family].areaStateByDate[date];
+
+    const changes={[firstNo]:value};
+    pendingFormationState[firstNo]=value;
+    pendingFormationTimestamps[currentDay]??={};
+    if(value) pendingFormationTimestamps[currentDay][firstNo]=new Date().toISOString();
+    else delete pendingFormationTimestamps[currentDay][firstNo];
+    syncDerivedStateForFamily(family);
 
     mergeFormationRemoteIntoLegacyState();
     applyRegistrationState();
     refreshAllTrainDataCache();
     saveLocalState();
     const ok=await syncRegistrationToRemote(changes);
-    if(ok){
-      for(const no of assigned){
-        delete pendingFormationState[no];
-      }
-    }
-    if(currentTrainSnapshot&&String(currentTrainSnapshot.no||'')===startNo){
+    if(ok) delete pendingFormationState[firstNo];
+
+    if(currentTrainSnapshot&&String(currentTrainSnapshot.no||'')===selectedNo){
       currentTrainSnapshot={...currentTrainSnapshot,formation:value};
     }
-    return assigned;
+    return [firstNo];
   };
 })();
 
