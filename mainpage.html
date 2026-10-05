@@ -456,7 +456,7 @@ button,input,select,textarea{font-family:inherit}
   .formation-updated-at .permission-tag{display:inline-flex;}
 }
 .input-trigger-btn{
-  background:#c62828;color:#fff;padding:4px 8px;border-radius:4px;
+  background:var(--corporate-title-color,#808080);color:#fff;padding:4px 8px;border-radius:4px;
   font-size:.75rem;margin-top:4px;display:inline-block;
 }
 #selectedOptionText{color:#444 !important;}
@@ -5017,8 +5017,9 @@ function updateRouteVisuals(){
   const meta=ROUTE_REGISTRY[activeRouteName]||{};
   const colors=activeRouteColors();
   const primary=colors[0]||'#808080';
-  const titleColor=String(meta?.corporateTitleColor||colors[0]||'#808080');
+  // 編成入力の路線カラーもH1と同じく、現在のJSONのlines[].colorを使用する。
   const h1Color=jsonBaseColorForActiveRoute();
+  const titleColor=h1Color;
   const root=document.documentElement;
   root.style.setProperty('--route-primary',primary);
   root.style.setProperty('--primary',primary);
