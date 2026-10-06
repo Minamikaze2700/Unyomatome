@@ -6711,15 +6711,15 @@ initRegionNavigation();
 <style id="circular-route-style">
 /* ===== 大阪環状線：環状線専用レイアウト ===== */
 .circular-stage{
-  --circular-end-padding:110px;
-  --circular-top-center:146px;
-  --circular-bottom-center:calc(100% - 146px);
-  --circular-bridge-y:60px;
+  --circular-end-padding:220px;
+  --circular-top-center:220px;
+  --circular-bottom-center:calc(100% - 220px);
+  --circular-bridge-y:80px;
   position:relative;
   width:100vw;
   min-width:100vw;
-  height:3170px;
-  min-height:3170px;
+  height:3140px;
+  min-height:3140px;
   margin:0;
   padding:0;
   overflow:visible;
@@ -6741,10 +6741,12 @@ initRegionNavigation();
   background:transparent !important;
 }
 .circular-bridge{
-  position:absolute;box-sizing:border-box;left:25%;width:50%;
+  position:absolute;box-sizing:border-box;
+  /* 12px線の中心を左右25% / 75%に正確に合わせる。 */
+  left:calc(25% - 6px);right:calc(25% - 6px);width:auto;
   z-index:1;pointer-events:none;
 }
-/* 横線はページ端から離し、左右の縦線は上下端駅のラベル中心まで正確に延長する。 */
+/* 横線はページ上端・下端から80px離し、縦線は端駅ラベル中心まで接続。 */
 .circular-bridge-top{
   top:var(--circular-bridge-y);
   height:calc(var(--circular-top-center) - var(--circular-bridge-y));
@@ -6794,24 +6796,27 @@ initRegionNavigation();
     function addEdges(side,arr){
       for(let i=0;i<arr.length-1;i++){
         const a=arr[i],b=arr[i+1];
-        info.edges.set(operationInfoUndirectedKey(a,b),{side,indexA:i,indexB:i+1,a,b});
+        info.edges.set(operationInfoUndirectedKey(a,b),{side,indexA:i,indexB:i+1,a,b,bridge:false});
       }
     }
     addEdges('left',left); addEdges('right',right);
+    // 上端：大阪⇄天満、下端：新今宮⇄天王寺を横線で接続。
+    info.edges.set(operationInfoUndirectedKey(left[0],right[0]),{bridge:true,sideA:'left',sideB:'right',indexA:0,indexB:0,a:left[0],b:right[0]});
+    info.edges.set(operationInfoUndirectedKey(left[left.length-1],right[right.length-1]),{bridge:true,sideA:'left',sideB:'right',indexA:left.length-1,indexB:right.length-1,a:left[left.length-1],b:right[right.length-1]});
     CIRCULAR_LAYOUT_CACHE.set(key,info);
     return info;
   }
   function circularStageMetrics(){
     const stage=document.getElementById('circularStage');
-    const endPadding=110;
-    if(!stage) return {stage:null,width:1920,height:3170,leftStep:302,rightStep:335,endPadding,topCenter:146,bottomCenter:3024};
+    if(!stage) return {stage:null,width:1920,height:3140,leftStep:302,rightStep:302,endPadding:220,topCenter:220,bottomCenter:2920};
     const width=Number(stage.offsetWidth)||1920;
-    const height=Number(stage.offsetHeight)||3170;
+    const height=Number(stage.offsetHeight)||3140;
     const layout=circularLayout();
     const leftCount=Math.max(1,layout?.left?.length||11);
     const rightCount=Math.max(1,layout?.right?.length||10);
-    const topCenter=146;
-    const bottomCenter=Math.max(topCenter,height-topCenter);
+    const endPadding=220;
+    const topCenter=endPadding;
+    const bottomCenter=Math.max(topCenter,height-endPadding);
     const span=Math.max(0,bottomCenter-topCenter);
     const leftStep=leftCount>1?span/(leftCount-1):0;
     const rightStep=rightCount>1?span/(rightCount-1):0;
@@ -6828,7 +6833,16 @@ initRegionNavigation();
     const layout=circularLayout(); if(!layout||!badge) return;
     const arr=layout[side]||[];
     let color='';
-    if(index<arr.length-1) color=circularEdgeColor(arr[index],arr[index+1]);
+    // 端駅は横断区間の色を優先。下端の新今宮・天王寺は大和路線色になる。
+    if(index===0 && arr.length){
+      const other=side==='left'?layout.right?.[0]:layout.left?.[0];
+      if(other) color=circularEdgeColor(arr[0],other);
+    }
+    if(!color && index===arr.length-1 && arr.length){
+      const other=side==='left'?layout.right?.[layout.right.length-1]:layout.left?.[layout.left.length-1];
+      if(other) color=circularEdgeColor(arr[arr.length-1],other);
+    }
+    if(!color && index<arr.length-1) color=circularEdgeColor(arr[index],arr[index+1]);
     if(!color && index>0) color=circularEdgeColor(arr[index-1],arr[index]);
     if(!color) color=activeRouteColors()[0]||'#666';
     badge.style.background='#fff';
@@ -6876,7 +6890,7 @@ initRegionNavigation();
     const layout=circularLayout();
     if(!layout) return;
     const leftCount=Math.max(1,layout.left.length), rightCount=Math.max(1,layout.right.length);
-    const endPadding=100;
+    const endPadding=220;
     const stageHeight=270*Math.max(leftCount,rightCount)+endPadding*2;
     container.innerHTML=`<div class="operation-info-layer" id="operationInfoLayer"></div><div class="circular-stage" id="circularStage"><div class="circular-column left" id="circularLeft"></div><div class="circular-column right" id="circularRight"></div><div class="circular-bridge circular-bridge-top"></div><div class="circular-bridge circular-bridge-bottom"></div><div class="rail-line" id="railLine"></div></div><div class="moving-train-layer" id="movingTrainLayer"></div><div class="operation-info-label-layer" id="operationInfoLabelLayer"></div>`;
     const stage=document.getElementById('circularStage');
@@ -6884,12 +6898,9 @@ initRegionNavigation();
     const metrics=circularStageMetrics();
     const left=document.getElementById('circularLeft'),right=document.getElementById('circularRight');
     layout.left.forEach((name,i)=>{
-      // 共有終端駅は左側では天王寺を、右側では大阪を重複表示しない。
-      if(name==='天王寺') return;
       const row=makeCircularStationRow(name,'left',i,metrics);if(row)left.appendChild(row);
     });
     layout.right.forEach((name,i)=>{
-      if(name==='大阪') return;
       const row=makeCircularStationRow(name,'right',i,metrics);if(row)right.appendChild(row);
     });
     renderCircularRailLineSegments();
@@ -6975,7 +6986,18 @@ initRegionNavigation();
         if(!Number.isFinite(na)||!Number.isFinite(nb)) continue;
         if(minutes>=na && (isTerminalNext?minutes<nb:minutes<=nb)){
           const iA=edge.indexA,iB=edge.indexB;
-          const ratio=nb===na?0:(minutes-na)/(nb-na);
+          const ratio=Math.max(0,Math.min(1,nb===na?0:(minutes-na)/(nb-na)));
+          if(edge.bridge){
+            const y=circularCenterY(edge.sideA,edge.indexA,metrics);
+            return {
+              side:ratio<0.5?edge.sideA:edge.sideB,
+              pos:ratio<0.5?edge.indexA:edge.indexB,
+              xPercent:25+(75-25)*ratio,
+              y,
+              bridge:true,
+              visualTrain:t,mode:'run',baseTrain:t
+            };
+          }
           const p=iA+(iB-iA)*ratio;
           return {side:edge.side,pos:p,visualTrain:t,mode:'run',baseTrain:t};
         }
@@ -7051,12 +7073,12 @@ initRegionNavigation();
         const trainLabelEl=el.querySelector('.train-label');
         if(trainLabelEl&&getMainLabelClass(t.type)==='route-normal'){trainLabelEl.style.background=color;trainLabelEl.style.color='#fff';}
         const stageWidth=metrics.width;
-        // 列車アイコンは線路（左右1/4位置）より外側を通す。
-        // 4% / 96%付近を中心にして、駅名・線路と十分な間隔を確保する。
-        const outerCenter=side==='left'?stageWidth*0.04:stageWidth*0.96;
+        // 通常区間は線路の外側、上下の横断区間は横線上を移動。
         const laneOffset=lane*(trainWidth+20)*(side==='left'?-1:1);
-        const trainLeft=outerCenter-(trainWidth/2)+laneOffset;
-        const y=circularCenterY(side,item.pos,metrics);
+        const trainLeft=Number.isFinite(Number(item.info?.xPercent))
+          ? stageWidth*(Number(item.info.xPercent)/100)-(trainWidth/2)+laneOffset
+          : (side==='left'?stageWidth*0.04:stageWidth*0.96)-(trainWidth/2)+laneOffset;
+        const y=Number.isFinite(Number(item.info?.y))?Number(item.info.y):circularCenterY(side,item.pos,metrics);
         const applyFinalCircularPosition=()=>{
           const img=el.querySelector('img');
           const noEl=el.querySelector('.train-no');
