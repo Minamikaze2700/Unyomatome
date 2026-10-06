@@ -384,6 +384,16 @@
       "circularLayout": {
         "left": [
           "大阪",
+          "福島",
+          "野田",
+          "西九条",
+          "弁天町",
+          "大正",
+          "芦原橋",
+          "今宮",
+          "新今宮"
+        ],
+        "right": [
           "天満",
           "桜ノ宮",
           "京橋",
@@ -393,18 +403,6 @@
           "鶴橋",
           "桃谷",
           "寺田町",
-          "天王寺"
-        ],
-        "right": [
-          "大阪",
-          "福島",
-          "野田",
-          "西九条",
-          "弁天町",
-          "大正",
-          "芦原橋",
-          "今宮",
-          "新今宮",
           "天王寺"
         ]
       },
@@ -70216,24 +70214,27 @@
       "destinationAliases": {
         "天王寺": "天王"
       },
-      "circularHiddenStationLabels": {
-        "left": [
-          "天王寺"
-        ],
-        "right": [
-          "大阪"
-        ]
-      },
       "circularDisplayGeometry": {
         "desktopColumnPositions": {
           "left": "25%",
           "right": "75%"
         },
         "stationCenterY": {
-          "top": 146,
-          "bottomOffset": 146
+          "top": 220,
+          "bottomOffset": 220
         },
-        "bridgeHorizontalInset": "60px"
+        "bridgeHorizontalY": 80,
+        "endPadding": 220,
+        "bridgeStations": {
+          "top": [
+            "大阪",
+            "天満"
+          ],
+          "bottom": [
+            "新今宮",
+            "天王寺"
+          ]
+        }
       }
     },
     "ゆめ咲線": {
