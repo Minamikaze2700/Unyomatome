@@ -7044,10 +7044,20 @@ initRegionNavigation();
             // 実際の横線の位置に合わせる。
             // 上端は CSS の border-top の中心(80px + 6px)、下端は
             // border-bottom の中心(ステージ下端 - 6px)を走行位置とする。
-            const bridgeInset=80;
-            const railHalf=6;
-            const topRailY=bridgeInset+railHalf;
-            const bottomRailY=metrics.height-railHalf;
+            // 横線の位置は、表示している .circular-bridge の実際の境界線中心から取得する。
+            // 特に下端は「ステージ最下端-6px」ではなく、CSSのborder-bottom位置が実際の線路位置。
+            const bridgeEl=document.querySelector(
+              Number(edge.indexA)===0 && Number(edge.indexB)===0
+                ? '.circular-bridge-top'
+                : '.circular-bridge-bottom'
+            );
+            const bridgeStyle=bridgeEl?getComputedStyle(bridgeEl):null;
+            const bridgeTop=bridgeEl?.offsetTop ?? 0;
+            const bridgeHeight=bridgeEl?.offsetHeight ?? 0;
+            const topBorderWidth=parseFloat(bridgeStyle?.borderTopWidth||'12')||12;
+            const bottomBorderWidth=parseFloat(bridgeStyle?.borderBottomWidth||'12')||12;
+            const topRailY=bridgeTop+(topBorderWidth/2);
+            const bottomRailY=bridgeTop+bridgeHeight-(bottomBorderWidth/2);
             const isTop=Number(edge.indexA)===0 && Number(edge.indexB)===0;
             const stationY=circularCenterY(edge.sideA,edge.indexA,metrics);
             const railY=isTop?topRailY:bottomRailY;
