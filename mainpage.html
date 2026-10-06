@@ -1434,10 +1434,25 @@ function buildFormationsForJson(json){
       const displayId=rawId.replace(/F$/i,'');
       const carsArr=Array.isArray(raw?.cars)?raw.cars.map(x=>String(x||'').trim()).filter(Boolean):[];
       const cars=carsArr.length || Number(raw?.carCount)||2;
+      /* 内房線：編成番号に対応する画像名を最終保証する。
+         JSON側が旧画像名・noimageになっていても、指定された
+         「形式_編成」命名で実画像をsrcへ入れる。
+         noImageはonerror側でのみ使用する。 */
+      const uchiboImageByFormation={
+        ...Object.fromEntries(Array.from({length:12},(_,i)=>{const n=String(i+1).padStart(2,'0');return [`R${n}`,`E131_R${n}`]})),
+        ...Object.fromEntries(Array.from({length:12},(_,i)=>{const n=String(i+1).padStart(2,'0');return [`F${n}`,`E235_F${n}`]})),
+        ...Object.fromEntries(Array.from({length:4},(_,i)=>{const n=String(i+1);return [`J${n}`,`E235_J${n}`]})),
+        C1:'E233_C1',C2:'E233_C2',C3:'E233_C3',C9:'E233_C9',
+        C401:'209_C401',C602:'209_C602'
+      };
+      const rawImage=String(raw?.image||raw?.img||'').trim();
+      const forcedImage=(String(activeRouteName||'')==='内房線' && uchiboImageByFormation[displayId])
+        ? uchiboImageByFormation[displayId]
+        : '';
       const item={
         id:displayId,
         name:String(raw?.name||`${displayId}編成`),
-        img:makeImg(raw?.image,jsonImageValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon),
+        img:makeImg(forcedImage || rawImage || jsonImageValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon),
         cars,
         carNames:carsArr,
         family:dataFamily,
