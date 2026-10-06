@@ -6701,21 +6701,28 @@ initRegionNavigation();
 .circular-track-segment{
   position:absolute;left:50%;width:12px;transform:translateX(-50%);z-index:1;
 }
+/* 環状線では標準レイアウト由来の中央縦線を完全に無効化する。
+   実際の線路は左右1/4位置、列車アイコンの通過位置はその外側。 */
+.circular-rail-line{
+  top:0 !important;right:0 !important;bottom:0 !important;left:0 !important;
+  width:100% !important;height:100% !important;
+  transform:none !important;background:transparent !important;
+}
 .circular-bridge{
   position:absolute;left:25%;right:25%;width:auto;box-sizing:border-box;
-  border-left:12px solid var(--rail-background,var(--primary));
-  border-right:12px solid var(--rail-background,var(--primary));
+  border-left:12px solid var(--primary);
+  border-right:12px solid var(--primary);
   z-index:1;pointer-events:none;
 }
 .circular-bridge-top{
   top:0;height:135px;
-  border-top:12px solid var(--rail-background,var(--primary));
+  border-top:12px solid var(--primary);
   border-bottom:0;
   border-radius:90px 90px 0 0;
 }
 .circular-bridge-bottom{
   bottom:0;height:135px;
-  border-bottom:12px solid var(--rail-background,var(--primary));
+  border-bottom:12px solid var(--primary);
   border-top:0;
   border-radius:0 0 90px 90px;
 }
@@ -6816,6 +6823,7 @@ initRegionNavigation();
     return row;
   }
   function renderCircularLine(){
+    // 環状線専用表示の線色はJSON/路線設定の大阪環状線色を使用。
     if(typeof TRAIN_ICON_CACHE!=='undefined') TRAIN_ICON_CACHE.clear();
     if(typeof TRAIN_LAYOUT_CACHE!=='undefined') TRAIN_LAYOUT_CACHE={container:null,rowCenters:null,rowCount:0};
     const container=document.getElementById('lineContainer'); if(!container) return;
@@ -6989,10 +6997,11 @@ initRegionNavigation();
         const trainLabelEl=el.querySelector('.train-label');
         if(trainLabelEl&&getMainLabelClass(t.type)==='route-normal'){trainLabelEl.style.background=color;trainLabelEl.style.color='#fff';}
         const stageWidth=metrics.width;
-        const colCenter=side==='left'?stageWidth*0.25:stageWidth*0.75;
-        const baseX=side==='left'?colCenter-340:colCenter+340-trainWidth;
-        const laneOffset=lane*(trainWidth+20);
-        const trainLeft=side==='left'?baseX-laneOffset:baseX+laneOffset;
+        // 列車アイコンは線路（左右1/4位置）より外側を通す。
+        // 4% / 96%付近を中心にして、駅名・線路と十分な間隔を確保する。
+        const outerCenter=side==='left'?stageWidth*0.04:stageWidth*0.96;
+        const laneOffset=lane*(trainWidth+20)*(side==='left'?-1:1);
+        const trainLeft=outerCenter-(trainWidth/2)+laneOffset;
         const y=circularCenterY(side,item.pos,metrics);
         const applyFinalCircularPosition=()=>{
           const img=el.querySelector('img');
