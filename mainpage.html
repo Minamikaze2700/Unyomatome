@@ -7041,8 +7041,13 @@ initRegionNavigation();
             // edge.a / edge.b の向きに合わせて左→右／右→左を切り替える。
             const fromLeft=String(name||'')===String(edge.a||'');
             const xStart=25, xEnd=75;
-            const topRailY=Number(metrics.endPadding?metrics.endPadding-140:80);
-            const bottomRailY=Number(metrics.height-(metrics.endPadding?metrics.endPadding-140:80));
+            // 実際の横線の位置に合わせる。
+            // 上端は CSS の border-top の中心(80px + 6px)、下端は
+            // border-bottom の中心(ステージ下端 - 6px)を走行位置とする。
+            const bridgeInset=80;
+            const railHalf=6;
+            const topRailY=bridgeInset+railHalf;
+            const bottomRailY=metrics.height-railHalf;
             const isTop=Number(edge.indexA)===0 && Number(edge.indexB)===0;
             const stationY=circularCenterY(edge.sideA,edge.indexA,metrics);
             const railY=isTop?topRailY:bottomRailY;
