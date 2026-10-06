@@ -1334,8 +1334,10 @@ function buildFormationsForJson(json){
       const groupFamily=String(rawGroup?.family||rawGroup?.formationFamily||dataFamily||'').trim();
       const groupRouteNames=formationRouteNamesFromConfig(rawGroup);
       const type=String(rawGroup?.type||'').trim()||dataFamily||'編成';
-      // 内房線では個体差・実編成も形式と同じ画像を使う。
-      const typeImg=makeImg(rawGroup?.typeImg||rawGroup?.image,jsonImageValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon||json?.noImage);
+      // 画像はJSONのimg/typeImg/imageをそのまま使用する。
+      // 未指定時だけ形式デフォルト→noimageへフォールバックする。
+      const typeImg=makeImg(rawGroup?.typeImg||rawGroup?.image||rawGroup?.img,
+        jsonImageValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon||json?.noImage);
 
       const normalizeItems=(source)=>{
         const items=[];
@@ -1351,7 +1353,7 @@ function buildFormationsForJson(json){
           const item={
             id:displayId,
             name:String(raw?.name||displayId),
-            img:typeImg,
+            img:makeImg(raw?.img||raw?.image,typeImg),
             cars,
             carNames:carsArr,
             disabled:!!raw?.disabled,
@@ -1378,7 +1380,7 @@ function buildFormationsForJson(json){
         variants.push({
           id:variantId.replace(/F$/i,''),
           name:variantName,
-          img:typeImg,
+          img:makeImg(rawVariant?.img||rawVariant?.image,typeImg),
           items:variantItems,
           family:groupFamily,
           kind:'variant',
@@ -3846,7 +3848,7 @@ function updateSheetContent(){
           </div>▼
         </div>
         <div class="custom-select-options" id="dropdownOptions">
-          <div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}')"><img src="${syncInitialFormationImage()}" class="option-img"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>
+          <div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}')"><img src="${syncInitialFormationImage()}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>
           ${(() => {
             const groups=formationDisplayGroups(formationsForTrain(train));
             const categoryHeaders=groups.map(group=>{
@@ -3864,7 +3866,7 @@ function updateSheetContent(){
               const items=[...(group.variants||[]).flatMap(variant=>variant.items||[]),...(group.items||[])];
               return items.map(item=>{
                 const disabled=!!item.disabled || UNAVAILABLE_FORMATIONS.has(String(item.id));
-                return `<div class=\"option-item ${disabled?'option-disabled':''}\" ${disabled?'aria-disabled=\"true\"':`onclick=\"selectFormation('${escapeJs(item.id)}')\"`}><img src=\"${esc(item.img||LINE_TRAIN_IMG)}\" class=\"option-img\"><span>${esc(item.name||item.id)}</span></div>`;
+                return `<div class=\"option-item ${disabled?'option-disabled':''}\" ${disabled?'aria-disabled=\"true\"':`onclick=\"selectFormation('${escapeJs(item.id)}')\"`}><img src=\"${esc(item.img||LINE_TRAIN_IMG)}\" class=\"option-img\" onerror=\"this.onerror=null;this.src=jsonNoImageUrl()\"><span>${esc(item.name||item.id)}</span></div>`;
               }).join('');
             }).join('');
             return categoryHeaders+variantHeaders+formationItems;
@@ -5815,12 +5817,12 @@ initRegionNavigation();
       const selectableCategory=!!group.selectableType || isGenericDeclared;
       const genericId=selectableCategory ? String(group.selectableId||declaredType||groupType) : '';
       chunks.push(selectableCategory
-        ? `<div class="option-header option-category-header option-selectable-category" role="button" tabindex="0" onclick="selectFormationAtSlot(${slot},'${escapeJs(genericId)}')"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(genericId)}</span></div>`
-        : `<div class="option-header option-category-header"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(groupType)}</span></div>`);
+        ? `<div class="option-header option-category-header option-selectable-category" role="button" tabindex="0" onclick="selectFormationAtSlot(${slot},'${escapeJs(genericId)}')"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${esc(genericId)}</span></div>`
+        : `<div class="option-header option-category-header"><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${esc(groupType)}</span></div>`);
 
       // 個体差をすべて先に並べ、その後に形式全体の個別編成をまとめて表示。
       for(const variant of (group.variants||[])){
-        chunks.push(`<div class="option-header option-subheader option-selectable-category" role="button" tabindex="0" onclick="selectFormationAtSlot(${slot},'${escapeJs(variant.id)}')"><img src="${esc(variant.img||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(variant.name||variant.id)}</span></div>`);
+        chunks.push(`<div class="option-header option-subheader option-selectable-category" role="button" tabindex="0" onclick="selectFormationAtSlot(${slot},'${escapeJs(variant.id)}')"><img src="${esc(variant.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${esc(variant.name||variant.id)}</span></div>`);
       }
 
       // すべての個体差に属する個別編成をまとめて表示。
