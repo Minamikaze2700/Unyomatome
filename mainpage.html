@@ -1026,6 +1026,20 @@ const ROUTE_REGISTRY={
     formationInputExample:'E233系8000番台 / N1',
     prescribedFormationRule:'common'
   },
+  '内房線':{
+    id:'uchibo',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/内房線.json',
+    jsonLines:['内房線'],
+    range:'千葉～安房鴨川',
+    area:'JR東日本',
+    storageRoot:'内房線',
+    storageArea:null,
+    company:'JR東日本',
+    formationFamily:'uchibo',
+    formationCountDefault:1,
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'E131系 / 0番台'
+  },
   '東武野田線':{
     id:'tobu-noda',
     json:'https://minamikaze2700.github.io/Unyomatome/data/TobuNoda.json',
@@ -4374,7 +4388,7 @@ const REGION_DEFINITIONS={
     routes:[
       {name:'京浜東北・根岸線',id:'keihin-tohoku'},
       {name:'横浜線',id:'yokohama'},
-      {name:'南武線',id:'nambu'},
+      {name:'JR南武線',id:'nambu'},
       {name:'内房線',id:'uchibo'}
     ]
   },{
