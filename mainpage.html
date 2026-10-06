@@ -6977,6 +6977,7 @@ initRegionNavigation();
   function circularTrainPosition(t,minutes){
     const layout=circularLayout(); if(!layout||!t) return null;
     const metrics=circularStageMetrics();
+    const stageWidth=Number(metrics?.width)||0;
     const stops=normalizeLineStopTimes(t.stops||[]); if(!stops.length) return null;
     const first=stops[0],last=stops[stops.length-1];
     const firstDep=Number(first._departure),lastArr=Number(last._arrival);
