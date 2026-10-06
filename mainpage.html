@@ -7030,17 +7030,41 @@ initRegionNavigation();
           const iA=edge.indexA,iB=edge.indexB;
           const ratio=Math.max(0,Math.min(1,nb===na?0:(minutes-na)/(nb-na)));
           if(edge.bridge){
-            // 横断線も列車の実際の進行方向をそのまま使う。
-            // edgeは左右どちらをa/bにするか固定で保持しているため、
-            // 現在駅→次駅の向きを見て25%→75%または75%→25%を決める。
+            // 横方向の線も実際の線路に沿って移動させる。
+            // 駅中心→曲線部→横線→曲線部→駅中心の順で補間する。
+            // edge.a / edge.b の向きに合わせて左→右／右→左を切り替える。
             const fromLeft=String(name||'')===String(edge.a||'');
-            const xStart=fromLeft?25:75;
-            const xEnd=fromLeft?75:25;
-            const y=circularCenterY(edge.sideA,edge.indexA,metrics);
+            const xStart=25, xEnd=75;
+            const topRailY=Number(metrics.endPadding?metrics.endPadding-140:80);
+            const bottomRailY=Number(metrics.height-(metrics.endPadding?metrics.endPadding-140:80));
+            const isTop=Number(edge.indexA)===0 && Number(edge.indexB)===0;
+            const stationY=circularCenterY(edge.sideA,edge.indexA,metrics);
+            const railY=isTop?topRailY:bottomRailY;
+            const xStation=fromLeft?xStart:xEnd;
+            const xAcross=fromLeft?xEnd:xStart;
+            const vertical=Math.abs(stationY-railY);
+            const horizontal=Math.abs(xEnd-xStart)*stageWidth/100;
+            const total=vertical*2+horizontal;
+            const dist=Math.max(0,Math.min(1,ratio))*total;
+            const v1=vertical;
+            const h=v1+horizontal;
+            let xPct=xStation, y=stationY;
+            if(dist<=v1){
+              const f=vertical>0?dist/vertical:1;
+              y=stationY+(railY-stationY)*f;
+            }else if(dist<=h){
+              const f=horizontal>0?(dist-v1)/horizontal:1;
+              xPct=(fromLeft?xStart:xEnd)+((fromLeft?1:-1)*50*f);
+              y=railY;
+            }else{
+              const f=vertical>0?(dist-h)/vertical:1;
+              xPct=xAcross;
+              y=railY+(stationY-railY)*f;
+            }
             return {
               side:fromLeft?edge.sideA:edge.sideB,
               pos:fromLeft?edge.indexA:edge.indexB,
-              xPercent:xStart+(xEnd-xStart)*ratio,
+              xPercent:xPct,
               y,
               bridge:true,
               visualTrain:t,mode:'run',baseTrain:t
