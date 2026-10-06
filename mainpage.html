@@ -7003,17 +7003,20 @@ initRegionNavigation();
       if(idx<0) continue;
 
       // 環状列車の端駅は共通の「始発2分前・終着2分後」を使わない。
-      // 端駅に着いた時刻から表示し、1分後に非表示にする。
+      // 端駅では到着時刻から表示し、出発時刻の1分後まで表示したら非表示にする。
       if(endpoint){
         const arrival=Number(st._arrival);
         const departure=Number(st._departure);
         const endpointShowFrom=Number.isFinite(arrival)?arrival:departure;
+        const endpointHideAt=Number.isFinite(departure)?departure+1:
+          (Number.isFinite(endpointShowFrom)?endpointShowFrom+1:NaN);
         if(Number.isFinite(endpointShowFrom)){
-          if(minutes>=endpointShowFrom && minutes<endpointShowFrom+1){
+          // 端駅では到着時刻から表示し、出発時刻そのものも必ず表示する。
+          // 非表示になるのは「出発時刻の1分後」を過ぎた時点。
+          if(minutes>=endpointShowFrom && minutes<=endpointHideAt){
             return {side,pos:idx,visualTrain:t,mode:'endpoint-dwell',baseTrain:t};
           }
-          // 端駅は到着1分後を過ぎたら必ず非表示。
-          if(minutes>=endpointShowFrom+1) continue;
+          if(minutes>endpointHideAt) continue;
         }
 
         // 端駅から反対側の端駅へつながる横線区間には列車アイコンを置かない。
@@ -7097,12 +7100,14 @@ initRegionNavigation();
       const lastIsEndpoint=circularOnly && isEndpoint(lastName);
 
       // 環状列車では既存の2分前／2分後処理を無効化。
-      // 始発端駅は発車時刻から、終着端駅は到着1分後まで表示する。
+      // 端駅は到着時刻から、出発時刻の1分後まで表示する。
       const visibleFrom=firstIsEndpoint
         ? (Number.isFinite(firstArrival)?firstArrival:firstDeparture)
         : firstDeparture;
       const visibleUntil=lastIsEndpoint
-        ? lastArrival+1
+        ? (Number.isFinite(Number(last._departure))
+            ? Number(last._departure)+1
+            : lastArrival+1)
         : lastArrival;
       out.push({train,visibleFrom,visibleUntil});
     }
