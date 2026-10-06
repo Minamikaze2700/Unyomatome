@@ -7128,18 +7128,21 @@ initRegionNavigation();
         const trainLabelEl=el.querySelector('.train-label');
         if(trainLabelEl&&getMainLabelClass(t.type)==='route-normal'){trainLabelEl.style.background=color;trainLabelEl.style.color='#fff';}
         const stageWidth=metrics.width;
-        // 横方向の位置は進行方向ではなく線路の左右で固定する。
-        // 左側の線路は常に線路の左、右側の線路は常に線路の右へ寄せる。
+        // 横方向は「内回り／外回り」で線路の内外を決める。
+        // 左右どちらの線路でも、線路中心からの距離は常に同じにする。
+        // up=内回り / down=外回り。
         const colCenter=side==='left'?stageWidth*0.25:stageWidth*0.75;
-        const baseX=side==='left'
-          ? colCenter-340
-          : colCenter+340-trainWidth;
-        const laneOffset=side==='left'
-          ? -lane*(trainWidth+20)
-          : lane*(trainWidth+20);
+        const railHalf=6;
+        const sideGap=26;
+        const centerOffset=railHalf+sideGap+(trainWidth/2);
+        const isInner=String(t?.direction||'')==='up';
+        const lateralSign=side==='left'
+          ? (isInner?1:-1)
+          : (isInner?-1:1);
+        const laneOffset=lateralSign*(centerOffset + lane*(trainWidth+20));
         const trainLeft=Number.isFinite(Number(item.info?.xPercent))
           ? stageWidth*(Number(item.info.xPercent)/100)-(trainWidth/2)
-          : baseX+laneOffset;
+          : colCenter-(trainWidth/2)+laneOffset;
         const y=Number.isFinite(Number(item.info?.y))?Number(item.info.y):circularCenterY(side,item.pos,metrics);
         const applyFinalCircularPosition=()=>{
           const img=el.querySelector('img');
