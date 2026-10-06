@@ -1039,6 +1039,46 @@ const ROUTE_REGISTRY={
     access:{public:false,routeAdmins:[]},
     formationInputExample:'E235系F編成 / E131系2両 / 209系4両'
   },
+  '大阪環状線':{
+    id:'osaka-loop',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/大阪環状線・ゆめ咲線.json',
+    jsonLines:['大阪環状線'],
+    range:'天王寺～天王寺',
+    area:'JR西日本',
+    storageRoot:'大阪環状線・ゆめ咲線',
+    storageArea:'JR西日本',
+    company:'JR西日本',
+    formationFamily:'osaka-loop',
+    formationCountDefault:1,
+    defaultFormationName:'323系',
+    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
+    formationTypeImage:'https://minamikaze2700.github.io/Unyomatome/images/323.png',
+    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
+    noImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
+    prescribedFormationRule:'common',
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'323系 / LS01'
+  },
+  'ゆめ咲線':{
+    id:'yumesaki',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/大阪環状線・ゆめ咲線.json',
+    jsonLines:['ゆめ咲線'],
+    range:'西九条～桜島',
+    area:'JR西日本',
+    storageRoot:'大阪環状線・ゆめ咲線',
+    storageArea:'JR西日本',
+    company:'JR西日本',
+    formationFamily:'osaka-loop',
+    formationCountDefault:1,
+    defaultFormationName:'323系',
+    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
+    formationTypeImage:'https://minamikaze2700.github.io/Unyomatome/images/323.png',
+    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
+    noImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
+    prescribedFormationRule:'common',
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'323系 / LS01'
+  },
   '東武野田線':{
     id:'tobu-noda',
     json:'https://minamikaze2700.github.io/Unyomatome/data/TobuNoda.json',
@@ -1617,6 +1657,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
     startTime:String(raw?.startTime||firstTimed.departure||firstTimed.arrival||firstTimed.time||''),
     dest:String(raw?.dest||lastTimed.station||''),
     endTime:String(raw?.endTime||lastTimed.arrival||lastTimed.departure||lastTimed.time||''),
+    circular:raw?.circular===true,
     trainNumbers:(raw?.trainNumbers&&typeof raw.trainNumbers==='object')?raw.trainNumbers:(rawNo?{[String(servedLineNames[0]||raw?.lineKind||meta?.lineKind||'route')]:[rawNo]}:{}),
     servedLineNames,
     sourceTypeColors:(raw?.__sourceTypeColors&&typeof raw.__sourceTypeColors==='object')?{...raw.__sourceTypeColors}:{},
@@ -1703,7 +1744,28 @@ async function loadExternalRouteJsons(routeMeta){
     throw lastError||new Error(`路線JSONの読み込みに失敗しました\n${url}`);
   }
 
-  const payloads=await Promise.all(unique.map(fetchJson));
+  function selectSharedRouteJson(rawJson){
+    // 大阪環状線・ゆめ咲線のように、1つのJSONへ複数路線を収録した場合は
+    // 現在表示中の路線のエントリだけを取り出して、既存の共通処理へ渡す。
+    if(rawJson && typeof rawJson==='object' && rawJson.routes && typeof rawJson.routes==='object' && !Array.isArray(rawJson.routes)){
+      const candidates=[
+        String(activeRouteName||'').trim(),
+        ...(Array.isArray(routeMeta?.jsonLines)?routeMeta.jsonLines.map(x=>String(x||'').trim()):[])
+      ].filter(Boolean);
+      for(const key of candidates){
+        if(rawJson.routes[key] && typeof rawJson.routes[key]==='object') return rawJson.routes[key];
+      }
+      throw new Error(`共有路線JSONに「${String(activeRouteName||'')}」のデータがありません`);
+    }
+    return rawJson;
+  }
+
+  // fetchJson() は共有JSONなら路線単位へ切り出して返す。
+  const sharedFetchJson=async(url)=>{
+    const result=await fetchJson(url);
+    return {...result,json:selectSharedRouteJson(result.json)};
+  };
+  const payloads=await Promise.all(unique.map(sharedFetchJson));
   const primary=payloads[0]?.json||{};
 
   // 各JSONごとの種別色を、そこから読み込んだ列車自身に保持させる。
@@ -2949,6 +3011,7 @@ function applyStationLabelColors(badge,index){
   }
 }
 function renderLine(){
+  if(activeJson?.circular===true){ renderCircularLine(); return; }
   if(typeof TRAIN_ICON_CACHE!=='undefined') TRAIN_ICON_CACHE.clear();
   if(typeof TRAIN_LAYOUT_CACHE!=='undefined') TRAIN_LAYOUT_CACHE={container:null,rowCenters:null,rowCount:0};
   const container=document.getElementById('lineContainer');
@@ -3176,8 +3239,13 @@ function positionForTrain(t,minutes){
 
 function trainLabelText(t){
   const type=String(t?.type||'').trim();
-  const dest=getShortDest(t?.dest);
+  const isCircular=activeJson?.circular===true && (t?.circular===true || t?.rawTrain?.circular===true);
+  const dest=isCircular ? '環状' : getShortDest(t?.dest);
   return `<span>${type?`${getShortType(type,t?.no)} ${dest}`:dest}</span>`;
+}
+function getDisplayDestinationForTrain(t){
+  const isCircular=activeJson?.circular===true && (t?.circular===true || t?.rawTrain?.circular===true);
+  return isCircular ? '環状' : getDetailDest(t?.dest);
 }
 function trainPositionViewportVisible(p,rowCenters,viewportTop,viewportBottom){
   if(!p||!Number.isFinite(Number(p.pos))||!rowCenters.length) return false;
@@ -3266,6 +3334,7 @@ function getTerminalDepartureIndex(){
   return index;
 }
 function renderTrainPositions(){
+  if(activeJson?.circular===true){ renderCircularTrainPositions(); return; }
   const layer=document.getElementById('movingTrainLayer');
   if(!layer) return;
   const minutes=currentMinutes();
@@ -3287,7 +3356,6 @@ function renderTrainPositions(){
     if(minutes<entry.visibleFrom || minutes>entry.visibleUntil) continue;
     const {train:base,meta,next:nextInfo}=entry;
     if(meta.lastIndex<0) continue;
-    if(!nextInfo||!nextInfo.train) continue;
     const oldSignature=`${String(base.no||'')}|${String(base.direction||'')}`;
     const nextSignature=`${String(nextInfo.train.no||'')}|${String(nextInfo.train.direction||'')}`;
     terminalHandoffs.set(oldSignature,{nextTrain:nextInfo.train,nextSignature,dep:nextInfo.dep,lastArr:meta.lastArr});
@@ -3703,7 +3771,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
       const effectiveFormationId=registeredFormationForTrain(train)||train.formation||'';
       const selectedForm=selectionDisplayObjectForTrain(train,effectiveFormationId);
       const imgSrc=imageForTrain(train);
-      const destination=`${getDetailDest(train.dest)} 行`;
+      const destination=`${getDisplayDestinationForTrain(train)} 行`;
       const isNext=index===nextIndex;
 
       return `
@@ -3718,7 +3786,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
           ${stationTimetableFormationHTML(train)}
           <span class="station-timetable-time">${escapeAttr(item.time)}</span>
           ${String(train.type||'').trim()?`<span class="station-timetable-type ${escapeAttr(getExpressClass(train))}" style="${typeBadgeInlineStyle(train,(train.stops||[]).findIndex(s=>String(s?.station||'')===stationName),stationDirectionRouteColor(STATIONS.findIndex(st=>String(st?.nameJa||'')===stationName),key))}">${escapeAttr(getDetailType(train.type))}</span>`:''}
-          <span class="station-timetable-destination"><span class="station-timetable-destination-station">${escapeAttr(getDetailDest(train.dest))}</span><span class="station-timetable-destination-go">行</span></span>
+          <span class="station-timetable-destination"><span class="station-timetable-destination-station">${escapeAttr(getDisplayDestinationForTrain(train))}</span><span class="station-timetable-destination-go">行</span></span>
         </button>
       `;
     }).join('');
@@ -3837,7 +3905,7 @@ function updateSheetContent(){
         <div class="train-info-main">
           <div>
             ${String(train.type||'').trim()?`<span class="type-badge ${getExpressClass(train)}" style="${typeBadgeInlineStyle(train)}">${getDetailType(train.type)}</span>`:''}
-            <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDetailDest(train.dest)} 行</span>
+            <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)} 行</span>
             ${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}
           </div>
           ${train.formation && train.formation!==INITIAL_FORMATION_SELECTION.id
@@ -3859,7 +3927,7 @@ function updateSheetContent(){
         <div class="train-info-main">
           <div>
             ${String(train.type||'').trim()?`<span class="type-badge ${getExpressClass(train)}" style="${typeBadgeInlineStyle(train)}">${getDetailType(train.type)}</span>`:''}
-            <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDetailDest(train.dest)} 行</span>
+            <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)} 行</span>
             ${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}
           </div>
           <div class="input-trigger-btn">編成を入力中</div>
@@ -4312,6 +4380,13 @@ function operationInfoVisibleSegments(){
 }
 
 function renderOperationInfoZones(){
+  if(activeJson?.circular===true || activeRouteName==='ゆめ咲線'){
+    const layer0=document.getElementById('operationInfoLayer');
+    if(layer0) layer0.innerHTML='';
+    const labelLayer0=document.getElementById('operationInfoLabelLayer');
+    if(labelLayer0) labelLayer0.innerHTML='';
+    return;
+  }
   const layer=document.getElementById('operationInfoLayer');
   if(!layer)return;
   layer.innerHTML='';
@@ -4525,6 +4600,12 @@ const REGION_DEFINITIONS={
   }],
   '東海':[],
   '近畿':[{
+    company:'JR西日本',
+    routes:[
+      {name:'大阪環状線',id:'osaka-loop'},
+      {name:'ゆめ咲線',id:'yumesaki'}
+    ]
+  },{
     company:'神戸市営地下鉄',
     routes:[
       {name:'海岸線',id:'kobe-kaigan'},
@@ -4833,6 +4914,7 @@ function stationNeighborRouteColors(index){
   return {prevColor,nextColor};
 }
 function renderRailLineSegments(){
+  if(activeJson?.circular===true){ renderCircularRailLineSegments(); return; }
   const rail=document.getElementById('railLine');
   if(!rail) return;
   rail.innerHTML='';
@@ -5227,6 +5309,10 @@ function updateRouteVisuals(){
   const h1Color=jsonBaseColorForActiveRoute();
   const titleColor=h1Color;
   const root=document.documentElement;
+  const isCircularRoute=activeJson?.circular===true;
+  root.classList.toggle('circular-route-active',isCircularRoute);
+  document.body?.classList.toggle('circular-route-active',isCircularRoute);
+  document.body?.classList.toggle('yumesaki-route-active',activeRouteName==='ゆめ咲線');
   root.style.setProperty('--route-primary',primary);
   root.style.setProperty('--primary',primary);
   root.style.setProperty('--primary-dark',shadeColor(primary,-25));
@@ -6578,6 +6664,360 @@ initRegionNavigation();
 })();
 </script>
 
+
+<style id="circular-route-style">
+/* ===== 大阪環状線：環状線専用レイアウト ===== */
+.circular-stage{
+  position:relative;width:100%;height:2970px;min-height:2970px;margin:0;padding:0;
+}
+.circular-column{position:absolute;top:0;bottom:0;width:0;z-index:2;}
+.circular-column.left{left:25%;}
+.circular-column.right{left:75%;}
+.circular-station-row{
+  position:absolute;left:0;width:384px;height:72px;min-width:384px;
+  transform:translate(-50%,-50%);z-index:4;
+}
+.circular-station-row .station-badge{width:384px;min-width:384px;height:72px;aspect-ratio:auto;}
+.circular-station-row .station-name-ja{height:calc(100% - 24px);min-height:0;}
+.circular-station-row .station-name-en{height:24px;min-height:24px;}
+.circular-track-segment{
+  position:absolute;left:50%;width:12px;transform:translateX(-50%);z-index:1;
+}
+.circular-bridge{
+  position:absolute;left:25%;right:25%;width:auto;box-sizing:border-box;
+  border-left:12px solid var(--rail-background,var(--primary));
+  border-right:12px solid var(--rail-background,var(--primary));
+  z-index:1;pointer-events:none;
+}
+.circular-bridge-top{
+  top:0;height:135px;
+  border-top:12px solid var(--rail-background,var(--primary));
+  border-bottom:0;
+  border-radius:90px 90px 0 0;
+}
+.circular-bridge-bottom{
+  bottom:0;height:135px;
+  border-bottom:12px solid var(--rail-background,var(--primary));
+  border-top:0;
+  border-radius:0 0 90px 90px;
+}
+.circular-route-active #lineContainer{margin-top:calc(58px + var(--control-bar-height, 69px));}
+.circular-route-active .line-container{display:block;}
+@media(max-width:959.98px){
+  html.circular-route-active,body.circular-route-active{
+    overflow-x:auto !important;
+  }
+  body.circular-route-active #viewportCanvas{
+    width:1920px !important;min-width:1920px !important;max-width:none !important;
+    margin-left:0 !important;margin-right:0 !important;
+    zoom:calc(100vw / 960px);
+  }
+  body.circular-route-active #viewportCanvas .line-container{
+    width:1920px !important;min-width:1920px !important;max-width:none !important;
+  }
+  body.circular-route-active .circular-stage{
+    width:1920px;min-width:1920px;
+  }
+}
+</style>
+<script id="circular-route-script">
+(function(){
+  const CIRCULAR_LAYOUT_CACHE=new Map();
+  function circularLayout(){
+    const raw=activeJson?.circularLayout;
+    if(!raw||!Array.isArray(raw.left)||!Array.isArray(raw.right)) return null;
+    const left=raw.left.map(String), right=raw.right.map(String);
+    const key=JSON.stringify([left,right]);
+    if(CIRCULAR_LAYOUT_CACHE.has(key)) return CIRCULAR_LAYOUT_CACHE.get(key);
+    const info={left,right,leftIndex:new Map(),rightIndex:new Map(),edges:new Map()};
+    left.forEach((name,i)=>info.leftIndex.set(name,i));
+    right.forEach((name,i)=>info.rightIndex.set(name,i));
+    function addEdges(side,arr){
+      for(let i=0;i<arr.length-1;i++){
+        const a=arr[i],b=arr[i+1];
+        info.edges.set(operationInfoUndirectedKey(a,b),{side,indexA:i,indexB:i+1,a,b});
+      }
+    }
+    addEdges('left',left); addEdges('right',right);
+    CIRCULAR_LAYOUT_CACHE.set(key,info);
+    return info;
+  }
+  function circularStageMetrics(){
+    const stage=document.getElementById('circularStage');
+    if(!stage) return {stage:null,width:1920,height:2970,leftStep:270,rightStep:300};
+    const width=Number(stage.offsetWidth)||1920;
+    const height=Number(stage.offsetHeight)||2970;
+    const layout=circularLayout();
+    const leftCount=Math.max(1,layout?.left?.length||11);
+    const rightCount=Math.max(1,layout?.right?.length||10);
+    const leftStep=leftCount>1?(height-270)/(leftCount-1):0;
+    const rightStep=rightCount>1?(height-270)/(rightCount-1):0;
+    return {stage,width,height,leftStep,rightStep};
+  }
+  function circularCenterY(side,index,metrics){
+    return 135+(side==='left'?metrics.leftStep:metrics.rightStep)*Number(index||0);
+  }
+  function circularEdgeColor(a,b){
+    const colors=activeSegmentColors(String(a||''),String(b||''));
+    return String(colors?.[0]||'#666');
+  }
+  function applyCircularStationColors(badge,side,index){
+    const layout=circularLayout(); if(!layout||!badge) return;
+    const arr=layout[side]||[];
+    let color='';
+    if(index<arr.length-1) color=circularEdgeColor(arr[index],arr[index+1]);
+    if(!color && index>0) color=circularEdgeColor(arr[index-1],arr[index]);
+    if(!color) color=activeRouteColors()[0]||'#666';
+    badge.style.background='#fff';
+    badge.style.setProperty('--station-label-bg',color);
+    badge.style.setProperty('--station-en-text-color',stationEnglishTextColor(color));
+    const en=badge.querySelector('.station-name-en');
+    if(en){ en.style.background=color; en.style.color=stationEnglishTextColor(color); }
+  }
+  function makeCircularStationRow(stationName,side,index,metrics){
+    const st=STATIONS.find(x=>String(x.nameJa)===String(stationName));
+    if(!st) return null;
+    const row=document.createElement('div');
+    row.className='station-row circular-station-row';
+    row.dataset.stationId=st.id;
+    row.style.top=`${circularCenterY(side,index,metrics)}px`;
+    const badge=document.createElement('div');
+    badge.className='station-badge';
+    badge.innerHTML=`<div class="station-name-ja">${esc(st.nameJa)}</div><div class="station-name-en">${esc(st.nameEn)}</div>`;
+    badge.setAttribute('role','button'); badge.tabIndex=0;
+    badge.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();openStationSheet(st.id);});
+    badge.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();ev.stopPropagation();openStationSheet(st.id);}});
+    const ja=badge.querySelector('.station-name-ja');
+    if(ja){
+      const len=[...ja.textContent.trim()].length; let ls='0';
+      if(len<=2)ls='.9em'; else if(len===3)ls='.3em'; else ls='.0em';
+      ja.style.letterSpacing=ls; ja.style.paddingLeft=ls;
+    }
+    applyCircularStationColors(badge,side,index);
+    row.appendChild(badge);
+    return row;
+  }
+  function renderCircularLine(){
+    if(typeof TRAIN_ICON_CACHE!=='undefined') TRAIN_ICON_CACHE.clear();
+    if(typeof TRAIN_LAYOUT_CACHE!=='undefined') TRAIN_LAYOUT_CACHE={container:null,rowCenters:null,rowCount:0};
+    const container=document.getElementById('lineContainer'); if(!container) return;
+    const layout=circularLayout();
+    if(!layout) return;
+    const leftCount=Math.max(1,layout.left.length), rightCount=Math.max(1,layout.right.length);
+    const stageHeight=270*Math.max(leftCount,rightCount);
+    container.innerHTML=`<div class="operation-info-layer" id="operationInfoLayer"></div><div class="circular-stage" id="circularStage"><div class="circular-column left" id="circularLeft"></div><div class="circular-column right" id="circularRight"></div><div class="circular-bridge circular-bridge-top"></div><div class="circular-bridge circular-bridge-bottom"></div><div class="rail-line" id="railLine"></div></div><div class="moving-train-layer" id="movingTrainLayer"></div><div class="operation-info-label-layer" id="operationInfoLabelLayer"></div>`;
+    const stage=document.getElementById('circularStage');
+    stage.style.height=`${stageHeight}px`; stage.style.minHeight=`${stageHeight}px`;
+    const metrics=circularStageMetrics();
+    const left=document.getElementById('circularLeft'),right=document.getElementById('circularRight');
+    layout.left.forEach((name,i)=>{const row=makeCircularStationRow(name,'left',i,metrics);if(row)left.appendChild(row);});
+    layout.right.forEach((name,i)=>{const row=makeCircularStationRow(name,'right',i,metrics);if(row)right.appendChild(row);});
+    renderCircularRailLineSegments();
+    renderCircularTrainPositions();
+    renderOperationInfoZones();
+  }
+  function renderCircularRailLineSegments(){
+    const rail=document.getElementById('railLine'),layout=circularLayout(),stage=document.getElementById('circularStage');
+    if(!rail||!layout||!stage) return;
+    const metrics=circularStageMetrics();
+    rail.innerHTML=''; rail.className='rail-line circular-rail-line';
+    function drawColumn(side,arr){
+      const col=document.createElement('div'); col.className=`circular-column-track ${side}`; col.style.cssText=`position:absolute;inset:0;pointer-events:none;`;
+      for(let i=0;i<arr.length-1;i++){
+        const seg=document.createElement('div'); seg.className='circular-track-segment';
+        const y1=circularCenterY(side,i,metrics),y2=circularCenterY(side,i+1,metrics);
+        seg.style.left=side==='left'?'25%':'75%'; seg.style.top=`${y1}px`; seg.style.height=`${Math.max(0,y2-y1)}px`;
+        seg.style.background=circularEdgeColor(arr[i],arr[i+1]);
+        col.appendChild(seg);
+      }
+      rail.appendChild(col);
+    }
+    drawColumn('left',layout.left); drawColumn('right',layout.right);
+  }
+  function circularEdgeForPair(a,b){
+    const layout=circularLayout(); if(!layout) return null;
+    return layout.edges.get(operationInfoUndirectedKey(String(a||''),String(b||'')))||null;
+  }
+  function circularSideAtStation(station,preferredSide){
+    const layout=circularLayout(); if(!layout) return preferredSide||'left';
+    if(preferredSide && layout[preferredSide]?.includes(station)) return preferredSide;
+    if(layout.left.includes(station)) return 'left';
+    if(layout.right.includes(station)) return 'right';
+    return preferredSide||'left';
+  }
+  function circularTrainPosition(t,minutes){
+    const layout=circularLayout(); if(!layout||!t) return null;
+    const stops=normalizeLineStopTimes(t.stops||[]); if(!stops.length) return null;
+    const first=stops[0],last=stops[stops.length-1];
+    const firstDep=Number(first._departure),lastArr=Number(last._arrival);
+    if(!Number.isFinite(firstDep)||!Number.isFinite(lastArr)) return null;
+    const next=connectionNext(t);
+    const nextStart=next ? timeToMinutes(next.startTime)+0.75 : null;
+    // 環状列車の天王寺到着後は、運用連結された次列車へ同方向のアイコンを引き継ぐ。
+    if(next && (t.circular===true || t.rawTrain?.circular===true) && String(t.dest||'')==='天王寺' && Number.isFinite(nextStart) && minutes>lastArr){
+      const nextTrain=liveTrain(trainEntryNo(next),next.start&&next.dest ? (next.start===next.dest?'up':(stationIndex(next.start)>stationIndex(next.dest)?'up':'down')) : null)
+        ||baseTrainForDay(trainEntryNo(next),null,currentDay)
+        ||(currentDay==='休日'?HOLIDAY_TRAIN_INDEX[trainEntryNo(next)]:TRAIN_INDEX[trainEntryNo(next)])
+        ||null;
+      if(minutes<nextStart){
+        const waitSide=nextTrain?circularSideAtStation(String(nextTrain.stops?.[0]?.station||'天王寺'),nextTrain.direction==='down'?'right':'left'):'left';
+        const visual=nextTrain||t;
+        const arr=layout[waitSide]||[]; const idx=arr.indexOf('天王寺');
+        return idx>=0?{side:waitSide,pos:idx,visualTrain:visual,mode:'turn-wait',baseTrain:t}:null;
+      }
+    }
+    // 始発駅停車表示
+    const firstSide=(layout.left.includes(String(first.station))||layout.right.includes(String(first.station)))
+      ?circularSideAtStation(String(first.station),t.direction==='down'?'right':'left'):null;
+    if(firstSide && isStartDwellMinute(minutes,firstDep)){
+      const idx=(layout[firstSide]||[]).indexOf(String(first.station));
+      if(idx>=0) return {side:firstSide,pos:idx,visualTrain:t,mode:'start-dwell',baseTrain:t};
+    }
+    // 各停車駅停車中＋駅間走行。環状線外のゆめ咲線区間は描画対象外にする。
+    for(let i=0;i<stops.length;i++){
+      const st=stops[i],name=String(st.station||'');
+      const sidePrev=i>0 ? (circularEdgeForPair(stops[i-1].station,name)?.side||null) : null;
+      const sideNext=i<stops.length-1 ? (circularEdgeForPair(name,stops[i+1].station)?.side||null) : null;
+      const side=sidePrev||sideNext||circularSideAtStation(name,t.direction==='down'?'right':'left');
+      const arr=(layout[side]||[]);
+      const idx=arr.indexOf(name);
+      if(idx<0) continue;
+      const a=Number(st._arrival)+0.25,b=Number(st._departure)+0.75;
+      if(Number.isFinite(a)&&Number.isFinite(b)&&minutes>=a&&minutes<b){
+        return {side,pos:idx,visualTrain:t,mode:i===stops.length-1?'end-dwell':'station-dwell',baseTrain:t};
+      }
+      if(i<stops.length-1){
+        const edge=circularEdgeForPair(name,String(stops[i+1].station||''));
+        if(!edge) continue;
+        const na=Number(st._departure)+0.75;
+        const isTerminalNext=i===stops.length-2;
+        const nb=isTerminalNext?Number(stops[i+1]._arrival):Number(stops[i+1]._arrival)+0.25;
+        if(!Number.isFinite(na)||!Number.isFinite(nb)) continue;
+        if(minutes>=na && (isTerminalNext?minutes<nb:minutes<=nb)){
+          const iA=edge.indexA,iB=edge.indexB;
+          const ratio=nb===na?0:(minutes-na)/(nb-na);
+          const p=iA+(iB-iA)*ratio;
+          return {side:edge.side,pos:p,visualTrain:t,mode:'run',baseTrain:t};
+        }
+      }
+    }
+    return null;
+  }
+  function getCircularVisibleEntries(){
+    const source=getDisplayedTrainSource(); const out=[];
+    for(const train of source){
+      const stops=normalizeLineStopTimes(train.stops||[]); if(!stops.length) continue;
+      const first=stops[0],last=stops[stops.length-1];
+      const firstDep=Number(first._departure),lastArr=Number(last._arrival);
+      if(!Number.isFinite(firstDep)||!Number.isFinite(lastArr)) continue;
+      const next=connectionNext(train); const nextDep=next?timeToMinutes(next.startTime)+0.75:null;
+      const visibleFrom=firstDep-RESET_DWELL_MIN+0.5;
+      const visibleUntil=Number.isFinite(nextDep)?nextDep:lastArr+RESET_DWELL_MIN+0.5;
+      out.push({train,visibleFrom,visibleUntil});
+    }
+    return out;
+  }
+  function circularDisplayTrainNo(t){
+    if(!t||t.hideTrainNumber) return '';
+    if(Array.isArray(t.noSequence)&&t.noSequence.length) return String(t.noSequence[0]);
+    return String(t.no||'');
+  }
+  function renderCircularTrainPositions(){
+    const layer=document.getElementById('movingTrainLayer');
+    if(!layer) return;
+    const now=currentMinutes();
+    const metrics=circularStageMetrics();
+    const entries=getCircularVisibleEntries();
+    const visible=[]; const keep=new Set(); const occupied={left:[],right:[]};
+    for(const entry of entries){
+      if(now<entry.visibleFrom || now>entry.visibleUntil) continue;
+      const p=circularTrainPosition(entry.train,now); if(!p) continue;
+      const displayTrain=p.visualTrain||entry.train;
+      const signature=`${String(entry.train.no||'')}|${String(entry.train.direction||'')}`;
+      visible.push({baseTrain:entry.train,visualTrain:displayTrain,info:p,signature}); keep.add(signature);
+      occupied[p.side].push({t:displayTrain,pos:p.pos,baseTrain:entry.train,mode:p.mode,signature});
+    }
+    for(const [signature,entry] of TRAIN_ICON_CACHE){
+      if(!keep.has(signature)){entry.el.remove();TRAIN_ICON_CACHE.delete(signature);}
+    }
+    const stageRect=metrics.stage?.getBoundingClientRect();
+    const mobileZoom=window.innerWidth<960?window.innerWidth/960:1;
+    const viewportTop=0,viewportBottom=window.innerHeight||document.documentElement.clientHeight||0;
+    ['left','right'].forEach(side=>{
+      occupied[side].sort((a,b)=>a.pos-b.pos||String(a.t.no).localeCompare(String(b.t.no),undefined,{numeric:true}));
+      const used=[];
+      occupied[side].forEach(item=>{
+        let lane=0; while(used.some(u=>Math.abs(u.pos-item.pos)<0.24&&u.lane===lane)) lane++; used.push({pos:item.pos,lane});
+        const t=item.t; let entry=TRAIN_ICON_CACHE.get(item.signature); let el=entry?.el;
+        if(entry) entry.currentTrain=t;
+        const cls=trainVisualKind(t); const registeredFormation=registeredFormationForTrain(t);
+        const formationId=registeredFormation||t.formation||'';
+        const formationParts=formationId&&formationId!==INITIAL_FORMATION_SELECTION.id?formationDisplayParts(formationId):[];
+        const imageUrl=imageForTrain(t); const displayNo=circularDisplayTrainNo(t); const labelText=trainLabelText(t);
+        const contentKey=[displayNo,imageUrl,formationParts.join('\n'),cls,getMainLabelClass(t.type),labelText].join('|');
+        const contentChanged=!entry||entry.contentKey!==contentKey;
+        if(!el){
+          el=document.createElement('div');el.className=`train-icon ${side}`;el.style.visibility='hidden';el.style.transition='none';layer.appendChild(el);
+          entry={el,contentKey:'',layoutHeight:0,ready:false,currentTrain:t};
+          el.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();const ct=entry.currentTrain||t;openSheet(ct.no,false,ct.direction);});
+          TRAIN_ICON_CACHE.set(item.signature,entry);
+        }
+        if(contentChanged){
+          el.innerHTML=`${displayNo?`<span class="train-no">${esc(displayNo)}</span>`:''}<img src="${esc(imageUrl)}" alt="${esc(displayNo)}">${formationParts.length?`<span class="train-no train-formation">${formationParts.map(x=>`<span>${esc(x)}</span>`).join('')}</span>`:''}<span class="train-label ${cls} ${getMainLabelClass(t.type)}" style="${typeBadgeInlineStyle(t,item.pos)}">${labelText}</span>`;
+          entry.contentKey=contentKey;entry.layoutHeight=0;entry.ready=false;
+        }
+        const color=typeColorForTrain(t,item.pos);el.style.setProperty('--train-type-color',color);
+        const trainLabelEl=el.querySelector('.train-label');
+        if(trainLabelEl&&getMainLabelClass(t.type)==='route-normal'){trainLabelEl.style.background=color;trainLabelEl.style.color='#fff';}
+        const stageWidth=metrics.width;
+        const colCenter=side==='left'?stageWidth*0.25:stageWidth*0.75;
+        const baseX=side==='left'?colCenter-340:colCenter+340-trainWidth;
+        const laneOffset=lane*(trainWidth+20);
+        const trainLeft=side==='left'?baseX-laneOffset:baseX+laneOffset;
+        const y=circularCenterY(side,item.pos,metrics);
+        const applyFinalCircularPosition=()=>{
+          const img=el.querySelector('img');
+          const noEl=el.querySelector('.train-no');
+          const formationEl=el.querySelector('.train-formation');
+          if(!img) return;
+          const z=window.innerWidth<960?window.innerWidth/960:1;
+          const imgRect=img.getBoundingClientRect();
+          const noRect=noEl?.getBoundingClientRect();
+          const formationRect=formationEl?.getBoundingClientRect();
+          const actualImageWidth=(imgRect.width/z)||imageWidth;
+          const imgHeight=(imgRect.height/z)||actualImageWidth*((img.naturalHeight||30)/(img.naturalWidth||60));
+          const noHeight=(noRect?.height/z)||12*uiScale*1.05;
+          const formationHeight=(formationRect?.height/z)||0;
+          const finalTop=y-(noHeight+imgHeight+formationHeight)/2;
+          el.style.left=`${trainLeft}px`;
+          el.style.right='auto';
+          el.style.top=`${finalTop}px`;
+          el.style.transform='none';
+          el.style.setProperty('--lane-shift','0px');
+          el.style.visibility='visible';
+          entry.ready=true;
+          entry.layoutHeight=el.getBoundingClientRect().height/z||48;
+          if(stageRect){
+            const visualY=stageRect.top+y*z;
+            el.style.display=(visualY+80>=viewportTop&&visualY-80<=viewportBottom)?'flex':'none';
+          }else{ el.style.display='flex'; }
+        };
+        const img=el.querySelector('img');
+        if(img?.complete&&img.naturalWidth){
+          applyFinalCircularPosition();
+        }else if(img){
+          el.style.visibility='hidden';
+          img.addEventListener('load',applyFinalCircularPosition,{once:true});
+        }else{
+          applyFinalCircularPosition();
+        }
+      });
+    });
+  }
+
+  window.__circularRouteHelpers={renderCircularLine,renderCircularRailLineSegments,renderCircularTrainPositions,circularTrainPosition,circularLayout};
+})();
+</script>
 </body>
 </html>
 
