@@ -6790,22 +6790,18 @@ initRegionNavigation();
 }
 /* 横線はページ上端・下端から80px離し、縦線は端駅ラベル中心まで接続。 */
 .circular-bridge-top{
-  top:var(--circular-bridge-y);
-  height:calc(var(--circular-top-center) - var(--circular-bridge-y));
+  top:calc(var(--circular-top-center) - 6px);
+  height:12px;
+  border:0;
   border-top:12px solid var(--circular-top-color,var(--primary));
-  border-left:12px solid var(--circular-top-color,var(--primary));
-  border-right:12px solid var(--circular-top-color,var(--primary));
-  border-bottom:0;
-  border-radius:90px 90px 0 0;
+  border-radius:0;
 }
 .circular-bridge-bottom{
-  top:var(--circular-bottom-center);
-  height:calc(100% - var(--circular-bottom-center) - var(--circular-bridge-y));
-  border-bottom:12px solid var(--circular-bottom-color,var(--primary));
-  border-left:12px solid var(--circular-bottom-color,var(--primary));
-  border-right:12px solid var(--circular-bottom-color,var(--primary));
-  border-top:0;
-  border-radius:0 0 90px 90px;
+  top:calc(var(--circular-bottom-center) - 6px);
+  height:12px;
+  border:0;
+  border-top:12px solid var(--circular-bottom-color,var(--primary));
+  border-radius:0;
 }
 .circular-hidden-station-label{visibility:hidden !important;pointer-events:none !important;}
 .circular-route-active #lineContainer{margin-top:calc(58px + var(--control-bar-height, 69px));}
@@ -6997,7 +6993,7 @@ initRegionNavigation();
       && String(t.direction||'')!==''
       && String(nextTrain.direction||'')===String(t.direction||'');
     const nextStart=sameDirection && next ? timeToMinutes(next.startTime)+0.75 : null;
-    const arrivalPoint=lastArr+0.25;
+    const arrivalPoint=lastArr;
     if(sameDirection && Number.isFinite(nextStart) && minutes>=arrivalPoint && minutes<nextStart){
       const waitStation=String(last.station||t.dest||'');
       const waitSide=circularSideAtStation(waitStation,t.direction==='down'?'right':'left');
@@ -7020,8 +7016,15 @@ initRegionNavigation();
       const arr=(layout[side]||[]);
       const idx=arr.indexOf(name);
       if(idx<0) continue;
-      const a=Number(st._arrival)+(circularEndpoint?0.25:0.25);
-      const b=Number(st._departure)+(circularEndpoint?0.75:0.75);
+      // 環状列車の始発端では始発2分前表示をせず、発車時刻から駅上に出す。
+      if(isCircularTrain(t) && i===0){
+        const dep=Number(st._departure);
+        if(Number.isFinite(dep) && minutes>=dep && minutes<dep+0.75){
+          return {side,pos:idx,visualTrain:t,mode:'start-dwell',baseTrain:t};
+        }
+      }
+      const a=Number(st._arrival)+0.25;
+      const b=Number(st._departure)+0.75;
       if(Number.isFinite(a)&&Number.isFinite(b)&&minutes>=a&&minutes<b){
         return {side,pos:idx,visualTrain:t,mode:i===stops.length-1?'end-dwell':'station-dwell',baseTrain:t};
       }
@@ -7036,62 +7039,20 @@ initRegionNavigation();
           const iA=edge.indexA,iB=edge.indexB;
           const ratio=Math.max(0,Math.min(1,nb===na?0:(minutes-na)/(nb-na)));
           if(edge.bridge){
-            // 横方向の線も実際の線路に沿って移動させる。
-            // 駅中心→曲線部→横線→曲線部→駅中心の順で補間する。
-            // edge.a / edge.b の向きに合わせて左→右／右→左を切り替える。
+            // 上端・下端の横線は、端駅の中心Yと同じ高さに直接接続している。
+            // そのため列車は端駅に着いたあと、上下に寄り道せず、そのまま横線を走行する。
             const fromLeft=String(name||'')===String(edge.a||'');
             const xStart=25, xEnd=75;
-            // 実際の横線の位置に合わせる。
-            // 上端は CSS の border-top の中心(80px + 6px)、下端は
-            // border-bottom の中心(ステージ下端 - 6px)を走行位置とする。
-            // 横線の位置は、表示している .circular-bridge の実際の境界線中心から取得する。
-            // 特に下端は「ステージ最下端-6px」ではなく、CSSのborder-bottom位置が実際の線路位置。
-            const bridgeEl=document.querySelector(
-              Number(edge.indexA)===0 && Number(edge.indexB)===0
-                ? '.circular-bridge-top'
-                : '.circular-bridge-bottom'
-            );
-            const bridgeStyle=bridgeEl?getComputedStyle(bridgeEl):null;
-            const bridgeTop=bridgeEl?.offsetTop ?? 0;
-            const bridgeHeight=bridgeEl?.offsetHeight ?? 0;
-            const topBorderWidth=parseFloat(bridgeStyle?.borderTopWidth||'12')||12;
-            const bottomBorderWidth=parseFloat(bridgeStyle?.borderBottomWidth||'12')||12;
-            const topRailY=bridgeTop+(topBorderWidth/2);
-            const bottomRailY=bridgeTop+bridgeHeight-(bottomBorderWidth/2);
-            const isTop=Number(edge.indexA)===0 && Number(edge.indexB)===0;
-            const stationY=circularCenterY(edge.sideA,edge.indexA,metrics);
-            const railY=isTop?topRailY:bottomRailY;
-            const xStation=fromLeft?xStart:xEnd;
-            const xAcross=fromLeft?xEnd:xStart;
-            const vertical=Math.abs(stationY-railY);
-            const horizontal=Math.abs(xEnd-xStart)*stageWidth/100;
-            const total=vertical*2+horizontal;
-            const dist=Math.max(0,Math.min(1,ratio))*total;
-            const v1=vertical;
-            const h=v1+horizontal;
-            let xPct=xStation, y=stationY, pathT=0;
-            if(dist<=v1){
-              const f=vertical>0?dist/vertical:1;
-              y=stationY+(railY-stationY)*f;
-              pathT=horizontal>0?dist/total*0.15:0;
-            }else if(dist<=h){
-              const f=horizontal>0?(dist-v1)/horizontal:1;
-              xPct=fromLeft ? xStart+50*f : xEnd-50*f;
-              y=railY;
-              pathT=0.15+0.70*f;
-            }else{
-              const f=vertical>0?(dist-h)/vertical:1;
-              xPct=xAcross;
-              y=railY+(stationY-railY)*f;
-              pathT=0.85+0.15*f;
-            }
-            // bridge上でも連続した位置を持たせる。これを車両の重なり判定に使う。
-            // これまでposを駅端の整数値にしていたため、橋上の列車同士が
-            // 実際には離れていても「1編成分内側にずらす」ことがあった。
+            const endpointSide=fromLeft?edge.sideA:edge.sideB;
+            const endpointIndex=fromLeft?edge.indexA:edge.indexB;
+            const y=circularCenterY(endpointSide,endpointIndex,metrics);
+            const xPct=fromLeft
+              ? xStart+(xEnd-xStart)*ratio
+              : xEnd-(xEnd-xStart)*ratio;
             const bridgeBase=fromLeft?edge.indexA:edge.indexB;
-            const bridgePathPos=bridgeBase + (fromLeft?pathT:(1-pathT));
+            const bridgePathPos=bridgeBase + (fromLeft?ratio:(1-ratio));
             return {
-              side:fromLeft?edge.sideA:edge.sideB,
+              side:endpointSide,
               pos:bridgePathPos,
               xPercent:xPct,
               y,
@@ -7123,9 +7084,9 @@ initRegionNavigation();
       // 環状列車だけは、左右の縦線の端駅での「始発2分前・終着2分後」を使わない。
       // 非環状列車は従来どおり共通の2分前・2分後表示を維持する。
       // 環状列車は始発・終着2分前／2分後を一切使わない。
-      const visibleFrom=circularOnly ? firstDep+0.75 : firstDep-RESET_DWELL_MIN+0.5;
+      const visibleFrom=circularOnly ? firstDep : firstDep-RESET_DWELL_MIN+0.5;
       const visibleUntil=circularOnly
-        ? (Number.isFinite(nextDep)?nextDep:lastArr+0.25)
+        ? (Number.isFinite(nextDep)?nextDep:lastArr)
         : (Number.isFinite(nextDep)?nextDep:lastArr+RESET_DWELL_MIN+0.5);
       out.push({train,visibleFrom,visibleUntil});
     }
