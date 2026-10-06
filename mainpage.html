@@ -1312,9 +1312,19 @@ function formationRouteNamesFromConfig(value, fallback=[]){
 function buildFormationsForJson(json){
   const base='https://minamikaze2700.github.io/Unyomatome/images/';
   const makeImg=(rawImage, fallback)=>{
-    const v=String(rawImage||fallback||'').trim();
+    let v=String(rawImage||fallback||'').trim();
     if(!v) return jsonNoImageUrl(json);
     if(/^https?:\/\//i.test(v)) return v;
+
+    // 旧JSONにも新JSONにも対応するため、旧画像名は常に現在の
+    // 「形式_編成」画像名へ正規化する。
+    // ここはactiveRouteNameに依存させない。路線名の判定に失敗しても
+    // 旧画像名のままにならず、JSONで指定された編成画像を正しく表示する。
+    v=v
+      .replace(/^E235_yokosuka_(F\d+)$/i,'E235_$1')
+      .replace(/^E235_yokosuka_(J\d+)$/i,'E235_$1')
+      .replace(/^E131-0_(R\d+)$/i,'E131_$1')
+      .replace(/^E233_boso_(C\d+)$/i,'E233_$1');
     return `${base}${v.replace(/\.png$/i,'')}.png`;
   };
   const rawFormations=Array.isArray(json?.formations)?json.formations:[];
