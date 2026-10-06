@@ -897,7 +897,7 @@ const ROUTE_REGISTRY={
     formationFamily:'hiroshima',
     prependStations:[{nameJa:'糸崎',nameEn:'Itozaki'}],
     corporateTitleColor:'#0072bc',
-    access:{public:false,routeAdmins:[]},
+    access:{public:true,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '可部線':{
@@ -911,7 +911,7 @@ const ROUTE_REGISTRY={
     company:'JR西日本',
     formationFamily:'hiroshima',
     corporateTitleColor:'#0072bc',
-    access:{public:false,routeAdmins:[]},
+    access:{public:true,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '呉線':{
@@ -925,7 +925,7 @@ const ROUTE_REGISTRY={
     company:'JR西日本',
     formationFamily:'hiroshima',
     corporateTitleColor:'#0072bc',
-    access:{public:false,routeAdmins:[]},
+    access:{public:true,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '海岸線':{
@@ -960,7 +960,7 @@ const ROUTE_REGISTRY={
     formationTypeImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobecity6000.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png',
-    access:{public:false,routeAdmins:[]},
+    access:{public:true,routeAdmins:[]},
     formationInputExample:'6000形'
   },
   '京浜東北・根岸線':{
@@ -4856,7 +4856,7 @@ function timetableRowsHTML(stops,trainContext=null){
 function displayedRouteColorForTrainPosition(train,position=null){
   // 列車の「所属路線」ではなく、画面上で列車が現在いる線路区間の色を使う。
   // これにより、同じ列車が路線カラーの境界を越えた場合でも、
-  // 普通の種別表示が実際の現在位置の線路色に一致する。
+  // 普通など「路線カラーを種別カラーとして使う列車」の色を現在位置に追従させる。
   if(position==null || !Array.isArray(STATIONS) || STATIONS.length<2) return null;
   const q=Number(position);
   if(!Number.isFinite(q)) return null;
@@ -4864,15 +4864,49 @@ function displayedRouteColorForTrainPosition(train,position=null){
   const clamped=Math.max(0,Math.min(max,q));
   let segIndex=Math.floor(clamped);
 
-  // 駅停車中など、ちょうど駅位置にいる場合は列車の進行方向側の区間を使う。
-  // 画面の駅順は下り方向に並んでいるため、上りは一つ手前、下りは一つ先。
+  // 駅停車中など、ちょうど駅位置にいる場合は、原則として列車の進行方向側の区間を使う。
+  // ただし「その列車の終点駅」では、進行方向側ではなく「入線してきた側」の区間色を維持する。
+  // これが路線カラー切替駅を終点とする列車で、終点到着時だけ種別カラーが別色へ変わる問題を防ぐ。
   const isInteger=Math.abs(clamped-Math.round(clamped))<1e-6;
   if(isInteger){
     const stationIndex=Math.round(clamped);
+    const stationName=String(STATIONS[stationIndex]?.nameJa||'').trim();
     const dir=String(train?.direction||'').toLowerCase();
-    if(dir==='up') segIndex=stationIndex-1;
-    else if(dir==='down') segIndex=stationIndex;
-    else segIndex=Math.min(stationIndex,max-1);
+
+    // 列車の実際の終点を最後の停車駅から判定。
+    let terminalName=String(train?.dest||'').trim();
+    let penultimateName='';
+    const trainStops=Array.isArray(train?.stops)?train.stops:[];
+    for(let i=trainStops.length-1;i>=0;i--){
+      const name=String(trainStops[i]?.station||'').trim();
+      if(!name) continue;
+      if(!terminalName) terminalName=name;
+      if(name===terminalName) continue;
+      penultimateName=name;
+      break;
+    }
+
+    if(stationName && terminalName && stationName===terminalName){
+      // 前の停車駅が路線図上で特定できる場合は、実際に入ってきた側から終点の区間を選ぶ。
+      // （急行などで途中駅を通過していても、終点駅の左右どちら側から来たかを判定できる。）
+      const prevIdx=penultimateName ? STATIONS.findIndex(st=>String(st?.nameJa||'')===penultimateName) : -1;
+      if(prevIdx>=0 && prevIdx!==stationIndex){
+        segIndex=prevIdx<stationIndex ? stationIndex-1 : stationIndex;
+      }else if(dir==='up'){
+        // 画面上の駅順は下り方向なので、上り列車の終点は通常「次区間」側から入る。
+        segIndex=stationIndex;
+      }else if(dir==='down'){
+        segIndex=stationIndex-1;
+      }else{
+        segIndex=Math.min(stationIndex,max-1);
+      }
+    }else if(dir==='up'){
+      segIndex=stationIndex-1;
+    }else if(dir==='down'){
+      segIndex=stationIndex;
+    }else{
+      segIndex=Math.min(stationIndex,max-1);
+    }
   }
   segIndex=Math.max(0,Math.min(max-1,segIndex));
   const a=STATIONS[segIndex]?.nameJa;
