@@ -3772,7 +3772,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
     const hour=Number(m[1]), minute=Number(m[2]);
     if(!Number.isFinite(hour)||!Number.isFinite(minute)) return;
     const bucket=String(train?.direction||'up')==='down'?'down':'up';
-    byTrain.set(`${bucket}:${String(train.no)}`,{train,hour,minute,time,bucket,circularAtTennoji});
+    byTrain.set(`${bucket}:${String(train.no)}`,{train,hour,minute,time,bucket});
   });
 
   Array.from(byTrain.values())
@@ -6976,6 +6976,7 @@ initRegionNavigation();
   }
   function circularTrainPosition(t,minutes){
     const layout=circularLayout(); if(!layout||!t) return null;
+    const metrics=circularStageMetrics();
     const stops=normalizeLineStopTimes(t.stops||[]); if(!stops.length) return null;
     const first=stops[0],last=stops[stops.length-1];
     const firstDep=Number(first._departure),lastArr=Number(last._arrival);
