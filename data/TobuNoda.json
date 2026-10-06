@@ -580,6 +580,13 @@
           "name": "81554F",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81554.png",
           "family": "noda"
+        },
+        {
+          "id": "81555",
+          "name": "81555F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81555.png",
+          "disabled": true,
+          "family": "noda"
         }
       ]
     }
@@ -877,7 +884,12 @@
     "88503": "81503",
     "88504": "81504",
     "88505": "81505",
-    "88565": "8165"
+    "88565": "8165",
+    "81555": "81555",
+    "82555": "81555",
+    "83555": "81555",
+    "84555": "81555",
+    "85555": "81555",
   },
   "trains": {
     "平日": {
@@ -22574,22 +22586,26 @@
             },
             {
               "station": "運河",
-              "time": "01:06"
+              "time": "01:03"
             },
             {
               "station": "梅郷",
-              "time": "01:09"
+              "time": "01:06"
             },
             {
               "station": "野田市",
-              "time": "01:11"
+              "time": "01:09"
             },
             {
               "station": "愛宕",
-              "time": "01:13"
+              "time": "01:11"
             },
             {
               "station": "清水公園",
+              "time": "01:13"
+            },
+            {
+              "station": "七光台",
               "time": "01:16"
             }
           ]
