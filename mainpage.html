@@ -3750,20 +3750,28 @@ function stationTimetableHTML(station, selectedDirection='up'){
   const byTrain=new Map();
 
   // 当日の全列車を常に表示し、スクロール位置だけを「次発」に合わせる。
+  // 大阪環状線の天王寺では、JSON上で終着が「天王寺」になっている環状運転列車も
+  // 駅時刻表へ含める。通常の路線では従来どおり当駅止まりを除外する。
   getVisibleTrains().forEach(train=>{
-    if(String(train?.dest||'')===stationName) return; // 当駅止まりは除外
+    const circularAtTennoji = activeRouteName==='大阪環状線'
+      && activeJson?.circular===true
+      && stationName==='天王寺'
+      && isCircularTrain(train);
+    if(String(train?.dest||'')===stationName && !circularAtTennoji) return; // 通常列車の当駅止まりは除外
     // 駅の時刻表には回送列車を掲載しない。
     if(String(train?.type||'')==='回送') return;
     const stops=(train.stops||[]).filter(stop=>String(stop?.station||'')===stationName);
     if(!stops.length) return;
     const stop=stops[stops.length-1]; // 同一駅が2回ある場合は発車側の時刻
-    const time=String(stop?.time||'');
+    // 天王寺の環状運転列車は終着側の到着時刻しかない場合があるため、
+    // time → departure → arrival の順で取得する。
+    const time=String(stop?.time||stop?.departure||stop?.arrival||'');
     const m=time.match(/^(\d{1,2}):(\d{2})$/);
     if(!m) return;
     const hour=Number(m[1]), minute=Number(m[2]);
     if(!Number.isFinite(hour)||!Number.isFinite(minute)) return;
     const bucket=String(train?.direction||'up')==='down'?'down':'up';
-    byTrain.set(`${bucket}:${String(train.no)}`,{train,hour,minute,time,bucket});
+    byTrain.set(`${bucket}:${String(train.no)}`,{train,hour,minute,time,bucket,circularAtTennoji});
   });
 
   Array.from(byTrain.values())
