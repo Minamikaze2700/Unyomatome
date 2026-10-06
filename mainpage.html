@@ -3620,19 +3620,39 @@ function getStationDirectionLabels(stationName){
   const stationDefs=activeJson?.stationDirections;
   const direct=stationDefs&&typeof stationDefs==='object' ? stationDefs[name] : null;
   if(direct && typeof direct==='object'){
-    return {up:String(direct.up||''),down:String(direct.down||'')};
+    const up=String(direct.up||''), down=String(direct.down||'');
+    if(activeRouteName==='大阪環状線' && activeJson?.circular===true){
+      return {
+        up:up.startsWith('内回り')?up:`内回り ${up}`,
+        down:down.startsWith('外回り')?down:`外回り ${down}`
+      };
+    }
+    return {up,down};
   }
   const routeKey=String(activeRouteName||'');
   const routeDefs=activeJson?.routeDirections;
   const route=routeDefs&&typeof routeDefs==='object' ? routeDefs[routeKey] : null;
   if(route && typeof route==='object'){
-    return {up:String(route.up||''),down:String(route.down||'')};
+    const up=String(route.up||''), down=String(route.down||'');
+    if(activeRouteName==='大阪環状線' && activeJson?.circular===true){
+      return {
+        up:up.startsWith('内回り')?up:`内回り ${up}`,
+        down:down.startsWith('外回り')?down:`外回り ${down}`
+      };
+    }
+    return {up,down};
   }
   const lineNames=getActiveRouteLineNames();
   for(const lineName of lineNames){
     const line=lineDefByName(lineName);
     const d=line?.directions;
-    if(d && typeof d==='object') return {up:String(d.up||''),down:String(d.down||'')};
+    if(d && typeof d==='object'){
+      const up=String(d.up||''), down=String(d.down||'');
+      if(activeRouteName==='大阪環状線' && activeJson?.circular===true){
+        return {up:up.startsWith('内回り')?up:`内回り ${up}`,down:down.startsWith('外回り')?down:`外回り ${down}`};
+      }
+      return {up,down};
+    }
   }
   // デフォルト方面はJSONの定義を使用し、未定義の場合は空欄。
   return {up:'',down:''};
@@ -6686,7 +6706,8 @@ initRegionNavigation();
 <style id="circular-route-style">
 /* ===== 大阪環状線：環状線専用レイアウト ===== */
 .circular-stage{
-  position:relative;width:100%;height:2970px;min-height:2970px;margin:0;padding:0;
+  --circular-end-padding:100px;
+  position:relative;width:100%;height:3170px;min-height:3170px;margin:0;padding:0;
 }
 .circular-column{position:absolute;top:0;bottom:0;width:0;z-index:2;}
 .circular-column.left{left:25%;}
@@ -6715,13 +6736,13 @@ initRegionNavigation();
   z-index:1;pointer-events:none;
 }
 .circular-bridge-top{
-  top:0;height:135px;
+  top:var(--circular-end-padding);height:135px;
   border-top:12px solid var(--primary);
   border-bottom:0;
   border-radius:90px 90px 0 0;
 }
 .circular-bridge-bottom{
-  bottom:0;height:135px;
+  bottom:var(--circular-end-padding);height:135px;
   border-bottom:12px solid var(--primary);
   border-top:0;
   border-radius:0 0 90px 90px;
@@ -6769,18 +6790,20 @@ initRegionNavigation();
   }
   function circularStageMetrics(){
     const stage=document.getElementById('circularStage');
-    if(!stage) return {stage:null,width:1920,height:2970,leftStep:270,rightStep:300};
+    const endPadding=100;
+    if(!stage) return {stage:null,width:1920,height:3170,leftStep:270,rightStep:300,endPadding};
     const width=Number(stage.offsetWidth)||1920;
-    const height=Number(stage.offsetHeight)||2970;
+    const height=Number(stage.offsetHeight)||3170;
     const layout=circularLayout();
     const leftCount=Math.max(1,layout?.left?.length||11);
     const rightCount=Math.max(1,layout?.right?.length||10);
-    const leftStep=leftCount>1?(height-270)/(leftCount-1):0;
-    const rightStep=rightCount>1?(height-270)/(rightCount-1):0;
-    return {stage,width,height,leftStep,rightStep};
+    const trackSpan=Math.max(0,height-(endPadding*2)-270);
+    const leftStep=leftCount>1?trackSpan/(leftCount-1):0;
+    const rightStep=rightCount>1?trackSpan/(rightCount-1):0;
+    return {stage,width,height,leftStep,rightStep,endPadding};
   }
   function circularCenterY(side,index,metrics){
-    return 135+(side==='left'?metrics.leftStep:metrics.rightStep)*Number(index||0);
+    return metrics.endPadding+135+(side==='left'?metrics.leftStep:metrics.rightStep)*Number(index||0);
   }
   function circularEdgeColor(a,b){
     const colors=activeSegmentColors(String(a||''),String(b||''));
@@ -6830,14 +6853,22 @@ initRegionNavigation();
     const layout=circularLayout();
     if(!layout) return;
     const leftCount=Math.max(1,layout.left.length), rightCount=Math.max(1,layout.right.length);
-    const stageHeight=270*Math.max(leftCount,rightCount);
+    const endPadding=100;
+    const stageHeight=270*Math.max(leftCount,rightCount)+endPadding*2;
     container.innerHTML=`<div class="operation-info-layer" id="operationInfoLayer"></div><div class="circular-stage" id="circularStage"><div class="circular-column left" id="circularLeft"></div><div class="circular-column right" id="circularRight"></div><div class="circular-bridge circular-bridge-top"></div><div class="circular-bridge circular-bridge-bottom"></div><div class="rail-line" id="railLine"></div></div><div class="moving-train-layer" id="movingTrainLayer"></div><div class="operation-info-label-layer" id="operationInfoLabelLayer"></div>`;
     const stage=document.getElementById('circularStage');
     stage.style.height=`${stageHeight}px`; stage.style.minHeight=`${stageHeight}px`;
     const metrics=circularStageMetrics();
     const left=document.getElementById('circularLeft'),right=document.getElementById('circularRight');
-    layout.left.forEach((name,i)=>{const row=makeCircularStationRow(name,'left',i,metrics);if(row)left.appendChild(row);});
-    layout.right.forEach((name,i)=>{const row=makeCircularStationRow(name,'right',i,metrics);if(row)right.appendChild(row);});
+    layout.left.forEach((name,i)=>{
+      // 共有終端駅は左側では天王寺を、右側では大阪を重複表示しない。
+      if(name==='天王寺') return;
+      const row=makeCircularStationRow(name,'left',i,metrics);if(row)left.appendChild(row);
+    });
+    layout.right.forEach((name,i)=>{
+      if(name==='大阪') return;
+      const row=makeCircularStationRow(name,'right',i,metrics);if(row)right.appendChild(row);
+    });
     renderCircularRailLineSegments();
     renderCircularTrainPositions();
     renderOperationInfoZones();
