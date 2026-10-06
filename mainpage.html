@@ -1818,6 +1818,8 @@ async function loadLineTrainData(routeName=activeRouteName){
   if(typeof OPERATION_INFO_STATIONS!=='undefined') OPERATION_INFO_STATIONS=STATIONS.map(x=>x.nameJa);
   if(typeof applyRegistrationState==='function') applyRegistrationState();
   updateRouteVisuals();
+  // 路線を切り替えたら、運行情報一覧も現在の路線だけに更新する。
+  if(typeof renderOperationInfoList==='function') renderOperationInfoList();
 }
 
 const STORAGE_KEY='routeTrainRegistrations_v2';
@@ -4161,13 +4163,23 @@ function operationInfoDelayText(value){const d=operationInfoDelayValue(value);re
 function normalizeOperationEntry(e){
   const stations=Array.isArray(e?.stations)&&e.stations.length>=2?e.stations.map(operationInfoNormalizeName):operationInfoFindPath(e?.start,e?.end);
   if(!stations||stations.length<2) return null;
-  return {...e,start:stations[0],end:stations.at(-1),stations,status:e?.status==='suspend'?'suspend':'delay',delay:e?.status==='suspend'?'unknown':operationInfoDelayValue(e?.delay)};
+  return {...e,start:stations[0],end:stations.at(-1),stations,route:String(e?.route||'').trim(),status:e?.status==='suspend'?'suspend':'delay',delay:e?.status==='suspend'?'unknown':operationInfoDelayValue(e?.delay)};
+}
+function operationInfoEntryBelongsToCurrentRoute(entry){
+  const e=normalizeOperationEntry(entry);
+  if(!e) return false;
+  const currentRoute=String(activeRouteName||'').trim();
+  // 新規登録分は路線IDを明示して判定する。
+  if(e.route) return !!currentRoute && e.route===currentRoute;
+  // 旧データには路線情報がないため、区間の全駅が現在路線に存在する場合だけ表示する。
+  const currentStations=new Set((OPERATION_INFO_STATIONS||[]).map(operationInfoNormalizeName));
+  return e.stations.every(st=>currentStations.has(operationInfoNormalizeName(st)));
 }
 function operationInfoDateKey(){return String(selectedDateKey||operationDateKey());}
 function loadOperationInfo(){try{const all=JSON.parse(localStorage.getItem(OPERATION_INFO_STORAGE_KEY)||'{}');operationInfoEntries=(Array.isArray(all?.[operationInfoDateKey()])?all[operationInfoDateKey()]:[]).map(normalizeOperationEntry).filter(Boolean);}catch(e){operationInfoEntries=[];}}
 function saveOperationInfo(){try{const all=JSON.parse(localStorage.getItem(OPERATION_INFO_STORAGE_KEY)||'{}');all[operationInfoDateKey()]=operationInfoEntries;localStorage.setItem(OPERATION_INFO_STORAGE_KEY,JSON.stringify(all));}catch(e){}}
 function formatTimestampShort(ts){if(!ts)return '';const d=new Date(Number(ts));if(Number.isNaN(d.getTime()))return '';const now=new Date();const hhmm=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()&&d.getDate()===now.getDate()?hhmm:`${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${hhmm}`;}
-function operationInfoFirebasePayload(entry){return{id:String(entry.id),start:operationInfoNormalizeName(entry.start),end:operationInfoNormalizeName(entry.end),stations:Array.isArray(entry.stations)?entry.stations.map(operationInfoNormalizeName):[],status:entry.status==='suspend'?'suspend':'delay',delay:operationInfoDelayValue(entry.delay),reason:String(entry.reason||OPERATION_INFO_REASONS[0]),createdAt:Number(entry.createdAt)||Date.now(),operationDate:operationInfoDateKey()};}
+function operationInfoFirebasePayload(entry){return{id:String(entry.id),route:String(entry.route||activeRouteName||''),start:operationInfoNormalizeName(entry.start),end:operationInfoNormalizeName(entry.end),stations:Array.isArray(entry.stations)?entry.stations.map(operationInfoNormalizeName):[],status:entry.status==='suspend'?'suspend':'delay',delay:operationInfoDelayValue(entry.delay),reason:String(entry.reason||OPERATION_INFO_REASONS[0]),createdAt:Number(entry.createdAt)||Date.now(),operationDate:operationInfoDateKey()};}
 function operationInfoFirebaseFlatten(v){const root=v&&typeof v==='object'?v:{};return Object.entries(root).map(([id,p])=>normalizeOperationEntry({...p,id:String(p?.id||id)})).filter(Boolean);}
 async function saveOperationInfoToFirebase(){
   if(!firebaseReady||operationInfoFirebaseSaving) return false;
@@ -4230,13 +4242,13 @@ function addOperationInfo(){
   if(status==='delay'&&delay!=='unknown'&&(!Number.isFinite(delay)||delay<5||delay%5!==0)){alert('遅延時間は5分単位で選択してください。');return;}
   const newEdges=operationInfoPathEdges(path),next=[];
   for(const raw of operationInfoEntries){const old=normalizeOperationEntry(raw);if(!old)continue;for(const part of operationInfoSubtractEdges(old.stations,newEdges)){next.push({...old,id:`${old.id}_${Math.random().toString(36).slice(2,7)}`,start:part[0],end:part.at(-1),stations:part});}}
-  next.push({id:`${Date.now()}_${Math.random().toString(36).slice(2,8)}`,start,end,stations:path,status,delay:status==='delay'?delay:'unknown',reason,createdAt:Date.now()});
+  next.push({id:`${Date.now()}_${Math.random().toString(36).slice(2,8)}`,start,end,stations:path,route:String(activeRouteName||''),status,delay:status==='delay'?delay:'unknown',reason,createdAt:Date.now()});
   operationInfoEntries=next.map(normalizeOperationEntry).filter(Boolean);saveOperationInfo();renderOperationInfoList();renderOperationInfoZones();resetOperationInfoForm();saveOperationInfoToFirebase();
 }
 function deleteOperationInfo(id){operationInfoEntries=operationInfoEntries.filter(x=>String(x.id)!==String(id));saveOperationInfo();renderOperationInfoList();renderOperationInfoZones();saveOperationInfoToFirebase();}
 function showOperationInfoDetail(id){const e=operationInfoEntries.find(x=>String(x.id)===String(id));if(!e)return;const body=document.getElementById('operationInfoDetailBody');if(!body)return;const txt=e.status==='suspend'?'運転見合わせ':operationInfoDelayText(e.delay);const posted=formatTimestampShort(e.createdAt);body.innerHTML=`<div class="operation-info-detail-status ${e.status==='suspend'?'suspend':'delay'}">${esc(txt)}</div><div><strong>区間：</strong>${esc(`${e.start} ⇄ ${e.end}`)}</div><div><strong>理由：</strong>${esc(e.reason||OPERATION_INFO_REASONS[0])}</div><div><strong>投稿時刻：</strong>${esc(posted)}</div>`;document.getElementById('operationInfoDetailBackdrop')?.classList.add('active');document.getElementById('operationInfoDetail')?.classList.add('active');}
 function hideOperationInfoDetail(){document.getElementById('operationInfoDetailBackdrop')?.classList.remove('active');document.getElementById('operationInfoDetail')?.classList.remove('active');}
-function renderOperationInfoList(){const box=document.getElementById('operationInfoList');if(!box)return;if(!operationInfoEntries.length){box.innerHTML='<div class="operation-info-empty">登録されている運行情報はありません。</div>';return;}box.innerHTML=operationInfoEntries.map(x=>{const txt=x.status==='suspend'?'運転見合わせ':operationInfoDelayText(x.delay);return `<div class="operation-info-card ${x.status==='suspend'?'suspend':'delay'}"><button type="button" class="operation-info-card-main" onclick="showOperationInfoDetail('${esc(x.id)}')"><div class="operation-info-card-title">${esc(x.start)} ⇄ ${esc(x.end)}</div><div class="operation-info-card-meta">${esc(txt)}</div><div class="operation-info-card-reason">${esc(x.reason||OPERATION_INFO_REASONS[0])}</div></button><button class="operation-info-card-delete" type="button" onclick="deleteOperationInfo('${esc(x.id)}')">削除</button></div>`;}).join('');}
+function renderOperationInfoList(){const box=document.getElementById('operationInfoList');if(!box)return;const visibleEntries=operationInfoEntries.filter(operationInfoEntryBelongsToCurrentRoute);if(!visibleEntries.length){box.innerHTML='<div class="operation-info-empty">この路線に登録されている運行情報はありません。</div>';return;}box.innerHTML=visibleEntries.map(x=>{const txt=x.status==='suspend'?'運転見合わせ':operationInfoDelayText(x.delay);return `<div class="operation-info-card ${x.status==='suspend'?'suspend':'delay'}"><button type="button" class="operation-info-card-main" onclick="showOperationInfoDetail('${esc(x.id)}')"><div class="operation-info-card-title">${esc(x.start)} ⇄ ${esc(x.end)}</div><div class="operation-info-card-meta">${esc(txt)}</div><div class="operation-info-card-reason">${esc(x.reason||OPERATION_INFO_REASONS[0])}</div></button><button class="operation-info-card-delete" type="button" onclick="deleteOperationInfo('${esc(x.id)}')">削除</button></div>`;}).join('');}
 function operationInfoVisibleSegments(){
   const rows=[...document.querySelectorAll('.station-row')];
   const byRouteName=new Map();
