@@ -1628,15 +1628,50 @@ async function loadExternalRouteJsons(routeMeta){
   const urls=[String(routeMeta?.json||'').trim(),...(Array.isArray(routeMeta?.relatedJsons)?routeMeta.relatedJsons:[]).map(x=>String(x||'').trim())].filter(Boolean);
   const unique=[...new Set(urls)];
   if(!unique.length) throw new Error('路線JSONの設定がありません');
-  const payloads=await Promise.all(unique.map(async url=>{
+
+  async function fetchJson(url){
     // GitHub Pages上の日本語ファイル名も確実に取得できるよう、
-    // リクエスト時だけURLをURIエンコードする。表示用の元URLはそのまま保持する。
+    // リクエスト時だけURLをURIエンコードする。
     const requestUrl=/^https?:\/\//i.test(url) ? encodeURI(url) : url;
-    const res=await fetch(requestUrl,{cache:'no-store'});
-    if(!res.ok) throw new Error(`路線JSONの読み込みに失敗しました (${res.status})\n${url}`);
-    const json=await res.json();
-    return {url,json};
-  }));
+    let lastError=null;
+
+    // まずGitHub Pagesから取得。キャッシュを避けて、途中で切れたレスポンスを再取得する。
+    for(let attempt=0; attempt<2; attempt++){
+      try{
+        const cacheBusted = requestUrl + (requestUrl.includes('?')?'&':'?') + `_jsonReload=${Date.now()}_${attempt}`;
+        const res=await fetch(cacheBusted,{cache:'no-store'});
+        const text=await res.text();
+        if(!res.ok) throw new Error(`路線JSONの読み込みに失敗しました (${res.status})\n${url}`);
+        if(!text.trim()) throw new Error(`路線JSONが空です\n${url}`);
+        try{
+          return {url,json:JSON.parse(text)};
+        }catch(parseErr){
+          lastError=new Error(`路線JSONの解析に失敗しました (${text.length} bytes)\n${url}\n${parseErr.message}`);
+        }
+      }catch(err){
+        lastError=err;
+      }
+    }
+
+    // GitHub Pages側のレスポンスが途中で切れた場合だけ、同じファイルをRaw GitHubから救済取得する。
+    const m=/^https?:\/\/minamikaze2700\.github\.io\/Unyomatome\/(.+)$/i.exec(url);
+    if(m){
+      const rawPath=m[1].split('/').map(part=>decodeURIComponent(part)).join('/');
+      const rawUrl=`https://raw.githubusercontent.com/minamikaze2700/Unyomatome/main/${rawPath}`;
+      try{
+        const res=await fetch(rawUrl+`?_jsonReload=${Date.now()}`,{cache:'no-store'});
+        const text=await res.text();
+        if(!res.ok) throw new Error(`Raw GitHub取得失敗 (${res.status})`);
+        if(!text.trim()) throw new Error('Raw GitHubのJSONが空です');
+        return {url,json:JSON.parse(text)};
+      }catch(rawErr){
+        lastError=new Error(`${lastError?.message||'路線JSONの取得に失敗しました'}\nRaw GitHub fallback: ${rawErr.message}`);
+      }
+    }
+    throw lastError||new Error(`路線JSONの読み込みに失敗しました\n${url}`);
+  }
+
+  const payloads=await Promise.all(unique.map(fetchJson));
   const primary=payloads[0]?.json||{};
 
   // 各JSONごとの種別色を、そこから読み込んだ列車自身に保持させる。
