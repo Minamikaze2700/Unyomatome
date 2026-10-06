@@ -6791,18 +6791,22 @@ initRegionNavigation();
 }
 /* 横線はページ上端・下端から80px離し、縦線は端駅ラベル中心まで接続。 */
 .circular-bridge-top{
-  top:calc(var(--circular-top-center) - 6px);
-  height:12px;
-  border:0;
+  top:var(--circular-bridge-y);
+  height:calc(var(--circular-top-center) - var(--circular-bridge-y));
   border-top:12px solid var(--circular-top-color,var(--primary));
-  border-radius:0;
+  border-left:12px solid var(--circular-top-color,var(--primary));
+  border-right:12px solid var(--circular-top-color,var(--primary));
+  border-bottom:0;
+  border-radius:90px 90px 0 0;
 }
 .circular-bridge-bottom{
-  top:calc(var(--circular-bottom-center) - 6px);
-  height:12px;
-  border:0;
-  border-top:12px solid var(--circular-bottom-color,var(--primary));
-  border-radius:0;
+  top:var(--circular-bottom-center);
+  height:calc(100% - var(--circular-bottom-center) - var(--circular-bridge-y));
+  border-bottom:12px solid var(--circular-bottom-color,var(--primary));
+  border-left:12px solid var(--circular-bottom-color,var(--primary));
+  border-right:12px solid var(--circular-bottom-color,var(--primary));
+  border-top:0;
+  border-radius:0 0 90px 90px;
 }
 .circular-hidden-station-label{visibility:hidden !important;pointer-events:none !important;}
 .circular-route-active #lineContainer{margin-top:calc(58px + var(--control-bar-height, 69px));}
@@ -6980,92 +6984,93 @@ initRegionNavigation();
     const firstDep=Number(first._departure),lastArr=Number(last._arrival);
     if(!Number.isFinite(firstDep)||!Number.isFinite(lastArr)) return null;
 
-    // 同じ方向の運用接続は、前列車の到着と同時に次列車の情報へ切り替える。
-    // 次列車そのものは発車時刻になるまで表示しない。
-    const next=connectionNext(t);
-    const nextNo=trainEntryNo(next);
-    const nextTrain=next
-      ? (liveTrain(nextNo,null)
-        ||baseTrainForDay(nextNo,null,currentDay)
-        ||(currentDay==='休日'?HOLIDAY_TRAIN_INDEX[nextNo]:TRAIN_INDEX[nextNo])
-        ||null)
-      : null;
-    const sameDirection=!!nextTrain
-      && String(t.direction||'')!==''
-      && String(nextTrain.direction||'')===String(t.direction||'');
-    const nextStart=sameDirection && next ? timeToMinutes(next.startTime)+0.75 : null;
-    const arrivalPoint=lastArr;
-    if(sameDirection && Number.isFinite(nextStart) && minutes>=arrivalPoint && minutes<nextStart){
-      const waitStation=String(last.station||t.dest||'');
-      const waitSide=circularSideAtStation(waitStation,t.direction==='down'?'right':'left');
-      const arr=layout[waitSide]||[];
-      const idx=arr.indexOf(waitStation);
-      if(idx>=0){
-        return {side:waitSide,pos:idx,visualTrain:nextTrain,mode:'connection-wait',baseTrain:t};
-      }
-    }
-    // 各停車駅停車中＋駅間走行。環状線外のゆめ咲線区間は描画対象外にする。
+    const circularOnly=!!isCircularTrain(t);
+    const isEndpointName=name=>!!layout && (
+      layout.left?.[0]===name || layout.right?.[0]===name ||
+      layout.left?.[layout.left.length-1]===name || layout.right?.[layout.right.length-1]===name
+    );
+
     for(let i=0;i<stops.length;i++){
       const st=stops[i],name=String(st.station||'');
-      const circularEndpoint = (t.circular===true || t.rawTrain?.circular===true) && (
-        (i===0 || i===stops.length-1) &&
-        ((layout.left?.[0]===name)||(layout.right?.[0]===name)||(layout.left?.[layout.left.length-1]===name)||(layout.right?.[layout.right.length-1]===name))
-      );
-      const sidePrev=i>0 ? (circularEdgeForPair(stops[i-1].station,name)?.side||null) : null;
-      const sideNext=i<stops.length-1 ? (circularEdgeForPair(name,stops[i+1].station)?.side||null) : null;
+      const endpoint=circularOnly && isEndpointName(name);
+      const prevEdge=i>0 ? circularEdgeForPair(stops[i-1].station,name) : null;
+      const nextEdge=i<stops.length-1 ? circularEdgeForPair(name,String(stops[i+1].station||'')) : null;
+      const sidePrev=prevEdge?.side||null;
+      const sideNext=nextEdge?.side||null;
       const side=sidePrev||sideNext||circularSideAtStation(name,t.direction==='down'?'right':'left');
       const arr=(layout[side]||[]);
       const idx=arr.indexOf(name);
       if(idx<0) continue;
-      // 環状列車の始発端では始発2分前表示をせず、発車時刻から駅上に出す。
-      if(isCircularTrain(t) && i===0){
-        const dep=Number(st._departure);
-        if(Number.isFinite(dep) && minutes>=dep && minutes<dep+0.75){
-          return {side,pos:idx,visualTrain:t,mode:'start-dwell',baseTrain:t};
+
+      // 環状列車の端駅は共通の「始発2分前・終着2分後」を使わない。
+      // 端駅に着いた時刻から表示し、1分後に非表示にする。
+      if(endpoint){
+        const arrival=Number(st._arrival);
+        const departure=Number(st._departure);
+        const endpointShowFrom=Number.isFinite(arrival)?arrival:departure;
+        if(Number.isFinite(endpointShowFrom)){
+          if(minutes>=endpointShowFrom && minutes<endpointShowFrom+1){
+            return {side,pos:idx,visualTrain:t,mode:'endpoint-dwell',baseTrain:t};
+          }
+          // 端駅は到着1分後を過ぎたら必ず非表示。
+          if(minutes>=endpointShowFrom+1) continue;
+        }
+
+        // 端駅から反対側の端駅へつながる横線区間には列車アイコンを置かない。
+        // 次駅の到着時刻になったら、次駅上で再表示する。
+        if(nextEdge?.bridge && Number.isFinite(departure) && minutes>=departure){
+          continue;
         }
       }
-      const a=Number(st._arrival)+0.25;
-      const b=Number(st._departure)+0.75;
+
+      // 横線を渡った直後の駅は、その駅の到着時刻から即時表示する。
+      const arrivedFromBridge = !!(prevEdge?.bridge && circularOnly);
+      const a=Number(st._arrival)+(arrivedFromBridge?0:0.25);
+      const b=Number(st._departure)+(arrivedFromBridge?0.75:0.75);
       if(Number.isFinite(a)&&Number.isFinite(b)&&minutes>=a&&minutes<b){
-        return {side,pos:idx,visualTrain:t,mode:i===stops.length-1?'end-dwell':'station-dwell',baseTrain:t};
+        return {side,pos:idx,visualTrain:t,mode:arrivedFromBridge?'bridge-arrival-dwell':(i===stops.length-1?'end-dwell':'station-dwell'),baseTrain:t};
       }
+
       if(i<stops.length-1){
-        const edge=circularEdgeForPair(name,String(stops[i+1].station||''));
+        const edge=nextEdge;
         if(!edge) continue;
         const na=Number(st._departure)+0.75;
         const isTerminalNext=i===stops.length-2;
         const nb=isTerminalNext?Number(stops[i+1]._arrival):Number(stops[i+1]._arrival)+0.25;
         if(!Number.isFinite(na)||!Number.isFinite(nb)) continue;
         if(minutes>=na && (isTerminalNext?minutes<nb:minutes<=nb)){
-          const iA=edge.indexA,iB=edge.indexB;
-          const ratio=Math.max(0,Math.min(1,nb===na?0:(minutes-na)/(nb-na)));
+          // 横線は表示上の線形として残すが、端駅間ではアイコンを非表示にする。
+          // それ以外の横線が存在する場合だけ従来の橋上補間を行う。
           if(edge.bridge){
-            // 上端・下端の横線は、端駅の中心Yと同じ高さに直接接続している。
-            // そのため列車は端駅に着いたあと、上下に寄り道せず、そのまま横線を走行する。
-            const fromLeft=String(name||'')===String(edge.a||'');
-            const xStart=25, xEnd=75;
-            const endpointSide=fromLeft?edge.sideA:edge.sideB;
-            const endpointIndex=fromLeft?edge.indexA:edge.indexB;
-            const y=circularCenterY(endpointSide,endpointIndex,metrics);
-            const xPct=fromLeft
-              ? xStart+(xEnd-xStart)*ratio
-              : xEnd-(xEnd-xStart)*ratio;
-            const bridgeBase=fromLeft?edge.indexA:edge.indexB;
-            const bridgePathPos=bridgeBase + (fromLeft?ratio:(1-ratio));
+            const fromName=String(name||'');
+            const endpointOnLeft=fromName===String(edge.a||'');
+            const bridgeBase=endpointOnLeft?edge.indexA:edge.indexB;
+            const fromLeft=endpointOnLeft;
+            const xStart=25,xEnd=75;
+            const y=circularCenterY(endpointOnLeft?edge.sideA:edge.sideB,endpointOnLeft?edge.indexA:edge.indexB,metrics);
+            const ratio=Math.max(0,Math.min(1,nb===na?0:(minutes-na)/(nb-na)));
+            // 環状線の端駅間は、端駅到着+1分後まで表示した後、次駅到着まで隠す。
+            if(circularOnly) continue;
+            const fromSide=endpointOnLeft?edge.sideA:edge.sideB;
+            const fromIndex=endpointOnLeft?edge.indexA:edge.indexB;
+            const pathT=endpointOnLeft?ratio:1-ratio;
             return {
-              side:endpointSide,
-              pos:bridgePathPos,
-              xPercent:xPct,
+              side:fromSide,
+              pos:bridgeBase+pathT,
+              xPercent:fromLeft?xStart+(xEnd-xStart)*ratio:xEnd-(xEnd-xStart)*ratio,
               y,
               bridge:true,
-              visualTrain:t,mode:'run',baseTrain:t
+              visualTrain:t,
+              mode:'run',
+              baseTrain:t,
+              stageWidth
             };
           }
-          // 縦線も列車の実際の進行方向で補間する。
-          // 右側の内回りは上方向、左側の内回りは下方向になる。
+
           const fromIsA=String(name||'')===String(edge.a||'');
           const fromIndex=fromIsA?edge.indexA:edge.indexB;
           const toIndex=fromIsA?edge.indexB:edge.indexA;
+          const ratio=Math.max(0,Math.min(1,nb===na?0:(minutes-na)/(nb-na)));
           const p=fromIndex+(toIndex-fromIndex)*ratio;
           return {side:edge.side,pos:p,visualTrain:t,mode:'run',baseTrain:t};
         }
@@ -7075,20 +7080,30 @@ initRegionNavigation();
   }
   function getCircularVisibleEntries(){
     const source=getDisplayedTrainSource(); const out=[];
+    const layout=circularLayout();
     for(const train of source){
       const stops=normalizeLineStopTimes(train.stops||[]); if(!stops.length) continue;
       const first=stops[0],last=stops[stops.length-1];
-      const firstDep=Number(first._departure),lastArr=Number(last._arrival);
-      if(!Number.isFinite(firstDep)||!Number.isFinite(lastArr)) continue;
-      const next=connectionNext(train); const nextDep=next?timeToMinutes(next.startTime)+0.75:null;
+      const firstArrival=Number(first._arrival),firstDeparture=Number(first._departure);
+      const lastArrival=Number(last._arrival);
+      if(!Number.isFinite(firstDeparture)||!Number.isFinite(lastArrival)) continue;
       const circularOnly=!!isCircularTrain(train);
-      // 環状列車だけは、左右の縦線の端駅での「始発2分前・終着2分後」を使わない。
-      // 非環状列車は従来どおり共通の2分前・2分後表示を維持する。
-      // 環状列車は始発・終着2分前／2分後を一切使わない。
-      const visibleFrom=circularOnly ? firstDep : firstDep-RESET_DWELL_MIN+0.5;
-      const visibleUntil=circularOnly
-        ? (Number.isFinite(nextDep)?nextDep:lastArr)
-        : (Number.isFinite(nextDep)?nextDep:lastArr+RESET_DWELL_MIN+0.5);
+      const firstName=String(first.station||''),lastName=String(last.station||'');
+      const isEndpoint=name=>!!layout && (
+        layout.left?.[0]===name || layout.right?.[0]===name ||
+        layout.left?.[layout.left.length-1]===name || layout.right?.[layout.right.length-1]===name
+      );
+      const firstIsEndpoint=circularOnly && isEndpoint(firstName);
+      const lastIsEndpoint=circularOnly && isEndpoint(lastName);
+
+      // 環状列車では既存の2分前／2分後処理を無効化。
+      // 始発端駅は発車時刻から、終着端駅は到着1分後まで表示する。
+      const visibleFrom=firstIsEndpoint
+        ? (Number.isFinite(firstArrival)?firstArrival:firstDeparture)
+        : firstDeparture;
+      const visibleUntil=lastIsEndpoint
+        ? lastArrival+1
+        : lastArrival;
       out.push({train,visibleFrom,visibleUntil});
     }
     return out;
