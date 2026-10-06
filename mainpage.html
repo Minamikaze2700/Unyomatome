@@ -1041,6 +1041,7 @@ const ROUTE_REGISTRY={
   },
   '大阪環状線':{
     id:'osaka-loop',
+    routeColor:'#ee354f',
     json:'https://minamikaze2700.github.io/Unyomatome/data/大阪環状線・ゆめ咲線.json',
     jsonLines:['大阪環状線'],
     range:'天王寺～天王寺',
@@ -1061,6 +1062,7 @@ const ROUTE_REGISTRY={
   },
   'ゆめ咲線':{
     id:'yumesaki',
+    routeColor:'#233f97',
     json:'https://minamikaze2700.github.io/Unyomatome/data/大阪環状線・ゆめ咲線.json',
     jsonLines:['ゆめ咲線'],
     range:'西九条～桜島',
@@ -3011,7 +3013,7 @@ function applyStationLabelColors(badge,index){
   }
 }
 function renderLine(){
-  if(activeJson?.circular===true){
+  if(activeRouteName==='大阪環状線' && activeJson?.circular===true){
     const fn=window.__circularRouteHelpers?.renderCircularLine;
     if(typeof fn==='function'){ fn(); }
     return;
@@ -3243,13 +3245,18 @@ function positionForTrain(t,minutes){
 
 function trainLabelText(t){
   const type=String(t?.type||'').trim();
-  const isCircular=activeJson?.circular===true && (t?.circular===true || t?.rawTrain?.circular===true);
+  const isCircular=isCircularTrain(t);
   const dest=isCircular ? '環状' : getShortDest(t?.dest);
   return `<span>${type?`${getShortType(type,t?.no)} ${dest}`:dest}</span>`;
 }
+function isCircularTrain(t){
+  return activeRouteName==='大阪環状線' && activeJson?.circular===true && (t?.circular===true || t?.rawTrain?.circular===true);
+}
 function getDisplayDestinationForTrain(t){
-  const isCircular=activeJson?.circular===true && (t?.circular===true || t?.rawTrain?.circular===true);
-  return isCircular ? '環状' : getDetailDest(t?.dest);
+  return isCircularTrain(t) ? '環状運転' : getDetailDest(t?.dest);
+}
+function destinationGoSuffix(t){
+  return isCircularTrain(t) ? '' : ' 行';
 }
 function trainPositionViewportVisible(p,rowCenters,viewportTop,viewportBottom){
   if(!p||!Number.isFinite(Number(p.pos))||!rowCenters.length) return false;
@@ -3338,7 +3345,7 @@ function getTerminalDepartureIndex(){
   return index;
 }
 function renderTrainPositions(){
-  if(activeJson?.circular===true){
+  if(activeRouteName==='大阪環状線' && activeJson?.circular===true){
     const fn=window.__circularRouteHelpers?.renderCircularTrainPositions;
     if(typeof fn==='function'){ fn(); }
     return;
@@ -3782,7 +3789,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
       const effectiveFormationId=registeredFormationForTrain(train)||train.formation||'';
       const selectedForm=selectionDisplayObjectForTrain(train,effectiveFormationId);
       const imgSrc=imageForTrain(train);
-      const destination=`${getDisplayDestinationForTrain(train)} 行`;
+      const destination=`${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}`;
       const isNext=index===nextIndex;
 
       return `
@@ -3797,7 +3804,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
           ${stationTimetableFormationHTML(train)}
           <span class="station-timetable-time">${escapeAttr(item.time)}</span>
           ${String(train.type||'').trim()?`<span class="station-timetable-type ${escapeAttr(getExpressClass(train))}" style="${typeBadgeInlineStyle(train,(train.stops||[]).findIndex(s=>String(s?.station||'')===stationName),stationDirectionRouteColor(STATIONS.findIndex(st=>String(st?.nameJa||'')===stationName),key))}">${escapeAttr(getDetailType(train.type))}</span>`:''}
-          <span class="station-timetable-destination"><span class="station-timetable-destination-station">${escapeAttr(getDisplayDestinationForTrain(train))}</span><span class="station-timetable-destination-go">行</span></span>
+          <span class="station-timetable-destination"><span class="station-timetable-destination-station">${escapeAttr(getDisplayDestinationForTrain(train))}</span>${destinationGoSuffix(train)?'<span class="station-timetable-destination-go">行</span>':''}</span>
         </button>
       `;
     }).join('');
@@ -3916,7 +3923,7 @@ function updateSheetContent(){
         <div class="train-info-main">
           <div>
             ${String(train.type||'').trim()?`<span class="type-badge ${getExpressClass(train)}" style="${typeBadgeInlineStyle(train)}">${getDetailType(train.type)}</span>`:''}
-            <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)} 行</span>
+            <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>
             ${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}
           </div>
           ${train.formation && train.formation!==INITIAL_FORMATION_SELECTION.id
@@ -3938,7 +3945,7 @@ function updateSheetContent(){
         <div class="train-info-main">
           <div>
             ${String(train.type||'').trim()?`<span class="type-badge ${getExpressClass(train)}" style="${typeBadgeInlineStyle(train)}">${getDetailType(train.type)}</span>`:''}
-            <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)} 行</span>
+            <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>
             ${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}
           </div>
           <div class="input-trigger-btn">編成を入力中</div>
@@ -5320,7 +5327,7 @@ function updateRouteVisuals(){
   const h1Color=jsonBaseColorForActiveRoute();
   const titleColor=h1Color;
   const root=document.documentElement;
-  const isCircularRoute=activeJson?.circular===true;
+  const isCircularRoute=activeRouteName==='大阪環状線' && activeJson?.circular===true;
   root.classList.toggle('circular-route-active',isCircularRoute);
   document.body?.classList.toggle('circular-route-active',isCircularRoute);
   document.body?.classList.toggle('yumesaki-route-active',activeRouteName==='ゆめ咲線');
@@ -6934,6 +6941,7 @@ initRegionNavigation();
     return String(t.no||'');
   }
   function renderCircularTrainPositions(){
+    const uiScale=1, trainWidth=66*uiScale, imageWidth=60*uiScale;
     const layer=document.getElementById('movingTrainLayer');
     if(!layer) return;
     const now=currentMinutes();
