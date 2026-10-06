@@ -4850,10 +4850,15 @@ function jsonSegmentColorForStations(a,b,lineNames=getActiveRouteLineNames()){
 function trainServiceColorBetweenStations(a,b,trainContext=null){
   const aa=String(a||''),bb=String(b||'');
   if(!aa||!bb||aa===bb) return fallbackTrainServiceColor(trainContext);
-  const routeOverride=String(activeRouteMeta?.routeColor||'').trim();
-  if(routeOverride) return routeOverride;
+  // 停車駅案内では、まずJSONに定義された区間カラーを優先する。
+  // 路線全体の基本色(routeColor)よりも、直通区間の個別路線色を優先する。
+  // ゆめ咲線区間は、直通列車の停車駅案内でもゆめ咲線カラーを優先する。
+  const yumesakiPairs=[['西九条','安治川口'],['安治川口','ユニバーサルシティ'],['ユニバーサルシティ','桜島']];
+  if(yumesakiPairs.some(pair=>(pair[0]===aa&&pair[1]===bb)||(pair[1]===aa&&pair[0]===bb))) return '#233f97';
   const jsonSegment=jsonSegmentColorForStations(aa,bb,getActiveRouteLineNames());
   if(jsonSegment) return jsonSegment;
+  const routeOverride=String(activeRouteMeta?.routeColor||'').trim();
+  if(routeOverride) return routeOverride;
   const line=preferredTrainServiceLine(aa,bb,trainContext);
   const direct=String(line?.color||'').trim();
   if(direct) return direct;
@@ -6989,14 +6994,10 @@ initRegionNavigation();
       layout.left?.[0]===name || layout.right?.[0]===name ||
       layout.left?.[layout.left.length-1]===name || layout.right?.[layout.right.length-1]===name
     );
-    // 特別な端駅表示処理は「端の駅→端の駅」の環状運転列車だけに適用する。
-    const endpointToEndpoint=circularOnly &&
-      isEndpointName(String(first.station||'')) &&
-      isEndpointName(String(last.station||''));
 
     for(let i=0;i<stops.length;i++){
       const st=stops[i],name=String(st.station||'');
-      const endpoint=endpointToEndpoint && isEndpointName(name);
+      const endpoint=circularOnly && isEndpointName(name);
       const prevEdge=i>0 ? circularEdgeForPair(stops[i-1].station,name) : null;
       const nextEdge=i<stops.length-1 ? circularEdgeForPair(name,String(stops[i+1].station||'')) : null;
       const sidePrev=prevEdge?.side||null;
@@ -7025,7 +7026,7 @@ initRegionNavigation();
 
         // 環状列車は端駅の発車時刻1分後まで表示し、それを過ぎたら非表示。
         // 次駅の到着時刻になったら、次駅上で再表示する。
-        if(endpointToEndpoint && nextEdge?.bridge && Number.isFinite(departure) && minutes>=departure+1){
+        if(nextEdge?.bridge && Number.isFinite(departure) && minutes>=departure+1){
           continue;
         }
       }
@@ -7056,7 +7057,7 @@ initRegionNavigation();
             const y=circularCenterY(endpointOnLeft?edge.sideA:edge.sideB,endpointOnLeft?edge.indexA:edge.indexB,metrics);
             const ratio=Math.max(0,Math.min(1,nb===na?0:(minutes-na)/(nb-na)));
             // 環状線は端駅の発車1分後を過ぎたら次駅到着まで非表示。
-            if(endpointToEndpoint){
+            if(circularOnly){
               const endpointDeparture=Number(st._departure);
               if(Number.isFinite(endpointDeparture) && minutes>=endpointDeparture+1) return null;
             }
@@ -7104,14 +7105,13 @@ initRegionNavigation();
       );
       const firstIsEndpoint=circularOnly && isEndpoint(firstName);
       const lastIsEndpoint=circularOnly && isEndpoint(lastName);
-      const endpointToEndpoint=circularOnly && firstIsEndpoint && lastIsEndpoint;
 
-      // 「端の駅→端の駅」の環状運転列車だけ、端駅で発車1分後まで表示する。
+      // 環状列車では既存の「始発2分前／終着2分後」を使わない。
       // 端駅は発車時刻から、発車1分後まで表示する。
-      const visibleFrom=endpointToEndpoint && firstIsEndpoint
+      const visibleFrom=firstIsEndpoint
         ? (Number.isFinite(firstDeparture)?firstDeparture:firstArrival)
         : firstDeparture;
-      const visibleUntil=endpointToEndpoint && lastIsEndpoint
+      const visibleUntil=lastIsEndpoint
         ? (Number.isFinite(Number(last._departure))
             ? Number(last._departure)+1
             : lastArrival+1)
