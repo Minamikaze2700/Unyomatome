@@ -7132,14 +7132,17 @@ initRegionNavigation();
         // 左右どちらの線路でも、線路中心からの距離は常に同じにする。
         // up=内回り / down=外回り。
         const colCenter=side==='left'?stageWidth*0.25:stageWidth*0.75;
-        const railHalf=6;
-        const sideGap=26;
-        const centerOffset=railHalf+sideGap+(trainWidth/2);
+        // 元ファイルと同じ横位置基準を使用する。
+        // 元ファイルは列車アイコン幅66pxで、アイコン左端を中心線から340px外側に置いていたため、
+        // アイコン中心は線路中心から307px離れる。環状線でもこの距離をそのまま使い、
+        // 内回り・外回りだけ左右を入れ替えることで、線路からの距離を完全に揃える。
+        const originalCenterOffset=340-(trainWidth/2);
+        const originalLaneGap=20;
         const isInner=String(t?.direction||'')==='up';
         const lateralSign=side==='left'
           ? (isInner?1:-1)
           : (isInner?-1:1);
-        const laneOffset=lateralSign*(centerOffset + lane*(trainWidth+20));
+        const laneOffset=lateralSign*(originalCenterOffset + lane*(trainWidth+originalLaneGap));
         const trainLeft=Number.isFinite(Number(item.info?.xPercent))
           ? stageWidth*(Number(item.info.xPercent)/100)-(trainWidth/2)
           : colCenter-(trainWidth/2)+laneOffset;
