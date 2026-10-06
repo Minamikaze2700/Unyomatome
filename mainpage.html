@@ -3011,7 +3011,11 @@ function applyStationLabelColors(badge,index){
   }
 }
 function renderLine(){
-  if(activeJson?.circular===true){ renderCircularLine(); return; }
+  if(activeJson?.circular===true){
+    const fn=window.__circularRouteHelpers?.renderCircularLine;
+    if(typeof fn==='function'){ fn(); }
+    return;
+  }
   if(typeof TRAIN_ICON_CACHE!=='undefined') TRAIN_ICON_CACHE.clear();
   if(typeof TRAIN_LAYOUT_CACHE!=='undefined') TRAIN_LAYOUT_CACHE={container:null,rowCenters:null,rowCount:0};
   const container=document.getElementById('lineContainer');
@@ -3334,7 +3338,11 @@ function getTerminalDepartureIndex(){
   return index;
 }
 function renderTrainPositions(){
-  if(activeJson?.circular===true){ renderCircularTrainPositions(); return; }
+  if(activeJson?.circular===true){
+    const fn=window.__circularRouteHelpers?.renderCircularTrainPositions;
+    if(typeof fn==='function'){ fn(); }
+    return;
+  }
   const layer=document.getElementById('movingTrainLayer');
   if(!layer) return;
   const minutes=currentMinutes();
@@ -3355,15 +3363,18 @@ function renderTrainPositions(){
   for(const entry of renderEntries){
     if(minutes<entry.visibleFrom || minutes>entry.visibleUntil) continue;
     const {train:base,meta,next:nextInfo}=entry;
-    if(meta.lastIndex<0) continue;
-    const oldSignature=`${String(base.no||'')}|${String(base.direction||'')}`;
-    const nextSignature=`${String(nextInfo.train.no||'')}|${String(nextInfo.train.direction||'')}`;
-    terminalHandoffs.set(oldSignature,{nextTrain:nextInfo.train,nextSignature,dep:nextInfo.dep,lastArr:meta.lastArr});
+    if(!base || !meta || meta.lastIndex<0) continue;
+    if(nextInfo?.train){
+      const oldSignature=`${String(base.no||'')}|${String(base.direction||'')}`;
+      const nextSignature=`${String(nextInfo.train.no||'')}|${String(nextInfo.train.direction||'')}`;
+      terminalHandoffs.set(oldSignature,{nextTrain:nextInfo.train,nextSignature,dep:nextInfo.dep,lastArr:meta.lastArr});
+    }
   }
 
   for(const entry of renderEntries){
     if(minutes<entry.visibleFrom || minutes>entry.visibleUntil) continue;
     const base=entry.train;
+    if(!base) continue;
     const p=positionForTrain(base,minutes);
     if(!p||(!p.stationA&&!p.stationB&&!Number.isFinite(p.pos))) continue;
     const baseSignature=`${String(base.no||'')}|${String(base.direction||'')}`;
