@@ -1426,7 +1426,12 @@ function buildFormationsForJson(json){
   const baseDeclaredType=String(json?.formationType||'').trim();
   const lineOverridesType=!!String(lineVisual?.formationType||'').trim() && declaredType!==baseDeclaredType;
   const formationSource=lineOverridesType ? [] : rawFormations;
-  if(declaredType){
+  // 内房線の旧JSONは formationType を持たず、formations[] に
+  // {formation, cars, image} を直接並べる形式。これをそのまま編成一覧として扱う。
+  const inferredDeclaredType=(String(activeRouteName||'')==='内房線' && rawFormations.length)
+    ? '内房線編成'
+    : declaredType;
+  if(inferredDeclaredType){
     const items=[];
     for(const raw of formationSource){
       const rawId=String(raw?.formation||raw?.id||'').trim();
@@ -1470,7 +1475,7 @@ function buildFormationsForJson(json){
       if(c&&f) VEHICLE_TO_FORMATION[c]=f;
     }
     const groupRouteNames=formationRouteNamesFromConfig(lineVisual);
-    return items.length?[{type:declaredType,typeImg:declaredTypeImg,family:dataFamily,routeNames:groupRouteNames,items}]:[];
+    return items.length?[{type:inferredDeclaredType,typeImg:declaredTypeImg,family:dataFamily,routeNames:groupRouteNames,items}]:[];
   }
 
   // 227系A/S編成の従来データ。
@@ -5830,6 +5835,23 @@ initRegionNavigation();
     return `${slot+1}編成目`;
   }
 
+  function uchiboFormationImageUrl(id){
+    if(String(activeRouteName||'')!=='内房線') return '';
+    const key=String(id||'').replace(/F$/i,'').trim();
+    let imageName='';
+    if(/^F\d{2}$/i.test(key)) imageName=`E235_${key.toUpperCase()}`;
+    else if(/^J\d{2}$/i.test(key)) imageName=`E235_${key.toUpperCase()}`;
+    else if(/^R\d{2}$/i.test(key)) imageName=`E131_${key.toUpperCase()}`;
+    else if(/^C(?:1|2|3|9)$/i.test(key)) imageName=`E233_${key.toUpperCase()}`;
+    else if(key==='C401'||key==='C602') imageName=`209_${key}`;
+    return imageName ? `https://minamikaze2700.github.io/Unyomatome/images/${imageName}.png` : '';
+  }
+
+  function formationOptionImage(item){
+    const forced=uchiboFormationImageUrl(item?.id);
+    return forced || String(item?.img||LINE_TRAIN_IMG);
+  }
+
   function renderFormationOptions(slot,currentIds,count){
     const current=currentIds[slot]||'';
     const groups=formationDisplayGroups(formationsForTrain(currentTrainSnapshot||{}));
@@ -5863,7 +5885,7 @@ initRegionNavigation();
         });
         if(selectedElsewhere) continue;
         const clickAttr=disabled ? '' : `onclick="selectFormationAtSlot(${slot},'${escapeJs(id)}')"`;
-        chunks.push(`<div class="option-item ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':''} ${clickAttr}><img src="${esc(item.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${esc(item.name||id)}</span></div>`);
+        chunks.push(`<div class="option-item ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':''} ${clickAttr}><img src="${esc(formationOptionImage(item))}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${esc(item.name||id)}</span></div>`);
       }
     }
     return initial+chunks.join('');
