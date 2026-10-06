@@ -2387,10 +2387,9 @@ function getDetailType(type){
 function displayTrainNo(train){ return (train && !train.hideTrainNumber) ? normalizeTrainNo(train.no) : ''; }
 function getShortDest(dest){
   const value=String(dest||'');
-  const jsonAliases=activeJson?.stationAliases;
-  if(jsonAliases && typeof jsonAliases==='object' && Object.prototype.hasOwnProperty.call(jsonAliases,value)) return String(jsonAliases[value]??value);
-  const aliases=activeRouteMeta?.destinationAliases;
-  if(aliases && Object.prototype.hasOwnProperty.call(aliases,value)) return String(aliases[value]??value);
+  // 略称は「列車の行先」に対してだけ適用する。駅名そのものの表示には使わない。
+  const aliases=activeRouteMeta?.destinationAliases || activeJson?.destinationAliases;
+  if(aliases && typeof aliases==='object' && Object.prototype.hasOwnProperty.call(aliases,value)) return String(aliases[value]??value);
   return value;
 }
 function nthMondayDateKey(year,month,nth){
@@ -4885,7 +4884,13 @@ function activeSegmentColors(a,b){
   const aa=String(a||''),bb=String(b||'');
   const meta=activeRouteMeta||{};
   const routeOverride=String(meta?.routeColor||'').trim();
-  for(const rule of (Array.isArray(meta.segmentColorRules)?meta.segmentColorRules:[])){
+  const segmentRules=[...(Array.isArray(meta.segmentColorRules)?meta.segmentColorRules:[])];
+  const lineDefs=Array.isArray(activeJson?.lines)?activeJson.lines:[];
+  for(const line of lineDefs){
+    if(!getActiveRouteLineNames().includes(String(line?.name||''))) continue;
+    if(Array.isArray(line?.segmentColorRules)) segmentRules.push(...line.segmentColorRules);
+  }
+  for(const rule of segmentRules){
     const required=Array.isArray(rule.whenStationsAllPresent)?rule.whenStationsAllPresent.map(String):[];
     if(required.length && required.includes(aa) && required.includes(bb)){
       const line=lineDefByName(rule.useLine);
@@ -6706,8 +6711,18 @@ initRegionNavigation();
 <style id="circular-route-style">
 /* ===== 大阪環状線：環状線専用レイアウト ===== */
 .circular-stage{
-  --circular-end-padding:100px;
-  position:relative;width:100%;height:3170px;min-height:3170px;margin:0;padding:0;
+  --circular-end-padding:110px;
+  --circular-top-center:146px;
+  --circular-bottom-center:calc(100% - 146px);
+  --circular-bridge-y:60px;
+  position:relative;
+  width:100vw;
+  min-width:100vw;
+  height:3170px;
+  min-height:3170px;
+  margin:0;
+  padding:0;
+  overflow:visible;
 }
 .circular-column{position:absolute;top:0;bottom:0;width:0;z-index:2;}
 .circular-column.left{left:25%;}
@@ -6719,40 +6734,40 @@ initRegionNavigation();
 .circular-station-row .station-badge{width:384px;min-width:384px;height:72px;aspect-ratio:auto;}
 .circular-station-row .station-name-ja{height:calc(100% - 24px);min-height:0;}
 .circular-station-row .station-name-en{height:24px;min-height:24px;}
-.circular-track-segment{
-  position:absolute;left:50%;width:12px;transform:translateX(-50%);z-index:1;
-}
-/* 環状線では標準レイアウト由来の中央縦線を完全に無効化する。
-   実際の線路は左右1/4位置、列車アイコンの通過位置はその外側。 */
+.circular-track-segment{position:absolute;left:50%;width:12px;transform:translateX(-50%);z-index:1;}
 .circular-rail-line{
   top:0 !important;right:0 !important;bottom:0 !important;left:0 !important;
-  width:100% !important;height:100% !important;
-  transform:none !important;background:transparent !important;
+  width:100% !important;height:100% !important;transform:none !important;
+  background:transparent !important;
 }
 .circular-bridge{
-  position:absolute;left:25%;right:25%;width:auto;box-sizing:border-box;
-  border-left:12px solid var(--primary);
-  border-right:12px solid var(--primary);
+  position:absolute;box-sizing:border-box;left:25%;width:50%;
   z-index:1;pointer-events:none;
 }
+/* 横線はページ端から離し、左右の縦線は上下端駅のラベル中心まで正確に延長する。 */
 .circular-bridge-top{
-  top:var(--circular-end-padding);height:135px;
+  top:var(--circular-bridge-y);
+  height:calc(var(--circular-top-center) - var(--circular-bridge-y));
   border-top:12px solid var(--primary);
+  border-left:12px solid var(--primary);
+  border-right:12px solid var(--primary);
   border-bottom:0;
   border-radius:90px 90px 0 0;
 }
 .circular-bridge-bottom{
-  bottom:var(--circular-end-padding);height:135px;
+  top:var(--circular-bottom-center);
+  height:calc(100% - var(--circular-bottom-center) - var(--circular-bridge-y));
   border-bottom:12px solid var(--primary);
+  border-left:12px solid var(--primary);
+  border-right:12px solid var(--primary);
   border-top:0;
   border-radius:0 0 90px 90px;
 }
+.circular-hidden-station-label{visibility:hidden !important;pointer-events:none !important;}
 .circular-route-active #lineContainer{margin-top:calc(58px + var(--control-bar-height, 69px));}
 .circular-route-active .line-container{display:block;}
 @media(max-width:959.98px){
-  html.circular-route-active,body.circular-route-active{
-    overflow-x:auto !important;
-  }
+  html.circular-route-active,body.circular-route-active{overflow-x:auto !important;}
   body.circular-route-active #viewportCanvas{
     width:1920px !important;min-width:1920px !important;max-width:none !important;
     margin-left:0 !important;margin-right:0 !important;
@@ -6761,9 +6776,7 @@ initRegionNavigation();
   body.circular-route-active #viewportCanvas .line-container{
     width:1920px !important;min-width:1920px !important;max-width:none !important;
   }
-  body.circular-route-active .circular-stage{
-    width:1920px;min-width:1920px;
-  }
+  body.circular-route-active .circular-stage{width:1920px;min-width:1920px;}
 }
 </style>
 <script id="circular-route-script">
@@ -6790,20 +6803,22 @@ initRegionNavigation();
   }
   function circularStageMetrics(){
     const stage=document.getElementById('circularStage');
-    const endPadding=100;
-    if(!stage) return {stage:null,width:1920,height:3170,leftStep:270,rightStep:300,endPadding};
+    const endPadding=110;
+    if(!stage) return {stage:null,width:1920,height:3170,leftStep:302,rightStep:335,endPadding,topCenter:146,bottomCenter:3024};
     const width=Number(stage.offsetWidth)||1920;
     const height=Number(stage.offsetHeight)||3170;
     const layout=circularLayout();
     const leftCount=Math.max(1,layout?.left?.length||11);
     const rightCount=Math.max(1,layout?.right?.length||10);
-    const trackSpan=Math.max(0,height-(endPadding*2)-270);
-    const leftStep=leftCount>1?trackSpan/(leftCount-1):0;
-    const rightStep=rightCount>1?trackSpan/(rightCount-1):0;
-    return {stage,width,height,leftStep,rightStep,endPadding};
+    const topCenter=146;
+    const bottomCenter=Math.max(topCenter,height-topCenter);
+    const span=Math.max(0,bottomCenter-topCenter);
+    const leftStep=leftCount>1?span/(leftCount-1):0;
+    const rightStep=rightCount>1?span/(rightCount-1):0;
+    return {stage,width,height,leftStep,rightStep,endPadding,topCenter,bottomCenter};
   }
   function circularCenterY(side,index,metrics){
-    return metrics.endPadding+135+(side==='left'?metrics.leftStep:metrics.rightStep)*Number(index||0);
+    return metrics.topCenter+(side==='left'?metrics.leftStep:metrics.rightStep)*Number(index||0);
   }
   function circularEdgeColor(a,b){
     const colors=activeSegmentColors(String(a||''),String(b||''));
@@ -6825,8 +6840,16 @@ initRegionNavigation();
   function makeCircularStationRow(stationName,side,index,metrics){
     const st=STATIONS.find(x=>String(x.nameJa)===String(stationName));
     if(!st) return null;
+    const hiddenMap=activeJson?.circularHiddenStationLabels||{};
+    const hidden=Array.isArray(hiddenMap?.[side]) && hiddenMap[side].map(String).includes(String(stationName));
     const row=document.createElement('div');
-    row.className='station-row circular-station-row';
+    row.className='station-row circular-station-row'+(hidden?' circular-hidden-station-label':'');
+    if(hidden){
+      row.dataset.stationId=st.id;
+      row.style.top=`${circularCenterY(side,index,metrics)}px`;
+      row.setAttribute('aria-hidden','true');
+      return row;
+    }
     row.dataset.stationId=st.id;
     row.style.top=`${circularCenterY(side,index,metrics)}px`;
     const badge=document.createElement('div');
