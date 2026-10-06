@@ -1001,7 +1001,6 @@ const ROUTE_REGISTRY={
     typeShortMap:{'普通':'各停','各駅停車':'各停','区間急行':'区急'},
     typeDetailMap:{'普通':'各駅停車','各停':'各駅停車'},
     typeClassMap:{'快速':'yokohama-express','普通':'yokohama-local','各停':'yokohama-local'},
-    destinationAliases:{'南浦和':'南浦','東十条':'東十','東神奈川':'東神','桜木町':'桜木','八王子':'八王'},
     segmentColorRules:[{whenStationsAllPresent:['東神奈川','横浜','桜木町','関内','石川町','山手','根岸','磯子','新杉田','洋光台','港南台','本郷台','大船'],useLine:'京浜東北・根岸線'}],
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Yokohama_noimage.png',
     access:{public:true,routeAdmins:[]},
@@ -1630,8 +1629,11 @@ async function loadExternalRouteJsons(routeMeta){
   const unique=[...new Set(urls)];
   if(!unique.length) throw new Error('路線JSONの設定がありません');
   const payloads=await Promise.all(unique.map(async url=>{
-    const res=await fetch(url,{cache:'no-store'});
-    if(!res.ok) throw new Error(`路線JSONの読み込みに失敗しました (${res.status})`);
+    // GitHub Pages上の日本語ファイル名も確実に取得できるよう、
+    // リクエスト時だけURLをURIエンコードする。表示用の元URLはそのまま保持する。
+    const requestUrl=/^https?:\/\//i.test(url) ? encodeURI(url) : url;
+    const res=await fetch(requestUrl,{cache:'no-store'});
+    if(!res.ok) throw new Error(`路線JSONの読み込みに失敗しました (${res.status})\n${url}`);
     const json=await res.json();
     return {url,json};
   }));
@@ -2236,21 +2238,26 @@ function getShortType(type, trainNo=''){
     if(rule.result!==undefined) return String(rule.result);
   }
   if(value==='区間急行') return '区急';
-  return value==='各駅停車' ? '普通' : value;
+  // JSONの「各駅停車」を「普通」へ勝手に変換しない。
+  // 路線側で略称が必要な場合は typeShortMap で明示的に定義する。
+  if(value==='各駅停車') return '各停';
+  return value;
 }
 function getDetailType(type){
   const value=String(type||'');
   const mapped=activeRouteMeta?.typeDetailMap?.[value];
   if(mapped!==undefined) return String(mapped);
-  return value==='各停' ? '普通' : value;
+  // 「各停」は駅時刻表などの詳細表示では「各駅停車」に戻す。
+  if(value==='各停') return '各駅停車';
+  return value;
 }
 function displayTrainNo(train){ return (train && !train.hideTrainNumber) ? normalizeTrainNo(train.no) : ''; }
 function getShortDest(dest){
   const value=String(dest||'');
-  const aliases=activeRouteMeta?.destinationAliases;
-  if(aliases && Object.prototype.hasOwnProperty.call(aliases,value)) return String(aliases[value]??value);
   const jsonAliases=activeJson?.stationAliases;
   if(jsonAliases && typeof jsonAliases==='object' && Object.prototype.hasOwnProperty.call(jsonAliases,value)) return String(jsonAliases[value]??value);
+  const aliases=activeRouteMeta?.destinationAliases;
+  if(aliases && Object.prototype.hasOwnProperty.call(aliases,value)) return String(aliases[value]??value);
   return value;
 }
 function nthMondayDateKey(year,month,nth){
