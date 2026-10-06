@@ -7010,13 +7010,18 @@ initRegionNavigation();
     // 各停車駅停車中＋駅間走行。環状線外のゆめ咲線区間は描画対象外にする。
     for(let i=0;i<stops.length;i++){
       const st=stops[i],name=String(st.station||'');
+      const circularEndpoint = (t.circular===true || t.rawTrain?.circular===true) && (
+        (i===0 || i===stops.length-1) &&
+        ((layout.left?.[0]===name)||(layout.right?.[0]===name)||(layout.left?.[layout.left.length-1]===name)||(layout.right?.[layout.right.length-1]===name))
+      );
       const sidePrev=i>0 ? (circularEdgeForPair(stops[i-1].station,name)?.side||null) : null;
       const sideNext=i<stops.length-1 ? (circularEdgeForPair(name,stops[i+1].station)?.side||null) : null;
       const side=sidePrev||sideNext||circularSideAtStation(name,t.direction==='down'?'right':'left');
       const arr=(layout[side]||[]);
       const idx=arr.indexOf(name);
       if(idx<0) continue;
-      const a=Number(st._arrival)+0.25,b=Number(st._departure)+0.75;
+      const a=Number(st._arrival)+(circularEndpoint?0.25:0.25);
+      const b=Number(st._departure)+(circularEndpoint?0.75:0.75);
       if(Number.isFinite(a)&&Number.isFinite(b)&&minutes>=a&&minutes<b){
         return {side,pos:idx,visualTrain:t,mode:i===stops.length-1?'end-dwell':'station-dwell',baseTrain:t};
       }
@@ -7049,22 +7054,30 @@ initRegionNavigation();
             const dist=Math.max(0,Math.min(1,ratio))*total;
             const v1=vertical;
             const h=v1+horizontal;
-            let xPct=xStation, y=stationY;
+            let xPct=xStation, y=stationY, pathT=0;
             if(dist<=v1){
               const f=vertical>0?dist/vertical:1;
               y=stationY+(railY-stationY)*f;
+              pathT=horizontal>0?dist/total*0.15:0;
             }else if(dist<=h){
               const f=horizontal>0?(dist-v1)/horizontal:1;
-              xPct=(fromLeft?xStart:xEnd)+((fromLeft?1:-1)*50*f);
+              xPct=fromLeft ? xStart+50*f : xEnd-50*f;
               y=railY;
+              pathT=0.15+0.70*f;
             }else{
               const f=vertical>0?(dist-h)/vertical:1;
               xPct=xAcross;
               y=railY+(stationY-railY)*f;
+              pathT=0.85+0.15*f;
             }
+            // bridge上でも連続した位置を持たせる。これを車両の重なり判定に使う。
+            // これまでposを駅端の整数値にしていたため、橋上の列車同士が
+            // 実際には離れていても「1編成分内側にずらす」ことがあった。
+            const bridgeBase=fromLeft?edge.indexA:edge.indexB;
+            const bridgePathPos=bridgeBase + (fromLeft?pathT:(1-pathT));
             return {
               side:fromLeft?edge.sideA:edge.sideB,
-              pos:fromLeft?edge.indexA:edge.indexB,
+              pos:bridgePathPos,
               xPercent:xPct,
               y,
               bridge:true,
@@ -7094,6 +7107,7 @@ initRegionNavigation();
       const circularOnly=!!isCircularTrain(train);
       // 環状列車だけは、左右の縦線の端駅での「始発2分前・終着2分後」を使わない。
       // 非環状列車は従来どおり共通の2分前・2分後表示を維持する。
+      // 環状列車は始発・終着2分前／2分後を一切使わない。
       const visibleFrom=circularOnly ? firstDep+0.75 : firstDep-RESET_DWELL_MIN+0.5;
       const visibleUntil=circularOnly
         ? (Number.isFinite(nextDep)?nextDep:lastArr+0.25)
@@ -7133,7 +7147,12 @@ initRegionNavigation();
       occupied[side].sort((a,b)=>a.pos-b.pos||String(a.t.no).localeCompare(String(b.t.no),undefined,{numeric:true}));
       const used=[];
       occupied[side].forEach(item=>{
-        let lane=0; while(used.some(u=>Math.abs(u.pos-item.pos)<0.24&&u.lane===lane)) lane++; used.push({pos:item.pos,lane});
+        // 内回り・外回りは別の線路位置なので、お互いを「横並び」と判定しない。
+        // 同方向・同一箇所で重なる場合だけ2列目以降へ退避する。
+        const laneGroup=String(item.t?.direction||'')==='up'?'up':'down';
+        let lane=0;
+        while(used.some(u=>u.group===laneGroup&&Math.abs(u.pos-item.pos)<0.24&&u.lane===lane)) lane++;
+        used.push({pos:item.pos,lane,group:laneGroup});
         const t=item.t; let entry=TRAIN_ICON_CACHE.get(item.signature); let el=entry?.el;
         if(entry) entry.currentTrain=t;
         const cls=trainVisualKind(t); const registeredFormation=registeredFormationForTrain(t);
