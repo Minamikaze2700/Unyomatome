@@ -6981,27 +6981,30 @@ initRegionNavigation();
     const first=stops[0],last=stops[stops.length-1];
     const firstDep=Number(first._departure),lastArr=Number(last._arrival);
     if(!Number.isFinite(firstDep)||!Number.isFinite(lastArr)) return null;
+
+    // 同じ方向の運用接続は、前列車の到着と同時に次列車の情報へ切り替える。
+    // 次列車そのものは発車時刻になるまで表示しない。
     const next=connectionNext(t);
-    const nextStart=next ? timeToMinutes(next.startTime)+0.75 : null;
-    // 環状列車の天王寺到着後は、運用連結された次列車へ同方向のアイコンを引き継ぐ。
-    if(next && (t.circular===true || t.rawTrain?.circular===true) && String(t.dest||'')==='天王寺' && Number.isFinite(nextStart) && minutes>lastArr){
-      const nextTrain=liveTrain(trainEntryNo(next),next.start&&next.dest ? (next.start===next.dest?'up':(stationIndex(next.start)>stationIndex(next.dest)?'up':'down')) : null)
-        ||baseTrainForDay(trainEntryNo(next),null,currentDay)
-        ||(currentDay==='休日'?HOLIDAY_TRAIN_INDEX[trainEntryNo(next)]:TRAIN_INDEX[trainEntryNo(next)])
-        ||null;
-      if(minutes<nextStart){
-        const waitSide=nextTrain?circularSideAtStation(String(nextTrain.stops?.[0]?.station||'天王寺'),nextTrain.direction==='down'?'right':'left'):'left';
-        const visual=nextTrain||t;
-        const arr=layout[waitSide]||[]; const idx=arr.indexOf('天王寺');
-        return idx>=0?{side:waitSide,pos:idx,visualTrain:visual,mode:'turn-wait',baseTrain:t}:null;
+    const nextNo=trainEntryNo(next);
+    const nextTrain=next
+      ? (liveTrain(nextNo,null)
+        ||baseTrainForDay(nextNo,null,currentDay)
+        ||(currentDay==='休日'?HOLIDAY_TRAIN_INDEX[nextNo]:TRAIN_INDEX[nextNo])
+        ||null)
+      : null;
+    const sameDirection=!!nextTrain
+      && String(t.direction||'')!==''
+      && String(nextTrain.direction||'')===String(t.direction||'');
+    const nextStart=sameDirection && next ? timeToMinutes(next.startTime)+0.75 : null;
+    const arrivalPoint=lastArr+0.25;
+    if(sameDirection && Number.isFinite(nextStart) && minutes>=arrivalPoint && minutes<nextStart){
+      const waitStation=String(last.station||t.dest||'');
+      const waitSide=circularSideAtStation(waitStation,t.direction==='down'?'right':'left');
+      const arr=layout[waitSide]||[];
+      const idx=arr.indexOf(waitStation);
+      if(idx>=0){
+        return {side:waitSide,pos:idx,visualTrain:nextTrain,mode:'connection-wait',baseTrain:t};
       }
-    }
-    // 始発駅停車表示
-    const firstSide=(layout.left.includes(String(first.station))||layout.right.includes(String(first.station)))
-      ?circularSideAtStation(String(first.station),t.direction==='down'?'right':'left'):null;
-    if(firstSide && isStartDwellMinute(minutes,firstDep)){
-      const idx=(layout[firstSide]||[]).indexOf(String(first.station));
-      if(idx>=0) return {side:firstSide,pos:idx,visualTrain:t,mode:'start-dwell',baseTrain:t};
     }
     // 各停車駅停車中＋駅間走行。環状線外のゆめ咲線区間は描画対象外にする。
     for(let i=0;i<stops.length;i++){
@@ -7063,8 +7066,10 @@ initRegionNavigation();
       const firstDep=Number(first._departure),lastArr=Number(last._arrival);
       if(!Number.isFinite(firstDep)||!Number.isFinite(lastArr)) continue;
       const next=connectionNext(train); const nextDep=next?timeToMinutes(next.startTime)+0.75:null;
-      const visibleFrom=firstDep-RESET_DWELL_MIN+0.5;
-      const visibleUntil=Number.isFinite(nextDep)?nextDep:lastArr+RESET_DWELL_MIN+0.5;
+      // 始発駅の2分前表示・終着駅の2分後表示は環状線では行わない。
+      // 始発列車は発車時刻から、終着列車は到着時刻までを表示範囲とする。
+      const visibleFrom=firstDep+0.75;
+      const visibleUntil=Number.isFinite(nextDep)?nextDep:lastArr+0.25;
       out.push({train,visibleFrom,visibleUntil});
     }
     return out;
@@ -7123,18 +7128,18 @@ initRegionNavigation();
         const trainLabelEl=el.querySelector('.train-label');
         if(trainLabelEl&&getMainLabelClass(t.type)==='route-normal'){trainLabelEl.style.background=color;trainLabelEl.style.color='#fff';}
         const stageWidth=metrics.width;
-        // 上り＝内回りは線路の内側、下り＝外回りは線路の外側を通す。
-        // 左線路では内回りを右側、右線路では内回りを左側へ配置する。
-        const isInner=String(t?.direction||'')==='up';
-        const trackPercent=side==='left'?25:75;
-        const outsidePercent=side==='left'?4:96;
-        const insidePercent=side==='left'?32:68;
-        const trainCenterPercent=isInner?insidePercent:outsidePercent;
-        const laneDirection=side==='left'?(isInner?1:-1):(isInner?-1:1);
-        const laneOffset=lane*(trainWidth+20)*laneDirection;
+        // 横方向の位置は進行方向ではなく線路の左右で固定する。
+        // 左側の線路は常に線路の左、右側の線路は常に線路の右へ寄せる。
+        const colCenter=side==='left'?stageWidth*0.25:stageWidth*0.75;
+        const baseX=side==='left'
+          ? colCenter-340
+          : colCenter+340-trainWidth;
+        const laneOffset=side==='left'
+          ? -lane*(trainWidth+20)
+          : lane*(trainWidth+20);
         const trainLeft=Number.isFinite(Number(item.info?.xPercent))
-          ? stageWidth*(Number(item.info.xPercent)/100)-(trainWidth/2)+laneOffset
-          : stageWidth*(trainCenterPercent/100)-(trainWidth/2)+laneOffset;
+          ? stageWidth*(Number(item.info.xPercent)/100)-(trainWidth/2)
+          : baseX+laneOffset;
         const y=Number.isFinite(Number(item.info?.y))?Number(item.info.y):circularCenterY(side,item.pos,metrics);
         const applyFinalCircularPosition=()=>{
           const img=el.querySelector('img');
