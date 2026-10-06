@@ -7091,10 +7091,13 @@ initRegionNavigation();
       const firstDep=Number(first._departure),lastArr=Number(last._arrival);
       if(!Number.isFinite(firstDep)||!Number.isFinite(lastArr)) continue;
       const next=connectionNext(train); const nextDep=next?timeToMinutes(next.startTime)+0.75:null;
-      // 始発駅の2分前表示・終着駅の2分後表示は環状線では行わない。
-      // 始発列車は発車時刻から、終着列車は到着時刻までを表示範囲とする。
-      const visibleFrom=firstDep+0.75;
-      const visibleUntil=Number.isFinite(nextDep)?nextDep:lastArr+0.25;
+      const circularOnly=!!isCircularTrain(train);
+      // 環状列車だけは、左右の縦線の端駅での「始発2分前・終着2分後」を使わない。
+      // 非環状列車は従来どおり共通の2分前・2分後表示を維持する。
+      const visibleFrom=circularOnly ? firstDep+0.75 : firstDep-RESET_DWELL_MIN+0.5;
+      const visibleUntil=circularOnly
+        ? (Number.isFinite(nextDep)?nextDep:lastArr+0.25)
+        : (Number.isFinite(nextDep)?nextDep:lastArr+RESET_DWELL_MIN+0.5);
       out.push({train,visibleFrom,visibleUntil});
     }
     return out;
