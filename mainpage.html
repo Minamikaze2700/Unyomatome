@@ -1010,14 +1010,15 @@ const ROUTE_REGISTRY={
     id:'nambu',
     routeColor:'#fdd700',
     json:'https://minamikaze2700.github.io/Unyomatome/data/JRENambu.json',
-    jsonLines:['南武線'],
+    jsonLines:['JR南武線'],
     range:'川崎～立川',
     area:'JR東日本',
-    storageRoot:'南武線',
+    storageRoot:'JR南武線',
     storageArea:null,
     company:'JR東日本',
     formationFamily:'nambu',
     formationCountDefault:1,
+    destinationAliases:{'稲城長沼':'稲城','武蔵中原':'中原','武蔵溝ノ口':'溝口'},
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Nambu_noimage.png',
     access:{public:true,routeAdmins:[]},
     formationInputExample:'E233系8000番台 / N1',
@@ -1055,7 +1056,7 @@ const ROUTE_REGISTRY={
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
     prescribedFormationRule:'common',
-    access:{public:false,routeAdmins:[]},
+    access:{public:false,routeAdmins:['aceKINKI2525']},
     formationInputExample:'323系 / LS01'
   },
   'ゆめ咲線':{
@@ -1183,8 +1184,12 @@ function getRouteNumberingImagesFromJson(json,routeMeta){
   const images=[];
   for(const lineName of names){
     const line=lines.find(x=>String(x?.name||'')===lineName);
-    const image=routeNumberingImageValue(line?.numberingImage);
+    const image=routeNumberingImageValue(line?.numberingImage) || routeNumberingImageValue(routeMeta?.numberingImage);
     if(image && !images.includes(image)) images.push(image);
+  }
+  if(!images.length){
+    const fallback=routeNumberingImageValue(routeMeta?.numberingImage);
+    if(fallback) images.push(fallback);
   }
   return images;
 }
