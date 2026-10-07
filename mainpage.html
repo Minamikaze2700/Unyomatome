@@ -183,7 +183,6 @@ button,input,select,textarea{font-family:inherit}
 .train-card.historical-readonly{cursor:default}
 .train-card.historical-readonly:hover{border-color:transparent}
 .station-info-card{cursor:default;border-color:var(--station-info-color,transparent);}
-.station-info-card:hover{border-color:var(--station-info-color,transparent);}
 .station-placeholder{margin-top:12px;min-height:140px;}
 .station-badge{cursor:pointer;}
 .station-timetable-title{
@@ -5000,8 +4999,16 @@ function activeSegmentColors(a,b){
   const line=preferredTrainServiceLine(aa,bb,{servedLineNames:getActiveRouteLineNames()});
   return line?.color?[String(line.color)]:[activeRouteColors()[0]||'#666'];
 }
+function circularStationLabelDisplayColor(stationName){
+  const name=String(stationName||'');
+  const loopColor=String(lineDefByName('大阪環状線')?.color||'#ee354f');
+  const yamatoColor=String(lineDefByName('大和路線')?.color||'#02ad73');
+  return activeJson?.circular===true ? (name==='新今宮'?yamatoColor:loopColor) : null;
+}
 function stationLabelColor(index){
   const i=Math.max(0,Math.min(STATIONS.length-1,Number(index)||0));
+  const circularColor=circularStationLabelDisplayColor(STATIONS[i]?.nameJa);
+  if(circularColor) return circularColor;
   const prev=i>0?STATIONS[i-1]?.nameJa:null;
   const cur=STATIONS[i]?.nameJa;
   const next=i<STATIONS.length-1?STATIONS[i+1]?.nameJa:null;
@@ -5070,7 +5077,11 @@ function stationNeighborRouteColors(index){
   return {prevColor,nextColor};
 }
 function renderRailLineSegments(){
-  if(activeJson?.circular===true){ renderCircularRailLineSegments(); return; }
+  if(activeJson?.circular===true){
+    const circularRenderer=window.__circularRouteHelpers?.renderCircularRailLineSegments;
+    if(typeof circularRenderer==='function') circularRenderer();
+    return;
+  }
   const rail=document.getElementById('railLine');
   if(!rail) return;
   rail.innerHTML='';
@@ -6946,8 +6957,8 @@ initRegionNavigation();
     const layout=circularLayout(); if(!layout||!badge) return;
     const arr=layout[side]||[];
     const stationName=String(arr[index]||'');
-    // 環状線の駅ラベルは基本的に大阪環状線色。大和路線境界の新今宮だけ緑。
-    const color=stationName==='新今宮' ? '#02ad73' : '#ee354f';
+    // 停車駅案内・方面タブと完全に同じ駅ラベル色を使用する。
+    const color=circularStationLabelDisplayColor(stationName)||'#666';
     badge.style.background='#fff';
     badge.style.setProperty('--station-label-bg',color);
     badge.style.setProperty('--station-en-text-color',stationEnglishTextColor(color));
