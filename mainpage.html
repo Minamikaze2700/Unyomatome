@@ -7129,17 +7129,15 @@ initRegionNavigation();
       layout.left?.[0]===name || layout.right?.[0]===name ||
       layout.left?.[layout.left.length-1]===name || layout.right?.[layout.right.length-1]===name
     );
-    // 特別な端駅処理は「指定された2区間を始発側として渡る環状列車」だけに適用。
-    // 大阪→天満／天王寺→新今宮、およびその逆方向の橋区間のみ対象にする。
-    const specialEndpointPair=circularOnly && (
-      (String(first.station||'')==='大阪' && String(stops[1]?.station||'')==='天満') ||
-      (String(first.station||'')==='天王寺' && String(stops[1]?.station||'')==='新今宮')
-    );
-    const endpointToEndpoint=specialEndpointPair;
+    // 特別処理は大阪⇄天満、新今宮⇄天王寺の2つの橋区間だけに適用する。
+    // 列車の進行方向に関係なく、橋の始点駅で発車時刻から1分経過するまで表示し、
+    // その1分後に消して、橋の終点駅の到着時刻になったら再表示する。
 
     for(let i=0;i<stops.length;i++){
       const st=stops[i],name=String(st.station||'');
-      const endpoint=endpointToEndpoint && isEndpointName(name);
+      const specialNextBridge=circularOnly && i<stops.length-1 && isSpecialCircularBridgePair(name,stops[i+1].station);
+      const specialPrevBridge=circularOnly && i>0 && isSpecialCircularBridgePair(stops[i-1].station,name);
+      const endpoint=specialNextBridge;
       const prevEdge=i>0 ? circularEdgeForPair(stops[i-1].station,name) : null;
       const nextEdge=i<stops.length-1 ? circularEdgeForPair(name,String(stops[i+1].station||'')) : null;
       const sidePrev=prevEdge?.side||null;
@@ -7154,27 +7152,15 @@ initRegionNavigation();
         ? circularCenterY('right',layout.right.length-1,metrics)
         : circularCenterY(side,idx,metrics);
 
-      // 環状列車の端駅は共通の「始発2分前・終着2分後」を使わない。
-      // 端駅では到着時刻から表示し、出発時刻の1分後まで表示したら非表示にする。
+      // 特別な2橋区間の「始点駅」では、発車時刻から1分間だけ駅上に表示する。
+      // 1分経った瞬間に消し、次駅の到着時刻から通常の駅表示へ戻す。
       if(endpoint){
-        const arrival=Number(st._arrival);
         const departure=Number(st._departure);
-        const endpointShowFrom=Number.isFinite(arrival)?arrival:departure;
-        const endpointHideAt=Number.isFinite(departure)?departure+1:
-          (Number.isFinite(endpointShowFrom)?endpointShowFrom+1:NaN);
-        if(Number.isFinite(endpointShowFrom)){
-          // 端駅では到着時刻から表示し、出発時刻そのものも必ず表示する。
-          // 非表示になるのは「出発時刻の1分後」を過ぎた時点。
-          if(minutes>=endpointShowFrom && minutes<=endpointHideAt){
-            return {side,pos:idx,visualTrain:t,mode:'endpoint-dwell',baseTrain:t};
+        if(Number.isFinite(departure)){
+          if(minutes>=departure && minutes<departure+1){
+            return {side,pos:idx,y:stationY,visualTrain:t,mode:'endpoint-dwell',baseTrain:t};
           }
-          if(minutes>endpointHideAt) continue;
-        }
-
-        // 環状列車は端駅の発車時刻1分後まで表示し、それを過ぎたら非表示。
-        // 次駅の到着時刻になったら、次駅上で再表示する。
-        if(endpointToEndpoint && nextEdge?.bridge && Number.isFinite(departure) && minutes>=departure+1){
-          continue;
+          if(minutes>=departure+1) continue;
         }
       }
 
@@ -7203,8 +7189,8 @@ initRegionNavigation();
             const xStart=25,xEnd=75;
             const y=circularCenterY(endpointOnLeft?edge.sideA:edge.sideB,endpointOnLeft?edge.indexA:edge.indexB,metrics);
             const ratio=Math.max(0,Math.min(1,nb===na?0:(minutes-na)/(nb-na)));
-            // 環状線は端駅の発車1分後を過ぎたら次駅到着まで非表示。
-            if(endpointToEndpoint){
+            // 大阪⇄天満／新今宮⇄天王寺の橋区間だけ、発車から1分後は非表示。
+            if(isSpecialCircularBridgePair(fromName,String(stops[i+1]?.station||''))){
               const endpointDeparture=Number(st._departure);
               if(Number.isFinite(endpointDeparture) && minutes>=endpointDeparture+1) return null;
             }
@@ -7284,7 +7270,7 @@ initRegionNavigation();
     const entries=getCircularVisibleEntries();
     const visible=[]; const keep=new Set(); const occupied={left:[],right:[]};
     for(const entry of entries){
-      if(now<entry.visibleFrom || now>entry.visibleUntil) continue;
+      if(now<entry.visibleFrom || (now>=entry.visibleUntil && entry.visibleUntil>entry.visibleFrom)) continue;
       const p=circularTrainPosition(entry.train,now); if(!p) continue;
       const displayTrain=p.visualTrain||entry.train;
       const signature=`${String(entry.train.no||'')}|${String(entry.train.direction||'')}`;
