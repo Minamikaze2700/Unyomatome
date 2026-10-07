@@ -7125,14 +7125,15 @@ initRegionNavigation();
     if(!Number.isFinite(firstDep)||!Number.isFinite(lastArr)) return null;
 
     const circularOnly=!!isCircularTrain(t);
-    const specialPair=(a,b)=>circularOnly && isSpecialCircularBridgePair(a,b);
+    // 特別処理の対象は「環状運転」かどうかではなく、この2つの橋区間そのもの。
+    // 大阪・天満間／新今宮・天王寺間を通る非環状列車にも同じ処理を適用する。
 
     for(let i=0;i<stops.length;i++){
       const st=stops[i],name=String(st.station||'');
       const prevEdge=i>0 ? circularEdgeForPair(stops[i-1].station,name) : null;
       const nextEdge=i<stops.length-1 ? circularEdgeForPair(name,String(stops[i+1].station||'')) : null;
-      const specialNextBridge=i<stops.length-1 && specialPair(name,stops[i+1].station);
-      const specialPrevBridge=i>0 && specialPair(stops[i-1].station,name);
+      const specialNextBridge=i<stops.length-1 && isSpecialCircularBridgePair(name,stops[i+1].station);
+      const specialPrevBridge=i>0 && isSpecialCircularBridgePair(stops[i-1].station,name);
 
       const sidePrev=prevEdge?.side||null;
       const sideNext=nextEdge?.side||null;
@@ -7264,7 +7265,8 @@ initRegionNavigation();
     const entries=getCircularVisibleEntries();
     const visible=[]; const keep=new Set(); const occupied={left:[],right:[]};
     for(const entry of entries){
-      if(now<entry.visibleFrom || (now>=entry.visibleUntil && entry.visibleUntil>entry.visibleFrom)) continue;
+      // 次駅の到着時刻ちょうどを含め、特別橋区間の終点駅でその瞬間に再表示する。
+      if(now<entry.visibleFrom || now>entry.visibleUntil) continue;
       const p=circularTrainPosition(entry.train,now); if(!p) continue;
       const displayTrain=p.visualTrain||entry.train;
       const signature=`${String(entry.train.no||'')}|${String(entry.train.direction||'')}`;
