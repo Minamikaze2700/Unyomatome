@@ -1058,7 +1058,7 @@ const ROUTE_REGISTRY={
     range:'天王寺～天王寺',
     area:'JR西日本',
     storageRoot:'大阪環状線・ゆめ咲線',
-    storageArea:'JR西日本',
+    storageArea:null,
     company:'JR西日本',
     formationFamily:'osaka-loop',
     formationCountDefault:1,
@@ -1079,7 +1079,7 @@ const ROUTE_REGISTRY={
     range:'西九条～桜島',
     area:'JR西日本',
     storageRoot:'大阪環状線・ゆめ咲線',
-    storageArea:'JR西日本',
+    storageArea:null,
     company:'JR西日本',
     formationFamily:'osaka-loop',
     formationCountDefault:1,
@@ -7268,9 +7268,22 @@ initRegionNavigation();
       const firstDeparture=Number(first._departure);
       const lastArrival=Number(last._arrival);
       if(!Number.isFinite(firstDeparture)||!Number.isFinite(lastArrival)) continue;
-      // 特別橋区間の表示・非表示そのものは circularTrainPosition() が担当する。
-      // ここでは列車全体の表示可能時間だけを設定し、橋区間の終点到着を切らない。
-      out.push({train,visibleFrom:firstDeparture,visibleUntil:lastArrival});
+
+      // 特別橋区間を越えた列車が、その終点駅で終着する場合でも
+      // 「次駅の到着時刻」に再表示できるよう、列車全体の表示期限を
+      // 終着駅の到着後まで確保する。
+      let visibleUntil=lastArrival;
+      if(stops.length>=2){
+        const prevName=String(stops[stops.length-2]?.station||'');
+        const lastName=String(last?.station||'');
+        if(isSpecialCircularBridgePair(prevName,lastName)){
+          const lastDeparture=Number(last._departure);
+          visibleUntil=Number.isFinite(lastDeparture)
+            ? Math.max(lastArrival,lastDeparture+0.75)
+            : lastArrival+0.75;
+        }
+      }
+      out.push({train,visibleFrom:firstDeparture,visibleUntil});
     }
     return out;
   }
