@@ -589,6 +589,11 @@ button,input,select,textarea{font-family:inherit}
 .auth-description{margin:0 0 12px;color:#555}
 .provider-login{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:10px;padding:12px 14px;margin-bottom:10px;font:700 1rem/1.2 inherit;cursor:pointer}
 .provider-login.google{background:#fff;color:#222;border:1px solid #ddd}.provider-login.twitter{background:#111;color:#fff}
+.email-login-box{display:flex;flex-direction:column;gap:9px;margin-top:14px;padding-top:14px;border-top:1px solid #d0d0d0}
+.email-login-box .user-profile-field{margin:0}
+.email-login-box input{box-sizing:border-box;width:100%;min-width:0}
+.provider-login.email-create{background:#fff;color:#333;border:1px solid #ccc;margin:0}
+.auth-text-btn{border:0;background:transparent;color:#2463a6;text-decoration:underline;cursor:pointer;padding:6px;font:inherit;font-size:.9rem}
 .provider-icon{font-weight:900;font-size:1.15rem;min-width:20px;text-align:center}
 .user-profile-form{display:flex;flex-direction:column;gap:8px}.user-profile-form[hidden],.login-choices[hidden]{display:none!important}.user-profile-account{font-size:.9rem;color:#555;background:#f5f5f5;border-radius:8px;padding:8px 10px}
 .profile-name-input-row{display:flex;align-items:center;gap:10px;width:100%;}.profile-name-input-row #profileNameInput{flex:1;min-width:0;}.permission-tag{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;background:#999;color:#fff;border-radius:999px;padding:2px 10px;font-size:.86rem;font-weight:400;line-height:1.2;white-space:nowrap;}.permission-a,.permission-l{background:#999;color:#fff;}.profile-permission-info{font-size:.82rem;color:#777;margin-top:-3px;margin-bottom:2px;}
@@ -801,9 +806,16 @@ body{padding-bottom:42px !important;}
   <div class="auth-panel-header"><span id="authPanelTitle">ログイン</span><button type="button" onclick="closeAuthPanel()" aria-label="閉じる">✖</button></div>
   <div class="auth-panel-body">
     <div id="loginChoices" class="login-choices">
-      <p class="auth-description">Googleでログインできます。</p>
+      <p class="auth-description">Googleアカウント、またはメールアドレスでログインできます。</p>
       <button class="provider-login google" type="button" onclick="signInWithGoogle()"><span class="provider-icon">G</span><span>Googleでログイン</span></button>
-      <div id="authError" class="auth-error"></div>
+      <div class="email-login-box">
+        <label class="user-profile-field"><span>メールアドレス</span><input id="authEmailInput" type="email" autocomplete="email" inputmode="email" placeholder="name@example.com"></label>
+        <label class="user-profile-field"><span>パスワード</span><input id="authPasswordInput" type="password" autocomplete="current-password" minlength="6" placeholder="6文字以上"></label>
+        <button class="profile-save-btn" type="button" onclick="signInWithEmail()">メールアドレスでログイン</button>
+        <button class="provider-login email-create" type="button" onclick="createEmailAccount()">新規登録</button>
+        <button class="auth-text-btn" type="button" onclick="sendPasswordReset()">パスワードを忘れた場合</button>
+      </div>
+      <div id="authError" class="auth-error" aria-live="polite"></div>
     </div>
     <div id="userProfileForm" class="user-profile-form" hidden>
       <div class="user-profile-account" id="userProfileAccount"></div>
@@ -6392,8 +6404,14 @@ initRegionNavigation();
     if(code==='auth/popup-blocked') return 'ポップアップがブロックされました。ブラウザのポップアップを許可してください。';
     if(code==='auth/cancelled-popup-request') return '別のログイン処理が実行中です。';
     if(code==='auth/account-exists-with-different-credential') return 'このアカウントは別のログイン方法です。最初に登録した方法でログインしてください。';
-    if(code==='auth/operation-not-allowed') return 'このログイン方法がFirebase側で有効になっていません。';
-    return 'ログインに失敗しました。しばらくしてからもう一度お試しください。';
+    if(code==='auth/operation-not-allowed') return 'このログイン方法がFirebase側で有効になっていません。Firebase Consoleでメール/パスワード認証を有効にしてください。';
+    if(code==='auth/invalid-email') return 'メールアドレスの形式を確認してください。';
+    if(code==='auth/missing-password') return 'パスワードを入力してください。';
+    if(code==='auth/weak-password') return 'パスワードは6文字以上で設定してください。';
+    if(code==='auth/email-already-in-use') return 'このメールアドレスは登録済みです。ログインをお試しください。';
+    if(code==='auth/invalid-credential' || code==='auth/wrong-password' || code==='auth/user-not-found') return 'メールアドレスまたはパスワードが正しくありません。';
+    if(code==='auth/too-many-requests') return '試行回数が多すぎます。しばらく待ってから再度お試しください。';
+    return '認証に失敗しました。入力内容とFirebaseの認証設定を確認してください。';
   }
   function setAuthError(text){
     const a=document.getElementById('authError'); if(a) a.textContent=text||'';
@@ -6450,7 +6468,7 @@ initRegionNavigation();
         if(ni && document.activeElement!==ni) ni.value=name;
         if(ii && document.activeElement!==ii) ii.value=id;
         const account=document.getElementById('userProfileAccount');
-        if(account) account.textContent=`${currentAuthUser.providerData?.[0]?.providerId==='twitter.com'?'Twitter':'Google'}アカウントでログイン中`;
+        if(account){const provider=currentAuthUser.providerData?.[0]?.providerId||'';const label=provider==='password'?'メールアドレス':provider==='twitter.com'?'Twitter':'Google';account.textContent=`${label}でログイン中${currentAuthUser.email?'（'+currentAuthUser.email+'）':''}`;}
       }
     }else{
       if(title) title.textContent='ログイン';
@@ -6565,6 +6583,36 @@ initRegionNavigation();
     try{ await firebaseAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
     catch(e){ console.error('Googleログイン失敗',e); setAuthError(authErrorMessage(e)); }
   }
+  function emailAuthInputs(){
+    const email=String(document.getElementById('authEmailInput')?.value||'').trim();
+    const password=String(document.getElementById('authPasswordInput')?.value||'');
+    if(!email){setAuthError('メールアドレスを入力してください。');return null;}
+    if(!password){setAuthError('パスワードを入力してください。');return null;}
+    if(password.length<6){setAuthError('パスワードは6文字以上で入力してください。');return null;}
+    if(!firebaseAuth){setAuthError('Firebase Authenticationが初期化されていません。ページを再読み込みしてください。');return null;}
+    return {email,password};
+  }
+  async function signInWithEmail(){
+    const values=emailAuthInputs();if(!values)return;
+    setAuthError('');
+    try{await firebaseAuth.signInWithEmailAndPassword(values.email,values.password);}
+    catch(e){console.error('メールログイン失敗',e);setAuthError(authErrorMessage(e));}
+  }
+  async function createEmailAccount(){
+    const values=emailAuthInputs();if(!values)return;
+    setAuthError('');
+    try{await firebaseAuth.createUserWithEmailAndPassword(values.email,values.password);}
+    catch(e){console.error('メールアカウント登録失敗',e);setAuthError(authErrorMessage(e));}
+  }
+  async function sendPasswordReset(){
+    const email=String(document.getElementById('authEmailInput')?.value||'').trim();
+    if(!email){setAuthError('パスワード再設定メールを送るメールアドレスを入力してください。');return;}
+    if(!firebaseAuth){setAuthError('Firebase Authenticationが初期化されていません。');return;}
+    setAuthError('');
+    try{await firebaseAuth.sendPasswordResetEmail(email);setAuthError('パスワード再設定メールを送信しました。受信トレイをご確認ください。');}
+    catch(e){console.error('パスワード再設定メール送信失敗',e);setAuthError(authErrorMessage(e));}
+  }
+
   async function logoutUser(){
     if(!firebaseAuth)return;
     try{ await firebaseAuth.signOut(); closeAuthPanel(); updateSiteAccountButton(); }
@@ -6604,6 +6652,9 @@ initRegionNavigation();
   window.openAuthPanel=openAuthPanel;
   window.closeAuthPanel=closeAuthPanel;
   window.signInWithGoogle=signInWithGoogle;
+  window.signInWithEmail=signInWithEmail;
+  window.createEmailAccount=createEmailAccount;
+  window.sendPasswordReset=sendPasswordReset;
   window.saveUserProfile=saveUserProfile;
   window.logoutUser=logoutUser;
 
