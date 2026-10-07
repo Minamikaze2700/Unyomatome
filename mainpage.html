@@ -1755,7 +1755,14 @@ async function loadExternalRouteJsons(routeMeta){
         ...(Array.isArray(routeMeta?.jsonLines)?routeMeta.jsonLines.map(x=>String(x||'').trim()):[])
       ].filter(Boolean);
       for(const key of candidates){
-        if(rawJson.routes[key] && typeof rawJson.routes[key]==='object') return rawJson.routes[key];
+        if(rawJson.routes[key] && typeof rawJson.routes[key]==='object'){
+          // 共有JSONの他路線も保持しておく。
+          // 現在の路線画面を壊さず、共通駅（西九条など）の駅時刻表や
+          // 直通列車の停車駅案内で、共有JSON内の他路線情報を参照できるようにする。
+          const selected={...rawJson.routes[key]};
+          selected._sharedRoutes=rawJson.routes;
+          return selected;
+        }
       }
       throw new Error(`共有路線JSONに「${String(activeRouteName||'')}」のデータがありません`);
     }
@@ -3750,12 +3757,30 @@ function stationTimetableHTML(station, selectedDirection='up'){
   const directionData={up:{label:directionLabels.up,entries:[]},down:{label:directionLabels.down,entries:[]}};
   const byTrain=new Map();
 
+  // 西九条は大阪環状線とゆめ咲線の共通駅。大阪環状線を選択している
+  // 場合でも、ゆめ咲線内完結列車（西九条始発→桜島）を駅時刻表へ追加する。
+  // 到着のみの列車（桜島→西九条）は、駅時刻表が発車時刻表のため従来通り除外。
+  const stationTimetableExtraTrains=[];
+  if(activeRouteName==='大阪環状線' && stationName==='西九条'){
+    const shared=activeJson?._sharedRoutes;
+    const yume=shared&&typeof shared==='object' ? shared['ゆめ咲線'] : null;
+    const sourceDay=syncCurrentScheduleDay()==='休日' ? '土休日' : '平日';
+    for(const direction of ['上り','下り']){
+      const rawList=Array.isArray(yume?.trains?.[sourceDay]?.[direction]) ? yume.trains[sourceDay][direction] : [];
+      for(const raw of rawList){
+        if(String(raw?.start||'')!=='西九条') continue;
+        if(String(raw?.dest||'')==='西九条') continue;
+        stationTimetableExtraTrains.push(...normalizeExternalTrain(raw, syncCurrentScheduleDay(), direction, ROUTE_REGISTRY['ゆめ咲線']));
+      }
+    }
+  }
+
   // 当日の全列車を常に表示し、スクロール位置だけを「次発」に合わせる。
   // 駅時刻表は「その駅から発車する列車」を掲載する。
   // したがって終着が天王寺でも、天王寺始発なら発車時刻を掲載する。
   // 一方、添付時刻表で「環状運転」となっている天王寺始発・天王寺終着の列車は、
   // 実際の終着列車ではないため、この駅時刻表の「天王寺止まり」枠には入れない。
-  getVisibleTrains().forEach(train=>{
+  [...getVisibleTrains(), ...stationTimetableExtraTrains].forEach(train=>{
     const isCircular=isCircularTrain(train);
     const isOrigin=String(train?.start||'')===stationName;
     const isTerminal=String(train?.dest||'')===stationName;
@@ -4696,7 +4721,26 @@ function esc(value){ return escapeAttr(value); }
    normalizeExternalTrain() の実行時点では activeJson が読み込み済みなので、
    ここから常に現在選択中のJSONの lines を参照する。 */
 function allJsonLines(){
-  return Array.isArray(activeJson?.lines) ? activeJson.lines : [];
+  const out=[];
+  const seen=new Set();
+  const addLines=lines=>{
+    for(const line of (Array.isArray(lines)?lines:[])){
+      const key=String(line?.name||'').trim();
+      if(!key||seen.has(key)) continue;
+      seen.add(key); out.push(line);
+    }
+  };
+  addLines(activeJson?.lines);
+  // 大阪環状線・ゆめ咲線のような共有JSONでは、選択中でない路線の
+  // 線区定義も色判定に使う。ただし列車データ自体は混ぜない。
+  const shared=activeJson?._sharedRoutes;
+  if(shared&&typeof shared==='object'){
+    for(const [name,route] of Object.entries(shared)){
+      if(String(name)===String(activeRouteName)) continue;
+      addLines(route?.lines);
+    }
+  }
+  return out;
 }
 
 /* 列車が実際に走る路線を基準に停車駅案内の色を決定する。 */
@@ -4851,6 +4895,15 @@ function trainServiceColorBetweenStations(a,b,trainContext=null){
   const aa=String(a||''),bb=String(b||'');
   if(!aa||!bb||aa===bb) return fallbackTrainServiceColor(trainContext);
   const routeOverride=String(activeRouteMeta?.routeColor||'').trim();
+
+  // 大阪環状線画面でも、ゆめ咲線区間はゆめ咲線の色を使う。
+  // 西九条～安治川口～ユニバーサルシティ～桜島の停車駅案内が
+  // 大阪環状線の赤に戻ってしまわないよう、共有JSONの線区定義を優先する。
+  const yumesakiLine=lineDefByName('ゆめ咲線');
+  if(yumesakiLine && lineContainsStops(yumesakiLine,aa,bb)){
+    const yumesakiColor=String(yumesakiLine?.color||'').trim();
+    if(yumesakiColor) return yumesakiColor;
+  }
   // 大阪環状線の停車駅案内では区間ごとの路線色を反映する。
   // ただし大和路線の色は停車駅案内には持ち込まず、環状線カラーを使う。
   if(activeJson?.circular===true && activeRouteName==='大阪環状線'){
