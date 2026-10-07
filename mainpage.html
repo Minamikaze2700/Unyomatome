@@ -7120,117 +7120,141 @@ initRegionNavigation();
     const metrics=circularStageMetrics();
     const stageWidth=Number(metrics?.width)||0;
     const stops=normalizeLineStopTimes(t.stops||[]); if(!stops.length) return null;
-    const first=stops[0],last=stops[stops.length-1];
-    const firstDep=Number(first._departure),lastArr=Number(last._arrival);
-    if(!Number.isFinite(firstDep)||!Number.isFinite(lastArr)) return null;
-
     const circularOnly=!!isCircularTrain(t);
-    // 特別処理の対象は「環状運転」かどうかではなく、この2つの橋区間そのもの。
-    // 大阪・天満間／新今宮・天王寺間を通る非環状列車にも同じ処理を適用する。
 
+    // 大阪⇄天満／新今宮⇄天王寺の2区間だけ、物理的な橋区間として特別扱いする。
+    // 列車種別や「環状運転」フラグには依存しない。
+    // 始点：発車時刻から1分間だけ始点駅に固定表示。
+    // その後：次駅の到着時刻まで完全非表示。
+    // 終点：次駅の到着時刻ちょうどに終点駅へ再表示。
+    function bridgeStationSide(name,index){
+      const prevEdge=index>0 ? circularEdgeForPair(stops[index-1].station,name) : null;
+      const nextEdge=index<stops.length-1 ? circularEdgeForPair(name,stops[index+1].station) : null;
+      if(nextEdge?.bridge){
+        return name===String(nextEdge.a||'') ? nextEdge.sideA : nextEdge.sideB;
+      }
+      if(prevEdge?.bridge){
+        return name===String(prevEdge.a||'') ? prevEdge.sideA : prevEdge.sideB;
+      }
+      if(layout.left?.includes(name)) return 'left';
+      if(layout.right?.includes(name)) return 'right';
+      return t.direction==='down'?'right':'left';
+    }
+
+    // まず2つの特別橋区間だけを時刻ベースで判定する。
+    // これを通常の駅間走行処理より先に置くことで、橋の上をアイコンが移動することを完全に防ぐ。
+    for(let i=0;i<stops.length-1;i++){
+      const from=String(stops[i]?.station||'');
+      const to=String(stops[i+1]?.station||'');
+      if(!isSpecialCircularBridgePair(from,to)) continue;
+      const departure=Number(stops[i]._departure);
+      const arrivalNext=Number(stops[i+1]._arrival);
+      if(!Number.isFinite(departure)||!Number.isFinite(arrivalNext)) continue;
+
+      const fromSide=bridgeStationSide(from,i);
+      const fromList=layout[fromSide]||[];
+      const fromIndex=fromList.indexOf(from);
+      const fromY=fromIndex>=0?circularCenterY(fromSide,fromIndex,metrics):null;
+
+      // 発車時刻から1分後になるまでは始点駅に固定。
+      if(minutes>=departure && minutes<departure+1 && fromIndex>=0){
+        return {
+          side:fromSide,
+          pos:fromIndex,
+          y:fromY,
+          visualTrain:t,
+          mode:'special-bridge-start',
+          baseTrain:t
+        };
+      }
+
+      // 発車1分後～次駅到着時刻の直前は完全に消す。
+      if(minutes>=departure+1 && minutes<arrivalNext){
+        return null;
+      }
+
+      // 次駅の到着時刻ちょうどから終点駅に再表示。
+      if(minutes>=arrivalNext){
+        const toSide=bridgeStationSide(to,i+1);
+        const toList=layout[toSide]||[];
+        const toIndex=toList.indexOf(to);
+        if(toIndex>=0){
+          const nextDeparture=Number(stops[i+1]._departure);
+          const showUntil=Number.isFinite(nextDeparture)
+            ? nextDeparture+0.75
+            : arrivalNext+0.75;
+          if(minutes<showUntil){
+            return {
+              side:toSide,
+              pos:toIndex,
+              y:circularCenterY(toSide,toIndex,metrics),
+              visualTrain:t,
+              mode:'special-bridge-arrival',
+              baseTrain:t
+            };
+          }
+        }
+      }
+    }
+
+    // 特別橋区間以外は従来どおりの駅間・駅停車処理。
     for(let i=0;i<stops.length;i++){
       const st=stops[i],name=String(st.station||'');
       const prevEdge=i>0 ? circularEdgeForPair(stops[i-1].station,name) : null;
       const nextEdge=i<stops.length-1 ? circularEdgeForPair(name,String(stops[i+1].station||'')) : null;
-      const specialNextBridge=i<stops.length-1 && isSpecialCircularBridgePair(name,stops[i+1].station);
-      const specialPrevBridge=i>0 && isSpecialCircularBridgePair(stops[i-1].station,name);
-
       const sidePrev=prevEdge?.side||null;
       const sideNext=nextEdge?.side||null;
       const side=sidePrev||sideNext||circularSideAtStation(name,t.direction==='down'?'right':'left');
       const arr=(layout[side]||[]);
       const idx=arr.indexOf(name);
       if(idx<0) continue;
+      const stationY=circularCenterY(side,idx,metrics);
 
-      // 大阪⇄天満／新今宮⇄天王寺の2区間だけ特別処理。
-      // 始点駅：発車時刻から1分間は駅上に表示。
-      // 発車1分後～次駅到着直前：完全に非表示。
-      // 終点駅：次駅到着時刻になった瞬間に再表示する。
-      if(specialNextBridge){
-        const departure=Number(st._departure);
-        const nextArrival=Number(stops[i+1]?._arrival);
-        const stationY=circularCenterY(side,idx,metrics);
-        if(Number.isFinite(departure)){
-          if(minutes>=departure && minutes<departure+1){
-            return {side,pos:idx,y:stationY,visualTrain:t,mode:'special-bridge-start',baseTrain:t};
-          }
-          if(Number.isFinite(nextArrival) && minutes>=departure+1 && minutes<nextArrival){
-            // この橋区間では、発車1分後から次駅到着まで絶対にアイコンを出さない。
-            return null;
-          }
-        }
-      }
-
-      // 特別橋区間の終点駅は、到着時刻から通常の駅停車表示へ戻す。
-      // arrival が無いダイヤでも normalizeLineStopTimes() が departure/time を補完している。
-      if(specialPrevBridge){
-        const arrival=Number(st._arrival);
-        const departure=Number(st._departure);
-        const stationY=circularCenterY(side,idx,metrics);
-        if(Number.isFinite(arrival) && minutes>=arrival &&
-           (!Number.isFinite(departure) || minutes<departure+0.75)){
-          return {side,pos:idx,y:stationY,visualTrain:t,mode:'special-bridge-arrival',baseTrain:t};
-        }
+      // 特別橋区間を次に渡る場合は、橋上走行処理に入れない。
+      if(i<stops.length-1 && isSpecialCircularBridgePair(name,stops[i+1].station)){
+        continue;
       }
 
       // 通常の駅停車表示。
       const a=Number(st._arrival)+0.25;
       const b=Number(st._departure)+0.75;
       if(Number.isFinite(a)&&Number.isFinite(b)&&minutes>=a&&minutes<b){
-        const stationY=circularCenterY(side,idx,metrics);
-        return {side,pos:idx,y:stationY,visualTrain:t,mode:(i===stops.length-1?'end-dwell':'station-dwell'),baseTrain:t};
+        return {
+          side,
+          pos:idx,
+          y:stationY,
+          visualTrain:t,
+          mode:(i===stops.length-1?'end-dwell':'station-dwell'),
+          baseTrain:t
+        };
       }
 
       if(i<stops.length-1){
         const edge=nextEdge;
-        if(!edge) continue;
+        if(!edge||edge.bridge) continue;
         const departure=Number(st._departure);
         const arrivalNext=Number(stops[i+1]._arrival);
         if(!Number.isFinite(departure)||!Number.isFinite(arrivalNext)) continue;
-
-        // 特別橋区間はアイコンを橋の上で走らせない。
-        // 上の specialNextBridge で「始点駅表示」または「非表示」を確定させ、
-        // 到着時刻になったら次ループの specialPrevBridge で再表示する。
-        if(specialNextBridge) return null;
-
         const na=departure+0.75;
         const isTerminalNext=i===stops.length-2;
         const nb=isTerminalNext?arrivalNext:arrivalNext+0.25;
         if(!Number.isFinite(na)||!Number.isFinite(nb)) continue;
         if(minutes>=na && (isTerminalNext?minutes<nb:minutes<=nb)){
-          // 横線の形状は既存のCSSをそのまま使用する。
-          if(edge.bridge){
-            const fromName=String(name||'');
-            const endpointOnLeft=fromName===String(edge.a||'');
-            const bridgeBase=endpointOnLeft?edge.indexA:edge.indexB;
-            const fromLeft=endpointOnLeft;
-            const xStart=25,xEnd=75;
-            const y=circularCenterY(endpointOnLeft?edge.sideA:edge.sideB,endpointOnLeft?edge.indexA:edge.indexB,metrics);
-            const ratio=Math.max(0,Math.min(1,nb===na?0:(minutes-na)/(nb-na)));
-            const fromSide=endpointOnLeft?edge.sideA:edge.sideB;
-            const pathT=endpointOnLeft?ratio:1-ratio;
-            return {
-              side:fromSide,
-              pos:bridgeBase+pathT,
-              xPercent:fromLeft?xStart+(xEnd-xStart)*ratio:xEnd-(xEnd-xStart)*ratio,
-              y,
-              bridge:true,
-              visualTrain:t,
-              mode:'run',
-              baseTrain:t,
-              stageWidth
-            };
-          }
-
           const fromIsA=String(name||'')===String(edge.a||'');
           const fromIndex=fromIsA?edge.indexA:edge.indexB;
           const toIndex=fromIsA?edge.indexB:edge.indexA;
           const ratio=Math.max(0,Math.min(1,nb===na?0:(minutes-na)/(nb-na)));
-          const p=fromIndex+(toIndex-fromIndex)*ratio;
-          const y=(name==='天王寺' && edge.side==='right' && fromIndex===layout.right.length-1)
-            ? circularCenterY('right',fromIndex+(toIndex-fromIndex)*ratio,metrics)
-            : circularCenterY(edge.side,p,metrics);
-          return {side:edge.side,pos:p,y,visualTrain:t,mode:'run',baseTrain:t};
+          const pos=fromIndex+(toIndex-fromIndex)*ratio;
+          const y=circularCenterY(edge.side,pos,metrics);
+          return {
+            side:edge.side,
+            pos,
+            y,
+            visualTrain:t,
+            mode:'run',
+            baseTrain:t,
+            stageWidth
+          };
         }
       }
     }
@@ -7244,9 +7268,8 @@ initRegionNavigation();
       const firstDeparture=Number(first._departure);
       const lastArrival=Number(last._arrival);
       if(!Number.isFinite(firstDeparture)||!Number.isFinite(lastArrival)) continue;
-
-      // 特別橋区間の表示・非表示は circularTrainPosition() で厳密に制御する。
-      // 一般の端駅表示まで広げない。
+      // 特別橋区間の表示・非表示そのものは circularTrainPosition() が担当する。
+      // ここでは列車全体の表示可能時間だけを設定し、橋区間の終点到着を切らない。
       out.push({train,visibleFrom:firstDeparture,visibleUntil:lastArrival});
     }
     return out;
