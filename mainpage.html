@@ -7129,13 +7129,17 @@ initRegionNavigation();
       layout.left?.[0]===name || layout.right?.[0]===name ||
       layout.left?.[layout.left.length-1]===name || layout.right?.[layout.right.length-1]===name
     );
+    // 特別な端駅処理は「指定された2区間を始発側として渡る環状列車」だけに適用。
+    // 大阪→天満／天王寺→新今宮、およびその逆方向の橋区間のみ対象にする。
+    const specialEndpointPair=circularOnly && (
+      (String(first.station||'')==='大阪' && String(stops[1]?.station||'')==='天満') ||
+      (String(first.station||'')==='天王寺' && String(stops[1]?.station||'')==='新今宮')
+    );
+    const endpointToEndpoint=specialEndpointPair;
 
     for(let i=0;i<stops.length;i++){
       const st=stops[i],name=String(st.station||'');
-      const endpoint=circularOnly && isEndpointName(name) && (
-        (i<stops.length-1 && isSpecialCircularBridgePair(name,stops[i+1].station)) ||
-        (i>0 && isSpecialCircularBridgePair(stops[i-1].station,name))
-      );
+      const endpoint=endpointToEndpoint && isEndpointName(name);
       const prevEdge=i>0 ? circularEdgeForPair(stops[i-1].station,name) : null;
       const nextEdge=i<stops.length-1 ? circularEdgeForPair(name,String(stops[i+1].station||'')) : null;
       const sidePrev=prevEdge?.side||null;
@@ -7169,7 +7173,7 @@ initRegionNavigation();
 
         // 環状列車は端駅の発車時刻1分後まで表示し、それを過ぎたら非表示。
         // 次駅の到着時刻になったら、次駅上で再表示する。
-        if(nextEdge?.bridge && Number.isFinite(departure) && minutes>=departure+1){
+        if(endpointToEndpoint && nextEdge?.bridge && Number.isFinite(departure) && minutes>=departure+1){
           continue;
         }
       }
@@ -7200,7 +7204,7 @@ initRegionNavigation();
             const y=circularCenterY(endpointOnLeft?edge.sideA:edge.sideB,endpointOnLeft?edge.indexA:edge.indexB,metrics);
             const ratio=Math.max(0,Math.min(1,nb===na?0:(minutes-na)/(nb-na)));
             // 環状線は端駅の発車1分後を過ぎたら次駅到着まで非表示。
-            if(circularOnly && isSpecialCircularBridgePair(name,stops[i+1].station)){
+            if(endpointToEndpoint){
               const endpointDeparture=Number(st._departure);
               if(Number.isFinite(endpointDeparture) && minutes>=endpointDeparture+1) return null;
             }
