@@ -7025,6 +7025,11 @@ initRegionNavigation();
       const arr=(layout[side]||[]);
       const idx=arr.indexOf(name);
       if(idx<0) continue;
+      // 天王寺始発は右列の最下段（天王寺駅の中心）を起点に固定する。
+      // 始発停車中に列車アイコンだけが駅ラベルより下へずれるのを防ぐ。
+      const stationY=(name==='天王寺' && side==='right')
+        ? circularCenterY('right',layout.right.length-1,metrics)
+        : circularCenterY(side,idx,metrics);
 
       // 環状列車の端駅は共通の「始発2分前・終着2分後」を使わない。
       // 端駅では到着時刻から表示し、出発時刻の1分後まで表示したら非表示にする。
@@ -7055,7 +7060,7 @@ initRegionNavigation();
       const a=Number(st._arrival)+(arrivedFromBridge?0:0.25);
       const b=Number(st._departure)+(arrivedFromBridge?0.75:0.75);
       if(Number.isFinite(a)&&Number.isFinite(b)&&minutes>=a&&minutes<b){
-        return {side,pos:idx,visualTrain:t,mode:arrivedFromBridge?'bridge-arrival-dwell':(i===stops.length-1?'end-dwell':'station-dwell'),baseTrain:t};
+        return {side,pos:idx,y:stationY,visualTrain:t,mode:arrivedFromBridge?'bridge-arrival-dwell':(i===stops.length-1?'end-dwell':'station-dwell'),baseTrain:t};
       }
 
       if(i<stops.length-1){
@@ -7101,7 +7106,10 @@ initRegionNavigation();
           const toIndex=fromIsA?edge.indexB:edge.indexA;
           const ratio=Math.max(0,Math.min(1,nb===na?0:(minutes-na)/(nb-na)));
           const p=fromIndex+(toIndex-fromIndex)*ratio;
-          return {side:edge.side,pos:p,visualTrain:t,mode:'run',baseTrain:t};
+          const y=(name==='天王寺' && edge.side==='right' && fromIndex===layout.right.length-1)
+            ? circularCenterY('right',fromIndex+(toIndex-fromIndex)*ratio,metrics)
+            : circularCenterY(edge.side,p,metrics);
+          return {side:edge.side,pos:p,y,visualTrain:t,mode:'run',baseTrain:t};
         }
       }
     }
