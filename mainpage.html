@@ -1058,7 +1058,7 @@ const ROUTE_REGISTRY={
     range:'天王寺～天王寺',
     area:'JR西日本',
     storageRoot:'大阪環状線・ゆめ咲線',
-    storageArea:null,
+    storageArea:'JR西日本',
     company:'JR西日本',
     formationFamily:'osaka-loop',
     formationCountDefault:1,
@@ -1079,7 +1079,7 @@ const ROUTE_REGISTRY={
     range:'西九条～桜島',
     area:'JR西日本',
     storageRoot:'大阪環状線・ゆめ咲線',
-    storageArea:null,
+    storageArea:'JR西日本',
     company:'JR西日本',
     formationFamily:'osaka-loop',
     formationCountDefault:1,
@@ -7173,28 +7173,26 @@ initRegionNavigation();
         return null;
       }
 
-      // 次駅の到着時刻ちょうどから1分間だけ終点駅に表示し、その1分後に消す。
-      // 到着後の通常の駅停車処理には戻さない（到着+1分～発車までは非表示）。
-      if(minutes>=arrivalNext && minutes<arrivalNext+1){
+      // 次駅の到着時刻ちょうどから終点駅に再表示。
+      if(minutes>=arrivalNext){
         const toSide=bridgeStationSide(to,i+1);
         const toList=layout[toSide]||[];
         const toIndex=toList.indexOf(to);
         if(toIndex>=0){
-          return {
-            side:toSide,
-            pos:toIndex,
-            y:circularCenterY(toSide,toIndex,metrics),
-            visualTrain:t,
-            mode:'special-bridge-arrival',
-            baseTrain:t
-          };
+          // 橋区間の終点駅では「到着時刻から1分間だけ」表示する。
+          // 発車時刻まで表示し続けず、到着+1分で必ず消す。
+          const showUntil=arrivalNext+1;
+          if(minutes<showUntil){
+            return {
+              side:toSide,
+              pos:toIndex,
+              y:circularCenterY(toSide,toIndex,metrics),
+              visualTrain:t,
+              mode:'special-bridge-arrival',
+              baseTrain:t
+            };
+          }
         }
-      }
-
-      // 到着+1分後から発車時刻までは完全非表示。
-      // 次にこの駅から特別橋区間へ進む場合は、上の特別橋始点処理が発車時刻から表示する。
-      if(minutes>=arrivalNext+1){
-        continue;
       }
     }
 
@@ -7213,15 +7211,6 @@ initRegionNavigation();
 
       // 特別橋区間を次に渡る場合は、橋上走行処理に入れない。
       if(i<stops.length-1 && isSpecialCircularBridgePair(name,stops[i+1].station)){
-        continue;
-      }
-
-      // 特別橋の終点駅では、到着+1分後～発車直前の通常停車表示を行わない。
-      // 到着時の表示は上の特別橋処理で行い、発車時に次区間が特別橋なら同じく上の始点処理へ入る。
-      const arrivedFromSpecialBridge = !!(prevEdge?.bridge && i>0 &&
-        isSpecialCircularBridgePair(stops[i-1]?.station,name));
-      if(arrivedFromSpecialBridge && Number.isFinite(Number(st._arrival)) &&
-         minutes>=Number(st._arrival)+1){
         continue;
       }
 
@@ -7278,20 +7267,16 @@ initRegionNavigation();
       const firstDeparture=Number(first._departure);
       const lastArrival=Number(last._arrival);
       if(!Number.isFinite(firstDeparture)||!Number.isFinite(lastArrival)) continue;
-
-      // 特別橋区間を越えた列車が、その終点駅で終着する場合でも
-      // 「次駅の到着時刻」に再表示できるよう、列車全体の表示期限を
-      // 終着駅の到着後まで確保する。
+      // 特別橋区間は「終点の到着時刻から1分間」も表示対象に含める。
+      // 列車全体の終着がその駅だった場合でも、到着時刻ちょうどで
+      // renderCircularTrainPositions() がアイコンを落とさないようにする。
       let visibleUntil=lastArrival;
-      if(stops.length>=2){
-        const prevName=String(stops[stops.length-2]?.station||'');
-        const lastName=String(last?.station||'');
-        if(isSpecialCircularBridgePair(prevName,lastName)){
-          const lastDeparture=Number(last._departure);
-          visibleUntil=Number.isFinite(lastDeparture)
-            ? Math.max(lastArrival,lastDeparture+0.75)
-            : lastArrival+0.75;
-        }
+      for(let i=0;i<stops.length-1;i++){
+        const from=String(stops[i]?.station||'');
+        const to=String(stops[i+1]?.station||'');
+        if(!isSpecialCircularBridgePair(from,to)) continue;
+        const arrivalNext=Number(stops[i+1]?._arrival);
+        if(Number.isFinite(arrivalNext)) visibleUntil=Math.max(visibleUntil,arrivalNext+1);
       }
       out.push({train,visibleFrom:firstDeparture,visibleUntil});
     }
