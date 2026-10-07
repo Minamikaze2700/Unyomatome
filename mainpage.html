@@ -7173,27 +7173,28 @@ initRegionNavigation();
         return null;
       }
 
-      // 次駅の到着時刻ちょうどから終点駅に再表示。
-      if(minutes>=arrivalNext){
+      // 次駅の到着時刻ちょうどから1分間だけ終点駅に表示し、その1分後に消す。
+      // 到着後の通常の駅停車処理には戻さない（到着+1分～発車までは非表示）。
+      if(minutes>=arrivalNext && minutes<arrivalNext+1){
         const toSide=bridgeStationSide(to,i+1);
         const toList=layout[toSide]||[];
         const toIndex=toList.indexOf(to);
         if(toIndex>=0){
-          const nextDeparture=Number(stops[i+1]._departure);
-          const showUntil=Number.isFinite(nextDeparture)
-            ? nextDeparture+0.75
-            : arrivalNext+0.75;
-          if(minutes<showUntil){
-            return {
-              side:toSide,
-              pos:toIndex,
-              y:circularCenterY(toSide,toIndex,metrics),
-              visualTrain:t,
-              mode:'special-bridge-arrival',
-              baseTrain:t
-            };
-          }
+          return {
+            side:toSide,
+            pos:toIndex,
+            y:circularCenterY(toSide,toIndex,metrics),
+            visualTrain:t,
+            mode:'special-bridge-arrival',
+            baseTrain:t
+          };
         }
+      }
+
+      // 到着+1分後から発車時刻までは完全非表示。
+      // 次にこの駅から特別橋区間へ進む場合は、上の特別橋始点処理が発車時刻から表示する。
+      if(minutes>=arrivalNext+1){
+        continue;
       }
     }
 
@@ -7212,6 +7213,15 @@ initRegionNavigation();
 
       // 特別橋区間を次に渡る場合は、橋上走行処理に入れない。
       if(i<stops.length-1 && isSpecialCircularBridgePair(name,stops[i+1].station)){
+        continue;
+      }
+
+      // 特別橋の終点駅では、到着+1分後～発車直前の通常停車表示を行わない。
+      // 到着時の表示は上の特別橋処理で行い、発車時に次区間が特別橋なら同じく上の始点処理へ入る。
+      const arrivedFromSpecialBridge = !!(prevEdge?.bridge && i>0 &&
+        isSpecialCircularBridgePair(stops[i-1]?.station,name));
+      if(arrivedFromSpecialBridge && Number.isFinite(Number(st._arrival)) &&
+         minutes>=Number(st._arrival)+1){
         continue;
       }
 
