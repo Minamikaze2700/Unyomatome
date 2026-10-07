@@ -7215,17 +7215,32 @@ initRegionNavigation();
       }
 
       // 通常の駅停車表示。
-      const a=Number(st._arrival)+0.25;
-      const b=Number(st._departure)+0.75;
-      if(Number.isFinite(a)&&Number.isFinite(b)&&minutes>=a&&minutes<b){
-        return {
-          side,
-          pos:idx,
-          y:stationY,
-          visualTrain:t,
-          mode:(i===stops.length-1?'end-dwell':'station-dwell'),
-          baseTrain:t
-        };
+      // 終着駅は「到着時刻ちょうどに表示」し、到着から1分後まで駅上に保持する。
+      if(i===stops.length-1){
+        const terminalArrival=Number(st._arrival);
+        if(Number.isFinite(terminalArrival) && minutes>=terminalArrival && minutes<terminalArrival+1){
+          return {
+            side,
+            pos:idx,
+            y:stationY,
+            visualTrain:t,
+            mode:'end-dwell',
+            baseTrain:t
+          };
+        }
+      }else{
+        const a=Number(st._arrival)+0.25;
+        const b=Number(st._departure)+0.75;
+        if(Number.isFinite(a)&&Number.isFinite(b)&&minutes>=a&&minutes<b){
+          return {
+            side,
+            pos:idx,
+            y:stationY,
+            visualTrain:t,
+            mode:'station-dwell',
+            baseTrain:t
+          };
+        }
       }
 
       if(i<stops.length-1){
@@ -7270,7 +7285,9 @@ initRegionNavigation();
       // 特別橋区間は「終点の到着時刻から1分間」も表示対象に含める。
       // 列車全体の終着がその駅だった場合でも、到着時刻ちょうどで
       // renderCircularTrainPositions() がアイコンを落とさないようにする。
-      let visibleUntil=lastArrival;
+      // 終着駅では到着時刻ちょうどから1分後まで表示対象にする。
+      // 特別橋区間の到着駅も同じ扱いにする。
+      let visibleUntil=lastArrival+1;
       for(let i=0;i<stops.length-1;i++){
         const from=String(stops[i]?.station||'');
         const to=String(stops[i+1]?.station||'');
