@@ -98,11 +98,6 @@ button,input,select,textarea{font-family:inherit}
 }
 
 .station-row.fukuoka-branch-toggle-row{flex-direction:column;gap:8px;}
-/* 箱崎線は日光線と同じ「分岐駅直後への縦方向の差し込み」。枝線駅も中央列に固定する。 */
-.station-row.fukuoka-hako-row,.station-row.fukuoka-main-row{position:relative;left:0;right:0;margin-left:0;margin-right:0;transform:none !important;width:100%;justify-content:center;align-items:center;}
-.station-row.fukuoka-hako-row{z-index:2;}
-.fukuoka-branch-toggle-wrap{display:flex;justify-content:center;align-items:center;z-index:7;}
-.fukuoka-branch-toggle-button{min-width:150px;}
 .station-badge{
   position:relative;width:384px;min-width:384px;height:auto;aspect-ratio:480 / 90;
   border:4px solid var(--primary);border-radius:40px;
@@ -1465,7 +1460,7 @@ function fukuokaBranchStationNames(json=activeJson,meta=activeRouteMeta){
   const junction=String(d?.junctionStation||'中洲川端').trim()||'中洲川端';
   const hakoLine=(Array.isArray(json?.lines)?json.lines:[]).find(line=>String(line?.name||'')==='箱崎線');
   /* JSONの箱崎線は「中洲川端→呉服町→…→貝塚」。
-     路線図では上下を反転して「貝塚→…→呉服町」とし、祇園の直後へ差し込む。 */
+     路線図では上下を反転して「貝塚→…→呉服町」とし、中洲川端の直前へ差し込む。 */
   if(Array.isArray(hakoLine?.stations)&&hakoLine.stations.length){
     const names=hakoLine.stations
       .map(st=>String(st?.name||'').trim())
@@ -1482,12 +1477,18 @@ function fukuokaDisplayedStationNames(json=activeJson,meta=activeRouteMeta){
   const d=fukuokaDiagramConfig(json,meta);
   const main=fukuokaMainStationNames(json,meta);
   if(!fukuokaHakozakiBranchOpen) return main;
-  const insertAfter=String(d?.insertAfter||'祇園').trim() || '祇園';
+
+  // 東武スカイツリーラインの日光線と同じ構造：
+  // 分岐先の駅列を「分岐の終端駅」の直前へ差し込む。
+  // 福岡では中洲川端がその終端駅なので、
+  // 祇園 → 貝塚 → … → 呉服町 → 中洲川端
+  // となる。
+  const junction=String(d?.junctionStation||'中洲川端').trim() || '中洲川端';
   const branch=fukuokaBranchStationNames(json,meta);
   const out=[];
   for(const name of main){
+    if(name===junction) out.push(...branch);
     out.push(name);
-    if(name===insertAfter) out.push(...branch);
   }
   return [...new Set(out)];
 }
@@ -3227,6 +3228,67 @@ function applyStationLabelColors(badge,index){
     en.style.color=stationEnglishTextColor(bg);
   }
 }
+function buildFukuokaScreenRows(){
+  const rows=[];
+  const push=(st,routeKey,opt={})=>rows.push({st,routeKey,opt:{...opt}});
+  const main=fukuokaMainStationNames(activeJson,activeRouteMeta).map(name=>{
+    const master=fukuokaStationMaster(activeJson);
+    const m=master.get(name)||{};
+    return [name,String(m.nameEn||'')];
+  });
+  const branch=fukuokaBranchStationNames(activeJson,activeRouteMeta).map(name=>{
+    const master=fukuokaStationMaster(activeJson);
+    const m=master.get(name)||{};
+    return [name,String(m.nameEn||'')];
+  });
+  const junction=String(fukuokaDiagramConfig(activeJson,activeRouteMeta)?.junctionStation||'中洲川端').trim()||'中洲川端';
+  const hakoColor=String(lineDefByName('箱崎線')?.color||'#0072BC');
+  const kukoColor=String(lineDefByName('空港線')?.color||'#F58220');
+  const branchOpen=fukuokaHakozakiBranchOpen;
+
+  for(let i=0;i<main.length;i++){
+    const st=main[i],next=main[i+1],prev=main[i-1];
+    const isJunction=st[0]===junction;
+
+    // 日光線と同じく、分岐駅（中洲川端）の直前へ枝線を丸ごと挿入する。
+    // そのため、本線側の祇園から枝線の最上段・貝塚へ直接つながる。
+    if(isJunction && branchOpen){
+      branch.forEach((x,j)=>push(x,'fukuoka-hakozaki',{
+        lineTop:hakoColor,
+        lineBottom:hakoColor,
+        stationColor:hakoColor,
+        cutAbove:j===0,
+        cutBelow:false
+      }));
+    }
+
+    const opt={};
+    if(i===0) opt.cutAbove=true;
+    if(i===main.length-1) opt.cutBelow=true;
+
+    if(isJunction && branchOpen){
+      // 上半分は箱崎線、下半分は空港線。駅名標は空港線側。
+      opt.lineTop=hakoColor;
+      opt.lineBottom=next?kukoColor:'transparent';
+      opt.stationColor=kukoColor;
+    }else{
+      opt.lineTop=prev ? (branchOpen && prev[0]===junction ? hakoColor : kukoColor) : 'transparent';
+      opt.lineBottom=next ? (next[0]===junction && branchOpen ? hakoColor : kukoColor) : 'transparent';
+      opt.stationColor=next ? (next[0]===junction && branchOpen ? hakoColor : kukoColor) : (prev ? kukoColor : 'transparent');
+    }
+
+    // 箱崎線開放時でも、本線側の色と駅名標は空港線側のままにする。
+    if(st[0]=== '祇園' && branchOpen){
+      opt.lineTop=prev ? kukoColor : 'transparent';
+      opt.lineBottom=hakoColor;
+      opt.stationColor=kukoColor;
+    }
+
+    push(st,'fukuoka-kuko',opt);
+  }
+  return rows;
+}
+
 function renderFukuokaLine(){
   if(!isFukuokaCompositeRoute(activeRouteMeta)) return false;
   if(typeof TRAIN_ICON_CACHE!=='undefined') TRAIN_ICON_CACHE.clear();
@@ -3234,66 +3296,32 @@ function renderFukuokaLine(){
   const container=document.getElementById('lineContainer');
   if(!container) return true;
   container.innerHTML='<div class="operation-info-layer" id="operationInfoLayer"></div><div class="rail-line" id="railLine"></div><div class="moving-train-layer" id="movingTrainLayer"></div><div class="operation-info-label-layer" id="operationInfoLabelLayer"></div>';
-  STATIONS=buildFukuokaStationsForRoute(activeJson,activeRouteMeta)||STATIONS;
-  const diagram=fukuokaDiagramConfig(activeJson,activeRouteMeta);
-  const insertAfter=String(diagram?.insertAfter||'祇園').trim()||'祇園';
-  const branchNames=new Set(fukuokaBranchStationNames(activeJson,activeRouteMeta));
-  STATIONS.forEach((st,index)=>{
-    const name=String(st.nameJa||'');
-    const isBranch=branchNames.has(name);
-    const row=document.createElement('div');
-    row.className='station-row'+(isBranch?' fukuoka-hako-row':' fukuoka-main-row');
-    /* 他路線の行レイアウトに影響されず、日光線型の中央列へ固定。 */
-    row.style.left='0';
-    row.style.right='0';
-    row.style.marginLeft='0';
-    row.style.marginRight='0';
-    row.style.transform='none';
-    row.style.justifyContent='center';
-    row.style.alignItems='center';
+
+  const rows=buildFukuokaScreenRows();
+  STATIONS=rows.map((r,i)=>({id:`st${i+1}`,nameJa:r.st[0],nameEn:r.st[1]}));
+
+  rows.forEach((r,index)=>{
+    const row=createRow(r.st,r.routeKey,r.opt);
     if(index===0) row.classList.add('endpoint-start');
-    if(index===STATIONS.length-1) row.classList.add('endpoint-end');
-    if(name===insertAfter) row.classList.add('fukuoka-branch-toggle-row');
-
-    const badge=document.createElement('div');
-    badge.className='station-badge';
-    badge.innerHTML=`<div class="station-name-ja">${escapeAttr(name)}</div><div class="station-name-en">${escapeAttr(String(st.nameEn||''))}</div>`;
-    badge.setAttribute('role','button');
-    badge.tabIndex=0;
-    badge.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();openStationSheet(st.id);});
-    badge.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();ev.stopPropagation();openStationSheet(st.id);}});
-    const ja=badge.querySelector('.station-name-ja');
-    if(ja){
-      const len=[...name.trim()].length;
-      let ls='0';
-      if(len<=2) ls='.9em';
-      else if(len===3) ls='.3em';
-      ja.style.letterSpacing=ls;
-      ja.style.paddingLeft=ls;
-    }
-    applyStationLabelColors(badge,index);
-    row.appendChild(badge);
-
-    if(name===insertAfter){
+    if(index===rows.length-1) row.classList.add('endpoint-end');
+    if(r.st[0]===String(fukuokaDiagramConfig(activeJson,activeRouteMeta)?.junctionStation||'中洲川端').trim()) row.classList.add('fukuoka-branch-toggle-row');
+    // junction row にだけ、日光線の「分岐切替ボタン」と同じ位置でボタンを付ける。
+    if(r.st[0]===String(fukuokaDiagramConfig(activeJson,activeRouteMeta)?.junctionStation||'中洲川端').trim()){
       const wrap=document.createElement('div');
-      wrap.className='fukuoka-branch-toggle-wrap connection-buttons connection-bottom';
-      const btn=document.createElement('button');
-      btn.type='button';
-      btn.className='connection-button fukuoka-branch-toggle-button'+(fukuokaHakozakiBranchOpen?' active':'');
-      btn.style.setProperty('--button-color','#0072BC');
-      btn.textContent=fukuokaBranchToggleLabel();
-      btn.setAttribute('aria-pressed',fukuokaHakozakiBranchOpen?'true':'false');
-      btn.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();toggleFukuokaHakozakiBranch();});
+      wrap.className='connection-buttons connection-bottom';
+      const btn=connectionButton(fukuokaBranchToggleLabel(),'#0072BC',()=>toggleFukuokaHakozakiBranch(),fukuokaHakozakiBranchOpen);
       wrap.appendChild(btn);
       row.appendChild(wrap);
     }
     container.appendChild(row);
   });
+
   renderRailLineSegments();
   renderTrainPositions();
   renderOperationInfoZones();
   return true;
 }
+
 function renderLine(){
   if(renderFukuokaLine()) return;
   if(activeRouteName==='大阪環状線' && activeJson?.circular===true){
