@@ -3018,6 +3018,10 @@ function formationRouteAllowed(target,train){
   const routes=formationRouteNamesFromConfig(target);
   if(!routes.length) return true;
   const route=String(train?.routeName||activeRouteName||'').trim();
+  // 福岡市地下鉄は空港線・箱崎線を1項目に統合しているため、JSON側の
+  // routeNames（空港線/箱崎線/JR筑肥線）を画面の路線項目名と照合しない。
+  if(String(train?.formationFamily||activeRouteMeta?.formationFamily||'')==='fukuoka-kuko-hakozaki'
+      || String(activeRouteMeta?.formationFamily||'')==='fukuoka-kuko-hakozaki') return true;
   return !!route && routes.includes(route);
 }
 function formationAllowedForTrain(train,id){
@@ -4131,7 +4135,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
   [...getVisibleTrains(), ...stationTimetableExtraTrains].forEach(train=>{
     const isCircular=isCircularTrain(train);
     const isOrigin=String(train?.start||'')===stationName;
-    const isTerminal=String(train?.dest||'')===stationName;
+    const isTerminal=getShortDest(train?.dest||'')===stationName;
     if(isTerminal && !isOrigin) return;
     if(isCircular && isOrigin && isTerminal) return;
     // 駅の時刻表には回送列車を掲載しない。
@@ -5568,7 +5572,7 @@ function displayedRouteColorForTrainPosition(train,position=null){
     const dir=String(train?.direction||'').toLowerCase();
 
     // 列車の実際の終点を最後の停車駅から判定。
-    let terminalName=String(train?.dest||'').trim();
+    let terminalName=getShortDest(train?.dest||'').trim();
     let penultimateName='';
     const trainStops=Array.isArray(train?.stops)?train.stops:[];
     for(let i=trainStops.length-1;i>=0;i--){
