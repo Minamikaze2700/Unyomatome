@@ -1,55 +1,1674 @@
 {
   "noImage": "Hibiya_noimage",
+  "formationFamily": "hibiya",
+  "formationType": "日比谷線車両",
   "formationDefaultImage": "Hibiya_noimage",
-  "routeColor": "#B5B5AC",
-  "typeColors": {
-    "普通": "#9fa0a0"
-  },
-  "routeDirections": {
-    "日比谷線": {
-      "up": "中目黒方面",
-      "down": "北千住方面"
+  "formations": [
+    {
+      "type": "東京メトロ13000系",
+      "typeImg": "TRTA13000",
+      "items": [
+        {
+          "formation": "13101F",
+          "name": "13101F",
+          "img": "TRTA13101",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13001",
+            "13601",
+            "13501",
+            "13401",
+            "13301",
+            "13201",
+            "13101"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2016-06-12"
+        },
+        {
+          "formation": "13102F",
+          "name": "13102F",
+          "img": "TRTA13102",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13002",
+            "13602",
+            "13502",
+            "13402",
+            "13302",
+            "13202",
+            "13102"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2016-08-28"
+        },
+        {
+          "formation": "13103F",
+          "name": "13103F",
+          "img": "TRTA13103",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13003",
+            "13603",
+            "13503",
+            "13403",
+            "13303",
+            "13203",
+            "13103"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2017-04-10"
+        },
+        {
+          "formation": "13104F",
+          "name": "13104F",
+          "img": "TRTA13104",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13004",
+            "13604",
+            "13504",
+            "13404",
+            "13304",
+            "13204",
+            "13104"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2017-04-16"
+        },
+        {
+          "formation": "13105F",
+          "name": "13105F",
+          "img": "TRTA13105",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13005",
+            "13605",
+            "13505",
+            "13405",
+            "13305",
+            "13205",
+            "13105"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2017-05-08"
+        },
+        {
+          "formation": "13106F",
+          "name": "13106F",
+          "img": "TRTA13106",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13006",
+            "13606",
+            "13506",
+            "13406",
+            "13306",
+            "13206",
+            "13106"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2017-05-29"
+        },
+        {
+          "formation": "13107F",
+          "name": "13107F",
+          "img": "TRTA13107",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13007",
+            "13607",
+            "13507",
+            "13407",
+            "13307",
+            "13207",
+            "13107"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2017-06-05"
+        },
+        {
+          "formation": "13108F",
+          "name": "13108F",
+          "img": "TRTA13108",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13008",
+            "13608",
+            "13508",
+            "13408",
+            "13308",
+            "13208",
+            "13108"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2017-06-19"
+        },
+        {
+          "formation": "13109F",
+          "name": "13109F",
+          "img": "TRTA13109",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13009",
+            "13609",
+            "13509",
+            "13409",
+            "13309",
+            "13209",
+            "13109"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2017-07-10"
+        },
+        {
+          "formation": "13110F",
+          "name": "13110F",
+          "img": "TRTA13110",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13010",
+            "13610",
+            "13510",
+            "13410",
+            "13310",
+            "13210",
+            "13110"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2017-07-24"
+        },
+        {
+          "formation": "13111F",
+          "name": "13111F",
+          "img": "TRTA13111",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13011",
+            "13611",
+            "13511",
+            "13411",
+            "13311",
+            "13211",
+            "13111"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2017-08-07"
+        },
+        {
+          "formation": "13112F",
+          "name": "13112F",
+          "img": "TRTA13112",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13012",
+            "13612",
+            "13512",
+            "13412",
+            "13312",
+            "13212",
+            "13112"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2017-08-28"
+        },
+        {
+          "formation": "13113F",
+          "name": "13113F",
+          "img": "TRTA13113",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13013",
+            "13613",
+            "13513",
+            "13413",
+            "13313",
+            "13213",
+            "13113"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2017-09-11"
+        },
+        {
+          "formation": "13114F",
+          "name": "13114F",
+          "img": "TRTA13114",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13014",
+            "13614",
+            "13514",
+            "13414",
+            "13314",
+            "13214",
+            "13114"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2017-09-25"
+        },
+        {
+          "formation": "13115F",
+          "name": "13115F",
+          "img": "TRTA13115",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13015",
+            "13615",
+            "13515",
+            "13415",
+            "13315",
+            "13215",
+            "13115"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2017-10-02"
+        },
+        {
+          "formation": "13116F",
+          "name": "13116F",
+          "img": "TRTA13116",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13016",
+            "13616",
+            "13516",
+            "13416",
+            "13316",
+            "13216",
+            "13116"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2017-10-24"
+        },
+        {
+          "formation": "13117F",
+          "name": "13117F",
+          "img": "TRTA13117",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13017",
+            "13617",
+            "13517",
+            "13417",
+            "13317",
+            "13217",
+            "13117"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2018-03-26"
+        },
+        {
+          "formation": "13118F",
+          "name": "13118F",
+          "img": "TRTA13118",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13018",
+            "13618",
+            "13518",
+            "13418",
+            "13318",
+            "13218",
+            "13118"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2018-04-09"
+        },
+        {
+          "formation": "13119F",
+          "name": "13119F",
+          "img": "TRTA13119",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13019",
+            "13619",
+            "13519",
+            "13419",
+            "13319",
+            "13219",
+            "13119"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2018-04-23"
+        },
+        {
+          "formation": "13120F",
+          "name": "13120F",
+          "img": "TRTA13120",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13020",
+            "13620",
+            "13520",
+            "13420",
+            "13320",
+            "13220",
+            "13120"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2018-05-21"
+        },
+        {
+          "formation": "13121F",
+          "name": "13121F",
+          "img": "TRTA13121",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13021",
+            "13621",
+            "13521",
+            "13421",
+            "13321",
+            "13221",
+            "13121"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2018-05-28"
+        },
+        {
+          "formation": "13122F",
+          "name": "13122F",
+          "img": "TRTA13122",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13022",
+            "13622",
+            "13522",
+            "13422",
+            "13322",
+            "13222",
+            "13122"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2018-06-18"
+        },
+        {
+          "formation": "13123F",
+          "name": "13123F",
+          "img": "TRTA13123",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13023",
+            "13623",
+            "13523",
+            "13423",
+            "13323",
+            "13223",
+            "13123"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2018-09-10"
+        },
+        {
+          "formation": "13124F",
+          "name": "13124F",
+          "img": "TRTA13124",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13024",
+            "13624",
+            "13524",
+            "13424",
+            "13324",
+            "13224",
+            "13124"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2018-10-02"
+        },
+        {
+          "formation": "13125F",
+          "name": "13125F",
+          "img": "TRTA13125",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13025",
+            "13625",
+            "13525",
+            "13425",
+            "13325",
+            "13225",
+            "13125"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2018-10-15"
+        },
+        {
+          "formation": "13126F",
+          "name": "13126F",
+          "img": "TRTA13126",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13026",
+            "13626",
+            "13526",
+            "13426",
+            "13326",
+            "13226",
+            "13126"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2018-10-29"
+        },
+        {
+          "formation": "13127F",
+          "name": "13127F",
+          "img": "TRTA13127",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13027",
+            "13627",
+            "13527",
+            "13427",
+            "13327",
+            "13227",
+            "13127"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2018-11-19"
+        },
+        {
+          "formation": "13128F",
+          "name": "13128F",
+          "img": "TRTA13128",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13028",
+            "13628",
+            "13528",
+            "13428",
+            "13328",
+            "13228",
+            "13128"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2018-11-26"
+        },
+        {
+          "formation": "13129F",
+          "name": "13129F",
+          "img": "TRTA13129",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13029",
+            "13629",
+            "13529",
+            "13429",
+            "13329",
+            "13229",
+            "13129"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2018-12-17"
+        },
+        {
+          "formation": "13130F",
+          "name": "13130F",
+          "img": "TRTA13130",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13030",
+            "13630",
+            "13530",
+            "13430",
+            "13330",
+            "13230",
+            "13130"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2019-04-08"
+        },
+        {
+          "formation": "13131F",
+          "name": "13131F",
+          "img": "TRTA13131",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13031",
+            "13631",
+            "13531",
+            "13431",
+            "13331",
+            "13231",
+            "13131"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2019-04-22"
+        },
+        {
+          "formation": "13132F",
+          "name": "13132F",
+          "img": "TRTA13132",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13032",
+            "13632",
+            "13532",
+            "13432",
+            "13332",
+            "13232",
+            "13132"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2019-05-20"
+        },
+        {
+          "formation": "13133F",
+          "name": "13133F",
+          "img": "TRTA13133",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13033",
+            "13633",
+            "13533",
+            "13433",
+            "13333",
+            "13233",
+            "13133"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2019-05-27"
+        },
+        {
+          "formation": "13134F",
+          "name": "13134F",
+          "img": "TRTA13134",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13034",
+            "13634",
+            "13534",
+            "13434",
+            "13334",
+            "13234",
+            "13134"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2019-06-17"
+        },
+        {
+          "formation": "13135F",
+          "name": "13135F",
+          "img": "TRTA13135",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13035",
+            "13635",
+            "13535",
+            "13435",
+            "13335",
+            "13235",
+            "13135"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2019-07-08"
+        },
+        {
+          "formation": "13136F",
+          "name": "13136F",
+          "img": "TRTA13136",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13036",
+            "13636",
+            "13536",
+            "13436",
+            "13336",
+            "13236",
+            "13136"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2019-07-29"
+        },
+        {
+          "formation": "13137F",
+          "name": "13137F",
+          "img": "TRTA13137",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13037",
+            "13637",
+            "13537",
+            "13437",
+            "13337",
+            "13237",
+            "13137"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2019-08-05"
+        },
+        {
+          "formation": "13138F",
+          "name": "13138F",
+          "img": "TRTA13138",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13038",
+            "13638",
+            "13538",
+            "13438",
+            "13338",
+            "13238",
+            "13138"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2019-09-17"
+        },
+        {
+          "formation": "13139F",
+          "name": "13139F",
+          "img": "TRTA13139",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13039",
+            "13639",
+            "13539",
+            "13439",
+            "13339",
+            "13239",
+            "13139"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2019-10-07"
+        },
+        {
+          "formation": "13140F",
+          "name": "13140F",
+          "img": "TRTA13140",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13040",
+            "13640",
+            "13540",
+            "13440",
+            "13340",
+            "13240",
+            "13140"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2019-10-28"
+        },
+        {
+          "formation": "13141F",
+          "name": "13141F",
+          "img": "TRTA13141",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13041",
+            "13641",
+            "13541",
+            "13441",
+            "13341",
+            "13241",
+            "13141"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2019-11-11"
+        },
+        {
+          "formation": "13142F",
+          "name": "13142F",
+          "img": "TRTA13142",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13042",
+            "13642",
+            "13542",
+            "13442",
+            "13342",
+            "13242",
+            "13142"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2019-11-25"
+        },
+        {
+          "formation": "13143F",
+          "name": "13143F",
+          "img": "TRTA13143",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13043",
+            "13643",
+            "13543",
+            "13443",
+            "13343",
+            "13243",
+            "13143"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2020-04-06"
+        },
+        {
+          "formation": "13144F",
+          "name": "13144F",
+          "img": "TRTA13144",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "13044",
+            "13644",
+            "13544",
+            "13444",
+            "13344",
+            "13244",
+            "13144"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "千住検車区",
+          "completionDate": "2020-04-27"
+        }
+      ],
+      "family": "hibiya",
+      "routeNames": [
+        "日比谷線",
+        "東武スカイツリーライン"
+      ],
+      "manufacturer": "近畿車輛",
+      "depot": "千住検車区",
+      "carCount": 7,
+      "carOrder": [
+        "1号車",
+        "2号車",
+        "3号車",
+        "4号車",
+        "5号車",
+        "6号車",
+        "7号車"
+      ],
+      "carTypes": [
+        "13000形",
+        "13600形",
+        "13500形",
+        "13400形",
+        "13300形",
+        "13200形",
+        "13100形"
+      ]
+    },
+    {
+      "type": "東武70000型",
+      "typeImg": "TB70000",
+      "items": [
+        {
+          "formation": "71701F",
+          "name": "71701F",
+          "img": "TB71701",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77701",
+            "76701",
+            "75701",
+            "74701",
+            "73701",
+            "72701",
+            "71701"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2017-02-26"
+        },
+        {
+          "formation": "71702F",
+          "name": "71702F",
+          "img": "TB71702",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77702",
+            "76702",
+            "75702",
+            "74702",
+            "73702",
+            "72702",
+            "71702"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2017-03-05"
+        },
+        {
+          "formation": "71703F",
+          "name": "71703F",
+          "img": "TB71703",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77703",
+            "76703",
+            "75703",
+            "74703",
+            "73703",
+            "72703",
+            "71703"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2017-03-12"
+        },
+        {
+          "formation": "71704F",
+          "name": "71704F",
+          "img": "TB71704",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77704",
+            "76704",
+            "75704",
+            "74704",
+            "73704",
+            "72704",
+            "71704"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2017-11-26"
+        },
+        {
+          "formation": "71705F",
+          "name": "71705F",
+          "img": "TB71705",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77705",
+            "76705",
+            "75705",
+            "74705",
+            "73705",
+            "72705",
+            "71705"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2017-12-17"
+        },
+        {
+          "formation": "71706F",
+          "name": "71706F",
+          "img": "TB71706",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77706",
+            "76706",
+            "75706",
+            "74706",
+            "73706",
+            "72706",
+            "71706"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2018-01-08"
+        },
+        {
+          "formation": "71707F",
+          "name": "71707F",
+          "img": "TB71707",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77707",
+            "76707",
+            "75707",
+            "74707",
+            "73707",
+            "72707",
+            "71707"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2018-01-14"
+        },
+        {
+          "formation": "71708F",
+          "name": "71708F",
+          "img": "TB71708",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77708",
+            "76708",
+            "75708",
+            "74708",
+            "73708",
+            "72708",
+            "71708"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2018-02-04"
+        },
+        {
+          "formation": "71709F",
+          "name": "71709F",
+          "img": "TB71709",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77709",
+            "76709",
+            "75709",
+            "74709",
+            "73709",
+            "72709",
+            "71709"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2018-02-18"
+        },
+        {
+          "formation": "71710F",
+          "name": "71710F",
+          "img": "TB71710",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77710",
+            "76710",
+            "75710",
+            "74710",
+            "73710",
+            "72710",
+            "71710"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2018-03-04"
+        },
+        {
+          "formation": "71711F",
+          "name": "71711F",
+          "img": "TB71711",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77711",
+            "76711",
+            "75711",
+            "74711",
+            "73711",
+            "72711",
+            "71711"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2019-01-06"
+        },
+        {
+          "formation": "71712F",
+          "name": "71712F",
+          "img": "TB71712",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77712",
+            "76712",
+            "75712",
+            "74712",
+            "73712",
+            "72712",
+            "71712"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2019-01-27"
+        },
+        {
+          "formation": "71713F",
+          "name": "71713F",
+          "img": "TB71713",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77713",
+            "76713",
+            "75713",
+            "74713",
+            "73713",
+            "72713",
+            "71713"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2019-02-03"
+        },
+        {
+          "formation": "71714F",
+          "name": "71714F",
+          "img": "TB71714",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77714",
+            "76714",
+            "75714",
+            "74714",
+            "73714",
+            "72714",
+            "71714"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2019-02-24"
+        },
+        {
+          "formation": "71715F",
+          "name": "71715F",
+          "img": "TB71715",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77715",
+            "76715",
+            "75715",
+            "74715",
+            "73715",
+            "72715",
+            "71715"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2019-03-03"
+        },
+        {
+          "formation": "71716F",
+          "name": "71716F",
+          "img": "TB71716",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77716",
+            "76716",
+            "75716",
+            "74716",
+            "73716",
+            "72716",
+            "71716"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2019-03-17"
+        },
+        {
+          "formation": "71717F",
+          "name": "71717F",
+          "img": "TB71717",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77717",
+            "76717",
+            "75717",
+            "74717",
+            "73717",
+            "72717",
+            "71717"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2020-01-13"
+        },
+        {
+          "formation": "71718F",
+          "name": "71718F",
+          "img": "TB71718",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77718",
+            "76718",
+            "75718",
+            "74718",
+            "73718",
+            "72718",
+            "71718"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2020-01-26"
+        }
+      ],
+      "family": "hibiya",
+      "routeNames": [
+        "日比谷線",
+        "東武スカイツリーライン"
+      ],
+      "manufacturer": "近畿車輛",
+      "depot": "春日部支所",
+      "carCount": 7,
+      "carOrder": [
+        "1号車",
+        "2号車",
+        "3号車",
+        "4号車",
+        "5号車",
+        "6号車",
+        "7号車"
+      ],
+      "carTypes": [
+        "77700形",
+        "76700形",
+        "75700形",
+        "74700形",
+        "73700形",
+        "72700形",
+        "71700形"
+      ]
+    },
+    {
+      "type": "東武70090型",
+      "typeImg": "TB70090",
+      "items": [
+        {
+          "formation": "71791F",
+          "name": "71791F",
+          "img": "TB71791",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77791",
+            "76791",
+            "75791",
+            "74791",
+            "73791",
+            "72791",
+            "71791"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2019-12-15"
+        },
+        {
+          "formation": "71792F",
+          "name": "71792F",
+          "img": "TB71792",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77792",
+            "76792",
+            "75792",
+            "74792",
+            "73792",
+            "72792",
+            "71792"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2020-02-16"
+        },
+        {
+          "formation": "71793F",
+          "name": "71793F",
+          "img": "TB71793",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77793",
+            "76793",
+            "75793",
+            "74793",
+            "73793",
+            "72793",
+            "71793"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2020-03-08"
+        },
+        {
+          "formation": "71794F",
+          "name": "71794F",
+          "img": "TB71794",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77794",
+            "76794",
+            "75794",
+            "74794",
+            "73794",
+            "72794",
+            "71794"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2020-03-22"
+        },
+        {
+          "formation": "71795F",
+          "name": "71795F",
+          "img": "TB71795",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77795",
+            "76795",
+            "75795",
+            "74795",
+            "73795",
+            "72795",
+            "71795"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2020-05-17"
+        },
+        {
+          "formation": "71796F",
+          "name": "71796F",
+          "img": "TB71796",
+          "cars": 7,
+          "family": "hibiya",
+          "routeNames": [
+            "日比谷線",
+            "東武スカイツリーライン"
+          ],
+          "carNames": [
+            "77796",
+            "76796",
+            "75796",
+            "74796",
+            "73796",
+            "72796",
+            "71796"
+          ],
+          "manufacturer": "近畿車輛",
+          "depot": "春日部支所",
+          "completionDate": "2020-05-24"
+        }
+      ],
+      "family": "hibiya",
+      "routeNames": [
+        "日比谷線",
+        "東武スカイツリーライン"
+      ],
+      "manufacturer": "近畿車輛",
+      "depot": "春日部支所",
+      "carCount": 7,
+      "carOrder": [
+        "1号車",
+        "2号車",
+        "3号車",
+        "4号車",
+        "5号車",
+        "6号車",
+        "7号車"
+      ],
+      "carTypes": [
+        "77790形",
+        "76790形",
+        "75790形",
+        "74790形",
+        "73790形",
+        "72790形",
+        "71790形"
+      ]
     }
-  },
-  "stationShortMap": {
-    "中目黒": "中目",
-    "恵比寿": "恵比",
-    "広尾": "広尾",
-    "六本木": "六本",
-    "神谷町": "神谷",
-    "虎ノ門ヒルズ": "虎ノ門H",
-    "霞ケ関": "霞ケ関",
-    "日比谷": "日比谷",
-    "銀座": "銀座",
-    "東銀座": "東銀座",
-    "築地": "築地",
-    "八丁堀": "八丁堀",
-    "茅場町": "茅場町",
-    "人形町": "人形町",
-    "小伝馬町": "小伝馬",
-    "秋葉原": "秋葉原",
-    "仲御徒町": "仲御徒",
-    "上野": "上野",
-    "入谷": "入谷",
-    "三ノ輪": "三ノ輪",
-    "南千住": "南千",
-    "北千住": "北千",
-    "北越谷": "北越",
-    "南栗橋": "南栗"
-  },
-  "destinationAliases": {
-    "北千住": "北千",
-    "北越谷": "北越",
-    "南栗橋": "南栗"
-  },
+  ],
   "lines": [
     {
       "name": "日比谷線",
       "color": "#B5B5AC",
-      "directions": {
-        "up": "中目黒方面",
-        "down": "北千住方面"
-      },
       "stations": [
         {
           "name": "中目黒",
@@ -63,8 +1682,7 @@
         },
         {
           "name": "広尾",
-          "nameEn": "Hiro-o",
-          "abbr": "広尾"
+          "nameEn": "Hiro-o"
         },
         {
           "name": "六本木",
@@ -73,83 +1691,67 @@
         },
         {
           "name": "神谷町",
-          "nameEn": "Kamiyacho",
-          "abbr": "神谷"
+          "nameEn": "Kamiyacho"
         },
         {
           "name": "虎ノ門ヒルズ",
-          "nameEn": "Toranomon Hills",
-          "abbr": "虎ノ門H"
+          "nameEn": "Toranomon Hills"
         },
         {
           "name": "霞ケ関",
-          "nameEn": "Kasumigaseki",
-          "abbr": "霞ケ関"
+          "nameEn": "Kasumigaseki"
         },
         {
           "name": "日比谷",
-          "nameEn": "Hibiya",
-          "abbr": "日比谷"
+          "nameEn": "Hibiya"
         },
         {
           "name": "銀座",
-          "nameEn": "Ginza",
-          "abbr": "銀座"
+          "nameEn": "Ginza"
         },
         {
           "name": "東銀座",
-          "nameEn": "Higashi-ginza",
-          "abbr": "東銀座"
+          "nameEn": "Higashi-ginza"
         },
         {
           "name": "築地",
-          "nameEn": "Tsukiji",
-          "abbr": "築地"
+          "nameEn": "Tsukiji"
         },
         {
           "name": "八丁堀",
-          "nameEn": "Hatchobori",
-          "abbr": "八丁堀"
+          "nameEn": "Hatchobori"
         },
         {
           "name": "茅場町",
-          "nameEn": "Kayabacho",
-          "abbr": "茅場町"
+          "nameEn": "Kayabacho"
         },
         {
           "name": "人形町",
-          "nameEn": "Ningyocho",
-          "abbr": "人形町"
+          "nameEn": "Ningyocho"
         },
         {
           "name": "小伝馬町",
-          "nameEn": "Kodemmacho",
-          "abbr": "小伝馬"
+          "nameEn": "Kodemmacho"
         },
         {
           "name": "秋葉原",
-          "nameEn": "Akihabara",
-          "abbr": "秋葉原"
+          "nameEn": "Akihabara"
         },
         {
           "name": "仲御徒町",
-          "nameEn": "Naka-okachimachi",
-          "abbr": "仲御徒"
+          "nameEn": "Naka-okachimachi"
         },
         {
           "name": "上野",
-          "nameEn": "Ueno",
-          "abbr": "上野"
+          "nameEn": "Ueno"
         },
         {
           "name": "入谷",
-          "nameEn": "Iriya",
-          "abbr": "入谷"
+          "nameEn": "Iriya"
         },
         {
           "name": "三ノ輪",
-          "nameEn": "Minowa",
-          "abbr": "三ノ輪"
+          "nameEn": "Minowa"
         },
         {
           "name": "南千住",
@@ -161,7 +1763,11 @@
           "nameEn": "Kita-senju",
           "abbr": "北千"
         }
-      ]
+      ],
+      "directions": {
+        "up": "中目黒方面",
+        "down": "北千住方面"
+      }
     },
     {
       "name": "東武スカイツリーライン",
@@ -185,1447 +1791,11 @@
       ]
     }
   ],
-  "formations": [
-    {
-      "type": "東京メトロ13000系",
-      "typeImg": "TRTA13000",
-      "family": "hibiya",
-      "routeNames": [
-        "日比谷線",
-        "東武スカイツリーライン"
-      ],
-      "carCount": 7,
-      "carOrder": [
-        "1号車",
-        "2号車",
-        "3号車",
-        "4号車",
-        "5号車",
-        "6号車",
-        "7号車"
-      ],
-      "items": [
-        {
-          "formation": "13101F",
-          "name": "13101F",
-          "img": "13101",
-          "cars": 7,
-          "carNames": [
-            "13001",
-            "13601",
-            "13501",
-            "13401",
-            "13301",
-            "13201",
-            "13101"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13102F",
-          "name": "13102F",
-          "img": "13102",
-          "cars": 7,
-          "carNames": [
-            "13002",
-            "13602",
-            "13502",
-            "13402",
-            "13302",
-            "13202",
-            "13102"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13103F",
-          "name": "13103F",
-          "img": "13103",
-          "cars": 7,
-          "carNames": [
-            "13003",
-            "13603",
-            "13503",
-            "13403",
-            "13303",
-            "13203",
-            "13103"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13104F",
-          "name": "13104F",
-          "img": "13104",
-          "cars": 7,
-          "carNames": [
-            "13004",
-            "13604",
-            "13504",
-            "13404",
-            "13304",
-            "13204",
-            "13104"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13105F",
-          "name": "13105F",
-          "img": "13105",
-          "cars": 7,
-          "carNames": [
-            "13005",
-            "13605",
-            "13505",
-            "13405",
-            "13305",
-            "13205",
-            "13105"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13106F",
-          "name": "13106F",
-          "img": "13106",
-          "cars": 7,
-          "carNames": [
-            "13006",
-            "13606",
-            "13506",
-            "13406",
-            "13306",
-            "13206",
-            "13106"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13107F",
-          "name": "13107F",
-          "img": "13107",
-          "cars": 7,
-          "carNames": [
-            "13007",
-            "13607",
-            "13507",
-            "13407",
-            "13307",
-            "13207",
-            "13107"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13108F",
-          "name": "13108F",
-          "img": "13108",
-          "cars": 7,
-          "carNames": [
-            "13008",
-            "13608",
-            "13508",
-            "13408",
-            "13308",
-            "13208",
-            "13108"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13109F",
-          "name": "13109F",
-          "img": "13109",
-          "cars": 7,
-          "carNames": [
-            "13009",
-            "13609",
-            "13509",
-            "13409",
-            "13309",
-            "13209",
-            "13109"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13110F",
-          "name": "13110F",
-          "img": "13110",
-          "cars": 7,
-          "carNames": [
-            "13010",
-            "13610",
-            "13510",
-            "13410",
-            "13310",
-            "13210",
-            "13110"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13111F",
-          "name": "13111F",
-          "img": "13111",
-          "cars": 7,
-          "carNames": [
-            "13011",
-            "13611",
-            "13511",
-            "13411",
-            "13311",
-            "13211",
-            "13111"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13112F",
-          "name": "13112F",
-          "img": "13112",
-          "cars": 7,
-          "carNames": [
-            "13012",
-            "13612",
-            "13512",
-            "13412",
-            "13312",
-            "13212",
-            "13112"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13113F",
-          "name": "13113F",
-          "img": "13113",
-          "cars": 7,
-          "carNames": [
-            "13013",
-            "13613",
-            "13513",
-            "13413",
-            "13313",
-            "13213",
-            "13113"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13114F",
-          "name": "13114F",
-          "img": "13114",
-          "cars": 7,
-          "carNames": [
-            "13014",
-            "13614",
-            "13514",
-            "13414",
-            "13314",
-            "13214",
-            "13114"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13115F",
-          "name": "13115F",
-          "img": "13115",
-          "cars": 7,
-          "carNames": [
-            "13015",
-            "13615",
-            "13515",
-            "13415",
-            "13315",
-            "13215",
-            "13115"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13116F",
-          "name": "13116F",
-          "img": "13116",
-          "cars": 7,
-          "carNames": [
-            "13016",
-            "13616",
-            "13516",
-            "13416",
-            "13316",
-            "13216",
-            "13116"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13117F",
-          "name": "13117F",
-          "img": "13117",
-          "cars": 7,
-          "carNames": [
-            "13017",
-            "13617",
-            "13517",
-            "13417",
-            "13317",
-            "13217",
-            "13117"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13118F",
-          "name": "13118F",
-          "img": "13118",
-          "cars": 7,
-          "carNames": [
-            "13018",
-            "13618",
-            "13518",
-            "13418",
-            "13318",
-            "13218",
-            "13118"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13119F",
-          "name": "13119F",
-          "img": "13119",
-          "cars": 7,
-          "carNames": [
-            "13019",
-            "13619",
-            "13519",
-            "13419",
-            "13319",
-            "13219",
-            "13119"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13120F",
-          "name": "13120F",
-          "img": "13120",
-          "cars": 7,
-          "carNames": [
-            "13020",
-            "13620",
-            "13520",
-            "13420",
-            "13320",
-            "13220",
-            "13120"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13121F",
-          "name": "13121F",
-          "img": "13121",
-          "cars": 7,
-          "carNames": [
-            "13021",
-            "13621",
-            "13521",
-            "13421",
-            "13321",
-            "13221",
-            "13121"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13122F",
-          "name": "13122F",
-          "img": "13122",
-          "cars": 7,
-          "carNames": [
-            "13022",
-            "13622",
-            "13522",
-            "13422",
-            "13322",
-            "13222",
-            "13122"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13123F",
-          "name": "13123F",
-          "img": "13123",
-          "cars": 7,
-          "carNames": [
-            "13023",
-            "13623",
-            "13523",
-            "13423",
-            "13323",
-            "13223",
-            "13123"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13124F",
-          "name": "13124F",
-          "img": "13124",
-          "cars": 7,
-          "carNames": [
-            "13024",
-            "13624",
-            "13524",
-            "13424",
-            "13324",
-            "13224",
-            "13124"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13125F",
-          "name": "13125F",
-          "img": "13125",
-          "cars": 7,
-          "carNames": [
-            "13025",
-            "13625",
-            "13525",
-            "13425",
-            "13325",
-            "13225",
-            "13125"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13126F",
-          "name": "13126F",
-          "img": "13126",
-          "cars": 7,
-          "carNames": [
-            "13026",
-            "13626",
-            "13526",
-            "13426",
-            "13326",
-            "13226",
-            "13126"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13127F",
-          "name": "13127F",
-          "img": "13127",
-          "cars": 7,
-          "carNames": [
-            "13027",
-            "13627",
-            "13527",
-            "13427",
-            "13327",
-            "13227",
-            "13127"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13128F",
-          "name": "13128F",
-          "img": "13128",
-          "cars": 7,
-          "carNames": [
-            "13028",
-            "13628",
-            "13528",
-            "13428",
-            "13328",
-            "13228",
-            "13128"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13129F",
-          "name": "13129F",
-          "img": "13129",
-          "cars": 7,
-          "carNames": [
-            "13029",
-            "13629",
-            "13529",
-            "13429",
-            "13329",
-            "13229",
-            "13129"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13130F",
-          "name": "13130F",
-          "img": "13130",
-          "cars": 7,
-          "carNames": [
-            "13030",
-            "13630",
-            "13530",
-            "13430",
-            "13330",
-            "13230",
-            "13130"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13131F",
-          "name": "13131F",
-          "img": "13131",
-          "cars": 7,
-          "carNames": [
-            "13031",
-            "13631",
-            "13531",
-            "13431",
-            "13331",
-            "13231",
-            "13131"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13132F",
-          "name": "13132F",
-          "img": "13132",
-          "cars": 7,
-          "carNames": [
-            "13032",
-            "13632",
-            "13532",
-            "13432",
-            "13332",
-            "13232",
-            "13132"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13133F",
-          "name": "13133F",
-          "img": "13133",
-          "cars": 7,
-          "carNames": [
-            "13033",
-            "13633",
-            "13533",
-            "13433",
-            "13333",
-            "13233",
-            "13133"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13134F",
-          "name": "13134F",
-          "img": "13134",
-          "cars": 7,
-          "carNames": [
-            "13034",
-            "13634",
-            "13534",
-            "13434",
-            "13334",
-            "13234",
-            "13134"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13135F",
-          "name": "13135F",
-          "img": "13135",
-          "cars": 7,
-          "carNames": [
-            "13035",
-            "13635",
-            "13535",
-            "13435",
-            "13335",
-            "13235",
-            "13135"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13136F",
-          "name": "13136F",
-          "img": "13136",
-          "cars": 7,
-          "carNames": [
-            "13036",
-            "13636",
-            "13536",
-            "13436",
-            "13336",
-            "13236",
-            "13136"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13137F",
-          "name": "13137F",
-          "img": "13137",
-          "cars": 7,
-          "carNames": [
-            "13037",
-            "13637",
-            "13537",
-            "13437",
-            "13337",
-            "13237",
-            "13137"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13138F",
-          "name": "13138F",
-          "img": "13138",
-          "cars": 7,
-          "carNames": [
-            "13038",
-            "13638",
-            "13538",
-            "13438",
-            "13338",
-            "13238",
-            "13138"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13139F",
-          "name": "13139F",
-          "img": "13139",
-          "cars": 7,
-          "carNames": [
-            "13039",
-            "13639",
-            "13539",
-            "13439",
-            "13339",
-            "13239",
-            "13139"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13140F",
-          "name": "13140F",
-          "img": "13140",
-          "cars": 7,
-          "carNames": [
-            "13040",
-            "13640",
-            "13540",
-            "13440",
-            "13340",
-            "13240",
-            "13140"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13141F",
-          "name": "13141F",
-          "img": "13141",
-          "cars": 7,
-          "carNames": [
-            "13041",
-            "13641",
-            "13541",
-            "13441",
-            "13341",
-            "13241",
-            "13141"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13142F",
-          "name": "13142F",
-          "img": "13142",
-          "cars": 7,
-          "carNames": [
-            "13042",
-            "13642",
-            "13542",
-            "13442",
-            "13342",
-            "13242",
-            "13142"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13143F",
-          "name": "13143F",
-          "img": "13143",
-          "cars": 7,
-          "carNames": [
-            "13043",
-            "13643",
-            "13543",
-            "13443",
-            "13343",
-            "13243",
-            "13143"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "13144F",
-          "name": "13144F",
-          "img": "13144",
-          "cars": 7,
-          "carNames": [
-            "13044",
-            "13644",
-            "13544",
-            "13444",
-            "13344",
-            "13244",
-            "13144"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        }
-      ]
-    },
-    {
-      "type": "東武70000型",
-      "typeImg": "TB70000",
-      "family": "hibiya",
-      "routeNames": [
-        "日比谷線",
-        "東武スカイツリーライン"
-      ],
-      "carCount": 7,
-      "carOrder": [
-        "1号車",
-        "2号車",
-        "3号車",
-        "4号車",
-        "5号車",
-        "6号車",
-        "7号車"
-      ],
-      "items": [
-        {
-          "formation": "71701F",
-          "name": "71701F",
-          "img": "71701",
-          "cars": 7,
-          "carNames": [
-            "77701",
-            "76701",
-            "75701",
-            "74701",
-            "73701",
-            "72701",
-            "71701"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71702F",
-          "name": "71702F",
-          "img": "71702",
-          "cars": 7,
-          "carNames": [
-            "77702",
-            "76702",
-            "75702",
-            "74702",
-            "73702",
-            "72702",
-            "71702"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71703F",
-          "name": "71703F",
-          "img": "71703",
-          "cars": 7,
-          "carNames": [
-            "77703",
-            "76703",
-            "75703",
-            "74703",
-            "73703",
-            "72703",
-            "71703"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71704F",
-          "name": "71704F",
-          "img": "71704",
-          "cars": 7,
-          "carNames": [
-            "77704",
-            "76704",
-            "75704",
-            "74704",
-            "73704",
-            "72704",
-            "71704"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71705F",
-          "name": "71705F",
-          "img": "71705",
-          "cars": 7,
-          "carNames": [
-            "77705",
-            "76705",
-            "75705",
-            "74705",
-            "73705",
-            "72705",
-            "71705"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71706F",
-          "name": "71706F",
-          "img": "71706",
-          "cars": 7,
-          "carNames": [
-            "77706",
-            "76706",
-            "75706",
-            "74706",
-            "73706",
-            "72706",
-            "71706"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71707F",
-          "name": "71707F",
-          "img": "71707",
-          "cars": 7,
-          "carNames": [
-            "77707",
-            "76707",
-            "75707",
-            "74707",
-            "73707",
-            "72707",
-            "71707"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71708F",
-          "name": "71708F",
-          "img": "71708",
-          "cars": 7,
-          "carNames": [
-            "77708",
-            "76708",
-            "75708",
-            "74708",
-            "73708",
-            "72708",
-            "71708"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71709F",
-          "name": "71709F",
-          "img": "71709",
-          "cars": 7,
-          "carNames": [
-            "77709",
-            "76709",
-            "75709",
-            "74709",
-            "73709",
-            "72709",
-            "71709"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71710F",
-          "name": "71710F",
-          "img": "71710",
-          "cars": 7,
-          "carNames": [
-            "77710",
-            "76710",
-            "75710",
-            "74710",
-            "73710",
-            "72710",
-            "71710"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71711F",
-          "name": "71711F",
-          "img": "71711",
-          "cars": 7,
-          "carNames": [
-            "77711",
-            "76711",
-            "75711",
-            "74711",
-            "73711",
-            "72711",
-            "71711"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71712F",
-          "name": "71712F",
-          "img": "71712",
-          "cars": 7,
-          "carNames": [
-            "77712",
-            "76712",
-            "75712",
-            "74712",
-            "73712",
-            "72712",
-            "71712"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71713F",
-          "name": "71713F",
-          "img": "71713",
-          "cars": 7,
-          "carNames": [
-            "77713",
-            "76713",
-            "75713",
-            "74713",
-            "73713",
-            "72713",
-            "71713"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71714F",
-          "name": "71714F",
-          "img": "71714",
-          "cars": 7,
-          "carNames": [
-            "77714",
-            "76714",
-            "75714",
-            "74714",
-            "73714",
-            "72714",
-            "71714"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71715F",
-          "name": "71715F",
-          "img": "71715",
-          "cars": 7,
-          "carNames": [
-            "77715",
-            "76715",
-            "75715",
-            "74715",
-            "73715",
-            "72715",
-            "71715"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71716F",
-          "name": "71716F",
-          "img": "71716",
-          "cars": 7,
-          "carNames": [
-            "77716",
-            "76716",
-            "75716",
-            "74716",
-            "73716",
-            "72716",
-            "71716"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71717F",
-          "name": "71717F",
-          "img": "71717",
-          "cars": 7,
-          "carNames": [
-            "77717",
-            "76717",
-            "75717",
-            "74717",
-            "73717",
-            "72717",
-            "71717"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71718F",
-          "name": "71718F",
-          "img": "71718",
-          "cars": 7,
-          "carNames": [
-            "77718",
-            "76718",
-            "75718",
-            "74718",
-            "73718",
-            "72718",
-            "71718"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        }
-      ]
-    },
-    {
-      "type": "東武70090型",
-      "typeImg": "TB70090",
-      "family": "hibiya",
-      "routeNames": [
-        "日比谷線",
-        "東武スカイツリーライン"
-      ],
-      "carCount": 7,
-      "carOrder": [
-        "1号車",
-        "2号車",
-        "3号車",
-        "4号車",
-        "5号車",
-        "6号車",
-        "7号車"
-      ],
-      "items": [
-        {
-          "formation": "71791F",
-          "name": "71791F",
-          "img": "71791",
-          "cars": 7,
-          "carNames": [
-            "77791",
-            "76791",
-            "75791",
-            "74791",
-            "73791",
-            "72791",
-            "71791"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71792F",
-          "name": "71792F",
-          "img": "71792",
-          "cars": 7,
-          "carNames": [
-            "77792",
-            "76792",
-            "75792",
-            "74792",
-            "73792",
-            "72792",
-            "71792"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71793F",
-          "name": "71793F",
-          "img": "71793",
-          "cars": 7,
-          "carNames": [
-            "77793",
-            "76793",
-            "75793",
-            "74793",
-            "73793",
-            "72793",
-            "71793"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71794F",
-          "name": "71794F",
-          "img": "71794",
-          "cars": 7,
-          "carNames": [
-            "77794",
-            "76794",
-            "75794",
-            "74794",
-            "73794",
-            "72794",
-            "71794"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71795F",
-          "name": "71795F",
-          "img": "71795",
-          "cars": 7,
-          "carNames": [
-            "77795",
-            "76795",
-            "75795",
-            "74795",
-            "73795",
-            "72795",
-            "71795"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        },
-        {
-          "formation": "71796F",
-          "name": "71796F",
-          "img": "71796",
-          "cars": 7,
-          "carNames": [
-            "77796",
-            "76796",
-            "75796",
-            "74796",
-            "73796",
-            "72796",
-            "71796"
-          ],
-          "routeNames": [
-            "日比谷線",
-            "東武スカイツリーライン"
-          ],
-          "family": "hibiya"
-        }
-      ]
-    }
-  ],
-  "linesInfo": {
-    "東京メトロ": {
-      "name": "東京メトロ"
-    },
-    "東武鉄道": {
-      "name": "東武鉄道"
-    }
-  },
   "trains": {
     "平日": {
       "下り": [
         {
           "no": "B534S",
-          "type": "普通",
-          "start": "南千住",
-          "dest": "北千住",
           "trainNumbers": {
             "日比谷線": [
               "B534S"
@@ -1640,13 +1810,15 @@
               "station": "北千住",
               "time": "05:04"
             }
-          ]
+          ],
+          "type": "普通",
+          "start": "南千住",
+          "startTime": "05:02",
+          "dest": "北千住",
+          "endTime": "05:04"
         },
         {
           "no": "B536S",
-          "type": "普通",
-          "start": "南千住",
-          "dest": "北千住",
           "trainNumbers": {
             "日比谷線": [
               "B536S"
@@ -1660,14 +1832,21 @@
             {
               "station": "北千住",
               "time": "05:12"
+            },
+            {
+              "station": "北越谷",
+              "time": "05:42",
+              "routeColor": "#0055b8"
             }
-          ]
+          ],
+          "type": "普通",
+          "start": "南千住",
+          "startTime": "05:09",
+          "dest": "北越谷",
+          "endTime": "05:42"
         },
         {
           "no": "B558S",
-          "type": "普通",
-          "start": "霞ケ関",
-          "dest": "南栗橋",
           "trainNumbers": {
             "日比谷線": [
               "B558S"
@@ -1743,13 +1922,15 @@
               "time": "06:47",
               "routeColor": "#0055b8"
             }
-          ]
+          ],
+          "type": "普通",
+          "start": "霞ケ関",
+          "startTime": "05:00",
+          "dest": "南栗橋",
+          "endTime": "06:47"
         },
         {
           "no": "B538S",
-          "type": "普通",
-          "start": "霞ケ関",
-          "dest": "北千住",
           "trainNumbers": {
             "日比谷線": [
               "B538S"
@@ -1820,13 +2001,15 @@
               "station": "北千住",
               "time": "05:37"
             }
-          ]
+          ],
+          "type": "普通",
+          "start": "霞ケ関",
+          "startTime": "05:00",
+          "dest": "北千住",
+          "endTime": "05:37"
         },
         {
           "no": "B566S",
-          "type": "普通",
-          "start": "中目黒",
-          "dest": "北越谷",
           "trainNumbers": {
             "日比谷線": [
               "B566S"
@@ -1926,13 +2109,15 @@
               "time": "06:15",
               "routeColor": "#0055b8"
             }
-          ]
+          ],
+          "type": "普通",
+          "start": "中目黒",
+          "startTime": "05:00",
+          "dest": "北越谷",
+          "endTime": "06:15"
         },
         {
           "no": "B568S",
-          "type": "普通",
-          "start": "中目黒",
-          "dest": "北越谷",
           "trainNumbers": {
             "日比谷線": [
               "B568S"
@@ -2032,7 +2217,12 @@
               "time": "06:30",
               "routeColor": "#0055b8"
             }
-          ]
+          ],
+          "type": "普通",
+          "start": "中目黒",
+          "startTime": "05:12",
+          "dest": "北越谷",
+          "endTime": "06:30"
         }
       ]
     },
@@ -2040,9 +2230,6 @@
       "下り": [
         {
           "no": "B534S",
-          "type": "普通",
-          "start": "南千住",
-          "dest": "北千住",
           "trainNumbers": {
             "日比谷線": [
               "B534S"
@@ -2057,13 +2244,15 @@
               "station": "北千住",
               "time": "05:04"
             }
-          ]
+          ],
+          "type": "普通",
+          "start": "南千住",
+          "startTime": "05:02",
+          "dest": "北千住",
+          "endTime": "05:04"
         },
         {
           "no": "B536S",
-          "type": "普通",
-          "start": "南千住",
-          "dest": "北千住",
           "trainNumbers": {
             "日比谷線": [
               "B536S"
@@ -2077,14 +2266,21 @@
             {
               "station": "北千住",
               "time": "05:12"
+            },
+            {
+              "station": "北越谷",
+              "time": "05:42",
+              "routeColor": "#0055b8"
             }
-          ]
+          ],
+          "type": "普通",
+          "start": "南千住",
+          "startTime": "05:09",
+          "dest": "北越谷",
+          "endTime": "05:42"
         },
         {
           "no": "B558S",
-          "type": "普通",
-          "start": "霞ケ関",
-          "dest": "南栗橋",
           "trainNumbers": {
             "日比谷線": [
               "B558S"
@@ -2160,13 +2356,15 @@
               "time": "06:47",
               "routeColor": "#0055b8"
             }
-          ]
+          ],
+          "type": "普通",
+          "start": "霞ケ関",
+          "startTime": "05:00",
+          "dest": "南栗橋",
+          "endTime": "06:47"
         },
         {
           "no": "B538S",
-          "type": "普通",
-          "start": "霞ケ関",
-          "dest": "北千住",
           "trainNumbers": {
             "日比谷線": [
               "B538S"
@@ -2237,13 +2435,15 @@
               "station": "北千住",
               "time": "05:37"
             }
-          ]
+          ],
+          "type": "普通",
+          "start": "霞ケ関",
+          "startTime": "05:00",
+          "dest": "北千住",
+          "endTime": "05:37"
         },
         {
           "no": "B566S",
-          "type": "普通",
-          "start": "中目黒",
-          "dest": "北越谷",
           "trainNumbers": {
             "日比谷線": [
               "B566S"
@@ -2343,13 +2543,15 @@
               "time": "06:15",
               "routeColor": "#0055b8"
             }
-          ]
+          ],
+          "type": "普通",
+          "start": "中目黒",
+          "startTime": "05:00",
+          "dest": "北越谷",
+          "endTime": "06:15"
         },
         {
           "no": "B568S",
-          "type": "普通",
-          "start": "中目黒",
-          "dest": "北越谷",
           "trainNumbers": {
             "日比谷線": [
               "B568S"
@@ -2449,9 +2651,42 @@
               "time": "06:30",
               "routeColor": "#0055b8"
             }
-          ]
+          ],
+          "type": "普通",
+          "start": "中目黒",
+          "startTime": "05:12",
+          "dest": "北越谷",
+          "endTime": "06:30"
         }
       ]
     }
+  },
+  "routeColor": "#B5B5AC",
+  "typeColors": {
+    "普通": "#9fa0a0"
+  },
+  "routeDirections": {
+    "日比谷線": {
+      "up": "中目黒方面",
+      "down": "北千住方面"
+    }
+  },
+  "stationShortMap": {
+    "南栗橋": "南栗",
+    "北越谷": "北越",
+    "北千住": "北千",
+    "中目黒": "中目",
+    "恵比寿": "恵比",
+    "六本木": "六本",
+    "南千住": "南千"
+  },
+  "destinationAliases": {
+    "南栗橋": "南栗",
+    "北越谷": "北越",
+    "北千住": "北千",
+    "中目黒": "中目",
+    "恵比寿": "恵比",
+    "六本木": "六本",
+    "南千住": "南千"
   }
 }
