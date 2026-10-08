@@ -3299,17 +3299,45 @@ function renderFukuokaLine(){
 
   const rows=buildFukuokaScreenRows();
   STATIONS=rows.map((r,i)=>({id:`st${i+1}`,nameJa:r.st[0],nameEn:r.st[1]}));
+  const junction=String(fukuokaDiagramConfig(activeJson,activeRouteMeta)?.junctionStation||'中洲川端').trim()||'中洲川端';
 
   rows.forEach((r,index)=>{
-    const row=createRow(r.st,r.routeKey,r.opt);
+    const row=document.createElement('div');
+    row.className='station-row';
+    row.dataset.rowIndex=String(index);
+    row.dataset.routeId=String(r.routeKey||'fukuoka-kuko');
+    row.dataset.station=String(r.st[0]||'');
     if(index===0) row.classList.add('endpoint-start');
     if(index===rows.length-1) row.classList.add('endpoint-end');
-    if(r.st[0]===String(fukuokaDiagramConfig(activeJson,activeRouteMeta)?.junctionStation||'中洲川端').trim()) row.classList.add('fukuoka-branch-toggle-row');
-    // junction row にだけ、日光線の「分岐切替ボタン」と同じ位置でボタンを付ける。
-    if(r.st[0]===String(fukuokaDiagramConfig(activeJson,activeRouteMeta)?.junctionStation||'中洲川端').trim()){
+    if(r.opt?.cutAbove) row.classList.add('cut-above');
+    if(r.opt?.cutBelow) row.classList.add('cut-below');
+    if(r.st[0]===junction) row.classList.add('fukuoka-branch-toggle-row');
+
+    const stationColor=String(r.opt?.stationColor||r.opt?.lineTop||activeRouteMeta?.routeColor||'#F58220');
+    row.style.setProperty('--primary',stationColor);
+    row.style.setProperty('--line-top',String(r.opt?.lineTop||stationColor));
+    row.style.setProperty('--line-bottom',String(r.opt?.lineBottom||stationColor));
+
+    const badge=document.createElement('div');
+    badge.className='station-badge';
+    badge.innerHTML=`<div class="station-name-ja">${esc(r.st[0])}</div><div class="station-name-en">${esc(r.st[1])}</div>`;
+    badge.setAttribute('role','button');
+    badge.tabIndex=0;
+    const stationId=`st${index+1}`;
+    const openStation=ev=>{ev.preventDefault();ev.stopPropagation();openStationSheet(stationId);};
+    badge.addEventListener('click',openStation);
+    badge.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){openStation(ev);}});
+    row.appendChild(badge);
+
+    // 分岐切替ボタンは、日光線と同じく中洲川端の駅行に置く。
+    if(r.st[0]===junction){
       const wrap=document.createElement('div');
-      wrap.className='connection-buttons connection-bottom';
-      const btn=connectionButton(fukuokaBranchToggleLabel(),'#0072BC',()=>toggleFukuokaHakozakiBranch(),fukuokaHakozakiBranchOpen);
+      wrap.className='fukuoka-branch-toggle-wrap';
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className='fukuoka-branch-toggle-button'+(fukuokaHakozakiBranchOpen?' active':'');
+      btn.textContent=fukuokaBranchToggleLabel();
+      btn.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();toggleFukuokaHakozakiBranch();});
       wrap.appendChild(btn);
       row.appendChild(wrap);
     }
@@ -3321,7 +3349,6 @@ function renderFukuokaLine(){
   renderOperationInfoZones();
   return true;
 }
-
 function renderLine(){
   if(renderFukuokaLine()) return;
   if(activeRouteName==='大阪環状線' && activeJson?.circular===true){
