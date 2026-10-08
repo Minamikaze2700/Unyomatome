@@ -175,12 +175,12 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8111.png",
           "family": "noda",
           "carNames": [
-            "8111",
-            "8211",
-            "8311",
-            "8611",
+            "8411",
             "8711",
-            "8411"
+            "8611",
+            "8311",
+            "8211",
+            "8111"
           ]
         },
         {
@@ -189,12 +189,12 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8158.png",
           "family": "noda",
           "carNames": [
-            "8158",
-            "8258",
-            "8358",
-            "8658",
+            "8458",
             "8758",
-            "8458"
+            "8658",
+            "8358",
+            "8258",
+            "8158"
           ]
         },
         {
@@ -203,12 +203,12 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8162.png",
           "family": "noda",
           "carNames": [
-            "8162",
-            "8262",
-            "8362",
-            "8662",
+            "8462",
             "8762",
-            "8462"
+            "8662",
+            "8362",
+            "8262",
+            "8162"
           ]
         },
         {
@@ -217,12 +217,12 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8163.png",
           "family": "noda",
           "carNames": [
-            "8163",
-            "8263",
-            "8363",
-            "8663",
+            "8463",
             "8763",
-            "8463"
+            "8663",
+            "8363",
+            "8263",
+            "8163"
           ]
         },
         {
@@ -231,12 +231,12 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8166.png",
           "family": "noda",
           "carNames": [
-            "8166",
-            "8266",
-            "8366",
-            "8666",
+            "8466",
             "8766",
-            "8466"
+            "8666",
+            "8366",
+            "8266",
+            "8166"
           ]
         },
         {
@@ -245,12 +245,12 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8170.png",
           "family": "noda",
           "carNames": [
-            "8170",
-            "8270",
-            "8370",
-            "8670",
+            "8470",
             "8770",
-            "8470"
+            "8670",
+            "8370",
+            "8270",
+            "8170"
           ]
         },
         {
@@ -259,12 +259,12 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8192.png",
           "family": "noda",
           "carNames": [
-            "8192",
-            "8292",
-            "8392",
-            "8692",
+            "8492",
             "8792",
-            "8492"
+            "8692",
+            "8392",
+            "8292",
+            "8192"
           ]
         },
         {
@@ -273,12 +273,12 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81110.png",
           "family": "noda",
           "carNames": [
-            "81110",
-            "82110",
-            "83110",
-            "86110",
+            "84110",
             "87110",
-            "84110"
+            "86110",
+            "83110",
+            "82110",
+            "81110"
           ]
         },
         {
@@ -287,12 +287,12 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81113.png",
           "family": "noda",
           "carNames": [
-            "81113",
-            "82113",
-            "83113",
-            "86113",
+            "84113",
             "87113",
-            "84113"
+            "86113",
+            "83113",
+            "82113",
+            "81113"
           ]
         },
         {
@@ -301,12 +301,12 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81114.png",
           "family": "noda",
           "carNames": [
-            "81114",
-            "82114",
-            "83114",
-            "86114",
+            "84114",
             "87114",
-            "84114"
+            "86114",
+            "83114",
+            "82114",
+            "81114"
           ]
         }
       ]
@@ -85741,33 +85741,6 @@
       "318A": {
         "高柳": 1343
       }
-    }
-  },
-  "formationDisplay": {
-    "mergeParentheticalGroups": true,
-    "selectableTypes": true,
-    "displayFullVariantNames": true,
-    "order": [
-      "8000型",
-      "10030型",
-      "60000型",
-      "80000系"
-    ],
-    "syntheticVariants": {
-      "80000系": [
-        {
-          "id": "__NODA_MIMA_MONI_YES__",
-          "name": "80000系みまモニ有",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB80000.png",
-          "displayAsFullName": true
-        },
-        {
-          "id": "__NODA_MIMA_MONI_NO__",
-          "name": "80000系みまモニ無",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB80000.png",
-          "displayAsFullName": true
-        }
-      ]
     }
   }
 }
