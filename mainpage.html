@@ -106,6 +106,8 @@ button,input,select,textarea{font-family:inherit}
 .station-row.fukuoka-branch-anchor-row .connection-button{appearance:none;border:2px solid var(--button-color);border-radius:7px;padding:8px 18px;background:#fff;color:var(--button-color);box-shadow:0 2px 7px rgba(0,0,0,.20);font:700 15px/1.2 inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-width:150px;transition:filter .12s,transform .12s,background .12s,color .12s;}
 .station-row.fukuoka-branch-anchor-row .connection-button:hover{filter:brightness(.96);transform:translateY(-1px);}
 .station-row.fukuoka-branch-anchor-row .connection-button.active{background:var(--button-color);color:#fff;}
+.station-row.fukuoka-hakozaki-start .station-badge{--primary:#0072BC;}
+.station-row.fukuoka-hakozaki-start .station-name-en{--station-label-bg:#0072BC;}
 .station-badge{
   position:relative;width:384px;min-width:384px;height:auto;aspect-ratio:480 / 90;
   border:4px solid var(--primary);border-radius:40px;
@@ -2081,7 +2083,9 @@ async function loadLineTrainData(routeName=activeRouteName){
     if(Array.isArray(dayData)){
       for(const raw of dayData){
         const rawDirection=String(raw?.direction||'');
-        let direction=(rawDirection==='toward_airport'||rawDirection==='上り'||rawDirection==='up')?'上り':'下り';
+        const normalizedDirection=rawDirection.trim().toLowerCase();
+        const isUpDirection=(normalizedDirection==='上り'||normalizedDirection==='up'||normalizedDirection==='toward_airport'||normalizedDirection==='toward_airport_kaizuka'||normalizedDirection==='toward_kaizuka'||normalizedDirection.startsWith('toward_airport_'));
+        let direction=isUpDirection?'上り':'下り';
         const normalizedDay=day==='休日'?'休日':'平日';
         built.push(...normalizeExternalTrain(raw,normalizedDay,direction,activeRouteMeta));
       }
@@ -3368,9 +3372,12 @@ function renderLine(){
       ja.style.paddingLeft=ls;
     }
     applyStationLabelColors(badge,index);
-    row.appendChild(badge);
-    if(isFukuokaCompositeRoute(activeRouteMeta) && st.nameJa===String(fukuokaDiagramConfig(activeJson,activeRouteMeta)?.insertAfter||'祇園')){
-      // 東武スカイツリーラインの「東武動物公園」上部にある日光線ボタンと同じ配置。
+    if(isFukuokaCompositeRoute(activeRouteMeta) && fukuokaHakozakiBranchOpen && st.nameJa===fukuokaBranchStationNames(activeJson,activeRouteMeta)[0]){
+      // 貝塚は箱崎線側の始発駅。福岡空港と同様に端駅扱いにする。
+      row.classList.add('endpoint-start','fukuoka-hakozaki-start');
+    }
+    if(isFukuokaCompositeRoute(activeRouteMeta) && st.nameJa===String(fukuokaDiagramConfig(activeJson,activeRouteMeta)?.junctionStation||'中洲川端')){
+      // 分岐駅・中洲川端のすぐ上に表示する。ボタン自体は東武スカイツリーラインの日光線分岐ボタンを踏襲。
       // 駅名標など重複する共通UIは mainpage 側のデザインを優先する。
       row.classList.add('fukuoka-branch-anchor-row');
       const buttonWrap=document.createElement('div');
@@ -3385,6 +3392,8 @@ function renderLine(){
       buttonWrap.appendChild(branchButton);
       row.appendChild(buttonWrap);
     }
+    // 分岐ボタンは駅名標より上、分岐駅の直前に配置する。
+    row.appendChild(badge);
     container.appendChild(row);
   });
   renderRailLineSegments();
@@ -3869,7 +3878,25 @@ function renderTrainPositions(){
         applyFinalPosition();
       }else if(img){
         img.addEventListener('load',applyFinalPosition,{once:true});
+        // 画像URLが404・通信失敗だと、以前の処理では load が発生せず、
+        // 列車要素を visibility:hidden のまま残してしまう。
+        // まず共通の既定画像を試し、それも失敗したら画像なしで列車ラベルを表示する。
+        const handleTrainImageError=()=>{
+          const currentSrc=String(img.getAttribute('src')||'');
+          const commonFallback=String(LINE_TRAIN_IMG||'').trim();
+          if(img.dataset.commonFallbackTried!=='1' && commonFallback && currentSrc!==commonFallback){
+            img.dataset.commonFallbackTried='1';
+            img.setAttribute('src',commonFallback);
+            return;
+          }
+          img.removeEventListener('error',handleTrainImageError);
+          img.style.display='none';
+          applyFinalPosition();
+        };
+        img.addEventListener('error',handleTrainImageError);
         el.style.visibility='hidden';
+        // キャッシュ済みの失敗画像は error イベントが発火済みの場合があるため、ここでも処理する。
+        if(img.complete && !img.naturalWidth) handleTrainImageError();
       }
     });
   });
@@ -5447,9 +5474,23 @@ function renderRailLineSegments(){
       const hakoColor=String(lineDefByName('箱崎線')?.color||'#0072BC');
       /* ここが重要：開いた状態では「祇園→貝塚」が最初の箱崎線区間。
          その後「貝塚→…→呉服町→中洲川端」まで同じ線を連続させる。 */
-      if((a===insertAfter && branch.has(b))
-        || (branch.has(a) && branch.has(b))
-        || (branch.has(a) && b===junction)) color=hakoColor;
+      const branchOrder=fukuokaBranchStationNames(activeJson,activeRouteMeta);
+      const firstBranchStation=branchOrder[0]||'貝塚';
+      if(a===insertAfter && b===firstBranchStation){
+        // 祇園の下の接続線は貝塚へ向かって徐々に透明にし、貝塚の上では完全に消す。
+        const hex=String(hakoColor).match(/^#?([0-9a-f]{6})$/i);
+        if(hex){
+          const value=parseInt(hex[1],16);
+          const r=(value>>16)&255,g=(value>>8)&255,bl=value&255;
+          seg.style.background=`linear-gradient(to bottom, ${hakoColor} 0%, rgba(${r},${g},${bl},0) 100%)`;
+        }else{
+          seg.style.background=`linear-gradient(to bottom, ${hakoColor} 0%, transparent 100%)`;
+        }
+        seg.classList.add('fukuoka-branch-fade-segment');
+        rail.appendChild(seg);
+        continue;
+      }
+      if((branch.has(a) && branch.has(b)) || (branch.has(a) && b===junction)) color=hakoColor;
     }
     seg.style.background=color;
     rail.appendChild(seg);
