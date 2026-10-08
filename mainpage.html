@@ -7421,6 +7421,235 @@ initRegionNavigation();
   window.__circularRouteHelpers={renderCircularLine,renderCircularRailLineSegments,renderCircularTrainPositions,circularTrainPosition,circularLayout};
 })();
 </script>
+
+<style id="train-info-tabs-style">
+/* ===== 列車情報：今日の運用／編成情報 ===== */
+.train-info-tabs-wrap{width:100%;margin:10px 0 0;background:#fff;border-radius:8px;overflow:hidden;}
+.train-info-tabs{display:flex;gap:6px;padding:6px 4px 0;background:#fff;}
+.train-info-tab{flex:1;min-width:0;border:0;border-bottom:4px solid transparent;border-radius:8px 8px 0 0;background:var(--corporate-title-color,#808080);color:#fff;font:inherit;font-size:1.35rem;font-weight:800;padding:12px 10px;cursor:pointer;line-height:1.15;}
+.train-info-tab:hover{filter:brightness(.95);}
+.train-info-tab.active{border-bottom-color:#111;}
+.train-info-tab-panel{display:none;background:#fff;padding:0 0 2px;}
+.train-info-tab-panel.active{display:block;}
+.train-info-tab-panel>.timetable-list{margin-top:0;border-radius:0 0 8px 8px;padding:12px 20px;}
+
+.operation-timetable-item{height:68px;min-height:68px;padding:7px 0;display:grid;grid-template-columns:18px 78px 76px minmax(150px,1fr) minmax(150px,1fr);align-items:center;column-gap:9px;}
+.operation-timetable-item::before{left:7px;}
+.operation-timetable-item .time-dot{width:18px;height:18px;margin-right:0;grid-column:1;grid-row:1;justify-self:center;}
+.operation-train-no{font-size:1.12rem;font-weight:800;white-space:nowrap;grid-column:2;text-align:center;}
+.operation-type{display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:3px 8px;border-radius:6px;background:var(--corporate-title-color,#808080);color:#fff;font-size:.95rem;font-weight:800;white-space:nowrap;grid-column:3;}
+.operation-endpoint{min-width:0;display:flex;flex-direction:column;justify-content:center;line-height:1.08;}
+.operation-endpoint.start{grid-column:4;}
+.operation-endpoint.end{grid-column:5;}
+.operation-endpoint-label{font-size:.72rem;color:#777;font-weight:700;margin-bottom:2px;}
+.operation-endpoint-main{display:flex;align-items:baseline;gap:8px;min-width:0;white-space:nowrap;}
+.operation-endpoint-station{font-size:1.1rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;}
+.operation-endpoint-time{font-family:Helvetica,"Helvetica Neue","Noto Sans JP",Arial,sans-serif;font-size:1.22rem;font-weight:800;white-space:nowrap;}
+.operation-arrow{position:absolute;left:calc(50% - 7px);top:50%;transform:translateY(-50%);font-size:.95rem;font-weight:800;color:#555;z-index:3;pointer-events:none;}
+.operation-timetable-item:last-child .operation-arrow{display:none;}
+
+.formation-info-panel{padding:12px 0 0;}
+.formation-info-empty{padding:26px 18px;text-align:center;color:#555;font-weight:700;}
+.formation-info-block{background:#fff;border:2px solid #ddd;border-radius:10px;padding:12px 14px;margin-bottom:12px;}
+.formation-info-head{display:flex;align-items:center;gap:12px;min-width:0;margin-bottom:10px;}
+.formation-info-head img{width:70px;height:70px;object-fit:contain;flex:0 0 70px;}
+.formation-info-name-wrap{min-width:0;}
+.formation-info-type{font-size:.9rem;color:#666;font-weight:700;margin-bottom:2px;}
+.formation-info-name{font-size:1.35rem;font-weight:800;line-height:1.1;word-break:break-word;}
+.formation-info-grid{display:grid;grid-template-columns:130px minmax(0,1fr);border-top:1px solid #ddd;}
+.formation-info-row{display:contents;}
+.formation-info-label,.formation-info-value{padding:8px 6px;border-bottom:1px solid #ddd;min-width:0;}
+.formation-info-label{font-weight:800;background:#f2f2f2;}
+.formation-info-value{font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere;}
+.formation-cars-title{font-weight:800;font-size:1rem;margin:12px 0 6px;}
+.formation-car-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+.formation-car-cell{display:grid;grid-template-columns:58px minmax(0,1fr);align-items:center;border:1px solid #ddd;border-radius:6px;overflow:hidden;min-width:0;}
+.formation-car-label{background:#f2f2f2;font-weight:800;padding:7px 6px;white-space:nowrap;}
+.formation-car-number{padding:7px 8px;font-family:Helvetica,"Helvetica Neue","Noto Sans JP",Arial,sans-serif;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.formation-comment-title{font-weight:800;font-size:1rem;margin:12px 0 6px;}
+.formation-comment{min-height:54px;border:1px solid #ddd;border-radius:6px;padding:9px;background:#fff;white-space:pre-wrap;overflow-wrap:anywhere;}
+
+@media(max-width:560px){
+  .train-info-tab{font-size:1.15rem;padding:10px 6px;}
+  .operation-timetable-item{grid-template-columns:18px 68px 66px minmax(0,1fr) minmax(0,1fr);column-gap:6px;height:72px;min-height:72px;}
+  .operation-train-no{font-size:1rem;}
+  .operation-type{font-size:.82rem;padding:3px 5px;}
+  .operation-endpoint-main{display:block;}
+  .operation-endpoint-station{display:block;font-size:.95rem;line-height:1.05;}
+  .operation-endpoint-time{display:block;font-size:1.02rem;margin-top:2px;}
+  .operation-arrow{display:none;}
+  .formation-info-grid{grid-template-columns:105px minmax(0,1fr);}
+  .formation-car-grid{grid-template-columns:1fr;}
+}
+</style>
+
+<script id="train-info-tabs-script">
+/* 列車情報に「今日の運用」「編成情報」を追加する共通表示処理。 */
+(function(){
+  let lastTrainInfoNo='';
+  let activeTrainInfoTab='today';
+
+  const escText=(value)=>{
+    const s=String(value??'');
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  };
+  const safeUrl=(value)=>{
+    const s=String(value||'').trim();
+    return escText(s);
+  };
+  const formationIdsLocal=(value)=>String(value??'').split('+').map(x=>String(x).trim().replace(/F$/i,'' )).filter(Boolean);
+
+  function operationEntriesForTrain(train){
+    const day=currentDay;
+    const entries=typeof chainEntries==='function' ? chainEntries(day,train?.no) : null;
+    if(Array.isArray(entries)&&entries.length) return entries;
+    if(!train) return [];
+    const first=train.stops?.[0]||{};
+    const last=train.stops?.[train.stops.length-1]||{};
+    return [{
+      no:String(train.no||''),
+      type:String(train.type||''),
+      start:String(train.start||first.station||''),
+      startTime:String(train.startTime||first.departure||first.time||''),
+      dest:String(train.dest||last.station||''),
+      endTime:String(train.endTime||last.arrival||last.time||'')
+    }];
+  }
+
+  function operationPanelHTML(train){
+    const entries=operationEntriesForTrain(train);
+    if(!entries.length) return '<div class="station-timetable-empty">この列車の運用情報はありません。</div>';
+    const rows=entries.map((e,i)=>{
+      const no=String(e?.no||'');
+      const type=String(e?.type||'');
+      const start=String(e?.start||'');
+      const st=String(e?.startTime||'');
+      const dest=String(e?.dest||'');
+      const et=String(e?.endTime||'');
+      return `<div class="timetable-item operation-timetable-item">
+        <div class="time-dot"></div>
+        <div class="operation-train-no">${escText(no)}</div>
+        <div class="operation-type">${escText(type)}</div>
+        <div class="operation-endpoint start"><span class="operation-endpoint-label">始発・発車</span><div class="operation-endpoint-main"><span class="operation-endpoint-station">${escText(start)}</span><span class="operation-endpoint-time">${escText(st)}</span></div></div>
+        <div class="operation-endpoint end"><span class="operation-endpoint-label">終着・到着</span><div class="operation-endpoint-main"><span class="operation-endpoint-station">${escText(dest)}</span><span class="operation-endpoint-time">${escText(et)}</span></div></div>
+        ${i<entries.length-1?'<span class="operation-arrow" aria-hidden="true">↓</span>':''}
+      </div>`;
+    }).join('');
+    return `<div class="timetable-list">${rows}</div>`;
+  }
+
+  function registeredFormationValue(train){
+    return String(registeredFormationForTrain(train)||train?.formation||'').trim();
+  }
+
+  function formationObjectForId(train,id){
+    try{
+      return selectionDisplayObjectForTrain(train,id) || formationById(id);
+    }catch(e){
+      try{return formationById(id);}catch(_){return null;}
+    }
+  }
+
+  function derivedCarNames(form){
+    const own=Array.isArray(form?.carNames)?form.carNames.map(x=>String(x||'').trim()).filter(Boolean):[];
+    if(own.length) return own;
+    const map=activeJson?.vehicleToFormation||{};
+    const id=String(form?.id||'').replace(/F$/i,'');
+    return Object.entries(map).filter(([car,f])=>String(f||'').replace(/F$/i,'')===id).map(([car])=>String(car));
+  }
+
+  function formationBlockHTML(train,id){
+    const f=formationObjectForId(train,id);
+    if(!f) return `<div class="formation-info-block"><div class="formation-info-name">${escText(id)}</div></div>`;
+    const carNames=derivedCarNames(f);
+    const type=String(f.type||'').trim();
+    const name=String(f.name||f.id||id).trim();
+    const img=safeUrl(f.img||'');
+    const completion=String(f.completionDate??'');
+    const manufacturer=String(f.manufacturer??'');
+    const comment=String(f.comment??'');
+    const carsHtml=carNames.length
+      ? `<div class="formation-car-grid">${carNames.map((car,i)=>`<div class="formation-car-cell"><span class="formation-car-label">${i+1}号車</span><span class="formation-car-number">${escText(car)}</span></div>`).join('')}</div>`
+      : '<div class="formation-comment">車番の登録はありません。</div>';
+    return `<section class="formation-info-block">
+      <div class="formation-info-head">
+        ${img?`<img src="${img}" alt="${escText(name)}" onerror="this.style.display='none'">`:''}
+        <div class="formation-info-name-wrap">
+          ${type?`<div class="formation-info-type">${escText(type)}</div>`:''}
+          <div class="formation-info-name">${escText(name)}</div>
+        </div>
+      </div>
+      <div class="formation-info-grid">
+        <div class="formation-info-row"><div class="formation-info-label">落成日</div><div class="formation-info-value">${escText(completion)}</div></div>
+        <div class="formation-info-row"><div class="formation-info-label">製造メーカー</div><div class="formation-info-value">${escText(manufacturer)}</div></div>
+      </div>
+      <div class="formation-cars-title">車両番号</div>
+      ${carsHtml}
+      <div class="formation-comment-title">コメント</div>
+      <div class="formation-comment">${escText(comment)}</div>
+    </section>`;
+  }
+
+  function formationPanelHTML(train){
+    const value=registeredFormationValue(train);
+    const ids=formationIdsLocal(value);
+    if(!ids.length) return '<div class="formation-info-empty">現在、編成は登録されていません。</div>';
+    return `<div class="formation-info-panel">${ids.map(id=>formationBlockHTML(train,id)).join('')}</div>`;
+  }
+
+  function applyTrainInfoTab(root,tab){
+    const key=tab==='formation'?'formation':'today';
+    activeTrainInfoTab=key;
+    root.querySelectorAll('.train-info-tab').forEach(btn=>{
+      const on=btn.dataset.tab===key;
+      btn.classList.toggle('active',on);
+      btn.setAttribute('aria-selected',on?'true':'false');
+    });
+    root.querySelectorAll('.train-info-tab-panel').forEach(panel=>panel.classList.toggle('active',panel.dataset.panel===key));
+  }
+
+  window.switchTrainInfoTab=function(tab){
+    const root=document.querySelector('#sheetContent .train-info-tabs-wrap');
+    if(!root) return;
+    applyTrainInfoTab(root,tab);
+  };
+
+  const oldUpdateSheetContent=window.updateSheetContent;
+  if(typeof oldUpdateSheetContent!=='function') return;
+
+  window.updateSheetContent=function(){
+    oldUpdateSheetContent.apply(this,arguments);
+    if(currentStationId || isEditMode) return;
+    const train=currentTrainSnapshot || trainForCurrentDay(currentTrainNo);
+    if(!train) return;
+    const key=String(train.no||'');
+    if(key!==lastTrainInfoNo){
+      activeTrainInfoTab='today';
+      lastTrainInfoNo=key;
+    }
+    const content=document.getElementById('sheetContent');
+    if(!content) return;
+    const oldTimetable=content.querySelector('.timetable-list');
+    if(!oldTimetable) return;
+    if(content.querySelector('.train-info-tabs-wrap')) return;
+
+    const wrap=document.createElement('div');
+    wrap.className='train-info-tabs-wrap';
+    wrap.innerHTML=`
+      <div class="train-info-tabs" role="tablist" aria-label="列車情報">
+        <button type="button" class="train-info-tab" data-tab="today" role="tab" aria-controls="trainInfoToday" aria-selected="false" onclick="switchTrainInfoTab('today')">今日の運用</button>
+        <button type="button" class="train-info-tab" data-tab="formation" role="tab" aria-controls="trainInfoFormation" aria-selected="false" onclick="switchTrainInfoTab('formation')">編成情報</button>
+      </div>
+      <section id="trainInfoToday" class="train-info-tab-panel" data-panel="today" role="tabpanel">${operationPanelHTML(train)}</section>
+      <section id="trainInfoFormation" class="train-info-tab-panel" data-panel="formation" role="tabpanel">${formationPanelHTML(train)}</section>
+    `;
+    oldTimetable.remove();
+    content.appendChild(wrap);
+    applyTrainInfoTab(wrap,activeTrainInfoTab);
+  };
+})();
+</script>
+
 </body>
 </html>
 
