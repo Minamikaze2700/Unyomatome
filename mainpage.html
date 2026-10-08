@@ -2816,6 +2816,27 @@ function formationDisplayGroups(groups){
   return out;
 }
 
+function formationDropdownHTML(train){
+  const groups=formationDisplayGroups(formationsForTrain(train));
+  return groups.map(group=>{
+    const groupType=String(group?.type||'');
+    const selectable=!!group?.selectableType;
+    const id=String(group?.selectableId||groupType);
+    const clickAttr=selectable?`onclick="selectFormation('${escapeJs(id)}')"`:'';
+    const category=`<div class="option-header option-category-header ${selectable?'option-selectable-category':''}" ${clickAttr}><img src="${esc(group?.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(id)}</span></div>`;
+    const variants=(group?.variants||[]).map(variant=>{
+      const disabled=!!variant?.disabled;
+      return `<div class="option-header option-subheader ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':`onclick="selectFormation('${escapeJs(variant.id)}')"`}><img src="${esc(variant?.img||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(variant?.name||variant?.id)}</span></div>`;
+    }).join('');
+    const variantItems=(group?.variants||[]).flatMap(v=>Array.isArray(v?.items)?v.items:[]);
+    const items=[...variantItems,...(group?.items||[])].map(item=>{
+      const disabled=!!item?.disabled||UNAVAILABLE_FORMATIONS.has(String(item?.id));
+      return `<div class="option-item ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':`onclick="selectFormation('${escapeJs(item.id)}')"`}><img src="${esc(item?.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${esc(item?.name||item?.id)}</span></div>`;
+    }).join('');
+    return category+variants+items;
+  }).join('');
+}
+
 function formationRouteAllowed(target,train){
   const routes=formationRouteNamesFromConfig(target);
   if(!routes.length) return true;
@@ -4068,26 +4089,7 @@ function updateSheetContent(){
         <div class="custom-select-options" id="dropdownOptions">
           <div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}')"><img src="${syncInitialFormationImage()}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>
           ${(() => {
-            const groups=formationDisplayGroups(formationsForTrain(train));
-            const categoryHeaders=groups.map(group=>{
-              const groupType=String(group.type||'');
-              const selectable=!!group.selectableType;
-              const id=String(group.selectableId||groupType);
-              const clickAttr=selectable ? `onclick=\"selectFormation('${escapeJs(id)}')\"` : '';
-              return `<div class=\"option-header option-category-header ${selectable?'option-selectable-category':''}\" ${clickAttr}><img src=\"${esc(group.typeImg||LINE_TRAIN_IMG)}\" class=\"option-img\"><span>${esc(id)}</span></div>`;
-            }).join('');
-            const variantHeaders=groups.flatMap(group=>(group.variants||[]).map(variant=>{
-              const disabled=!!variant.disabled;
-              return `<div class=\"option-header option-subheader ${disabled?'option-disabled':''}\" ${disabled?'aria-disabled=\"true\"':`onclick=\"selectFormation('${escapeJs(variant.id)}')\"`}><img src=\"${esc(variant.img||LINE_TRAIN_IMG)}\" class=\"option-img\"><span>${esc(variant.name||variant.id)}</span></div>`;
-            })).join('');
-            const formationItems=groups.map(group=>{
-              const items=[...(group.variants||[]).flatMap(variant=>variant.items||[]),...(group.items||[])];
-              return items.map(item=>{
-                const disabled=!!item.disabled || UNAVAILABLE_FORMATIONS.has(String(item.id));
-                return `<div class=\"option-item ${disabled?'option-disabled':''}\" ${disabled?'aria-disabled=\"true\"':`onclick=\"selectFormation('${escapeJs(item.id)}')\"`}><img src=\"${esc(item.img||LINE_TRAIN_IMG)}\" class=\"option-img\" onerror=\"this.onerror=null;this.src=jsonNoImageUrl()\"><span>${esc(item.name||item.id)}</span></div>`;
-              }).join('');
-            }).join('');
-            return categoryHeaders+variantHeaders+formationItems;
+            return formationDropdownHTML(train);
           })()}
         </div>
       </div>
@@ -7869,7 +7871,7 @@ initRegionNavigation();
           <div class="custom-select-trigger" onclick="toggleDropdown(event)"><div style="display:flex;align-items:center;gap:10px"><img src="${originalSelected.img}" id="selectedOptionImg" style="width:auto;height:70px;object-fit:contain"><span id="selectedOptionText">${originalSelected.name}</span></div>▼</div>
           <div class="custom-select-options" id="dropdownOptions">
             <div class="option-item initial-option" onclick="selectFormation('${INITIAL_FORMATION_SELECTION.id}')"><img src="${syncInitialFormationImage()}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${INITIAL_FORMATION_SELECTION.name}</span></div>
-            ${(()=>{const groups=formationDisplayGroups(formationsForTrain(train));return groups.map(group=>{const groupType=String(group.type||'');const selectable=!!group.selectableType;const id=String(group.selectableId||groupType);const clickAttr=selectable?`onclick="selectFormation('${escapeJs(id)}')"`:'';return `<div class="option-header option-category-header ${selectable?'option-selectable-category':''}" ${clickAttr}><img src="${esc(group.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(id)}</span></div>`;}).join('')+groups.flatMap(group=>(group.variants||[]).map(variant=>{const disabled=!!variant.disabled;return `<div class="option-header option-subheader ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':`onclick="selectFormation('${escapeJs(variant.id)}')"`}><img src="${esc(variant.img||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(variant.name||variant.id)}</span></div>`;})).join('')+groups.map(group=>[...(group.variants||[]).flatMap(v=>v.items||[]),...(group.items||[])].map(item=>{const disabled=!!item.disabled||UNAVAILABLE_FORMATIONS.has(String(item.id));return `<div class="option-item ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':`onclick="selectFormation('${escapeJs(item.id)}')"`}><img src="${esc(item.img||LINE_TRAIN_IMG)}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${esc(item.name||item.id)}</span></div>`;}).join('')).join('');})()}
+            ${formationDropdownHTML(train)}
           </div>
         </div>`;
       return;
