@@ -2791,6 +2791,19 @@ function formationDisplayGroups(groups){
       group.items.push(...(Array.isArray(g?.items)?g.items:[]));
     }
   }
+
+  // 東武野田線の60000型は「6両 → 5両」の順で固定する。
+  // JSONの記述順や統合処理で逆転しても、編成選択画面ではこの順を維持する。
+  for(const group of out){
+    if(String(group?.type||'')!=='60000型') continue;
+    const variants=Array.isArray(group?.variants)?group.variants:[];
+    variants.sort((a,b)=>{
+      const av=Number(String(a?.name||'').match(/(\d+)\s*両/)?.[1]);
+      const bv=Number(String(b?.name||'').match(/(\d+)\s*両/)?.[1]);
+      if(Number.isFinite(av)&&Number.isFinite(bv)) return bv-av;
+      return 0;
+    });
+  }
   return out;
 }
 
