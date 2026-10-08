@@ -98,6 +98,14 @@ button,input,select,textarea{font-family:inherit}
 }
 
 .station-row.fukuoka-branch-toggle-row{flex-direction:column;gap:8px;}
+/* 別路線の分岐ボタンは東武スカイツリーラインの connection-button を踏襲。
+   駅名標・共通操作など重複する部分は mainpage の既存スタイルを優先する。 */
+.station-row.fukuoka-branch-anchor-row{flex-direction:column;gap:0;}
+.station-row.fukuoka-branch-anchor-row .connection-buttons{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;max-width:860px;z-index:7;}
+.station-row.fukuoka-branch-anchor-row .connection-top{margin-bottom:22px;}
+.station-row.fukuoka-branch-anchor-row .connection-button{appearance:none;border:2px solid var(--button-color);border-radius:7px;padding:8px 18px;background:#fff;color:var(--button-color);box-shadow:0 2px 7px rgba(0,0,0,.20);font:700 15px/1.2 inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-width:150px;transition:filter .12s,transform .12s,background .12s,color .12s;}
+.station-row.fukuoka-branch-anchor-row .connection-button:hover{filter:brightness(.96);transform:translateY(-1px);}
+.station-row.fukuoka-branch-anchor-row .connection-button.active{background:var(--button-color);color:#fff;}
 .station-badge{
   position:relative;width:384px;min-width:384px;height:auto;aspect-ratio:480 / 90;
   border:4px solid var(--primary);border-radius:40px;
@@ -1503,7 +1511,8 @@ function buildFukuokaStationsForRoute(json,meta){
   }));
 }
 function fukuokaBranchToggleLabel(){
-  return fukuokaHakozakiBranchOpen ? '▲ 箱崎線' : '▼ 箱崎線';
+  // 東武スカイツリーラインの日光線ボタンと同じ表記。開閉状態は active クラスで示す。
+  return '▼ 箱崎線';
 }
 function fukuokaTrainUsesHakozaki(train){
   const hako=new Set(fukuokaBranchStationNames(activeJson,activeRouteMeta));
@@ -2062,13 +2071,25 @@ async function loadLineTrainData(routeName=activeRouteName){
   INITIAL_FORMATION_SELECTION.img=jsonNoImageUrl(json);
   TYPE_SELECTIONS=FORMATIONS.map(g=>({id:g.type,name:g.type,img:g.typeImg,kind:'type',type:g.type}));
   const built=[];
-  const jsonDayKeys=day=>day==='休日'?['土休日','休日']:['平日'];
+  // 路線JSONには「平日/土休」の配列形式と「平日/休日→上り/下り」の形式がある。
+  // 福岡市地下鉄のように各列車が direction を持つ配列形式もここで共通形式へ変換する。
   for(const day of ['平日','休日']){
-    const sourceDay=jsonDayKeys(day).find(k=>Array.isArray(json?.trains?.[k]?.上り)||Array.isArray(json?.trains?.[k]?.下り));
+    const candidateKeys=day==='休日'?['土休日','土休','休日']:['平日'];
+    const sourceDay=candidateKeys.find(k=>Array.isArray(json?.trains?.[k]) || (json?.trains?.[k]&&typeof json.trains[k]==='object'&&(Array.isArray(json.trains[k]?.上り)||Array.isArray(json.trains[k]?.下り))));
     if(!sourceDay) continue;
-    for(const direction of ['上り','下り']){
-      const rawList=json?.trains?.[sourceDay]?.[direction]||[];
-      for(const raw of rawList) built.push(...normalizeExternalTrain(raw,day,direction,activeRouteMeta));
+    const dayData=json.trains[sourceDay];
+    if(Array.isArray(dayData)){
+      for(const raw of dayData){
+        const rawDirection=String(raw?.direction||'');
+        let direction=(rawDirection==='toward_airport'||rawDirection==='上り'||rawDirection==='up')?'上り':'下り';
+        const normalizedDay=day==='休日'?'休日':'平日';
+        built.push(...normalizeExternalTrain(raw,normalizedDay,direction,activeRouteMeta));
+      }
+    }else{
+      for(const direction of ['上り','下り']){
+        const rawList=dayData?.[direction]||[];
+        for(const raw of rawList) built.push(...normalizeExternalTrain(raw,day,direction,activeRouteMeta));
+      }
     }
   }
   const seen=new Set(); ALL_SCHEDULE_TRAINS=[];
@@ -3290,65 +3311,11 @@ function buildFukuokaScreenRows(){
 }
 
 function renderFukuokaLine(){
-  if(!isFukuokaCompositeRoute(activeRouteMeta)) return false;
-  if(typeof TRAIN_ICON_CACHE!=='undefined') TRAIN_ICON_CACHE.clear();
-  if(typeof TRAIN_LAYOUT_CACHE!=='undefined') TRAIN_LAYOUT_CACHE={container:null,rowCenters:null,rowCount:0};
-  const container=document.getElementById('lineContainer');
-  if(!container) return true;
-  container.innerHTML='<div class="operation-info-layer" id="operationInfoLayer"></div><div class="rail-line" id="railLine"></div><div class="moving-train-layer" id="movingTrainLayer"></div><div class="operation-info-label-layer" id="operationInfoLabelLayer"></div>';
-
-  const rows=buildFukuokaScreenRows();
-  STATIONS=rows.map((r,i)=>({id:`st${i+1}`,nameJa:r.st[0],nameEn:r.st[1]}));
-  const junction=String(fukuokaDiagramConfig(activeJson,activeRouteMeta)?.junctionStation||'中洲川端').trim()||'中洲川端';
-
-  rows.forEach((r,index)=>{
-    const row=document.createElement('div');
-    row.className='station-row';
-    row.dataset.rowIndex=String(index);
-    row.dataset.routeId=String(r.routeKey||'fukuoka-kuko');
-    row.dataset.station=String(r.st[0]||'');
-    if(index===0) row.classList.add('endpoint-start');
-    if(index===rows.length-1) row.classList.add('endpoint-end');
-    if(r.opt?.cutAbove) row.classList.add('cut-above');
-    if(r.opt?.cutBelow) row.classList.add('cut-below');
-    if(r.st[0]===junction) row.classList.add('fukuoka-branch-toggle-row');
-
-    const stationColor=String(r.opt?.stationColor||r.opt?.lineTop||activeRouteMeta?.routeColor||'#F58220');
-    row.style.setProperty('--primary',stationColor);
-    row.style.setProperty('--line-top',String(r.opt?.lineTop||stationColor));
-    row.style.setProperty('--line-bottom',String(r.opt?.lineBottom||stationColor));
-
-    const badge=document.createElement('div');
-    badge.className='station-badge';
-    badge.innerHTML=`<div class="station-name-ja">${esc(r.st[0])}</div><div class="station-name-en">${esc(r.st[1])}</div>`;
-    badge.setAttribute('role','button');
-    badge.tabIndex=0;
-    const stationId=`st${index+1}`;
-    const openStation=ev=>{ev.preventDefault();ev.stopPropagation();openStationSheet(stationId);};
-    badge.addEventListener('click',openStation);
-    badge.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){openStation(ev);}});
-    row.appendChild(badge);
-
-    // 分岐切替ボタンは、日光線と同じく中洲川端の駅行に置く。
-    if(r.st[0]===junction){
-      const wrap=document.createElement('div');
-      wrap.className='fukuoka-branch-toggle-wrap';
-      const btn=document.createElement('button');
-      btn.type='button';
-      btn.className='fukuoka-branch-toggle-button'+(fukuokaHakozakiBranchOpen?' active':'');
-      btn.textContent=fukuokaBranchToggleLabel();
-      btn.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();toggleFukuokaHakozakiBranch();});
-      wrap.appendChild(btn);
-      row.appendChild(wrap);
-    }
-    container.appendChild(row);
-  });
-
-  renderRailLineSegments();
-  renderTrainPositions();
-  renderOperationInfoZones();
-  return true;
+  // 福岡線も本体と同じ駅行・列車アイコン描画を使う。
+  // 専用DOMを組み立てると既存ページとデザインがずれるため、ここでは描画を横取りしない。
+  return false;
 }
+
 function renderLine(){
   if(renderFukuokaLine()) return;
   if(activeRouteName==='大阪環状線' && activeJson?.circular===true){
@@ -3402,6 +3369,22 @@ function renderLine(){
     }
     applyStationLabelColors(badge,index);
     row.appendChild(badge);
+    if(isFukuokaCompositeRoute(activeRouteMeta) && st.nameJa===String(fukuokaDiagramConfig(activeJson,activeRouteMeta)?.insertAfter||'祇園')){
+      // 東武スカイツリーラインの「東武動物公園」上部にある日光線ボタンと同じ配置。
+      // 駅名標など重複する共通UIは mainpage 側のデザインを優先する。
+      row.classList.add('fukuoka-branch-anchor-row');
+      const buttonWrap=document.createElement('div');
+      buttonWrap.className='connection-buttons connection-top';
+      const branchButton=document.createElement('button');
+      branchButton.type='button';
+      branchButton.className='connection-button'+(fukuokaHakozakiBranchOpen?' active':'');
+      branchButton.style.setProperty('--button-color',String(lineDefByName('箱崎線')?.color||'#0072BC'));
+      branchButton.textContent=fukuokaBranchToggleLabel();
+      branchButton.setAttribute('aria-expanded',String(fukuokaHakozakiBranchOpen));
+      branchButton.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();toggleFukuokaHakozakiBranch();});
+      buttonWrap.appendChild(branchButton);
+      row.appendChild(buttonWrap);
+    }
     container.appendChild(row);
   });
   renderRailLineSegments();
