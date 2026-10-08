@@ -639,7 +639,27 @@ button,input,select,textarea{font-family:inherit}
 .terms-date{margin:0 2px;color:#777;font-size:.84rem;text-align:right;}
 @media (max-width:520px){.terms-content{font-size:.93rem;line-height:1.8;}.terms-section{padding:12px 12px 11px;margin-bottom:12px;}.terms-lead{padding:12px 13px;}.terms-content h2{font-size:.98rem;}}
 </style>
-
+<style id="today-operation-type-width-fix">
+/* 今日の運用：種別は2文字までなので、背景・列幅とも2文字相当に縮小 */
+.train-operation-type{
+  box-sizing:border-box !important;
+  min-width:44px !important;
+  width:44px !important;
+  max-width:44px !important;
+  padding-left:2px !important;
+  padding-right:2px !important;
+  justify-content:center;
+}
+@container (max-width:529px){
+  .train-operation-type{
+    min-width:8.3cqw !important;
+    width:8.3cqw !important;
+    max-width:8.3cqw !important;
+    padding-left:.38cqw !important;
+    padding-right:.38cqw !important;
+  }
+}
+</style>
 <style id="hiroshima-final-overrides">
   /* 京浜東北・根岸線と同じコントロールバー */
   .control-bar{
@@ -1104,6 +1124,7 @@ const ROUTE_REGISTRY={
     formationFamily:'noda',
     formationCountDefault:1,
     destinationAliases:{'春日部':'春日','七光台':'七光','清水公園':'清水','野田市':'野田'},
+    stationShortMap:{'春日部':'春日','七光台':'七光','清水公園':'清水','野田市':'野田'},
     typeColors:{'普通':'#666'},
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/TD_noimage.png',
     access:{public:true,routeAdmins:[]},
@@ -2980,12 +3001,14 @@ function updateCurrentTimeOnly(){
   const btn=document.getElementById('nowBtn');
   if(btn) btn.classList.add('active');
   renderTrainPositions();
+  refreshTrainInfoOperationState?.();
 }
 function setManualTime(){
   followNow=false;
   const btn=document.getElementById('nowBtn');
   if(btn) btn.classList.remove('active');
   renderTrainPositions();
+  refreshTrainInfoOperationState?.();
 }
 
 
@@ -5654,7 +5677,24 @@ initRegionNavigation();
   formationsForTrain=function(train){
     const target=train||currentTrainSnapshot||{};
     const family=allowedFormationFamily(target);
-    return (FORMATIONS||[]).filter(group=>formationFamily(group)===family && formationRouteAllowed(group,target));
+    const groups=(FORMATIONS||[]).filter(group=>formationFamily(group)===family && formationRouteAllowed(group,target));
+    // 東武野田線の10030型は、更新車（11631～11636）を未更新車（11651～11654）より先に固定。
+    // JSONの並びや形式統合処理の影響で順番が入れ替わらないようにする。
+    if(String(activeRouteName||'')==='東武野田線'){
+      for(const group of groups){
+        const type=String(group?.type||'');
+        if(type!=='10030型') continue;
+        const sortItems=items=>Array.isArray(items)?items.sort((a,b)=>{
+          const ai=Number(String(a?.id||'').replace(/\D/g,''));
+          const bi=Number(String(b?.id||'').replace(/\D/g,''));
+          if(Number.isFinite(ai)&&Number.isFinite(bi)) return ai-bi;
+          return 0;
+        }):items;
+        sortItems(group.items);
+        for(const variant of (group.variants||[])) sortItems(variant.items);
+      }
+    }
+    return groups;
   };
 
   function canonicalFormationId(value){
@@ -7518,40 +7558,239 @@ initRegionNavigation();
   function operationChainForCurrentTrain(train){
     const day=currentDay;
     const info=findChain(day,String(train?.no||''));
+    let chain=null;
     if(info){
-      const chain=OPERATION_CHAINS?.[day]?.[info.chainIndex];
-      if(Array.isArray(chain) && chain.length) return chain;
+      const candidate=OPERATION_CHAINS?.[day]?.[info.chainIndex];
+      if(Array.isArray(candidate) && candidate.length) chain=candidate;
     }
-    return [{
-      no:String(train?.no||''),
-      type:String(train?.type||''),
-      start:String(train?.start||train?.stops?.[0]?.station||''),
-      startTime:String(train?.startTime||train?.stops?.[0]?.departure||train?.stops?.[0]?.time||''),
-      dest:String(train?.dest||train?.stops?.[train.stops.length-1]?.station||''),
-      endTime:String(train?.endTime||train?.stops?.[train.stops.length-1]?.arrival||train?.stops?.[train.stops.length-1]?.time||'')
-    }];
+    if(!chain){
+      // 列車番号を持たない列車では内部識別子を「仮の列番」として表示しない。
+      return [{
+        no:'',
+        type:String(train?.type||''),
+        start:String(train?.start||train?.stops?.[0]?.station||''),
+        startTime:String(train?.startTime||train?.stops?.[0]?.departure||train?.stops?.[0]?.time||''),
+        dest:String(train?.dest||train?.stops?.[train.stops.length-1]?.station||''),
+        endTime:String(train?.endTime||train?.stops?.[train.stops.length-1]?.arrival||train?.stops?.[train.stops.length-1]?.time||''),
+        _sourceTrain:train,
+        _fromIndex:0,
+        _toIndex:Math.max(0,(train?.stops?.length||1)-1)
+      }];
+    }
+
+    const expanded=[];
+    for(const entry of chain){
+      const entryNo=String(entry?.no||'').trim();
+      const sourceTrain=entryNo ? findOperationTrainRecord(entryNo,day) : null;
+      // 実際のJSON列車データにある番号だけを使用し、内部ID・仮番号は表示しない。
+      const hasRealNumber=!!sourceTrain && sourceTrain.hasTrainNumber!==false && !sourceTrain.hideTrainNumber;
+      const stops=Array.isArray(sourceTrain?.stops)?sourceTrain.stops:[];
+      const rawSegments=sourceTrain?.numberSegments && typeof sourceTrain.numberSegments==='object'
+        ? Object.values(sourceTrain.numberSegments).flatMap(v=>Array.isArray(v)?v:[])
+        : [];
+      const segments=[];
+      const seen=new Set();
+      for(const seg of rawSegments){
+        const from=Number(seg?.from),to=Number(seg?.to);
+        if(!Number.isFinite(from)||!Number.isFinite(to)||from>to) continue;
+        const segNo=hasRealNumber?String(seg?.no||'').trim():'';
+        if(!segNo) continue;
+        const key=`${segNo}|${from}|${to}`;
+        if(seen.has(key)) continue;
+        seen.add(key);
+        segments.push({no:segNo,from,to});
+      }
+      segments.sort((a,b)=>a.from-b.from||a.to-b.to);
+      // 路線境界などで同じ列車番号の区間が複数登録されている場合は1つにまとめる。
+      // 番号そのものが切り替わる箇所だけを、運用の表示上の分割境界とする。
+      const mergedSegments=[];
+      for(const seg of segments){
+        const last=mergedSegments[mergedSegments.length-1];
+        if(last && last.no===seg.no && seg.from<=last.to+1){
+          last.to=Math.max(last.to,seg.to);
+        }else{
+          mergedSegments.push({...seg});
+        }
+      }
+
+      // numberChanges により番号が途中で変わる場合は、変更駅を境界として分割する。
+      if(stops.length && mergedSegments.length>1){
+        for(const seg of mergedSegments){
+          const from=Math.max(0,Math.min(stops.length-1,seg.from));
+          const to=Math.max(from,Math.min(stops.length-1,seg.to));
+          const first=stops[from]||{};
+          const last=stops[to]||{};
+          const start=String(first?.station||'');
+          const dest=String(last?.station||'');
+          const startTime=String(first?.departure||first?.time||first?.arrival||'');
+          const endTime=String(last?.arrival||last?.time||last?.departure||'');
+          if(!start && !dest) continue;
+          expanded.push({
+            no:seg.no,
+            type:String(entry?.type||sourceTrain?.type||''),
+            start,
+            startTime,
+            dest,
+            endTime,
+            _sourceTrain:sourceTrain,
+            _fromIndex:from,
+            _toIndex:to
+          });
+        }
+        continue;
+      }
+
+      const from=stops.length?0:0;
+      const to=stops.length?stops.length-1:0;
+      expanded.push({
+        no:hasRealNumber ? (mergedSegments[0]?.no||entryNo||trainDisplayNoAtPosition(sourceTrain,from)||'') : '',
+        type:String(entry?.type||sourceTrain?.type||''),
+        start:String(entry?.start||sourceTrain?.start||stops[from]?.station||''),
+        startTime:String(entry?.startTime||sourceTrain?.startTime||stops[from]?.departure||stops[from]?.time||stops[from]?.arrival||''),
+        dest:String(entry?.dest||sourceTrain?.dest||stops[to]?.station||''),
+        endTime:String(entry?.endTime||sourceTrain?.endTime||stops[to]?.arrival||stops[to]?.time||stops[to]?.departure||''),
+        _sourceTrain:sourceTrain,
+        _fromIndex:from,
+        _toIndex:to
+      });
+    }
+    return expanded.length ? expanded : [{...chain[0],no:'',_sourceTrain:train}];
+  }
+
+  /* 今日の運用だけで使用する駅名略称。停車駅案内・駅時刻表などには適用しない。
+     JSON/路線設定に存在する代表的なキーを順に参照し、指定がなければ正式駅名をそのまま表示する。 */
+  function operationStationLabel(name){
+    const value=String(name||'').trim();
+    if(!value) return '';
+
+    // 路線設定・JSONに直接用意された駅名→略称マップ。
+    const registryMeta=(typeof ROUTE_REGISTRY==='object' && ROUTE_REGISTRY && activeRouteName && ROUTE_REGISTRY[activeRouteName]) ? ROUTE_REGISTRY[activeRouteName] : null;
+    const maps=[
+      registryMeta?.stationShortMap,
+      registryMeta?.stationAbbreviations,
+      activeRouteMeta?.stationShortMap,
+      activeRouteMeta?.stationAbbreviations,
+      activeRouteMeta?.stationAliases,
+      activeJson?.stationShortMap,
+      activeJson?.stationAbbreviations,
+      activeJson?.stationAliases,
+      activeRouteMeta?.destinationAliases
+    ];
+    for(const map of maps){
+      if(map && typeof map==='object' && Object.prototype.hasOwnProperty.call(map,value)){
+        const short=String(map[value]??'').trim();
+        if(short) return short;
+      }
+    }
+
+    // データベース作成HTMLの駅名略称形式
+    // { route:{ abbreviations:{ stations:[{targetId,value}] } }, stations:[{id,name,abbr}] }
+    const dbStations=Array.isArray(activeJson?.stations)?activeJson.stations:[];
+    const dbStation=dbStations.find(st=>String(st?.name||'').trim()===value);
+    const directAbbr=String(dbStation?.abbr||'').trim();
+    if(directAbbr) return directAbbr;
+    const dbAbbrs=activeJson?.route?.abbreviations?.stations;
+    if(Array.isArray(dbAbbrs)){
+      const hit=dbAbbrs.find(a=>String(a?.targetId||'')===String(dbStation?.id||''));
+      const short=String(hit?.value||'').trim();
+      if(short) return short;
+    }
+
+    // 通常の路線JSONの lines[].stations[].abbr にも対応
+    const lineStations=Array.isArray(activeJson?.lines)
+      ? activeJson.lines.flatMap(line=>Array.isArray(line?.stations)?line.stations:[])
+      : [];
+    const lineStation=lineStations.find(st=>String(st?.name||'').trim()===value);
+    const lineAbbr=String(lineStation?.abbr||'').trim();
+    if(lineAbbr) return lineAbbr;
+
+    const rules=[
+      ...(Array.isArray(activeRouteMeta?.stationShortRules)?activeRouteMeta.stationShortRules:[]),
+      ...(Array.isArray(activeJson?.stationShortRules)?activeJson.stationShortRules:[])
+    ];
+    for(const rule of rules){
+      const target=String(rule?.station??rule?.name??'').trim();
+      if(target && target===value && rule?.result!==undefined) return String(rule.result);
+    }
+    return value;
+  }
+
+  /* 03:00境界の運用時刻へそろえる。 */
+  function operationServiceMinutes(value){
+    const raw=String(value||'').trim();
+    if(!raw) return NaN;
+    const m=timeToMinutes(raw);
+    if(!Number.isFinite(m)) return NaN;
+    return m<RESET_HOUR*60 ? m+1440 : m;
+  }
+
+  function operationEntryState(entry,index,train){
+    // 過去日・未来日では「現在運用」の強調を出さない。
+    const isToday=!isNonCurrentSelectedDate(selectedDateKey) && String(selectedDateKey||'')===operationDateKey(new Date());
+    if(!isToday) return {current:false,next:false};
+    const now=currentMinutes();
+    const start=operationServiceMinutes(entry?.startTime);
+    const end=operationServiceMinutes(entry?.endTime);
+    if(!Number.isFinite(now)) return {current:false,next:false};
+    if(Number.isFinite(start) && Number.isFinite(end)){
+      const current=now>=start && now<=end;
+      if(current) return {current:true,next:false};
+      if(now<start) return {current:false,next:true};
+    }
+    return {current:false,next:false};
   }
 
   function operationItemHTML(entry,index,count){
-    const no=String(entry?.no||'');
-    const type=String(entry?.type||'');
-    const start=String(entry?.start||'');
+    const sourceTrain=entry?._sourceTrain || findOperationTrainRecord(String(entry?.no||''),currentDay);
+    const hasRealNumber=!!sourceTrain && sourceTrain.hasTrainNumber!==false && !sourceTrain.hideTrainNumber;
+    const no=hasRealNumber ? String(entry?.no||'').trim() : '';
+    const rawType=String(entry?.type||'').trim();
+    const type=rawType ? getShortType(rawType,no) : '';
+    const start=operationStationLabel(entry?.start);
     const startTime=String(entry?.startTime||'');
-    const dest=String(entry?.dest||'');
+    const dest=operationStationLabel(entry?.dest);
     const endTime=String(entry?.endTime||'');
-    /* 種別色・文字色は既存の列車情報／駅時刻表と同じ共通処理を使用する。 */
-    const sourceTrain=findOperationTrainRecord(no,currentDay) || {type};
-    const typeBadgeStyle=type ? typeBadgeInlineStyle(sourceTrain,null,null) : '';
-    return `<button type="button" class="station-timetable-row train-operation-row" onclick="openSheet('${escapeJs(no)}',false,'${escapeJs(inferDirectionFromStations(start,dest))}')">
+    const state=operationEntryState(entry,index,sourceTrain);
+    const typeBadgeStyle=rawType ? typeBadgeInlineStyle(sourceTrain || {type:rawType},null,null) : '';
+    const openNo=no;
+    const clickAttr=openNo ? `onclick="openSheet('${escapeJs(openNo)}',false,'${escapeJs(inferDirectionFromStations(entry?.start,entry?.dest))}')"` : '';
+    const rowClass=[
+      'station-timetable-row','train-operation-row',
+      state.current?'current-operation':'',
+      state.next?'next-operation':''
+    ].filter(Boolean).join(' ');
+    return `<button type="button" class="${rowClass}" data-operation-start="${escapeAttr(startTime)}" data-operation-end="${escapeAttr(endTime)}" ${clickAttr}>
       <span class="train-operation-number">${escapeAttr(no)}</span>
-      <span class="station-timetable-type train-operation-type" style="${escapeAttr(typeBadgeStyle)}">${escapeAttr(type||'—')}</span>
+      <span class="station-timetable-type train-operation-type${type?'':' empty-operation-field'}"${type?` style="${typeBadgeStyle}"`:''}>${escapeAttr(type)}</span>
       <span class="train-operation-time start-time">${escapeAttr(startTime)}</span>
-      <span class="train-operation-station start-station">${escapeAttr(start)}</span>
+      <span class="train-operation-station start-station" title="${escapeAttr(String(entry?.start||''))}">${escapeAttr(start)}</span>
       <span class="train-operation-arrow" aria-hidden="true">→</span>
       <span class="train-operation-time end-time">${escapeAttr(endTime)}</span>
-      <span class="train-operation-station end-station">${escapeAttr(dest)}</span>
+      <span class="train-operation-station end-station" title="${escapeAttr(String(entry?.dest||''))}">${escapeAttr(dest)}</span>
+      
     </button>`;
   }
+
+  function refreshTrainInfoOperationState(){
+    const root=document.querySelector('#sheetContent .train-info-tabs');
+    if(!root) return;
+    const wrap=document.querySelector('#sheetContent .train-operation-wrap');
+    if(!wrap) return;
+    const today=(!isNonCurrentSelectedDate(selectedDateKey) && String(selectedDateKey||'')===operationDateKey(new Date()));
+    const now=currentMinutes();
+    wrap.querySelectorAll('.train-operation-row').forEach(row=>{
+      const start=operationServiceMinutes(row.dataset.operationStart||'');
+      const end=operationServiceMinutes(row.dataset.operationEnd||'');
+      let current=false,next=false;
+      if(today && Number.isFinite(now) && Number.isFinite(start) && Number.isFinite(end)){
+        current=now>=start && now<=end;
+        next=!current && now<start;
+      }
+      row.classList.toggle('current-operation',current);
+      row.classList.toggle('next-operation',next);
+    });
+  }
+  window.refreshTrainInfoOperationState=refreshTrainInfoOperationState;
 
   function renderFormationInfo(train){
     const formationValue=String(registeredFormationForTrain(train)||train?.formation||'').trim();
@@ -7598,6 +7837,14 @@ initRegionNavigation();
     const noFormationText=currentAuthUser?'ここから編成を入力':'編成を入力するにはログインしてください';
     const tabColor=primaryTrainInfoColor();
     const operation=operationChainForCurrentTrain(train);
+    const hasOperationNumber=operation.some(entry=>String(entry?.no||'').trim()!=='');
+    const hasOperationType=operation.some(entry=>String(entry?.type||'').trim()!=='');
+    const operationWrapClasses=[
+      'station-timetable-wrap',
+      'train-operation-wrap',
+      !hasOperationNumber?'hide-operation-number':'',
+      !hasOperationType?'hide-operation-type':''
+    ].filter(Boolean).join(' ');
     const opHtml=operation.map((entry,i)=>operationItemHTML(entry,i,operation.length)).join('');
     const activeStops=currentTrainInfoTab==='stops';
     const activeOp=currentTrainInfoTab==='operation';
@@ -7642,10 +7889,11 @@ initRegionNavigation();
 
       <div class="train-info-content-panel">
         ${activeStops?`<div class="timetable-list train-stop-guide-list">${timetableHTMLForCurrentDay(train)}</div>`:''}
-        ${activeOp?`<div class="station-timetable-frame train-operation-frame"><div class="station-timetable-wrap train-operation-wrap">${opHtml || '<div class="train-info-empty">この列車の運用情報はありません。</div>'}</div></div>`:''}
+        ${activeOp?`<div class="station-timetable-frame train-operation-frame"><div class="${operationWrapClasses}">${opHtml || '<div class="train-info-empty">この列車の運用情報はありません。</div>'}</div></div>`:''}
         ${activeForm?`<div class="train-info-formation-wrap">${renderFormationInfo(train)}</div>`:''}
       </div>
     `;
+    refreshTrainInfoOperationState();
   }
 
   window.__selectTrainInfoTab=function(tab){
@@ -7732,7 +7980,7 @@ initRegionNavigation();
       height:78px;
       display:grid;
       /* 時刻列を固定位置にして、駅名の長短に左右されないようにする。 */
-      grid-template-columns:86px 92px 78px minmax(0,1fr) 36px 78px minmax(0,1fr);
+      grid-template-columns:86px 44px 78px minmax(0,1fr) 36px 78px minmax(0,1fr);
       align-items:center;
       column-gap:8px;
       padding:6px 12px;
@@ -7747,6 +7995,33 @@ initRegionNavigation();
     .train-operation-row:nth-child(even){background:#cfcfcf;}
     .train-operation-row:hover{filter:brightness(.97);}
     .train-operation-row:focus-visible{outline:3px solid rgba(0,0,0,.35);outline-offset:-3px;}
+    .train-operation-row.current-operation{
+      border:3px solid var(--train-info-color,var(--primary));
+      box-sizing:border-box;
+      position:relative;
+      z-index:2;
+    }
+    .train-operation-row.next-operation{
+      box-shadow:inset 0 0 0 2px rgba(0,0,0,.18);
+    }
+    .train-operation-wrap.hide-operation-number .train-operation-row{
+      grid-template-columns:52px 44px 78px minmax(0,1fr) 36px 78px minmax(0,1fr);
+    }
+    .train-operation-wrap.hide-operation-type .train-operation-row{
+      grid-template-columns:86px 44px minmax(0,1fr) 36px 78px minmax(0,1fr);
+    }
+    .train-operation-wrap.hide-operation-number.hide-operation-type .train-operation-row{
+      grid-template-columns:78px minmax(0,1fr) 36px 78px minmax(0,1fr);
+    }
+    /* 列そのものを非表示にするときはグリッドの子要素も消し、
+       implicit column が生成されてレイアウトが崩れるのを防ぐ。 */
+    .train-operation-wrap.hide-operation-number .train-operation-number{display:none;}
+    .train-operation-wrap.hide-operation-type .train-operation-type{display:none;}
+    .train-operation-wrap .empty-operation-field{
+      visibility:hidden;
+      background:transparent !important;
+      border:0;
+    }
     .train-operation-number{
       color:#1b6e27;
       font-family:Helvetica,"Helvetica Neue","Noto Sans JP",Arial,sans-serif;
@@ -7761,8 +8036,14 @@ initRegionNavigation();
       width:100%;
       min-width:0;
       font-size:17px;
-      height:32px;
-      padding:0 8px;
+      min-height:32px;
+      height:auto;
+      padding:4px 8px;
+      line-height:1.05;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:clip;
+      overflow-wrap:normal;
     }
     .train-operation-time{
       font-family:Helvetica,"Helvetica Neue","Noto Sans JP",Arial,sans-serif;
@@ -7778,11 +8059,13 @@ initRegionNavigation();
     .train-operation-station{
       min-width:0;
       font-size:23px;
-      line-height:1;
+      line-height:1.12;
       font-weight:500;
       overflow:hidden;
-      text-overflow:ellipsis;
+      text-overflow:clip;
       white-space:nowrap;
+      overflow-wrap:normal;
+      word-break:normal;
     }
     .train-operation-station.start-station{text-align:left;}
     .train-operation-station.end-station{text-align:left;}
@@ -7815,19 +8098,36 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     .train-info-empty{padding:22px 14px;text-align:center;color:#555;font-weight:700;}
 
     @media(max-width:520px){
-      .train-info-tabs{gap:8px;margin:8px 0;}
+      .train-info-tabs{gap:8px;margin:8px 0;padding:5px;}
       .train-info-tab{padding:10px 5px;font-size:1rem;}
       .train-operation-row{
         min-height:66px;height:66px;
-        grid-template-columns:58px 72px 58px minmax(0,1fr) 24px 58px minmax(0,1fr);
+        grid-template-columns:58px 44px 58px minmax(0,1fr) 24px 58px minmax(0,1fr);
         column-gap:5px;
         padding:5px 7px;
       }
       .train-operation-number{font-size:18px;}
       .train-operation-type{font-size:14px;height:28px;padding:0 4px;}
       .train-operation-time{font-size:18px;}
-      .train-operation-station{font-size:18px;}
+      .train-operation-station{font-size:18px;line-height:1.12;white-space:nowrap;overflow:hidden;text-overflow:clip;overflow-wrap:normal;word-break:normal;}
+      .train-operation-type{white-space:nowrap;overflow:hidden;text-overflow:clip;overflow-wrap:normal;}
       .train-operation-arrow{font-size:20px;}
+      .train-operation-wrap.hide-operation-number .train-operation-row{
+        grid-template-columns:44px 58px minmax(0,1fr) 24px 58px minmax(0,1fr);
+      }
+      .train-operation-wrap.hide-operation-type .train-operation-row{
+        grid-template-columns:58px 44px minmax(0,1fr) 24px 58px minmax(0,1fr);
+      }
+      .train-operation-wrap.hide-operation-number.hide-operation-type .train-operation-row{
+        grid-template-columns:58px minmax(0,1fr) 24px 58px minmax(0,1fr);
+      }
+      .train-operation-wrap.hide-operation-number .train-operation-number{display:none;}
+      .train-operation-wrap.hide-operation-type .train-operation-type{display:none;}
+    .train-operation-wrap .empty-operation-field{
+      visibility:hidden;
+      background:transparent !important;
+      border:0;
+    }
       .train-formation-detail-row{grid-template-columns:100px minmax(0,1fr);font-size:15px;gap:8px;padding:6px 9px;}
       .train-formation-card-title{font-size:20px;padding:8px 9px;}
     }
