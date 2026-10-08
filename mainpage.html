@@ -96,6 +96,16 @@ button,input,select,textarea{font-family:inherit}
   position:relative;z-index:2;width:100%;height:var(--row-height);min-height:var(--row-height);
   margin:0;display:flex;align-items:center;justify-content:center;
 }
+
+.station-row.fukuoka-branch-toggle-row{flex-direction:column;gap:9px;}
+.fukuoka-branch-toggle-wrap{display:flex;justify-content:center;align-items:center;z-index:7;}
+.fukuoka-branch-toggle-button{
+  appearance:none;border:2px solid #0072BC;border-radius:999px;background:#fff;color:#0072BC;
+  padding:7px 18px;font:inherit;font-weight:700;line-height:1;cursor:pointer;
+  box-shadow:0 1px 3px rgba(0,0,0,.16);
+}
+.fukuoka-branch-toggle-button:hover{background:#f1f7fb;}
+.fukuoka-branch-toggle-button.active{background:#0072BC;color:#fff;}
 .station-badge{
   position:relative;width:384px;min-width:384px;height:auto;aspect-ratio:480 / 90;
   border:4px solid var(--primary);border-radius:40px;
@@ -1318,6 +1328,7 @@ function storageFamilyForTrain(train){ return formationStorageContext(train).fam
 let activeRouteName='';
 let activeRouteMeta=null;
 let activeJson=null;
+let fukuokaHakozakiBranchOpen=false;
 const LINE_TRAIN_IMG='https://minamikaze2700.github.io/Unyomatome/images/227-0_noimage.png';
 const KEIHIN_TOHOKU_TRAIN_IMG=LINE_TRAIN_IMG;
 const YOKOHAMA_TRAIN_IMG=LINE_TRAIN_IMG;
@@ -1411,7 +1422,80 @@ const operationChainFirstTrainNo=operationChainFirstNo;
 const VEHICLE_TO_FORMATION={};
 let TYPE_SELECTIONS=[];
 function formationFamilyFromType(){return 'keihin';}
+function isFukuokaCompositeRoute(meta=activeRouteMeta){
+  return String(meta?.id||'')==='fukuoka-kuko-hakozaki';
+}
+function fukuokaDiagramConfig(json=activeJson,meta=activeRouteMeta){
+  if(!isFukuokaCompositeRoute(meta)) return null;
+  const diagram=json?.diagram;
+  if(!diagram || diagram.branchToggle!==true) return null;
+  return diagram;
+}
+function fukuokaStationMaster(json=activeJson){
+  const map=new Map();
+  for(const line of (Array.isArray(json?.lines)?json.lines:[])){
+    for(const st of (Array.isArray(line?.stations)?line.stations:[])){
+      const name=String(st?.name||'').trim();
+      if(!name || map.has(name)) continue;
+      map.set(name,{id:'',nameJa:name,nameEn:String(st?.nameEn||'')});
+    }
+  }
+  return map;
+}
+function fukuokaBranchStationNames(json=activeJson,meta=activeRouteMeta){
+  const d=fukuokaDiagramConfig(json,meta);
+  if(!d) return [];
+  const junction=String(d.junctionStation||'').trim();
+  return (Array.isArray(d.hakosakiInsert)?d.hakosakiInsert:[])
+    .map(x=>String(x||'').trim())
+    .filter(Boolean)
+    .filter(x=>x!==junction);
+}
+function fukuokaDisplayedStationNames(json=activeJson,meta=activeRouteMeta){
+  const d=fukuokaDiagramConfig(json,meta);
+  if(!d) return [];
+  const master=fukuokaStationMaster(json);
+  const main=(Array.isArray(d.mainOrder)?d.mainOrder:[]).map(x=>String(x||'').trim()).filter(x=>x&&master.has(x));
+  if(!fukuokaHakozakiBranchOpen) return main;
+  const insertAfter=String(d.insertAfter||'').trim();
+  const branch=fukuokaBranchStationNames(json,meta);
+  const out=[];
+  for(const name of main){
+    out.push(name);
+    if(name===insertAfter) out.push(...branch);
+  }
+  return [...new Set(out)];
+}
+function buildFukuokaStationsForRoute(json,meta){
+  const names=fukuokaDisplayedStationNames(json,meta);
+  if(!names.length) return null;
+  const master=fukuokaStationMaster(json);
+  return names.map((name,i)=>({
+    id:`st${i+1}`,
+    nameJa:name,
+    nameEn:String(master.get(name)?.nameEn||'')
+  }));
+}
+function fukuokaBranchToggleLabel(){
+  return fukuokaHakozakiBranchOpen ? '▲ 箱崎線' : '▼ 箱崎線';
+}
+function toggleFukuokaHakozakiBranch(){
+  if(!isFukuokaCompositeRoute(activeRouteMeta)) return;
+  fukuokaHakozakiBranchOpen=!fukuokaHakozakiBranchOpen;
+  if(typeof TRAIN_ICON_CACHE!=='undefined') TRAIN_ICON_CACHE.clear();
+  if(typeof TRAIN_RUNTIME_CACHE!=='undefined') TRAIN_RUNTIME_CACHE.clear();
+  if(typeof TERMINAL_DEPARTURE_CACHE!=='undefined') TERMINAL_DEPARTURE_CACHE.clear();
+  if(typeof TERMINAL_NEXT_CACHE!=='undefined') TERMINAL_NEXT_CACHE.clear();
+  if(typeof TRAIN_RENDER_INDEX_CACHE!=='undefined') TRAIN_RENDER_INDEX_CACHE.clear();
+  const rebuilt=buildFukuokaStationsForRoute(activeJson,activeRouteMeta);
+  if(rebuilt?.length) STATIONS=rebuilt;
+  renderLine();
+}
+window.toggleFukuokaHakozakiBranch=toggleFukuokaHakozakiBranch;
+
 function buildStationsForRoute(json,meta){
+  const fukuokaStations=buildFukuokaStationsForRoute(json,meta);
+  if(fukuokaStations?.length) return fukuokaStations;
   const seen=new Set(),list=[];
   for(const lineName of meta.jsonLines){
     const line=(json.lines||[]).find(x=>String(x?.name||'')===lineName);
@@ -1937,6 +2021,7 @@ async function loadLineTrainData(routeName=activeRouteName){
   }
   activeRouteMeta=ROUTE_REGISTRY[activeRouteName];
   if(!activeRouteMeta) throw new Error(`路線設定が見つかりません: ${activeRouteName}`);
+  fukuokaHakozakiBranchOpen=false;
   let json=null;
   if(!activeRouteMeta.json) throw new Error(`路線JSONの設定がありません: ${activeRouteName}`);
   json=await loadExternalRouteJsons(activeRouteMeta);
@@ -2443,9 +2528,18 @@ function getDisplayedTrainSource(){
   // 東神奈川～横浜～大船の共用区間では、両路線の列車を同じ画面に表示する。
   // 現在の路線データだけを表示する。
 //   // STATIONS内に存在する区間だけを描画対象にする。
-  return day==='休日'
+  const source=day==='休日'
     ? HOLIDAY_TRAINS
     : TRAINS.filter(t=>!Array.isArray(t.days)||!t.days.length||t.days.includes(day));
+  if(isFukuokaCompositeRoute(activeRouteMeta) && !fukuokaHakozakiBranchOpen){
+    const airportLine=lineDefByName('空港線');
+    const airportNames=new Set((airportLine?.stations||[]).map(st=>String(st?.name||'')).filter(Boolean));
+    return source.filter(t=>{
+      const count=(t?.stops||[]).filter(st=>airportNames.has(String(st?.station||''))).length;
+      return count>=2;
+    });
+  }
+  return source;
 }
 function getVisibleTrains(){
   const source=getDisplayedTrainSource();
@@ -3120,6 +3214,10 @@ function renderLine(){
     const row=document.createElement('div');
     row.className='station-row';
     if(index===0) row.classList.add('endpoint-start');
+    if(isFukuokaCompositeRoute(activeRouteMeta)){
+      const diagram=fukuokaDiagramConfig(activeJson,activeRouteMeta);
+      if(String(st.nameJa||'')===String(diagram?.insertAfter||'')) row.classList.add('fukuoka-branch-toggle-row');
+    }
     if(index===STATIONS.length-1) row.classList.add('endpoint-end');
     const badge=document.createElement('div');
     badge.className='station-badge';
@@ -3157,6 +3255,21 @@ function renderLine(){
     }
     applyStationLabelColors(badge,index);
     row.appendChild(badge);
+    if(isFukuokaCompositeRoute(activeRouteMeta)){
+      const diagram=fukuokaDiagramConfig(activeJson,activeRouteMeta);
+      if(String(st.nameJa||'')===String(diagram?.insertAfter||'')){
+        const wrap=document.createElement('div');
+        wrap.className='fukuoka-branch-toggle-wrap';
+        const btn=document.createElement('button');
+        btn.type='button';
+        btn.className='fukuoka-branch-toggle-button'+(fukuokaHakozakiBranchOpen?' active':'');
+        btn.setAttribute('aria-pressed',fukuokaHakozakiBranchOpen?'true':'false');
+        btn.textContent=fukuokaBranchToggleLabel();
+        btn.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();toggleFukuokaHakozakiBranch();});
+        wrap.appendChild(btn);
+        row.appendChild(wrap);
+      }
+    }
     container.appendChild(row);
   });
   renderRailLineSegments();
@@ -5063,6 +5176,18 @@ function activeRouteColors(){
 }
 function activeSegmentColors(a,b){
   const aa=String(a||''),bb=String(b||'');
+  if(isFukuokaCompositeRoute(activeRouteMeta) && fukuokaHakozakiBranchOpen){
+    const hakoColor=String(lineDefByName('箱崎線')?.color||'#0072BC');
+    const branchNames=new Set(fukuokaBranchStationNames(activeJson,activeRouteMeta));
+    const d=fukuokaDiagramConfig(activeJson,activeRouteMeta);
+    const insertAfter=String(d?.insertAfter||'').trim();
+    if((branchNames.has(aa)&&branchNames.has(bb))
+      || (aa===insertAfter&&branchNames.has(bb))
+      || (bb===insertAfter&&branchNames.has(aa))
+      || ((aa==='呉服町'&&bb==='中洲川端')||(aa==='中洲川端'&&bb==='呉服町'))){
+      return [hakoColor];
+    }
+  }
   const meta=activeRouteMeta||{};
   const routeOverride=String(meta?.routeColor||'').trim();
   const segmentRules=[...(Array.isArray(meta.segmentColorRules)?meta.segmentColorRules:[])];
