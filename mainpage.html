@@ -98,6 +98,9 @@ button,input,select,textarea{font-family:inherit}
 }
 
 .station-row.fukuoka-branch-toggle-row{flex-direction:column;gap:8px;}
+/* 箱崎線は日光線と同じ「分岐駅直後への縦方向の差し込み」。枝線駅も中央列に固定する。 */
+.station-row.fukuoka-hako-row,.station-row.fukuoka-main-row{position:relative;left:0;right:0;margin-left:0;margin-right:0;transform:none !important;width:100%;justify-content:center;align-items:center;}
+.station-row.fukuoka-hako-row{z-index:2;}
 .fukuoka-branch-toggle-wrap{display:flex;justify-content:center;align-items:center;z-index:7;}
 .fukuoka-branch-toggle-button{min-width:150px;}
 .station-badge{
@@ -1459,11 +1462,20 @@ function fukuokaMainStationNames(json=activeJson,meta=activeRouteMeta){
 function fukuokaBranchStationNames(json=activeJson,meta=activeRouteMeta){
   const d=fukuokaDiagramConfig(json,meta);
   const master=fukuokaStationMaster(json);
+  const junction=String(d?.junctionStation||'中洲川端').trim()||'中洲川端';
+  const hakoLine=(Array.isArray(json?.lines)?json.lines:[]).find(line=>String(line?.name||'')==='箱崎線');
+  /* JSONの箱崎線は「中洲川端→呉服町→…→貝塚」。
+     路線図では上下を反転して「貝塚→…→呉服町」とし、祇園の直後へ差し込む。 */
+  if(Array.isArray(hakoLine?.stations)&&hakoLine.stations.length){
+    const names=hakoLine.stations
+      .map(st=>String(st?.name||'').trim())
+      .filter(name=>name&&name!==junction&&master.has(name));
+    if(names.length) return names.reverse();
+  }
   const configured=Array.isArray(d?.hakosakiInsert)?d.hakosakiInsert:[];
   const configuredSet=new Set(configured.map(x=>String(x||'').trim()).filter(Boolean));
-  const src=(configured.length ? FUKUOKA_HAKO_FALLBACK.filter(x=>configuredSet.has(x)) : FUKUOKA_HAKO_FALLBACK);
-  const ordered=src.filter(x=>master.has(x));
-  return ordered;
+  const src=(configured.length ? FUKUOKA_HAKO_FALLBACK.filter(x=>configuredSet.has(x)&&x!==junction) : FUKUOKA_HAKO_FALLBACK);
+  return src.filter(x=>master.has(x)&&x!==junction);
 }
 function fukuokaDisplayedStationNames(json=activeJson,meta=activeRouteMeta){
   if(!isFukuokaCompositeRoute(meta)) return [];
@@ -3231,6 +3243,14 @@ function renderFukuokaLine(){
     const isBranch=branchNames.has(name);
     const row=document.createElement('div');
     row.className='station-row'+(isBranch?' fukuoka-hako-row':' fukuoka-main-row');
+    /* 他路線の行レイアウトに影響されず、日光線型の中央列へ固定。 */
+    row.style.left='0';
+    row.style.right='0';
+    row.style.marginLeft='0';
+    row.style.marginRight='0';
+    row.style.transform='none';
+    row.style.justifyContent='center';
+    row.style.alignItems='center';
     if(index===0) row.classList.add('endpoint-start');
     if(index===STATIONS.length-1) row.classList.add('endpoint-end');
     if(name===insertAfter) row.classList.add('fukuoka-branch-toggle-row');
@@ -5375,13 +5395,25 @@ function renderRailLineSegments(){
   if(!rail) return;
   rail.innerHTML='';
   for(let i=0;i<Math.max(0,STATIONS.length-1);i++){
-    const a=STATIONS[i].nameJa,b=STATIONS[i+1].nameJa;
+    const a=String(STATIONS[i].nameJa||''),b=String(STATIONS[i+1].nameJa||'');
     const seg=document.createElement('div');
     seg.className='rail-segment';
     seg.style.top=`${i*270}px`;
     seg.style.height='270px';
-    const colors=activeSegmentColors(a,b);
-    seg.style.background=colors[0]||'#666';
+    let color=activeSegmentColors(a,b)[0]||'#666';
+    if(isFukuokaCompositeRoute(activeRouteMeta) && fukuokaHakozakiBranchOpen){
+      const branch=new Set(fukuokaBranchStationNames(activeJson,activeRouteMeta));
+      const d=fukuokaDiagramConfig(activeJson,activeRouteMeta);
+      const insertAfter=String(d?.insertAfter||'祇園').trim()||'祇園';
+      const junction=String(d?.junctionStation||'中洲川端').trim()||'中洲川端';
+      const hakoColor=String(lineDefByName('箱崎線')?.color||'#0072BC');
+      /* ここが重要：開いた状態では「祇園→貝塚」が最初の箱崎線区間。
+         その後「貝塚→…→呉服町→中洲川端」まで同じ線を連続させる。 */
+      if((a===insertAfter && branch.has(b))
+        || (branch.has(a) && branch.has(b))
+        || (branch.has(a) && b===junction)) color=hakoColor;
+    }
+    seg.style.background=color;
     rail.appendChild(seg);
   }
 }
