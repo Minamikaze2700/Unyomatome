@@ -1165,7 +1165,7 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'福岡市地下鉄',
     formationFamily:'fukuoka-kuko-hakozaki',
-    destinationAliases:{'福岡空港':'福岡空港','筑前前原':'前原','筑前深江':'深江','西唐津':'西唐津','唐津':'唐津','中洲川端':'中洲川端','姪浜':'姪浜','貝塚':'貝塚','西新':'西新','博多':'博多'},
+    destinationAliases:{"福岡空港":"福岡空港","東比恵":"東比恵","博多":"博多","祇園":"祇園","中洲川端":"中洲川端","天神":"天神","赤坂":"赤坂","大濠公園":"大濠公園","唐人町":"唐人町","西新":"西新","藤崎":"藤崎","室見":"室見","姪浜":"姪浜","貝塚":"貝塚","箱崎九大前":"箱崎九大前","箱崎宮前":"箱崎宮前","馬出九大病院前":"馬出九大病院前","千代県庁口":"千代県庁口","呉服町":"呉服町","筑前前原":"前原","筑前深江":"筑深","唐津":"唐津","西唐津":"西唐"},
     formationCountDefault:1,
     typeColors:{'普通':'#9fa0a0'},
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
@@ -1886,6 +1886,7 @@ function trainDisplayNoAtStation(train,stationName){
   return trainDisplayNoAtPosition(train,idx>=0?idx:0);
 }
 function trainDisplayNoAtPosition(train,pos){
+  if(String(activeRouteMeta?.formationFamily||'')==='fukuoka-kuko-hakozaki') return '';
   const segments=train?.numberSegments||{};
   const stationPos=Math.max(0,Number(pos)||0);
   // 現在区間を担当する路線から列番を解決。路線の変更がある場合は、その駅から新列番へ切り替える。
@@ -3111,6 +3112,11 @@ function defaultTrainImage(){
   return jsonNoImageUrl();
 }
 function imageForTrain(t){
+  // 福岡線では他路線由来の古い登録ID（例: 227_noimage）を編成画像として扱わない。
+  if(String(activeRouteMeta?.formationFamily||'')==='fukuoka-kuko-hakozaki'){
+    const rid=String(registeredFormationForTrain(t)||'').toLowerCase();
+    if(rid.includes('noimage') || rid.startsWith('227')) return defaultTrainImage(t);
+  }
   // 表示時はFirebaseから同期したregistrationStateを登録情報の基準にする。
   // Firebaseにその列車のキーがある場合は、列車オブジェクト側の古い値へ戻さない。
   const registeredId=registeredFormationForTrain(t);
