@@ -475,7 +475,8 @@ button,input,select,textarea{font-family:inherit}
   z-index:1;
 }
 .timetable-item:first-child::before{top:50%}
-.timetable-item.dotted-route-guide::before{background:repeating-linear-gradient(to bottom,var(--route-dotted-color,#0055b8) 0 7px,transparent 7px 14px) !important;background-size:100% 100% !important;background-position:center !important;background-repeat:repeat-y !important;}
+.timetable-item.dotted-route-guide::before{background:repeating-linear-gradient(to bottom,var(--station-route-color,var(--primary)) 0 7px,transparent 7px 14px) !important;}
+.timetable-item.dotted-route-guide:first-child::before{background:repeating-linear-gradient(to bottom,transparent 0 7px,var(--station-route-color,var(--primary)) 7px 14px) !important;}
 .timetable-item:last-child::before{bottom:50%}
 .time-dot{width:18px;height:18px;background:var(--station-route-color,var(--primary));border-radius:50%;z-index:2;margin-right:16px}
 .time-text{width:58px;font-weight:700;display:flex;flex-direction:column;justify-content:center;line-height:1.05;gap:0;height:40px;flex:none}.time-text span{display:block;height:20px;line-height:20px;white-space:nowrap}.time-text.two-line span:first-child{font-size:1rem}.time-text.two-line span:last-child{font-size:1rem}
@@ -714,7 +715,6 @@ button,input,select,textarea{font-family:inherit}
     background-repeat:no-repeat !important;
   }
   .time-dot{background:var(--station-route-color-bg) !important;}
-</style>
 <style id="hiroshima-ui-overrides">
 /* 下部メニュー：メインページ.html と同じ固定・サイズ設定 */
 :root{--region-nav-height:42px;}
@@ -786,11 +786,6 @@ body{padding-bottom:42px !important;}
   .operation-short{display:inline;}
   .train-operation-type{min-width:44px !important;width:44px !important;max-width:44px !important;}
 }
-</style>
-<style id="hibiya-dotted-line-final-fix">
-/* 日比谷線：対応エリア外へ続く区間は、各駅間の後半/前半を個別に破線化する。
-   行全体を破線化しないことで、南千住→北千住の実線を維持しつつ、
-   北千住→北越谷の破線を北千住の駅位置から開始する。 */
 </style>
 </head>
 <body>
@@ -1142,12 +1137,30 @@ const ROUTE_REGISTRY={
     company:'東京メトロ',
     formationFamily:'hibiya',
     formationCountDefault:1,
-    typeColors:{'普通':'#9fa0a0'},
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Hibiya_noimage.png',
     access:{public:false,routeAdmins:[]},
-    formationInputExample:'13101 / 13101F / 13000系',
+    formationInputExample:'TRTA13000 / TRTA13101 / TB70000 / TB71701 / TB70090 / TB71791',
     prescribedFormationRule:'common',
     dottedTimetableGuide:true
+  },
+  '福岡市地下鉄 空港線・箱崎線':{
+    id:'fukuoka-kuko-hakozaki',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/Fukuoka_空港線・箱崎線.json',
+    jsonLines:['空港線','箱崎線'],
+    range:'福岡空港～姪浜・貝塚',
+    area:'福岡市地下鉄',
+    storageRoot:'福岡市地下鉄 空港線・箱崎線',
+    storageArea:null,
+    company:'福岡市地下鉄',
+    formationFamily:'fukuoka-kuko-hakozaki',
+    formationCountDefault:1,
+    typeColors:{'普通':'#9fa0a0'},
+    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
+    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
+    noImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'1000N系 No04編成 / 2000N系 No19編成 / 4000系 No25編成 / 303系 K01 / 305系 W1',
+    prescribedFormationRule:'common'
   },
   '東武野田線':{
     id:'tobu-noda',
@@ -1656,7 +1669,6 @@ function normalizeExternalTrain(raw,day,direction,meta){
       departure:String(st?.departure||''),
       time:String(st?.time||st?.departure||st?.arrival||''),
       platform:st?.platform||undefined,
-      routeColor:String(st?.routeColor||'').trim(),
       isStop:hasTime
     };
   }).filter(st=>st.station);
@@ -2030,7 +2042,6 @@ function buildTimetableRows(stops){
   for(let i=0;i<scheduled.length;){
     const station=String(scheduled[i]?.station||'');
     const times=[];
-    let routeColor='';
     let j=i;
     while(j<scheduled.length && String(scheduled[j]?.station||'')===station){
       const st=scheduled[j]||{};
@@ -2038,10 +2049,9 @@ function buildTimetableRows(stops){
       const d=st.departure||st.time||'';
       if(a && !times.includes(a)) times.push(a);
       if(d && !times.includes(d)) times.push(d);
-      if(!routeColor && String(st.routeColor||'').trim()) routeColor=String(st.routeColor).trim();
       j++;
     }
-    rows.push({station,times:times.slice(0,2),routeColor});
+    rows.push({station,times:times.slice(0,2)});
     i=j;
   }
   return rows;
@@ -4274,13 +4284,19 @@ async function selectFormation(formId){
   }
 }
 window.addEventListener('load',async ()=>{
-  // 日比谷線専用ページは既定で必ず日比谷線を開く。URLの ?route= が明示された場合のみ上書きする。
-  let restoredRoute='日比谷線';
+  // URLの ?route=路線ID を最優先し、なければ前回の路線を復元する。
+  let restoredRoute='';
   try{
     const params=new URLSearchParams(window.location.search||'');
     const queryRoute=routeNameFromId(params.get('route')||'');
     if(queryRoute) restoredRoute=queryRoute;
   }catch(e){}
+  if(!restoredRoute){
+    try{
+      const saved=String(localStorage.getItem(LAST_ROUTE_STORAGE_KEY)||'').trim();
+      if(saved && ROUTE_REGISTRY[saved]) restoredRoute=saved;
+    }catch(e){}
+  }
 
   if(restoredRoute){
     try{
@@ -5040,7 +5056,7 @@ function activeRouteColors(){
   if(override) return [override];
   return getActiveRouteLineNames().map(name=>String(lineDefByName(name)?.color||'')).filter(Boolean);
 }
-function activeSegmentColors(a,b,trainContext=null){
+function activeSegmentColors(a,b){
   const aa=String(a||''),bb=String(b||'');
   const meta=activeRouteMeta||{};
   const routeOverride=String(meta?.routeColor||'').trim();
@@ -5211,21 +5227,11 @@ function timetableRowsHTML(stops,trainContext=null){
     const twoLine=times.length>=2;
     let prevBg=index>0?segmentBg(index-1,index):'';
     let nextBg=index<rows.length-1?segmentBg(index,index+1):'';
-    const rawDotColor=String(stationDotColors(rows,index,trainContext)[0]||'#666');
-    const dotBg=singleColorGradient(rawDotColor,'to right');
+    const dotBg=singleColorGradient(stationDotColors(rows,index,trainContext)[0],'to right');
     if(rows.length>1&&index===0) prevBg=nextBg;
     if(rows.length>1&&index===rows.length-1) nextBg=prevBg;
     if(rows.length===1) prevBg=nextBg=dotBg;
-    // 日比谷線の対応エリア外へ出る区間は「駅と駅の間」だけを破線化する。
-    // そのため、北千住の行では上半分（南千住→北千住）は実線、
-    // 下半分（北千住→北越谷）は破線、というように上下を個別に指定する。
-    const isHibiya=activeRouteName==='日比谷線';
-    const previousExternal=!!(isHibiya && row.routeColor);
-    const nextExternal=!!(isHibiya && rows[index+1]?.routeColor);
-    const dottedBg=color=>`repeating-linear-gradient(to bottom,${color} 0 7px,transparent 7px 14px)`;
-    const topSectionBg=previousExternal ? dottedBg(rawDotColor) : prevBg;
-    const bottomSectionBg=nextExternal ? dottedBg(String((rows[index+1]?.routeColor)||rawDotColor)) : nextBg;
-    return `<div class="timetable-item" style="--route-dotted-color:${rawDotColor};--route-line-top:${prevBg};--route-line-bottom:${nextBg};--station-route-color:${dotBg};--route-line-top-bg:${topSectionBg};--route-line-bottom-bg:${bottomSectionBg};--station-route-color-bg:${dotBg}"><div class="time-dot"></div><div class="time-text${twoLine?' two-line':''}">${times.map(t=>`<span>${escapeAttr(t)}</span>`).join('')}</div><div class="station-text">${escapeAttr(row.station)}</div></div>`;
+    return `<div class="timetable-item${activeRouteMeta?.dottedTimetableGuide?' dotted-route-guide':''}" style="--route-line-top:${prevBg};--route-line-bottom:${nextBg};--station-route-color:${dotBg};--route-line-top-bg:${prevBg};--route-line-bottom-bg:${nextBg};--station-route-color-bg:${dotBg}"><div class="time-dot"></div><div class="time-text${twoLine?' two-line':''}">${times.map(t=>`<span>${escapeAttr(t)}</span>`).join('')}</div><div class="station-text">${escapeAttr(row.station)}</div></div>`;
   }).join('');
 }
 
@@ -7608,11 +7614,10 @@ initRegionNavigation();
       if(Array.isArray(candidate) && candidate.length) chain=candidate;
     }
     if(!chain){
-      // 運用連結が未定義でも、実際に列車番号を持つ列車はその番号を表示する。
-      const hasRealNumber=train?.hasTrainNumber!==false && !train?.hideTrainNumber;
+      // 列車番号を持たない列車では内部識別子を「仮の列番」として表示しない。
       return [{
-        no:hasRealNumber ? normalizeTrainNo(train?.no||'') : '',
-        type:String(train?.type||'普通'),
+        no:'',
+        type:String(train?.type||''),
         start:String(train?.start||train?.stops?.[0]?.station||''),
         startTime:String(train?.startTime||train?.stops?.[0]?.departure||train?.stops?.[0]?.time||''),
         dest:String(train?.dest||train?.stops?.[train.stops.length-1]?.station||''),
