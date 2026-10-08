@@ -774,6 +774,17 @@ body{padding-bottom:42px !important;}
 .bottom-sheet{bottom:calc(-100% - var(--sheet-bottom-offset,42px));}
 .bottom-sheet.active,.bottom-sheet.editing{bottom:var(--sheet-bottom-offset,42px) !important;}
 </style>
+
+<style id="operation-abbreviation-responsive">
+.operation-short{display:none;}
+.operation-full{display:inline;}
+.train-operation-type{width:auto !important;min-width:0 !important;max-width:none !important;}
+@media (max-width:959.98px){
+  .operation-full{display:none;}
+  .operation-short{display:inline;}
+  .train-operation-type{min-width:44px !important;width:44px !important;max-width:44px !important;}
+}
+</style>
 </head>
 <body>
 
@@ -2730,88 +2741,55 @@ function allowedFormationFamily(train){
 }
 function formationDisplayGroups(groups){
   const source=Array.isArray(groups)?groups:[];
-  const config=activeJson?.formationDisplay||{};
-  const useMerge=config.mergeParentheticalGroups===true;
-  const selectableTypes=config.selectableTypes!==false;
-  if(!useMerge){
-    return source.map(g=>{
-      const gType=String(g?.type||'');
-      const selectable=g?.selectableType===true || /^[^A-Z]*227系 [AS]編成$/.test(gType);
-      const selectableId=g?.selectableId || (gType.includes('A編成')?'A編成':gType.includes('S編成')?'S編成':selectable?gType:'');
-      return {...g,selectableType:selectable,selectableId,routeNames:formationRouteNamesFromConfig(g)};
-    });
-  }
-
-  const order=Array.isArray(config.order)?config.order.map(String):[];
-  const consumed=new Set();
   const out=[];
-  const variantLabel=(rawType)=>{
-    const m=String(rawType||'').match(/^(.*?)(?:（(.+)）)$/);
-    if(!m) return String(rawType||'');
-    return `${m[1]}${m[2]}`;
-  };
-  for(const baseType of order){
-    const direct=source.filter(g=>String(g?.type||'')===baseType);
-    const parenthetical=source.filter(g=>{
-      const m=String(g?.type||'').match(/^(.*?)(?:（(.+)）)$/);
-      return !!m && m[1]===baseType;
-    });
-    const matched=[...direct,...parenthetical.filter(g=>!direct.includes(g))];
-    if(!matched.length) continue;
-    matched.forEach(g=>consumed.add(g));
-    const first=matched[0];
-    const group={
-      type:baseType,
-      typeImg:first?.typeImg||LINE_TRAIN_IMG,
-      family:first?.family||activeRouteMeta?.formationFamily||'',
-      selectableType:selectableTypes,
-      selectableId:baseType,
-      routeNames:[...new Set(matched.flatMap(g=>formationRouteNamesFromConfig(g)))],
-      variants:[],
-      items:[]
-    };
-    const hasParenthetical=parenthetical.length>0;
-    if(hasParenthetical){
-      for(const g of matched){
-        const rawType=String(g?.type||'');
-        if(rawType===baseType){
-          group.items.push(...(Array.isArray(g?.items)?g.items:[]));
-          continue;
-        }
-        group.variants.push({
-          id:variantLabel(rawType),
-          name:config.displayFullVariantNames===true?variantLabel(rawType):rawType.match(/^(.*?)(?:（(.+)）)$/)?.[2]||rawType,
-          img:g?.typeImg||LINE_TRAIN_IMG,
-          items:Array.isArray(g?.items)?g.items:[],
-          family:g?.family||group.family,
-          kind:'variant',
-          displayAsFullName:config.displayFullVariantNames===true,
-          routeNames:formationRouteNamesFromConfig(g,formationRouteNamesFromConfig(first))
-        });
-      }
-    }else{
-      group.items=matched.flatMap(g=>Array.isArray(g?.items)?g.items:[]);
-    }
-    const synthetic=Array.isArray(config.syntheticVariants?.[baseType])?config.syntheticVariants[baseType]:[];
-    for(const v of synthetic){
-      group.variants.push({
-        id:String(v.id||v.name||''),name:String(v.name||v.id||''),img:String(v.img||first?.typeImg||LINE_TRAIN_IMG),items:Array.isArray(v.items)?v.items:[],family:group.family,kind:'variant',generic:true,displayAsFullName:v.displayAsFullName!==false,routeNames:formationRouteNamesFromConfig(v,formationRouteNamesFromConfig(group))
-      });
-    }
-    out.push(group);
-  }
+  const byBase=new Map();
+
+  // 形式名に付いた「（個体差）」を取り除き、同じ形式へまとめる。
+  // 例：10030型（更新）＋10030型（未更新）→ 10030型
+  // 個体差は先にすべて並べ、その後に全個別編成をまとめて並べる。
   for(const g of source){
-    if(consumed.has(g)) continue;
-    out.push({...g,selectableType:selectableTypes && (g?.selectableType===true || /^[^A-Z]*227系 [AS]編成$/.test(String(g?.type||'')))});
-  }
-  if(order.length){
-    out.sort((a,b)=>{
-      const ai=order.indexOf(String(a?.type||'')), bi=order.indexOf(String(b?.type||''));
-      if(ai>=0&&bi>=0) return ai-bi;
-      if(ai>=0) return -1;
-      if(bi>=0) return 1;
-      return 0;
-    });
+    const rawType=String(g?.type||'').trim();
+    if(!rawType) continue;
+    const m=rawType.match(/^(.*?型)（(.+)）$/);
+    const baseType=m ? m[1] : rawType;
+    let group=byBase.get(baseType);
+    if(!group){
+      group={
+        type:baseType,
+        typeImg:g?.typeImg||LINE_TRAIN_IMG,
+        family:g?.family||activeRouteMeta?.formationFamily||'',
+        selectableType:true,
+        selectableId:baseType,
+        routeNames:[],
+        variants:[],
+        items:[]
+      };
+      byBase.set(baseType,group);
+      out.push(group);
+    }
+    group.routeNames=[...new Set([
+      ...(group.routeNames||[]),
+      ...formationRouteNamesFromConfig(g)
+    ])];
+
+    if(m){
+      const variantName=m[2].trim();
+      const variantId=(baseType+variantName).replace(/F$/i,'');
+      const items=Array.isArray(g?.items)?g.items:[];
+      group.variants.push({
+        id:variantId,
+        name:variantName,
+        img:g?.typeImg||LINE_TRAIN_IMG,
+        items,
+        family:g?.family||group.family,
+        kind:'variant',
+        generic:true,
+        displayAsFullName:false,
+        routeNames:formationRouteNamesFromConfig(g)
+      });
+    }else{
+      group.items.push(...(Array.isArray(g?.items)?g.items:[]));
+    }
   }
   return out;
 }
@@ -2820,13 +2798,11 @@ function formationDropdownHTML(train){
   const groups=formationDisplayGroups(formationsForTrain(train));
   return groups.map(group=>{
     const groupType=String(group?.type||'');
-    const selectable=!!group?.selectableType;
     const id=String(group?.selectableId||groupType);
-    const clickAttr=selectable?`onclick="selectFormation('${escapeJs(id)}')"`:'';
-    const category=`<div class="option-header option-category-header ${selectable?'option-selectable-category':''}" ${clickAttr}><img src="${esc(group?.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(id)}</span></div>`;
+    const category=`<div class="option-header option-category-header option-selectable-category" onclick="selectFormation('${escapeJs(id)}')"><img src="${esc(group?.typeImg||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(id)}</span></div>`;
     const variants=(group?.variants||[]).map(variant=>{
       const disabled=!!variant?.disabled;
-      return `<div class="option-header option-subheader ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':`onclick="selectFormation('${escapeJs(variant.id)}')"`}><img src="${esc(variant?.img||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(variant?.name||variant?.id)}</span></div>`;
+      return `<div class="option-header option-subheader option-selectable-category ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':`onclick="selectFormation('${escapeJs(variant.id)}')"`}><img src="${esc(variant?.img||LINE_TRAIN_IMG)}" class="option-img"><span>${esc(variant?.name||variant?.id)}</span></div>`;
     }).join('');
     const variantItems=(group?.variants||[]).flatMap(v=>Array.isArray(v?.items)?v.items:[]);
     const items=[...variantItems,...(group?.items||[])].map(item=>{
@@ -4163,7 +4139,13 @@ function positionFormationDropdown(el,trigger){
   const leftBound=Number(vv?.offsetLeft||0)+6;
   const viewportW=Number(vv?.width||window.innerWidth);
   const viewportH=Number(vv?.height||window.innerHeight);
-  const bottomBound=Number(vv?.offsetTop||0)+viewportH-10;
+  const viewportTop=Number(vv?.offsetTop||0);
+  const viewportBottom=viewportTop+viewportH;
+  // 画面下部に固定される地域メニューと重ならないよう、メニュー上端を下端とする。
+  const regionNav=document.getElementById('regionNav');
+  const navRect=regionNav?.getBoundingClientRect();
+  const menuTop=Number.isFinite(Number(navRect?.top)) ? Number(navRect.top) : viewportBottom;
+  const bottomBound=Math.max(viewportTop,Math.min(viewportBottom,menuTop-10));
 
   const width=Math.min(Math.max(rect.width,260),Math.max(120,viewportW-12));
   const top=Math.max(topBound,rect.bottom+4);
@@ -7748,9 +7730,11 @@ initRegionNavigation();
     const no=hasRealNumber ? String(entry?.no||'').trim() : '';
     const rawType=String(entry?.type||'').trim();
     const type=rawType ? getShortType(rawType,no) : '';
-    const start=operationStationLabel(entry?.start);
+    const start=String(entry?.start||'').trim();
+    const shortStart=operationStationLabel(start);
     const startTime=String(entry?.startTime||'');
-    const dest=operationStationLabel(entry?.dest);
+    const dest=String(entry?.dest||'').trim();
+    const shortDest=operationStationLabel(dest);
     const endTime=String(entry?.endTime||'');
     const state=operationEntryState(entry,index,sourceTrain);
     const typeBadgeStyle=rawType ? typeBadgeInlineStyle(sourceTrain || {type:rawType},null,null) : '';
@@ -7763,12 +7747,12 @@ initRegionNavigation();
     ].filter(Boolean).join(' ');
     return `<button type="button" class="${rowClass}" data-operation-start="${escapeAttr(startTime)}" data-operation-end="${escapeAttr(endTime)}" ${clickAttr}>
       <span class="train-operation-number">${escapeAttr(no)}</span>
-      <span class="station-timetable-type train-operation-type${type?'':' empty-operation-field'}"${type?` style="${typeBadgeStyle}"`:''}>${escapeAttr(type)}</span>
+      <span class="station-timetable-type train-operation-type${rawType?'':' empty-operation-field'}"${rawType?` style="${typeBadgeStyle}"`:''}><span class="operation-full">${escapeAttr(rawType)}</span><span class="operation-short">${escapeAttr(type)}</span></span>
       <span class="train-operation-time start-time">${escapeAttr(startTime)}</span>
-      <span class="train-operation-station start-station" title="${escapeAttr(String(entry?.start||''))}">${escapeAttr(start)}</span>
+      <span class="train-operation-station start-station" title="${escapeAttr(start)}"><span class="operation-full">${escapeAttr(start)}</span><span class="operation-short">${escapeAttr(shortStart)}</span></span>
       <span class="train-operation-arrow" aria-hidden="true">→</span>
       <span class="train-operation-time end-time">${escapeAttr(endTime)}</span>
-      <span class="train-operation-station end-station" title="${escapeAttr(String(entry?.dest||''))}">${escapeAttr(dest)}</span>
+      <span class="train-operation-station end-station" title="${escapeAttr(dest)}"><span class="operation-full">${escapeAttr(dest)}</span><span class="operation-short">${escapeAttr(shortDest)}</span></span>
       
     </button>`;
   }
