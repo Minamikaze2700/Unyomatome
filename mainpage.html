@@ -5472,19 +5472,19 @@ function renderRailLineSegments(){
       const insertAfter=String(d?.insertAfter||'祇園').trim()||'祇園';
       const junction=String(d?.junctionStation||'中洲川端').trim()||'中洲川端';
       const hakoColor=String(lineDefByName('箱崎線')?.color||'#0072BC');
-      /* ここが重要：開いた状態では「祇園→貝塚」が最初の箱崎線区間。
-         その後「貝塚→…→呉服町→中洲川端」まで同じ線を連続させる。 */
+      const kukoColor=String(lineDefByName('空港線')?.color||'#F58220');
+      /* 箱崎線開放時の「祇園→貝塚」は、駅間の中点まで空港線色を徐々に透明にする。
+         中点から貝塚側は線を描かず、貝塚を始発駅として見せる。 */
       const branchOrder=fukuokaBranchStationNames(activeJson,activeRouteMeta);
       const firstBranchStation=branchOrder[0]||'貝塚';
       if(a===insertAfter && b===firstBranchStation){
-        // 祇園の下の接続線は貝塚へ向かって徐々に透明にし、貝塚の上では完全に消す。
-        const hex=String(hakoColor).match(/^#?([0-9a-f]{6})$/i);
+        const hex=String(kukoColor).match(/^#?([0-9a-f]{6})$/i);
         if(hex){
           const value=parseInt(hex[1],16);
           const r=(value>>16)&255,g=(value>>8)&255,bl=value&255;
-          seg.style.background=`linear-gradient(to bottom, ${hakoColor} 0%, rgba(${r},${g},${bl},0) 100%)`;
+          seg.style.background=`linear-gradient(to bottom, rgba(${r},${g},${bl},1) 0%, rgba(${r},${g},${bl},0) 50%, rgba(${r},${g},${bl},0) 100%)`;
         }else{
-          seg.style.background=`linear-gradient(to bottom, ${hakoColor} 0%, transparent 100%)`;
+          seg.style.background=`linear-gradient(to bottom, ${kukoColor} 0%, transparent 50%, transparent 100%)`;
         }
         seg.classList.add('fukuoka-branch-fade-segment');
         rail.appendChild(seg);
