@@ -1209,7 +1209,7 @@ const ROUTE_REGISTRY={
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     access:{public:false,routeAdmins:[]},
-    formationInputExample:'1000N系 No04編成 / 2000N系 No19編成 / 4000系 No25編成 / 303系 K01 / 305系 W1',
+    formationInputExample:'04 / K01 / W01',
     prescribedFormationRule:'common'
   },
   '東武野田線':{
@@ -2258,6 +2258,11 @@ function fukuokaChikuhiStationSet(json=activeJson){
   return new Set(chikuhi.flatMap(line=>Array.isArray(line?.stations)?line.stations:[])
     .map(st=>String(st?.name||st?.nameJa||st?.station||'').trim()).filter(Boolean));
 }
+function isTobuSkytreeDottedSegment(a,b){
+  if(String(activeRouteMeta?.id||'')!=='hibiya' && String(activeRouteName||'')!=='日比谷線') return false;
+  const line=lineDefByName('東武スカイツリーライン');
+  return !!line && lineContainsStops(line,String(a||''),String(b||''));
+}
 function timetableRowsHTML(stops,trainContext=null){
   // 停車駅案内は現在の路線外の停車駅も含める。時刻未設定の駅は表示しない。
   const visibleStops=(stops||[]).filter(st=>!!String(st?.arrival||st?.departure||st?.time||'').trim());
@@ -2270,6 +2275,7 @@ function timetableRowsHTML(stops,trainContext=null){
   };
   const chikuhiStations=fukuokaChikuhiStationSet();
   const isChikuhiSegment=(a,b)=>chikuhiStations.has(String(a||''))&&chikuhiStations.has(String(b||''))&&String(a||'')!==String(b||'');
+  const isDottedRouteSegment=(a,b)=>isChikuhiSegment(a,b)||isTobuSkytreeDottedSegment(a,b);
   const globalDotted=!!activeRouteMeta?.dottedTimetableGuide;
   const solidLineBg=color=>`linear-gradient(to bottom,${color},${color})`;
   const dottedLineBg=color=>`repeating-linear-gradient(to bottom,${color} 0 7px,transparent 7px 14px)`;
@@ -2284,8 +2290,8 @@ function timetableRowsHTML(stops,trainContext=null){
     if(rows.length>1&&index===0) prevColor=nextColor;
     if(rows.length>1&&index===rows.length-1) nextColor=prevColor;
     if(rows.length===1) prevColor=nextColor=dotColor;
-    const prevDotted=index>0&&isChikuhiSegment(rows[index-1]?.station,row.station);
-    const nextDotted=index<rows.length-1&&isChikuhiSegment(row.station,rows[index+1]?.station);
+    const prevDotted=index>0&&isDottedRouteSegment(rows[index-1]?.station,row.station);
+    const nextDotted=index<rows.length-1&&isDottedRouteSegment(row.station,rows[index+1]?.station);
     const topBg=prevDotted?dottedLineBg(prevColor):solidLineBg(prevColor);
     const bottomBg=nextDotted?dottedLineBg(nextColor):solidLineBg(nextColor);
     const classes=['timetable-item',globalDotted?'dotted-route-guide':''].filter(Boolean).join(' ');
@@ -5605,6 +5611,7 @@ function timetableRowsHTML(stops,trainContext=null){
   const segmentColor=(aIndex,bIndex)=>String(timetableSegmentColors(rows[aIndex]?.station,rows[bIndex]?.station,trainContext)[0]||'#666');
   const chikuhiStations=fukuokaChikuhiStationSet();
   const isChikuhiSegment=(a,b)=>isFukuoka && !!a && !!b && a!==b && chikuhiStations.has(String(a)) && chikuhiStations.has(String(b));
+  const isDottedRouteSegment=(a,b)=>isChikuhiSegment(a,b)||isTobuSkytreeDottedSegment(a,b);
   return rows.map((row,index)=>{
     const rawTimes=row.times.length>=2?row.times.slice(0,2):row.times.slice(0,1);
     const formattedTimes=rawTimes.map(formatRailwayDisplayTime);
@@ -5616,15 +5623,17 @@ function timetableRowsHTML(stops,trainContext=null){
     if(rows.length>1&&index===0) prevColor=nextColor;
     if(rows.length>1&&index===rows.length-1) nextColor=prevColor;
     if(rows.length===1) prevColor=nextColor=dotColor;
-    const prevDotted=index>0&&isChikuhiSegment(rows[index-1]?.station,row.station);
-    const nextDotted=index<rows.length-1&&isChikuhiSegment(row.station,rows[index+1]?.station);
+    const prevChikuhi=index>0&&isChikuhiSegment(rows[index-1]?.station,row.station);
+    const nextChikuhi=index<rows.length-1&&isChikuhiSegment(row.station,rows[index+1]?.station);
+    const prevDotted=index>0&&isDottedRouteSegment(rows[index-1]?.station,row.station);
+    const nextDotted=index<rows.length-1&&isDottedRouteSegment(row.station,rows[index+1]?.station);
     // CSS の background-image には色コード単体を渡せないため、必ず画像値の gradient にする。
     // 以前ここへ #xxxxxx を直接渡したことで、共通の停車駅案内線が無効になっていた。
     const solidLineBg=color=>`linear-gradient(to bottom,${color},${color})`;
     const dottedLineBg=color=>`repeating-linear-gradient(to bottom,${color} 0 7px,transparent 7px 14px)`;
     const topBg=prevDotted?dottedLineBg(prevColor):solidLineBg(prevColor);
     const bottomBg=nextDotted?dottedLineBg(nextColor):solidLineBg(nextColor);
-    const classes=['timetable-item',activeRouteMeta?.dottedTimetableGuide?'dotted-route-guide':'',prevDotted?'chikuhi-prev':'',nextDotted?'chikuhi-next':''].filter(Boolean).join(' ');
+    const classes=['timetable-item',activeRouteMeta?.dottedTimetableGuide?'dotted-route-guide':'',prevChikuhi?'chikuhi-prev':'',nextChikuhi?'chikuhi-next':''].filter(Boolean).join(' ');
     return `<div class="${classes}" style="--route-line-top:${escapeAttr(prevColor)};--route-line-bottom:${escapeAttr(nextColor)};--station-route-color:${escapeAttr(dotColor)};--route-line-top-bg:${escapeAttr(topBg)};--route-line-bottom-bg:${escapeAttr(bottomBg)};--station-route-color-bg:${escapeAttr(dotColor)}"><div class="time-dot"></div><div class="time-text${twoLine?' two-line':''}">${times.map(t=>`<span>${escapeAttr(t)}</span>`).join('')}</div><div class="station-text">${escapeAttr(row.station)}</div></div>`;
   }).join('');
 }
