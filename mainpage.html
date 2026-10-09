@@ -1052,10 +1052,8 @@ const ROUTE_REGISTRY={
     company:'JR東日本',
     formationFamily:'keihin',
     formationCountDefault:1,
-    typeShortMap:{'普通':'各停','各駅停車':'各停','区間急行':'区急'},
     typeDetailMap:{'普通':'各駅停車','各停':'各駅停車'},
     typeClassMap:{'快速':'keihin-express','普通':'keihin-local','各停':'keihin-local'},
-    destinationAliases:{'南浦和':'南浦','東十条':'東十','東神奈川':'東神','桜木町':'桜木','八王子':'八王'},
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Keihin-Tohoku_noimage.png',
     access:{public:true,routeAdmins:[]},
     formationInputExample:'E233系1000番台 / 101 / 101F',
@@ -1080,7 +1078,7 @@ const ROUTE_REGISTRY={
     segmentColorRules:[{whenStationsAllPresent:['東神奈川','横浜','桜木町','関内','石川町','山手','根岸','磯子','新杉田','洋光台','港南台','本郷台','大船'],useLine:'京浜東北・根岸線'}],
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Yokohama_noimage.png',
     access:{public:true,routeAdmins:[]},
-    formationInputExample:'E233系6000番台 / H001 / H001F',
+    formationInputExample:'E233系6000番台 / H001',
     prescribedFormationRule:'jre'
   },
   '南武線':{
@@ -1113,7 +1111,7 @@ const ROUTE_REGISTRY={
     formationFamily:'uchibo',
     formationCountDefault:2,
     access:{public:false,routeAdmins:[]},
-    formationInputExample:'E235系F編成 / E131系2両 / 209系4両'
+    formationInputExample:'E235系F編成 / E131系 / C1'
   },
   '大阪環状線':{
     id:'osaka-loop',
@@ -1185,15 +1183,13 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'福岡市地下鉄',
     formationFamily:'fukuoka-kuko-hakozaki',
-    stationShortMap:{'福岡空港':'福岡空'},
-    destinationAliases:{"福岡空港":"福岡空","東比恵":"東比恵","博多":"博多","祇園":"祇園","中洲川端":"中洲川端","天神":"天神","赤坂":"赤坂","大濠公園":"大濠公園","唐人町":"唐人町","西新":"西新","藤崎":"藤崎","室見":"室見","姪浜":"姪浜","貝塚":"貝塚","箱崎九大前":"箱崎九大前","箱崎宮前":"箱崎宮前","馬出九大病院前":"馬出九大病院前","千代県庁口":"千代県庁口","呉服町":"呉服町","筑前前原":"前原","筑前深江":"筑深","唐津":"唐津","西唐津":"西唐"},
     formationCountDefault:1,
     typeColors:{'普通':'#9fa0a0'},
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     access:{public:false,routeAdmins:[]},
-    formationInputExample:'1000N系 No04編成 / 2000N系 No19編成 / 4000系 No25編成 / 303系 K01 / 305系 W1',
+    formationInputExample:'04 / K01 / 305系',
     prescribedFormationRule:'common'
   },
   '東武野田線':{
@@ -1207,8 +1203,6 @@ const ROUTE_REGISTRY={
     company:'東武鉄道',
     formationFamily:'noda',
     formationCountDefault:1,
-    destinationAliases:{'春日部':'春日','七光台':'七光','清水公園':'清水','野田市':'野田'},
-    stationShortMap:{'春日部':'春日','七光台':'七光','清水公園':'清水','野田市':'野田'},
     typeColors:{'普通':'#666'},
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/TD_noimage.png',
     access:{public:true,routeAdmins:[]},
@@ -1226,7 +1220,6 @@ const ROUTE_REGISTRY={
     company:'長野電鉄',
     formationFamily:'nagano',
     formationCountDefault:1,
-    destinationAliases:{'信州中野':'中野','湯田中':'湯田','長野':'長野','須坂':'須坂'},
     typeShortRules:[
       {containsAll:['ゆけむり','のんびり'],result:'ゆの'},
       {contains:'特急',trainNoSuffix:'A',result:'A特'},
