@@ -838,6 +838,66 @@ body{padding-bottom:42px !important;}
   background-size:100% 100% !important;
 }
 </style>
+
+<style id="today-operation-type-width-expanded">
+/* 今日の運用：種別欄を広げ、種別名が途中で切れにくいようにする */
+.train-operation-type{
+  box-sizing:border-box !important;
+  width:112px !important;
+  min-width:112px !important;
+  max-width:112px !important;
+  padding-left:5px !important;
+  padding-right:5px !important;
+  justify-self:center !important;
+  white-space:nowrap !important;
+}
+.train-operation-row{
+  grid-template-columns:86px 112px 78px minmax(0,1fr) 36px 78px minmax(0,1fr) !important;
+}
+.train-operation-wrap.hide-operation-number .train-operation-row{
+  grid-template-columns:112px 78px minmax(0,1fr) 36px 78px minmax(0,1fr) !important;
+}
+.train-operation-wrap.hide-operation-type .train-operation-row{
+  grid-template-columns:86px 78px minmax(0,1fr) 36px 78px minmax(0,1fr) !important;
+}
+.train-operation-wrap.hide-operation-number.hide-operation-type .train-operation-row{
+  grid-template-columns:78px minmax(0,1fr) 36px 78px minmax(0,1fr) !important;
+}
+@media (max-width:959.98px){
+  .train-operation-type{
+    width:90px !important;
+    min-width:90px !important;
+    max-width:90px !important;
+  }
+  .train-operation-row{
+    grid-template-columns:86px 90px 78px minmax(0,1fr) 36px 78px minmax(0,1fr) !important;
+  }
+  .train-operation-wrap.hide-operation-number .train-operation-row{
+    grid-template-columns:90px 78px minmax(0,1fr) 36px 78px minmax(0,1fr) !important;
+  }
+}
+@media (max-width:520px){
+  .train-operation-type{
+    width:76px !important;
+    min-width:76px !important;
+    max-width:76px !important;
+    padding-left:3px !important;
+    padding-right:3px !important;
+  }
+  .train-operation-row{
+    grid-template-columns:58px 76px 58px minmax(0,1fr) 24px 58px minmax(0,1fr) !important;
+  }
+  .train-operation-wrap.hide-operation-number .train-operation-row{
+    grid-template-columns:76px 58px minmax(0,1fr) 24px 58px minmax(0,1fr) !important;
+  }
+  .train-operation-wrap.hide-operation-type .train-operation-row{
+    grid-template-columns:58px 58px minmax(0,1fr) 24px 58px minmax(0,1fr) !important;
+  }
+  .train-operation-wrap.hide-operation-number.hide-operation-type .train-operation-row{
+    grid-template-columns:58px minmax(0,1fr) 24px 58px minmax(0,1fr) !important;
+  }
+}
+</style>
 </head>
 <body>
 
