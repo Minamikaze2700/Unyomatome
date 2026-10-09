@@ -1191,8 +1191,7 @@ const ROUTE_REGISTRY={
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Hibiya_noimage.png',
     access:{public:false,routeAdmins:[]},
     formationInputExample:'TRTA13000 / TRTA13101 / TB70000 / TB71701 / TB70090 / TB71791',
-    prescribedFormationRule:'common',
-    dottedTimetableGuide:true
+    prescribedFormationRule:'common'
   },
   '福岡市地下鉄 空港線・箱崎線':{
     id:'fukuoka-kuko-hakozaki',
@@ -5334,6 +5333,16 @@ function trainServiceColorBetweenStations(a,b,trainContext=null){
     const direct=String(line?.color||'').trim();
     if(direct && direct!==String(lineDefByName('大和路線')?.color||'')) return direct;
     return routeOverride||fallbackTrainServiceColor(trainContext);
+  }
+  // 日比谷線は北千住から東武線へ直通するため、登録された基本色で全区間を固定しない。
+  // 各区間が属する線区のJSONカラー（例：東武線の青）を優先する。
+  if(String(activeRouteName||'')==='日比谷線'){
+    const allLineNames=allJsonLines().map(line=>String(line?.name||'')).filter(Boolean);
+    const hibiyaSegment=jsonSegmentColorForStations(aa,bb,allLineNames);
+    if(hibiyaSegment) return hibiyaSegment;
+    const serviceLine=preferredTrainServiceLine(aa,bb,trainContext);
+    const serviceColor=String(serviceLine?.color||'').trim();
+    if(serviceColor) return serviceColor;
   }
   if(routeOverride) return routeOverride;
   const jsonSegment=jsonSegmentColorForStations(aa,bb,getActiveRouteLineNames());
