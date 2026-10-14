@@ -8405,7 +8405,7 @@ initRegionNavigation();
         runs.push('<div class="train-history-run train-history-run-message">この日付の時刻表データでは運用を特定できません。</div>');
       }
       return `<details class="train-history-card">
-        <summary class="train-history-card-header"><span class="train-history-date">${escapeAttr(dateLabel)}</span><span class="train-history-day">${escapeAttr(record.day)}ダイヤ</span><span class="train-history-chevron" aria-hidden="true">⌄</span></summary>
+        <summary class="train-history-card-header"><span class="train-history-date">${escapeAttr(dateLabel)}</span><span class="train-history-day">${escapeAttr(record.day)}ダイヤ</span><span class="train-history-chevron" aria-hidden="true"></span></summary>
         <div class="train-history-runs">${runs.join('')}</div>
       </details>`;
     }).join('');
@@ -8729,8 +8729,10 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     .train-history-card-header::-webkit-details-marker{display:none;}
     .train-history-card-header::marker{content:"";}
     .train-history-card[open]>.train-history-card-header{background:rgba(0,0,0,.075);}
-    .train-history-chevron{flex:0 0 auto;margin-left:2px;font-size:17px;font-weight:900;line-height:1;color:#555;transition:transform .15s ease;}
-    .train-history-card[open]>.train-history-card-header .train-history-chevron{transform:rotate(180deg);}
+    /* 日付行の中央高さに矢印を配置し、開閉状態を▼／▲で明示 */
+    .train-history-chevron{flex:0 0 18px;align-self:center;display:inline-flex;align-items:center;justify-content:center;height:1.2em;margin-left:auto;font-size:12px;font-weight:900;line-height:1;color:#555;}
+    .train-history-chevron::before{content:"▼";display:block;line-height:1;}
+    .train-history-card[open]>.train-history-card-header .train-history-chevron::before{content:"▲";}
     .train-history-runs .train-history-run{background:#fff;}
     .train-history-runs .train-history-run:nth-child(even){background:#cfcfcf;}
     .train-history-date{font-size:13px;font-weight:800;line-height:1.2;}
