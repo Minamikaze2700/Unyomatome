@@ -3023,7 +3023,8 @@ function formationDisplayGroups(groups){
       const items=Array.isArray(g?.items)?g.items:[];
       group.variants.push({
         id:variantId,
-        name:variantName,
+        // 選択肢名は形式を省略せず、「60000型5両」「10030型未更新」のように表示する。
+        name:baseType+variantName,
         img:g?.typeImg||fallbackTrainImageUrl(),
         items,
         family:g?.family||group.family,
@@ -3037,18 +3038,6 @@ function formationDisplayGroups(groups){
     }
   }
 
-  // 東武野田線の60000型は「5両 → 6両」の順で固定する。
-  // JSONの記述順や統合処理で逆転しても、編成選択画面ではこの順を維持する。
-  for(const group of out){
-    if(String(group?.type||'')!=='60000型') continue;
-    const variants=Array.isArray(group?.variants)?group.variants:[];
-    variants.sort((a,b)=>{
-      const av=Number(String(a?.name||'').match(/(\d+)\s*両/)?.[1]);
-      const bv=Number(String(b?.name||'').match(/(\d+)\s*両/)?.[1]);
-      if(Number.isFinite(av)&&Number.isFinite(bv)) return av-bv;
-      return 0;
-    });
-  }
   return out;
 }
 
@@ -4305,9 +4294,65 @@ function formationStorageEntryForTrain(train){
   const date=String(selectedDateKey||operationDateKey());
   const rawNo=String(train.no||'').trim();
   if(!rawNo) return null;
-  // 編成・入力時刻・ユーザー名は、登録対象の列車番号自身の情報だけを参照する。
   const stored=formationRemoteByFamily[ctx.family]?.areaStateByDate?.[date]?.[area]||{};
-  return stored[rawNo] || null;
+  const entryForNo=(no)=>{
+    const key=String(no||'').trim();
+    if(!key) return null;
+    if(stored[key]) return stored[key];
+    const normalized=normalizeTrainNo(key);
+    if(!normalized) return null;
+    for(const [savedNo,entry] of Object.entries(stored)){
+      if(normalizeTrainNo(savedNo)===normalized) return entry;
+    }
+    return null;
+  };
+
+  // 編成自体は従来どおり列番単位で保存する。
+  // 表示用の入力日時・登録者は、同じ運用チェーン内の全列番で共有する。
+  // そのチェーン内の登録情報から、最も新しい入力日時・登録者を選ぶ。
+  const chainInfo=findChain(currentDay,rawNo);
+  const chain=chainInfo?(OPERATION_CHAINS?.[currentDay]?.[chainInfo.chainIndex]||[]):[];
+  const linkedNos=[rawNo];
+  for(const item of chain){
+    const no=String(item?.no||item||'').trim();
+    if(no && !linkedNos.some(x=>normalizeTrainNo(x)===normalizeTrainNo(no))) linkedNos.push(no);
+  }
+
+  const registered=[];
+  for(const no of linkedNos){
+    const entry=entryForNo(no);
+    if(entry && String(entry.f||'').trim()) registered.push({no,entry});
+  }
+  if(!registered.length) return entryForNo(rawNo)||null;
+
+  // 表示中の列番自身の編成を優先し、未登録ならチェーン内の登録編成を引き継ぐ。
+  const formationSource=registered.find(x=>normalizeTrainNo(x.no)===normalizeTrainNo(rawNo))||registered[0];
+  const hasMeta=registered.filter(x=>String(x.entry.t??x.entry.time??'').trim());
+  const stampScore=(entry)=>{
+    const raw=String(entry?.t??entry?.time??'');
+    const parsed=typeof window.parseStoredMeta==='function'?window.parseStoredMeta(raw):null;
+    const stamp=String(parsed?.stamp||'');
+    if(!/^\d{10}$/.test(stamp)) return -1;
+    const yy=Number(stamp.slice(0,2)), mm=Number(stamp.slice(2,4)), dd=Number(stamp.slice(4,6));
+    const hh=Number(stamp.slice(6,8)), mi=Number(stamp.slice(8,10));
+    return Date.UTC(2000+yy,mm-1,dd,hh,mi);
+  };
+  let metaSource=null;
+  if(hasMeta.length){
+    metaSource=hasMeta.slice().sort((a,b)=>stampScore(b.entry)-stampScore(a.entry))[0];
+    // 旧形式で実時刻がない場合も、少なくともチェーン内の登録者情報を共有する。
+    if(stampScore(metaSource.entry)<0){
+      metaSource=hasMeta.find(x=>normalizeTrainNo(x.no)===normalizeTrainNo(rawNo))||hasMeta[0];
+    }
+  }
+
+  const combined={...formationSource.entry};
+  if(metaSource){
+    combined.t=metaSource.entry.t??metaSource.entry.time??'';
+    if(metaSource.entry.r) combined.r=metaSource.entry.r;
+    else delete combined.r;
+  }
+  return combined;
 }
 function formationUpdatedAuthorForTrain(trainNo){
   const key=String(trainNo||'');
@@ -6134,24 +6179,8 @@ initRegionNavigation();
   formationsForTrain=function(train){
     const target=train||currentTrainSnapshot||{};
     const family=allowedFormationFamily(target);
-    const groups=(FORMATIONS||[]).filter(group=>formationFamily(group)===family && formationRouteAllowed(group,target));
-    // 東武野田線の10030型は、更新車（11631～11636）を未更新車（11651～11654）より先に固定。
-    // JSONの並びや形式統合処理の影響で順番が入れ替わらないようにする。
-    if(String(activeRouteName||'')==='東武野田線'){
-      for(const group of groups){
-        const type=String(group?.type||'');
-        if(type!=='10030型') continue;
-        const sortItems=items=>Array.isArray(items)?items.sort((a,b)=>{
-          const ai=Number(String(a?.id||'').replace(/\D/g,''));
-          const bi=Number(String(b?.id||'').replace(/\D/g,''));
-          if(Number.isFinite(ai)&&Number.isFinite(bi)) return ai-bi;
-          return 0;
-        }):items;
-        sortItems(group.items);
-        for(const variant of (group.variants||[])) sortItems(variant.items);
-      }
-    }
-    return groups;
+    // 編成形式名と並び順は路線別の特例で書き換えず、JSON定義をそのまま使用する。
+    return (FORMATIONS||[]).filter(group=>formationFamily(group)===family && formationRouteAllowed(group,target));
   };
 
   function canonicalFormationId(value){
@@ -8278,11 +8307,25 @@ initRegionNavigation();
 
   function renderFormationOperationHistory(train){
     const assignedValue=String(registeredFormationForTrain(train)||train?.formation||'').trim();
+    const emptyHistoryFrame='<div class="station-timetable-frame train-history-frame"><div class="train-history-wrap"></div></div>';
     if(!assignedValue){
-      return '<div class="train-info-empty">この列車には編成が登録されていません。編成登録済みの列車を選ぶと、その編成の運用履歴を確認できます。</div>';
+      return emptyHistoryFrame;
     }
 
-    const targetIds=assignedValue.split('+').map(id=>String(id||'').trim().replace(/F$/i,'')).filter(Boolean);
+    // 運用履歴の対象は個別編成のみ。形式全体（○○系・○○型）、個体差（○両・更新／未更新等）、
+    // 未選択値や解決できないIDは履歴の照合対象から除外する。
+    const isIndividualFormationId=(value)=>{
+      const id=String(value||'').trim().replace(/F$/i,'');
+      if(!id || id===INITIAL_FORMATION_SELECTION.id) return false;
+      const obj=typeof formationById==='function' ? formationById(id) : null;
+      return !!obj && obj.kind!=='type' && obj.kind!=='variant' && obj.generic!==true && obj.selectableType!==true;
+    };
+    const targetIds=assignedValue.split('+')
+      .map(id=>String(id||'').trim().replace(/F$/i,''))
+      .filter(isIndividualFormationId);
+    if(!targetIds.length){
+      return emptyHistoryFrame;
+    }
     const family=typeof formationFamilyForTrain==='function'
       ? formationFamilyForTrain(train)
       : String(formationStorageContext(train)?.family||'').trim();
@@ -8306,7 +8349,9 @@ initRegionNavigation();
 
       // 編成が登録されている列車を起点として、その列車が属する運用チェーン全体を収集。
       for(const [assignedNoRaw,stored] of Object.entries(assignments)){
-        const assignedIds=String(stored?.f||'').split('+').map(id=>String(id||'').trim().replace(/F$/i,'')).filter(Boolean);
+        const assignedIds=String(stored?.f||'').split('+')
+          .map(id=>String(id||'').trim().replace(/F$/i,''))
+          .filter(isIndividualFormationId);
         if(!assignedIds.length || !targetIds.some(id=>assignedIds.includes(id))) continue;
         const assignedNo=normalizeTrainNo(assignedNoRaw);
         if(!assignedNo) continue;
