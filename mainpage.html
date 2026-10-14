@@ -4305,11 +4305,9 @@ function formationStorageEntryForTrain(train){
   const date=String(selectedDateKey||operationDateKey());
   const rawNo=String(train.no||'').trim();
   if(!rawNo) return null;
-  // 編成・入力時刻・ユーザー名も、運用先頭列車の登録情報を
-  // 同じ運用チェーン内の後続列車へ引き継ぐ。
-  const firstNo=operationChainFirstNo(currentDay,rawNo);
+  // 編成・入力時刻・ユーザー名は、登録対象の列車番号自身の情報だけを参照する。
   const stored=formationRemoteByFamily[ctx.family]?.areaStateByDate?.[date]?.[area]||{};
-  return stored[firstNo] || stored[rawNo] || null;
+  return stored[rawNo] || null;
 }
 function formationUpdatedAuthorForTrain(trainNo){
   const key=String(trainNo||'');
@@ -6274,11 +6272,39 @@ initRegionNavigation();
     const no=String(train.no||'').trim();
     if(!no) return null;
 
-    // データベースには「その日の運用チェーンの先頭列車番号」だけを保存する。
-    // 表示時は現在の列車番号から先頭列車番号へ遡って、先頭に登録された編成を割り当てる。
-    const firstNo=operationChainFirstNo(currentDay,no);
+    // Firebaseには入力対象の列車番号ごとに保存する。
+    // 読み込み時は、まず表示中の列番を優先し、登録がなければ
+    // 同じ日の運用チェーンに含まれる全列番を順番に確認する。
     const stored=formationRemoteByFamily[family]?.areaStateByDate?.[date]?.[area]||{};
-    return String(stored?.[firstNo]?.f||'')||null;
+    const getSavedValue=(trainNo)=>{
+      const key=String(trainNo||'').trim();
+      if(!key) return '';
+      const direct=String(stored?.[key]?.f||'').trim();
+      if(direct) return direct;
+      // 古いデータに列番表記の揺れがある場合のみ、正規化後の完全一致で補完する。
+      const normalized=normalizeTrainNo(key);
+      if(!normalized) return '';
+      for(const [savedNo,entry] of Object.entries(stored)){
+        if(normalizeTrainNo(savedNo)===normalized){
+          const value=String(entry?.f||'').trim();
+          if(value) return value;
+        }
+      }
+      return '';
+    };
+
+    const ownValue=getSavedValue(no);
+    if(ownValue) return ownValue;
+
+    const chainInfo=findChain(currentDay,no);
+    const chain=chainInfo ? (OPERATION_CHAINS?.[currentDay]?.[chainInfo.chainIndex]||[]) : [];
+    for(const entry of chain){
+      const linkedNo=String(entry?.no||entry||'').trim();
+      if(!linkedNo || linkedNo===no) continue;
+      const value=getSavedValue(linkedNo);
+      if(value) return value;
+    }
+    return null;
   };
 
   applyRegistrationState=function(){
@@ -6460,49 +6486,46 @@ initRegionNavigation();
     const selectedNo=String(train.no||'').trim();
     if(!selectedNo) return [];
 
-    // 1日の運用チェーン単位で編成を管理する。
-    // DBへ保存するキーは、必ずそのチェーンの一番最初の列車番号だけにする。
-    const firstNo=operationChainFirstNo(currentDay,selectedNo);
-    const firstTrain=findOperationTrainRecord(firstNo,currentDay) || train;
+    // 運用チェーンの先頭へ集約せず、ユーザーが入力した列車番号だけを更新する。
     const value=(formId&&formId!==INITIAL_FORMATION_SELECTION.id)?normalizeStoredFormationId(formId):null;
-    if(value && !formationAllowedForTrain(firstTrain,value)) return [];
+    if(value && !formationAllowedForTrain(train,value)) return [];
 
-    const family=formationFamilyForTrain(firstTrain);
+    const family=formationFamilyForTrain(train);
     const date=formationDateKey();
     const area=storageAreaForFamily(family);
     formationRemoteByFamily[family].areaStateByDate[date]??={};
     formationRemoteByFamily[family].areaStateByDate[date][area]??={};
-    const areaState=formationRemoteByFamily[family].areaStateByDate[date];
+    const areaState=formationRemoteByFamily[family].areaStateByDate[date][area];
 
     if(value){
-      areaState[firstNo]={f:value,t:makeStoredMeta()};
+      areaState[selectedNo]={f:value,t:makeStoredMeta()};
       const roleCode=typeof window.currentPermissionCodeForRoute==='function' ? window.currentPermissionCodeForRoute(activeRouteName) : '';
-      if(roleCode) areaState[firstNo].r=roleCode;
+      if(roleCode) areaState[selectedNo].r=roleCode;
     }else{
-      delete areaState[firstNo];
+      delete areaState[selectedNo];
     }
 
     if(!Object.keys(areaState).length) delete formationRemoteByFamily[family].areaStateByDate[date][area];
     if(!Object.keys(formationRemoteByFamily[family].areaStateByDate[date]).length) delete formationRemoteByFamily[family].areaStateByDate[date];
 
-    const changes={[firstNo]:value};
-    pendingFormationState[firstNo]=value;
+    const changes={[selectedNo]:value};
+    pendingFormationState[selectedNo]=value;
     pendingFormationTimestamps[currentDay]??={};
-    if(value) pendingFormationTimestamps[currentDay][firstNo]=new Date().toISOString();
-    else delete pendingFormationTimestamps[currentDay][firstNo];
+    if(value) pendingFormationTimestamps[currentDay][selectedNo]=new Date().toISOString();
+    else delete pendingFormationTimestamps[currentDay][selectedNo];
     syncDerivedStateForFamily(family);
 
     mergeFormationRemoteIntoLegacyState();
     applyRegistrationState();
     refreshAllTrainDataCache();
     saveLocalState();
-    const ok=await syncRegistrationToRemote(changes);
-    if(ok) delete pendingFormationState[firstNo];
+    const ok=await syncRegistrationToRemoteByFamily({[family]:{[selectedNo]:value}});
+    if(ok) delete pendingFormationState[selectedNo];
 
     if(currentTrainSnapshot&&String(currentTrainSnapshot.no||'')===selectedNo){
       currentTrainSnapshot={...currentTrainSnapshot,formation:value};
     }
-    return [firstNo];
+    return [selectedNo];
   };
 })();
 
@@ -6602,7 +6625,7 @@ initRegionNavigation();
   };
 
   function selectedIdsForTrain(train){
-    const current=formationIds(train?.formation||registeredFormationForTrain(train)||'');
+    const current=formationIds(registeredFormationForTrain(train)||train?.formation||'');
     const out=[];
     for(let i=0;i<MAX_FORMATION_SLOTS;i++) out.push(current[i]||'');
     return out;
@@ -6778,7 +6801,7 @@ initRegionNavigation();
     const count=formationCountForTrain(currentTrainSnapshot);
     if(count>1){
       const input=document.getElementById('formationManualInput');
-      if(input){ input.placeholder=formationInputPlaceholderForTrain(currentTrainSnapshot); input.value=formationIds(currentTrainSnapshot.formation||'').map(id=>selectionDisplayObject(id)?.name||id).join('+'); }
+      if(input){ input.placeholder=formationInputPlaceholderForTrain(currentTrainSnapshot); input.value=formationIds(registeredFormationForTrain(currentTrainSnapshot)||currentTrainSnapshot.formation||'').map(id=>selectionDisplayObject(id)?.name||id).join('+'); }
     }
     return true;
   }
@@ -6790,10 +6813,10 @@ initRegionNavigation();
     if(currentStationId) return;
     const train=currentTrainSnapshot || trainForCurrentDay(currentTrainNo);
     if(!train) return;
-    const ids=formationIds(train.formation||registeredFormationForTrain(train)||'');
+    const ids=formationIds(registeredFormationForTrain(train)||train.formation||'');
     const display=document.querySelector('#sheetContent .formation-id');
     if(display){
-      const parts=formationDisplayParts(train.formation||registeredFormationForTrain(train)||'');
+      const parts=formationDisplayParts(registeredFormationForTrain(train)||train.formation||'');
       display.innerHTML=parts.map(x=>`<span class="hiro-formation-display-line">${esc(x)}</span>`).join(' ＋ ');
       display.style.whiteSpace='normal';
     }
@@ -7947,7 +7970,7 @@ initRegionNavigation();
 </style>
 
 
-<!-- 列車情報：停車駅／今日の運用／編成情報を同一タブ領域で表示 -->
+<!-- 列車情報：停車駅／今日の運用／編成情報／運用履歴を同一タブ領域で表示 -->
 <script id="train-info-design-update">
 (function(){
   let currentTrainInfoTab='stops';
@@ -8253,6 +8276,143 @@ initRegionNavigation();
   }
   window.refreshTrainInfoOperationState=refreshTrainInfoOperationState;
 
+  function renderFormationOperationHistory(train){
+    const assignedValue=String(registeredFormationForTrain(train)||train?.formation||'').trim();
+    if(!assignedValue){
+      return '<div class="train-info-empty">この列車には編成が登録されていません。編成登録済みの列車を選ぶと、その編成の運用履歴を確認できます。</div>';
+    }
+
+    const targetIds=assignedValue.split('+').map(id=>String(id||'').trim().replace(/F$/i,'')).filter(Boolean);
+    const family=typeof formationFamilyForTrain==='function'
+      ? formationFamilyForTrain(train)
+      : String(formationStorageContext(train)?.family||'').trim();
+    const area=typeof window.storageAreaForFamily==='function'
+      ? String(window.storageAreaForFamily(family)||'__ROOT__')
+      : String(formationStorageContext(train)?.area||'__ROOT__');
+    const allDates=formationRemoteByFamily?.[family]?.areaStateByDate||{};
+    const currentDate=operationDateKey();
+    const records=[];
+
+    for(const [date,areaMap] of Object.entries(allDates)){
+      // 当日分も含め、未来の日付だけを除外する。
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date)) || String(date)>currentDate) continue;
+      const assignments=areaMap?.[area]||{};
+      const dateObj=new Date(`${date}T12:00:00`);
+      if(Number.isNaN(dateObj.getTime())) continue;
+      const day=getScheduleDayForDate(dateObj);
+      const dayChains=Array.isArray(OPERATION_CHAINS?.[day])?OPERATION_CHAINS[day]:[];
+      const matchedChains=new Map();
+      const unchained=[];
+
+      // 編成が登録されている列車を起点として、その列車が属する運用チェーン全体を収集。
+      for(const [assignedNoRaw,stored] of Object.entries(assignments)){
+        const assignedIds=String(stored?.f||'').split('+').map(id=>String(id||'').trim().replace(/F$/i,'')).filter(Boolean);
+        if(!assignedIds.length || !targetIds.some(id=>assignedIds.includes(id))) continue;
+        const assignedNo=normalizeTrainNo(assignedNoRaw);
+        if(!assignedNo) continue;
+        // 同じ列車番号が複数の運用チェーンに含まれる場合も、該当するチェーンをすべて表示する。
+        // A付き列番などが別列車として存在するときは、まず完全一致を優先する。
+        const exactChainIndexes=[];
+        const canonicalChainIndexes=[];
+        dayChains.forEach((chain,chainIndex)=>{
+          if(!Array.isArray(chain)||!chain.length) return;
+          const hasExact=chain.some(entry=>normalizeTrainNo(entry?.no||entry)===assignedNo);
+          if(hasExact) exactChainIndexes.push(chainIndex);
+          else if(chain.some(entry=>String(normalizeTrainNo(entry?.no||entry)||'').replace(/A$/i,'')===String(assignedNo).replace(/A$/i,''))) canonicalChainIndexes.push(chainIndex);
+        });
+        const chainIndexes=exactChainIndexes.length?exactChainIndexes:canonicalChainIndexes;
+        if(chainIndexes.length){
+          for(const chainIndex of chainIndexes){
+            const chain=dayChains[chainIndex];
+            const chainKey=String(chainIndex);
+            if(!matchedChains.has(chainKey)) matchedChains.set(chainKey,{chainIndex,entries:chain,registeredNumbers:[]});
+            matchedChains.get(chainKey).registeredNumbers.push(assignedNo);
+          }
+        }else{
+          unchained.push({trainNo:assignedNo,assignedValue:String(stored?.f||'')});
+        }
+      }
+
+      if(matchedChains.size || unchained.length){
+        records.push({date,day,chains:[...matchedChains.values()].sort((a,b)=>a.chainIndex-b.chainIndex),unchained});
+      }
+    }
+
+    records.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+    if(!records.length){
+      return '<div class="train-info-empty">当日を含む、登録済み編成の運用履歴はありません。</div>';
+    }
+
+    const weekdayNames=['日','月','火','水','木','金','土'];
+    const renderRun=(entry,day,registerNo='')=>{
+      const entryNo=normalizeTrainNo(entry?.no||entry||registerNo);
+      const sourceTrain=entryNo?findOperationTrainRecord(entryNo,day):null;
+      if(!entry && !sourceTrain){
+        return `<div class="train-history-run train-history-run-message">この日付の時刻表データでは運用を特定できません（登録列車番号：${escapeAttr(registerNo||entryNo)}）</div>`;
+      }
+      const displayNo=sourceTrain
+        ? (sourceTrain.hasTrainNumber!==false&&!sourceTrain.hideTrainNumber?entryNo:'')
+        : entryNo;
+      const rawType=String(entry?.type||sourceTrain?.type||'').trim();
+      const typeLabel=rawType?getDetailType(rawType):'';
+      const badgeStyle=rawType?typeBadgeInlineStyle(sourceTrain||{type:rawType},null,null):'';
+      const start=String(entry?.start||sourceTrain?.start||sourceTrain?.stops?.[0]?.station||'').trim();
+      const dest=String(entry?.dest||sourceTrain?.dest||sourceTrain?.stops?.[sourceTrain?.stops?.length-1]?.station||'').trim();
+      const startTime=String(entry?.startTime||sourceTrain?.startTime||sourceTrain?.stops?.[0]?.departure||sourceTrain?.stops?.[0]?.time||'').trim();
+      const endTime=String(entry?.endTime||sourceTrain?.endTime||sourceTrain?.stops?.[sourceTrain?.stops?.length-1]?.arrival||sourceTrain?.stops?.[sourceTrain?.stops?.length-1]?.time||'').trim();
+      return `<div class="train-operation-row train-history-run">
+        <span class="train-operation-number">${escapeAttr(displayNo)}</span>
+        <span class="station-timetable-type train-operation-type${typeLabel?'':' empty-operation-field'}"${rawType?` style="${badgeStyle}"`:''}>${escapeAttr(typeLabel)}</span>
+        <span class="train-operation-time">${escapeAttr(formatRailwayDisplayTime(startTime))}</span>
+        <span class="train-operation-station start-station" title="${escapeAttr(start)}">${escapeAttr(start)}</span>
+        <span class="train-operation-arrow" aria-hidden="true">→</span>
+        <span class="train-operation-time">${escapeAttr(formatRailwayDisplayTime(endTime))}</span>
+        <span class="train-operation-station end-station" title="${escapeAttr(dest)}">${escapeAttr(dest)}</span>
+      </div>`;
+    };
+
+    const historyCards=records.map(record=>{
+      const d=new Date(`${record.date}T12:00:00`);
+      const dateLabel=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${weekdayNames[d.getDay()]}）`;
+      const runs=[];
+      const seenRows=new Set();
+      // 同じ運用チェーンが複数の登録列車から見つかった場合は一度だけ表示する。
+      for(const chainRecord of record.chains){
+        for(const entry of chainRecord.entries){
+          const no=normalizeTrainNo(entry?.no||entry);
+          const rowKey=[no,entry?.startTime||'',entry?.endTime||'',entry?.start||'',entry?.dest||''].join('|');
+          if(seenRows.has(rowKey)) continue;
+          seenRows.add(rowKey);
+          runs.push(renderRun(entry,record.day));
+        }
+      }
+      for(const item of record.unchained){
+        const sourceTrain=findOperationTrainRecord(item.trainNo,record.day);
+        if(sourceTrain){
+          const entry={
+            no:item.trainNo,type:sourceTrain.type,start:sourceTrain.start||sourceTrain.stops?.[0]?.station,
+            startTime:sourceTrain.startTime||sourceTrain.stops?.[0]?.departure||sourceTrain.stops?.[0]?.time,
+            dest:sourceTrain.dest||sourceTrain.stops?.[sourceTrain.stops?.length-1]?.station,
+            endTime:sourceTrain.endTime||sourceTrain.stops?.[sourceTrain.stops.length-1]?.arrival||sourceTrain.stops?.[sourceTrain.stops.length-1]?.time
+          };
+          const rowKey=[entry.no,entry.startTime||'',entry.endTime||'',entry.start||'',entry.dest||''].join('|');
+          if(!seenRows.has(rowKey)){seenRows.add(rowKey);runs.push(renderRun(entry,record.day,item.trainNo));}
+        }else{
+          runs.push(renderRun(null,record.day,item.trainNo));
+        }
+      }
+      if(!runs.length){
+        runs.push('<div class="train-history-run train-history-run-message">この日付の時刻表データでは運用を特定できません。</div>');
+      }
+      return `<details class="train-history-card">
+        <summary class="train-history-card-header"><span class="train-history-date">${escapeAttr(dateLabel)}</span><span class="train-history-day">${escapeAttr(record.day)}ダイヤ</span><span class="train-history-chevron" aria-hidden="true">⌄</span></summary>
+        <div class="train-history-runs">${runs.join('')}</div>
+      </details>`;
+    }).join('');
+
+    return `<div class="station-timetable-frame train-history-frame"><div class="train-history-wrap">${historyCards}</div></div>`;
+  }
+
   function renderFormationInfo(train){
     const formationValue=String(registeredFormationForTrain(train)||train?.formation||'').trim();
     const ids=formationValue.split('+').map(x=>x.trim()).filter(Boolean);
@@ -8310,6 +8470,7 @@ initRegionNavigation();
     const activeStops=currentTrainInfoTab==='stops';
     const activeOp=currentTrainInfoTab==='operation';
     const activeForm=currentTrainInfoTab==='formation';
+    const activeHistory=currentTrainInfoTab==='history';
 
     if(isEditMode && !readonly){
       /* 編成入力時は既存の編集画面をそのまま使用。 */
@@ -8346,19 +8507,21 @@ initRegionNavigation();
         <button type="button" class="train-info-tab ${activeStops?'active':''}" onclick="window.__selectTrainInfoTab('stops')">停車駅</button>
         <button type="button" class="train-info-tab ${activeOp?'active':''}" onclick="window.__selectTrainInfoTab('operation')">今日の運用</button>
         <button type="button" class="train-info-tab ${activeForm?'active':''}" onclick="window.__selectTrainInfoTab('formation')">編成情報</button>
+        <button type="button" class="train-info-tab ${activeHistory?'active':''}" onclick="window.__selectTrainInfoTab('history')">運用履歴</button>
       </div>
 
       <div class="train-info-content-panel">
         ${activeStops?`<div class="timetable-list train-stop-guide-list">${timetableHTMLForCurrentDay(train)}</div>`:''}
         ${activeOp?`<div class="station-timetable-frame train-operation-frame"><div class="${operationWrapClasses}">${opHtml || '<div class="train-info-empty">この列車の運用情報はありません。</div>'}</div></div>`:''}
         ${activeForm?`<div class="train-info-formation-wrap">${renderFormationInfo(train)}</div>`:''}
+        ${activeHistory?renderFormationOperationHistory(train):''}
       </div>
     `;
     refreshTrainInfoOperationState();
   }
 
   window.__selectTrainInfoTab=function(tab){
-    currentTrainInfoTab=(tab==='operation'||tab==='formation'||tab==='stops')?tab:'stops';
+    currentTrainInfoTab=(tab==='operation'||tab==='formation'||tab==='history'||tab==='stops')?tab:'stops';
     if(typeof updateSheetContent==='function') updateSheetContent();
   };
 
@@ -8558,6 +8721,39 @@ initRegionNavigation();
 font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-break:break-word;}
     .train-info-empty{padding:22px 14px;text-align:center;color:#555;font-weight:700;}
 
+    /* 運用履歴：今日の運用と同じ列構成・交互背景で、日付見出しと1列車の高さを圧縮 */
+    .train-history-frame{position:relative;margin-top:0;height:53vh;background:#fff;border:3px solid #000;border-radius:11px;overflow:hidden;box-sizing:border-box;}
+    .train-history-wrap{height:100%;overflow-y:auto;overflow-x:hidden;background:#fff;box-sizing:border-box;}
+    .train-history-card{background:#fff;border-bottom:1px solid #bbb;}
+    .train-history-card-header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:nowrap;padding:4px 8px;background:rgba(0,0,0,.045);border-bottom:1px solid rgba(0,0,0,.12);min-height:27px;cursor:pointer;list-style:none;user-select:none;}
+    .train-history-card-header::-webkit-details-marker{display:none;}
+    .train-history-card-header::marker{content:"";}
+    .train-history-card[open]>.train-history-card-header{background:rgba(0,0,0,.075);}
+    .train-history-chevron{flex:0 0 auto;margin-left:2px;font-size:17px;font-weight:900;line-height:1;color:#555;transition:transform .15s ease;}
+    .train-history-card[open]>.train-history-card-header .train-history-chevron{transform:rotate(180deg);}
+    .train-history-runs .train-history-run{background:#fff;}
+    .train-history-runs .train-history-run:nth-child(even){background:#cfcfcf;}
+    .train-history-date{font-size:13px;font-weight:800;line-height:1.2;}
+    .train-history-day{font-size:11px;font-weight:700;color:#555;white-space:nowrap;}
+    .train-history-runs{padding:0;}
+    .train-history-run.train-operation-row{width:100%;min-height:46px;height:46px;grid-template-columns:72px 66px 62px minmax(0,1fr) 20px 62px minmax(0,1fr)!important;column-gap:6px;padding:3px 8px;cursor:default;}
+    .train-history-run.train-operation-row:hover{filter:none;}
+    .train-history-run .train-operation-number{font-size:16px;}
+    .train-history-run .train-operation-type{box-sizing:border-box!important;width:100%!important;min-width:0!important;max-width:none!important;min-height:24px;height:24px;padding:2px 3px;font-size:12px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:clip;}
+    .train-history-run .train-operation-time{font-size:14px;}
+    .train-history-run .train-operation-station{font-size:14px;line-height:1.1;white-space:normal;max-height:2.2em;overflow:hidden;overflow-wrap:anywhere;word-break:normal;}
+    .train-history-run .train-operation-arrow{font-size:16px;}
+    .train-history-run-message{min-height:32px;height:auto;padding:5px 8px;font-size:12px;line-height:1.3;color:#555;}
+
+    /* PC版「今日の運用」種別背景は4文字分で固定。スマホの既存44px幅は変更しない。 */
+    @media(min-width:960px){
+      .train-operation-row{grid-template-columns:86px 68px 78px minmax(0,1fr) 36px 78px minmax(0,1fr)!important;}
+      .train-operation-wrap.hide-operation-number .train-operation-row{grid-template-columns:68px 78px minmax(0,1fr) 36px 78px minmax(0,1fr)!important;}
+      .train-operation-wrap.hide-operation-type .train-operation-row{grid-template-columns:86px 78px minmax(0,1fr) 36px 78px minmax(0,1fr)!important;}
+      .train-operation-wrap.hide-operation-number.hide-operation-type .train-operation-row{grid-template-columns:78px minmax(0,1fr) 36px 78px minmax(0,1fr)!important;}
+      .train-operation-type{box-sizing:border-box;min-width:4em!important;width:4em!important;max-width:4em!important;padding-left:2px!important;padding-right:2px!important;}
+    }
+
     @media(max-width:520px){
       .train-info-tabs{gap:8px;margin:8px 0;padding:5px;}
       .train-info-tab{padding:10px 5px;font-size:1rem;}
@@ -8591,6 +8787,17 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     }
       .train-formation-detail-row{grid-template-columns:100px minmax(0,1fr);font-size:15px;gap:8px;padding:6px 9px;}
       .train-formation-card-title{font-size:20px;padding:8px 9px;}
+      .train-history-frame{border-width:3px;border-radius:9px;}
+      .train-history-card-header{min-height:24px;padding:3px 6px;gap:5px;}
+      .train-history-date{font-size:11px;}
+      .train-history-day{font-size:10px;}
+      .train-history-run.train-operation-row{min-height:42px;height:42px;grid-template-columns:45px 50px 49px minmax(0,1fr) 13px 49px minmax(0,1fr)!important;column-gap:3px;padding:2px 4px;}
+      .train-history-run .train-operation-number{font-size:12px;}
+      .train-history-run .train-operation-type{min-height:21px;height:21px;padding:0 2px;font-size:10px;}
+      .train-history-run .train-operation-time{font-size:11px;}
+      .train-history-run .train-operation-station{font-size:11px;line-height:1.05;max-height:2.1em;}
+      .train-history-run .train-operation-arrow{font-size:13px;}
+      .train-history-run-message{min-height:28px;padding:4px 6px;font-size:11px;}
     }
   `;
   document.head.appendChild(style);
