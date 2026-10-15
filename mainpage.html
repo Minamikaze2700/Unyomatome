@@ -8470,14 +8470,17 @@ initRegionNavigation();
       const raw=rawFormationDefinitionById(id)||{};
       const name=String(obj?.name||raw?.name||id).trim();
       const type=String(raw?.type||obj?.type||raw?._groupType||'').trim();
-      const completion=formationRawValue(raw,['completionDate','formationDate','completedAt','落成日']);
+      const storedManufacturingYear=formationRawValue(raw,['manufacturingYear','manufactureYear','製造年']);
+      const legacyCompletionDate=formationRawValue(raw,['completionDate','formationDate','completedAt','落成日']);
+      const legacyYears=[...new Set((legacyCompletionDate.match(/(?:19|20)\d{2}年/g)||[]))];
+      const manufacturingYear=storedManufacturingYear || legacyYears.join('・');
       const maker=formationRawValue(raw,['manufacturer','manufacturerName','maker','製造メーカー']);
       const comment=formationRawValue(raw,['comment','comments','remarks','note','コメント']);
       const cars=formationCarNames({...raw,carNames:Array.isArray(raw?.carNames)&&raw.carNames.length?raw.carNames:obj?.carNames},id);
       return `<section class="train-formation-card" style="--train-info-color:${color}">
         <div class="train-formation-card-title">${escapeAttr(name)}</div>
         <div class="train-formation-detail-row train-formation-type-row"><span>形式</span><strong>${escapeAttr(type)}</strong></div>
-        <div class="train-formation-detail-row"><span>落成日</span><strong>${escapeAttr(completion)}</strong></div>
+        <div class="train-formation-detail-row"><span>製造年</span><strong>${escapeAttr(manufacturingYear)}</strong></div>
         <div class="train-formation-detail-row"><span>製造メーカー</span><strong>${escapeAttr(maker)}</strong></div>
         <div class="train-formation-detail-row train-formation-cars-row"><span>車番</span><div class="train-formation-cars">${cars.length?cars.map((car,i)=>{
           const featuresRaw=raw?.carFeatures?.[String(car)] ?? raw?.carFeatures?.[String(car).trim()];
