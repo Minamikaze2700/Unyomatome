@@ -992,7 +992,7 @@ const ROUTE_REGISTRY={
     formationFamily:'hiroshima',
     prependStations:[{nameJa:'糸崎',nameEn:'Itozaki'}],
     corporateTitleColor:'#0072bc',
-    access:{public:true,routeAdmins:[]},
+    access:{public:false,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '可部線':{
@@ -1006,7 +1006,7 @@ const ROUTE_REGISTRY={
     company:'JR西日本',
     formationFamily:'hiroshima',
     corporateTitleColor:'#0072bc',
-    access:{public:true,routeAdmins:[]},
+    access:{public:false,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '呉線':{
@@ -1020,7 +1020,7 @@ const ROUTE_REGISTRY={
     company:'JR西日本',
     formationFamily:'hiroshima',
     corporateTitleColor:'#0072bc',
-    access:{public:true,routeAdmins:[]},
+    access:{public:false,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '海岸線':{
@@ -8311,7 +8311,10 @@ initRegionNavigation();
   }
   window.refreshTrainInfoOperationState=refreshTrainInfoOperationState;
 
-  function renderFormationOperationHistory(train){
+  function renderFormationOperationHistory(train, visibility={}){
+    // 「今日の運用」で列全体が非表示になる条件をそのまま履歴にも適用する。
+    const hideHistoryNumber=visibility.hideNumber===true;
+    const hideHistoryType=visibility.hideType===true;
     const assignedValue=String(registeredFormationForTrain(train)||train?.formation||'').trim();
     const emptyHistoryFrame='<div class="station-timetable-frame train-history-frame"><div class="train-history-wrap"></div></div>';
     if(!assignedValue){
@@ -8411,9 +8414,14 @@ initRegionNavigation();
       const dest=String(entry?.dest||sourceTrain?.dest||sourceTrain?.stops?.[sourceTrain?.stops?.length-1]?.station||'').trim();
       const startTime=String(entry?.startTime||sourceTrain?.startTime||sourceTrain?.stops?.[0]?.departure||sourceTrain?.stops?.[0]?.time||'').trim();
       const endTime=String(entry?.endTime||sourceTrain?.endTime||sourceTrain?.stops?.[sourceTrain?.stops?.length-1]?.arrival||sourceTrain?.stops?.[sourceTrain?.stops?.length-1]?.time||'').trim();
-      return `<div class="train-operation-row train-history-run">
-        <span class="train-operation-number">${escapeAttr(displayNo)}</span>
-        <span class="station-timetable-type train-operation-type${typeLabel?'':' empty-operation-field'}"${rawType?` style="${badgeStyle}"`:''}>${escapeAttr(typeLabel)}</span>
+      const historyRowClasses=[
+        'train-operation-row','train-history-run',
+        hideHistoryNumber?'hide-operation-number':'',
+        hideHistoryType?'hide-operation-type':''
+      ].filter(Boolean).join(' ');
+      return `<div class="${historyRowClasses}">
+        ${hideHistoryNumber?'':`<span class="train-operation-number">${escapeAttr(displayNo)}</span>`}
+        ${hideHistoryType?'':`<span class="station-timetable-type train-operation-type${typeLabel?'':' empty-operation-field'}"${rawType?` style="${badgeStyle}"`:''}>${escapeAttr(typeLabel)}</span>`}
         <span class="train-operation-time">${escapeAttr(formatRailwayDisplayTime(startTime))}</span>
         <span class="train-operation-station start-station" title="${escapeAttr(start)}">${escapeAttr(start)}</span>
         <span class="train-operation-arrow" aria-hidden="true">→</span>
@@ -8587,7 +8595,7 @@ initRegionNavigation();
         ${activeStops?`<div class="timetable-list train-stop-guide-list">${timetableHTMLForCurrentDay(train)}</div>`:''}
         ${activeOp?`<div class="station-timetable-frame train-operation-frame"><div class="${operationWrapClasses}">${opHtml || '<div class="train-info-empty">この列車の運用情報はありません。</div>'}</div></div>`:''}
         ${activeForm?`<div class="train-info-formation-wrap">${renderFormationInfo(train)}</div>`:''}
-        ${activeHistory?renderFormationOperationHistory(train):''}
+        ${activeHistory?renderFormationOperationHistory(train,{hideNumber:!hasOperationNumber,hideType:!hasOperationType}):''}
       </div>
     `;
     if(activeForm) initCarFeatureMarquees(content);
@@ -8922,6 +8930,16 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
       .train-history-run .train-operation-station{font-size:11px;line-height:1.05;max-height:2.1em;}
       .train-history-run .train-operation-arrow{font-size:13px;}
       .train-history-run-message{min-height:28px;padding:4px 6px;font-size:11px;}
+    }
+
+    /* 運用履歴も「今日の運用」で非表示になる列を省き、残りのグリッドを詰める。 */
+    .train-history-run.train-operation-row.hide-operation-number{grid-template-columns:66px 62px minmax(0,1fr) 20px 62px minmax(0,1fr)!important;}
+    .train-history-run.train-operation-row.hide-operation-type{grid-template-columns:72px 62px minmax(0,1fr) 20px 62px minmax(0,1fr)!important;}
+    .train-history-run.train-operation-row.hide-operation-number.hide-operation-type{grid-template-columns:62px minmax(0,1fr) 20px 62px minmax(0,1fr)!important;}
+    @media(max-width:520px){
+      .train-history-run.train-operation-row.hide-operation-number{grid-template-columns:50px 49px minmax(0,1fr) 13px 49px minmax(0,1fr)!important;}
+      .train-history-run.train-operation-row.hide-operation-type{grid-template-columns:45px 49px minmax(0,1fr) 13px 49px minmax(0,1fr)!important;}
+      .train-history-run.train-operation-row.hide-operation-number.hide-operation-type{grid-template-columns:49px minmax(0,1fr) 13px 49px minmax(0,1fr)!important;}
     }
   `;
   document.head.appendChild(style);
