@@ -8481,8 +8481,22 @@ initRegionNavigation();
         <div class="train-formation-detail-row"><span>製造メーカー</span><strong>${escapeAttr(maker)}</strong></div>
         <div class="train-formation-detail-row train-formation-cars-row"><span>車番</span><div class="train-formation-cars">${cars.length?cars.map((car,i)=>{
           const featuresRaw=raw?.carFeatures?.[String(car)] ?? raw?.carFeatures?.[String(car).trim()];
-          const features=(Array.isArray(featuresRaw)?featuresRaw:[featuresRaw]).map(x=>String(x||'').trim()).filter(Boolean);
-          return `<div class="train-formation-car-row"><b>${i+1}号車</b><span class="train-formation-car-number">${escapeAttr(car)}</span><div class="train-formation-car-feature-viewport">${features.length?`<div class="train-formation-car-feature-track"><div class="train-formation-car-feature-group">${features.map(feature=>`<span class="permission-tag">${escapeAttr(feature)}</span>`).join('')}</div></div>`:''}</div></div>`;
+          const features=(Array.isArray(featuresRaw)?featuresRaw:[featuresRaw]).map(item=>{
+            if(item && typeof item==='object'){
+              const label=String(item.name ?? item.label ?? item.value ?? item.feature ?? '').trim();
+              const type=String(item.type ?? item.category ?? item.kind ?? '').trim();
+              return label?{label,type}:null;
+            }
+            const label=String(item||'').trim();
+            if(!label) return null;
+            // 文字列形式の旧データも読み取れるようにし、既知の名称は分類する。
+            const type=/行先表示|表示器|機器|制御|モーター|空調|VVVF|ATO|ATS/i.test(label)?'機器類':
+              /座席|シート|内装|車内|つり革|床材|化粧板|照明/i.test(label)?'内装':
+              /外観|塗装|ラッピング|前面|車体|帯色|ロゴ|スカート/i.test(label)?'外観':'';
+            return {label,type};
+          }).filter(Boolean);
+          const featureTypeClass=type=>type==='外観'?'car-feature-type-appearance':type==='内装'?'car-feature-type-interior':type==='機器類'?'car-feature-type-equipment':'';
+          return `<div class="train-formation-car-row"><b>${i+1}号車</b><span class="train-formation-car-number">${escapeAttr(car)}</span><div class="train-formation-car-feature-viewport">${features.length?`<div class="train-formation-car-feature-track"><div class="train-formation-car-feature-group">${features.map(feature=>`<span class="permission-tag car-feature-tag ${featureTypeClass(feature.type)}"${feature.type?` data-feature-type="${escapeAttr(feature.type)}"`:''}>${escapeAttr(feature.label)}</span>`).join('')}</div></div>`:''}</div></div>`;
         }).join(''):'<div class="train-formation-car-row"><b>—</b><span class="train-formation-car-number"></span><div class="train-formation-car-feature-viewport"></div></div>'}</div></div>
         ${comment?`<div class="train-formation-comment">${escapeAttr(comment)}</div>`:''}
       </section>`;
@@ -8645,6 +8659,12 @@ initRegionNavigation();
       background:var(--train-info-color,var(--primary));
     }
 
+    /* 編成入力日時・登録者タグが灰色の固定ヘッダーやタブ領域より前面に飛び出さないよう、
+       列車カード内の重なり順を閉じ、タブと内容領域をその上に配置する。 */
+    #sheetContent > .train-card{position:relative;z-index:0;isolation:isolate;}
+    #sheetContent > .train-info-tabs,
+    #sheetContent > .train-info-content-panel{position:relative;z-index:1;}
+
     /* タブの下は常に同じ「内容領域」。表示内容だけを差し替える。 */
     .train-info-content-panel{width:100%;min-width:0;}
 
@@ -8791,11 +8811,19 @@ initRegionNavigation();
     .train-formation-detail-row{display:grid;grid-template-columns:135px minmax(0,1fr);gap:10px;align-items:start;padding:7px 12px;border-top:1px solid #ddd;font-size:17px;line-height:1.25;}
     .train-formation-detail-row>span:first-child{font-weight:700;color:#444;}
     .train-formation-detail-row strong{font-weight:500;min-width:0;word-break:break-word;white-space:pre-wrap;}
+    /* 車番欄だけは他項目の値位置に合わせず、枠の全幅を使って左から配置する。 */
+    .train-formation-detail-row.train-formation-cars-row{display:block;}
+    .train-formation-cars-row>span:first-child{display:block;margin-bottom:5px;}
     .train-formation-cars{display:flex;flex-direction:column;gap:3px;min-width:0;width:100%;}
     .train-formation-cars>.train-formation-car-row{display:grid;grid-template-columns:70px 74px minmax(0,1fr);gap:8px;align-items:center;min-width:0;width:100%;}
     .train-formation-cars b{font-weight:700;}
     .train-formation-car-number{min-width:0;overflow-wrap:anywhere;}
     .train-formation-car-feature-viewport{min-width:0;width:100%;overflow:hidden;white-space:nowrap;align-self:center;}
+    /* 特徴タグは分類別の背景色。説明用の凡例は表示しない。 */
+    .train-formation-car-feature-group .car-feature-tag{border:0;}
+    .train-formation-car-feature-group .car-feature-type-appearance{background:#2869a6;color:#fff;}
+    .train-formation-car-feature-group .car-feature-type-interior{background:#37834a;color:#fff;}
+    .train-formation-car-feature-group .car-feature-type-equipment{background:#7751a3;color:#fff;}
     .train-formation-car-feature-track{display:flex;width:max-content;max-width:none;transform:translateX(0);}
     .train-formation-car-feature-group{display:inline-flex;align-items:center;gap:5px;width:max-content;flex:0 0 auto;padding-right:16px;}
     .train-formation-car-feature-group .permission-tag{font-size:.86rem;font-weight:400;line-height:1.2;}
