@@ -8479,7 +8479,11 @@ initRegionNavigation();
         <div class="train-formation-detail-row train-formation-type-row"><span>形式</span><strong>${escapeAttr(type)}</strong></div>
         <div class="train-formation-detail-row"><span>落成日</span><strong>${escapeAttr(completion)}</strong></div>
         <div class="train-formation-detail-row"><span>製造メーカー</span><strong>${escapeAttr(maker)}</strong></div>
-        <div class="train-formation-detail-row train-formation-cars-row"><span>車番</span><div class="train-formation-cars">${cars.length?cars.map((car,i)=>`<div><b>${i+1}号車</b><span>${escapeAttr(car)}</span></div>`).join(''):'<div><b>—</b><span></span></div>'}</div></div>
+        <div class="train-formation-detail-row train-formation-cars-row"><span>車番</span><div class="train-formation-cars">${cars.length?cars.map((car,i)=>{
+          const featuresRaw=raw?.carFeatures?.[String(car)] ?? raw?.carFeatures?.[String(car).trim()];
+          const features=(Array.isArray(featuresRaw)?featuresRaw:[featuresRaw]).map(x=>String(x||'').trim()).filter(Boolean);
+          return `<div class="train-formation-car-row"><b>${i+1}号車</b><span class="train-formation-car-number">${escapeAttr(car)}</span><div class="train-formation-car-feature-viewport">${features.length?`<div class="train-formation-car-feature-track"><div class="train-formation-car-feature-group">${features.map(feature=>`<span class="permission-tag">${escapeAttr(feature)}</span>`).join('')}</div></div>`:''}</div></div>`;
+        }).join(''):'<div class="train-formation-car-row"><b>—</b><span class="train-formation-car-number"></span><div class="train-formation-car-feature-viewport"></div></div>'}</div></div>
         ${comment?`<div class="train-formation-comment">${escapeAttr(comment)}</div>`:''}
       </section>`;
     }).join('')}</div>`;
@@ -8562,7 +8566,34 @@ initRegionNavigation();
         ${activeHistory?renderFormationOperationHistory(train):''}
       </div>
     `;
+    if(activeForm) initCarFeatureMarquees(content);
     refreshTrainInfoOperationState();
+  }
+
+  function initCarFeatureMarquees(root){
+    const schedule=typeof requestAnimationFrame==='function'?requestAnimationFrame:(fn)=>setTimeout(fn,0);
+    schedule(()=>{
+      if(!root || !root.isConnected) return;
+      root.querySelectorAll('.train-formation-car-feature-viewport').forEach(viewport=>{
+        const track=viewport.querySelector('.train-formation-car-feature-track');
+        const group=track?.querySelector('.train-formation-car-feature-group');
+        if(!track || !group) return;
+        track.classList.remove('is-scrolling');
+        track.style.removeProperty('--feature-marquee-duration');
+        const clone=track.querySelector('.train-formation-car-feature-group[aria-hidden="true"]');
+        if(clone) clone.remove();
+        const viewportWidth=viewport.clientWidth;
+        const groupWidth=group.scrollWidth;
+        if(viewportWidth>0 && groupWidth>viewportWidth+1){
+          const duplicate=group.cloneNode(true);
+          duplicate.setAttribute('aria-hidden','true');
+          track.appendChild(duplicate);
+          const seconds=Math.max(8,Math.min(30,groupWidth/24));
+          track.style.setProperty('--feature-marquee-duration',`${seconds}s`);
+          track.classList.add('is-scrolling');
+        }
+      });
+    });
   }
 
   window.__selectTrainInfoTab=function(tab){
@@ -8760,9 +8791,17 @@ initRegionNavigation();
     .train-formation-detail-row{display:grid;grid-template-columns:135px minmax(0,1fr);gap:10px;align-items:start;padding:7px 12px;border-top:1px solid #ddd;font-size:17px;line-height:1.25;}
     .train-formation-detail-row>span:first-child{font-weight:700;color:#444;}
     .train-formation-detail-row strong{font-weight:500;min-width:0;word-break:break-word;white-space:pre-wrap;}
-    .train-formation-cars{display:flex;flex-direction:column;gap:3px;}
-    .train-formation-cars>div{display:grid;grid-template-columns:70px minmax(0,1fr);gap:8px;}
+    .train-formation-cars{display:flex;flex-direction:column;gap:3px;min-width:0;width:100%;}
+    .train-formation-cars>.train-formation-car-row{display:grid;grid-template-columns:70px 74px minmax(0,1fr);gap:8px;align-items:center;min-width:0;width:100%;}
     .train-formation-cars b{font-weight:700;}
+    .train-formation-car-number{min-width:0;overflow-wrap:anywhere;}
+    .train-formation-car-feature-viewport{min-width:0;width:100%;overflow:hidden;white-space:nowrap;align-self:center;}
+    .train-formation-car-feature-track{display:flex;width:max-content;max-width:none;transform:translateX(0);}
+    .train-formation-car-feature-group{display:inline-flex;align-items:center;gap:5px;width:max-content;flex:0 0 auto;padding-right:16px;}
+    .train-formation-car-feature-group .permission-tag{font-size:.86rem;font-weight:400;line-height:1.2;}
+    .train-formation-car-feature-track.is-scrolling{animation:train-car-feature-marquee var(--feature-marquee-duration,12s) linear infinite;will-change:transform;}
+    @keyframes train-car-feature-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+    @media(prefers-reduced-motion:reduce){.train-formation-car-feature-track.is-scrolling{animation:none;}}
 font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-break:break-word;}
     .train-info-empty{padding:22px 14px;text-align:center;color:#555;font-weight:700;}
 
