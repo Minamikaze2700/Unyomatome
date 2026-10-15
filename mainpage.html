@@ -8027,6 +8027,12 @@ initRegionNavigation();
       for(const v of (Array.isArray(g?.variants)?g.variants:[])){
         hit=visitItems(v?.items,g?.type); if(hit) return hit;
       }
+      // 形式そのものが選択された場合は、JSONの形式グループに設定された
+      // 製造年・製造所の集計情報を編成情報タブへ渡す。
+      const groupId=String(g?.selectableId||g?.type||'').trim().replace(/F$/i,'');
+      if(groupId===canonical && (g?.manufacturingYear || g?.manufacturer)){
+        return {...g,type:String(g?.formationType||g?.type||''),_groupType:String(g?.type||''),_isFormationGroup:true};
+      }
     }
     return null;
   }
@@ -8469,7 +8475,7 @@ initRegionNavigation();
       const obj=selectionDisplayObject(id)||formationById(id)||{};
       const raw=rawFormationDefinitionById(id)||{};
       const name=String(obj?.name||raw?.name||id).trim();
-      const type=String(raw?.type||obj?.type||raw?._groupType||'').trim();
+      const type=String(raw?.formationType||raw?.type||obj?.type||raw?._groupType||'').trim();
       const storedManufacturingYear=formationRawValue(raw,['manufacturingYear','manufactureYear','製造年']);
       const legacyCompletionDate=formationRawValue(raw,['completionDate','formationDate','completedAt','落成日']);
       const legacyYears=[...new Set((legacyCompletionDate.match(/(?:19|20)\d{2}年/g)||[]))];
@@ -8477,12 +8483,7 @@ initRegionNavigation();
       const maker=formationRawValue(raw,['manufacturer','manufacturerName','maker','製造メーカー']);
       const comment=formationRawValue(raw,['comment','comments','remarks','note','コメント']);
       const cars=formationCarNames({...raw,carNames:Array.isArray(raw?.carNames)&&raw.carNames.length?raw.carNames:obj?.carNames},id);
-      return `<section class="train-formation-card" style="--train-info-color:${color}">
-        <div class="train-formation-card-title">${escapeAttr(name)}</div>
-        <div class="train-formation-detail-row train-formation-type-row"><span>形式</span><strong>${escapeAttr(type)}</strong></div>
-        <div class="train-formation-detail-row"><span>製造年</span><strong>${escapeAttr(manufacturingYear)}</strong></div>
-        <div class="train-formation-detail-row"><span>製造メーカー</span><strong>${escapeAttr(maker)}</strong></div>
-        <div class="train-formation-detail-row train-formation-cars-row"><span>車番</span><div class="train-formation-cars">${cars.length?cars.map((car,i)=>{
+      const carsHtml=raw?._isFormationGroup ? '' : `<div class="train-formation-detail-row train-formation-cars-row"><span>車番</span><div class="train-formation-cars">${cars.length?cars.map((car,i)=>{
           const featuresRaw=raw?.carFeatures?.[String(car)] ?? raw?.carFeatures?.[String(car).trim()];
           const features=(Array.isArray(featuresRaw)?featuresRaw:[featuresRaw]).map(item=>{
             if(item && typeof item==='object'){
@@ -8500,7 +8501,13 @@ initRegionNavigation();
           }).filter(Boolean);
           const featureTypeClass=type=>type==='外観'?'car-feature-type-appearance':type==='内装'?'car-feature-type-interior':type==='機器類'?'car-feature-type-equipment':'';
           return `<div class="train-formation-car-row"><b>${i+1}号車</b><span class="train-formation-car-number">${escapeAttr(car)}</span><div class="train-formation-car-feature-viewport">${features.length?`<div class="train-formation-car-feature-track"><div class="train-formation-car-feature-group">${features.map(feature=>`<span class="permission-tag car-feature-tag ${featureTypeClass(feature.type)}"${feature.type?` data-feature-type="${escapeAttr(feature.type)}"`:''}>${escapeAttr(feature.label)}</span>`).join('')}</div></div>`:''}</div></div>`;
-        }).join(''):'<div class="train-formation-car-row"><b>—</b><span class="train-formation-car-number"></span><div class="train-formation-car-feature-viewport"></div></div>'}</div></div>
+        }).join(''):'<div class="train-formation-car-row"><b>—</b><span class="train-formation-car-number"></span><div class="train-formation-car-feature-viewport"></div></div>'}</div></div>`;
+      return `<section class="train-formation-card" style="--train-info-color:${color}">
+        <div class="train-formation-card-title">${escapeAttr(name)}</div>
+        <div class="train-formation-detail-row train-formation-type-row"><span>形式</span><strong>${escapeAttr(type)}</strong></div>
+        <div class="train-formation-detail-row"><span>製造年</span><strong>${escapeAttr(manufacturingYear)}</strong></div>
+        <div class="train-formation-detail-row"><span>${raw?._isFormationGroup?'製造所':'製造メーカー'}</span><strong>${escapeAttr(maker)}</strong></div>
+        ${carsHtml}
         ${comment?`<div class="train-formation-comment">${escapeAttr(comment)}</div>`:''}
       </section>`;
     }).join('')}</div>`;
