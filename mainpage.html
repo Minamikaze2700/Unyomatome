@@ -990,7 +990,6 @@ const ROUTE_REGISTRY={
     storageArea:'JR広島',
     company:'JR西日本',
     formationFamily:'hiroshima',
-    formationCountDefault:3,
     prependStations:[{nameJa:'糸崎',nameEn:'Itozaki'}],
     corporateTitleColor:'#0072bc',
     access:{public:true,routeAdmins:[]},
@@ -1006,7 +1005,6 @@ const ROUTE_REGISTRY={
     storageArea:'JR広島',
     company:'JR西日本',
     formationFamily:'hiroshima',
-    formationCountDefault:3,
     corporateTitleColor:'#0072bc',
     access:{public:true,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
@@ -1021,7 +1019,6 @@ const ROUTE_REGISTRY={
     storageArea:'JR広島',
     company:'JR西日本',
     formationFamily:'hiroshima',
-    formationCountDefault:3,
     corporateTitleColor:'#0072bc',
     access:{public:true,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
@@ -1037,7 +1034,6 @@ const ROUTE_REGISTRY={
     company:'神戸市営地下鉄',
     formationFamily:'kobe',
     corporateTitleColor:'#0072bc',
-    formationCountDefault:1,
     access:{public:true,routeAdmins:[]},
     formationInputExample:'5101 / 5101F / 5000系'
   },
@@ -1052,7 +1048,6 @@ const ROUTE_REGISTRY={
     company:'神戸市営地下鉄',
     formationFamily:'kobe',
     corporateTitleColor:'#0072bc',
-    formationCountDefault:1,
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png',
     formationType:'6000形',
     formationTypeImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobecity6000.png',
@@ -1073,7 +1068,6 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'JR東日本',
     formationFamily:'keihin',
-    formationCountDefault:1,
     typeShortMap:{'普通':'各停','各駅停車':'各停','区間急行':'区急'},
     typeDetailMap:{'普通':'各駅停車','各停':'各駅停車'},
     typeClassMap:{'快速':'keihin-express','普通':'keihin-local','各停':'keihin-local'},
@@ -1095,7 +1089,6 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'JR東日本',
     formationFamily:'yokohama',
-    formationCountDefault:1,
     typeShortMap:{'普通':'各停','各駅停車':'各停','区間急行':'区急'},
     typeDetailMap:{'普通':'各駅停車','各停':'各駅停車'},
     typeClassMap:{'快速':'yokohama-express','普通':'yokohama-local','各停':'yokohama-local'},
@@ -1116,7 +1109,6 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'JR東日本',
     formationFamily:'nambu',
-    formationCountDefault:1,
     destinationAliases:{'稲城長沼':'稲城','武蔵中原':'中原','武蔵溝ノ口':'溝口'},
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Nambu_noimage.png',
     access:{public:true,routeAdmins:[]},
@@ -1133,7 +1125,6 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'JR東日本',
     formationFamily:'uchibo',
-    formationCountDefault:2,
     access:{public:false,routeAdmins:[]},
     formationInputExample:'E235系F編成 / E131系2両 / 209系4両'
   },
@@ -1148,7 +1139,6 @@ const ROUTE_REGISTRY={
     storageArea:'JR西日本',
     company:'JR西日本',
     formationFamily:'osaka-loop',
-    formationCountDefault:1,
     defaultFormationName:'323系',
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
     formationTypeImage:'https://minamikaze2700.github.io/Unyomatome/images/323.png',
@@ -1169,7 +1159,6 @@ const ROUTE_REGISTRY={
     storageArea:'JR西日本',
     company:'JR西日本',
     formationFamily:'osaka-loop',
-    formationCountDefault:1,
     defaultFormationName:'323系',
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
     formationTypeImage:'https://minamikaze2700.github.io/Unyomatome/images/323.png',
@@ -1190,7 +1179,6 @@ const ROUTE_REGISTRY={
     storageArea:'__ROOT__',
     company:'東京メトロ',
     formationFamily:'hibiya',
-    formationCountDefault:1,
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Hibiya_noimage.png',
     access:{public:false,routeAdmins:[]},
     formationInputExample:'TRTA13000 / TRTA13101 / TB70000 / TB71701 / TB70090 / TB71791',
@@ -1206,7 +1194,6 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'福岡市地下鉄',
     formationFamily:'fukuoka-kuko-hakozaki',
-    formationCountDefault:1,
     typeColors:{'普通':'#9fa0a0'},
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
@@ -1225,7 +1212,6 @@ const ROUTE_REGISTRY={
     storageArea:'__ROOT__',
     company:'東武鉄道',
     formationFamily:'noda',
-    formationCountDefault:1,
     destinationAliases:{'春日部':'春日','七光台':'七光','清水公園':'清水','野田市':'野田'},
     stationShortMap:{'春日部':'春日','七光台':'七光','清水公園':'清水','野田市':'野田'},
     typeColors:{'普通':'#666'},
@@ -1244,7 +1230,6 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'長野電鉄',
     formationFamily:'nagano',
-    formationCountDefault:1,
     destinationAliases:{'信州中野':'中野','湯田中':'湯田','長野':'長野','須坂':'須坂'},
     typeShortRules:[
       {containsAll:['ゆけむり','のんびり'],result:'ゆの'},
@@ -6740,21 +6725,21 @@ initRegionNavigation();
 */
 (function(){
   const MAX_FORMATION_SLOTS=6;
-  const DEFAULT_FORMATION_COUNT=3;
+  const DEFAULT_FORMATION_COUNT=1;
   let formationDropdownState=null;
 
   function clampFormationCount(v){
     const n=Number(v);
-    if(!Number.isFinite(n)) return DEFAULT_FORMATION_COUNT;
+    if(!Number.isFinite(n)) return 1;
     return Math.max(1,Math.min(MAX_FORMATION_SLOTS,Math.trunc(n)));
   }
 
   function formationCountForTrain(train){
-    const family=String(train?.formationFamily||activeRouteMeta?.formationFamily||'').trim();
-    // 広島地区JSONは3編成連結用。データの読込順や旧JSONの有無に左右されず3枠を確保する。
-    if(family==='hiroshima') return 3;
-    const routeDefault=activeRouteMeta?.formationCountDefault ?? activeJson?.formationCountDefault ?? train?.formationCount ?? DEFAULT_FORMATION_COUNT;
-    return clampFormationCount(routeDefault);
+    // 編成数は読み込んだ路線JSONだけを参照する。JSONに設定がなければ1編成。
+    // 列車単位のformationCountも、列車データ自体がJSONから来ている場合のみ有効。
+    const jsonCount = activeJson?.formationCountDefault ?? train?.formationCount;
+    if (jsonCount === undefined || jsonCount === null || jsonCount === '') return 1;
+    return clampFormationCount(jsonCount);
   }
   window.formationCountForTrain=formationCountForTrain;
 
@@ -7015,7 +7000,7 @@ initRegionNavigation();
   const oldUpdateSheetContent=updateSheetContent;
   updateSheetContent=function(){
     oldUpdateSheetContent();
-    if(currentStationId) return;
+    // 駅時刻表から開いた列車詳細でも、複数編成セレクターを必ず更新する。
     const train=currentTrainSnapshot || trainForCurrentDay(currentTrainNo);
     if(!train) return;
     const ids=formationIds(registeredFormationForTrain(train)||train.formation||'');
