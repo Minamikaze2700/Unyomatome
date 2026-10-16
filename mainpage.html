@@ -990,9 +990,10 @@ const ROUTE_REGISTRY={
     storageArea:'JR広島',
     company:'JR西日本',
     formationFamily:'hiroshima',
+    formationCountDefault:3,
     prependStations:[{nameJa:'糸崎',nameEn:'Itozaki'}],
     corporateTitleColor:'#0072bc',
-    access:{public:false,routeAdmins:[]},
+    access:{public:true,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '可部線':{
@@ -1005,8 +1006,9 @@ const ROUTE_REGISTRY={
     storageArea:'JR広島',
     company:'JR西日本',
     formationFamily:'hiroshima',
+    formationCountDefault:3,
     corporateTitleColor:'#0072bc',
-    access:{public:false,routeAdmins:[]},
+    access:{public:true,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '呉線':{
@@ -1019,8 +1021,9 @@ const ROUTE_REGISTRY={
     storageArea:'JR広島',
     company:'JR西日本',
     formationFamily:'hiroshima',
+    formationCountDefault:3,
     corporateTitleColor:'#0072bc',
-    access:{public:false,routeAdmins:[]},
+    access:{public:true,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '海岸線':{
@@ -1900,6 +1903,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
     noSequence:allNumbers,
     numbersByLine,
     numberSegments,
+    segmentLineNames,
     type:jsonType,
     lineKind:String(raw?.lineKind||meta?.lineKind||formationFamily),
     lineName:activeRouteName,
@@ -2479,12 +2483,38 @@ function findOperationTrainRecord(no,day=currentDay){
   const key=normalizeTrainNo(no);
   if(!key) return null;
   const source=operationTrainSourceForDay(day);
+  const canonical=value=>normalizeTrainNo(value).replace(/A$/i,'');
+  // 代表番号以外の列番も同じ運行レコードへ戻せるようにする。
+  // 広島地区の列車は trainNumbers / noSequence / numberSegments に
+  // 列番変更前後の番号が別々に保存されている。
+  const numbersOf=t=>{
+    const values=[];
+    const add=v=>{const n=normalizeTrainNo(v);if(n&&!values.includes(n))values.push(n);};
+    add(t?.no);
+    (Array.isArray(t?.noSequence)?t.noSequence:[]).forEach(add);
+    for(const list of Object.values(t?.numbersByLine||{})) if(Array.isArray(list)) list.forEach(add);
+    for(const list of Object.values(t?.trainNumbers||{})) if(Array.isArray(list)) list.forEach(add);
+    for(const list of Object.values(t?.numberSegments||{})) if(Array.isArray(list)) list.forEach(seg=>add(seg?.no));
+    return values;
+  };
   const exact=source.find(t=>normalizeTrainNo(t?.no)===key);
   if(exact) return exact;
-  return source.find(t=>String(t?.no||'').replace(/A$/i,'')===key.replace(/A$/i,''))||null;
+  const exactAlias=source.find(t=>numbersOf(t).includes(key));
+  if(exactAlias) return exactAlias;
+  const loose=source.find(t=>canonical(t?.no)===canonical(key));
+  if(loose) return loose;
+  return source.find(t=>numbersOf(t).some(n=>canonical(n)===canonical(key)))||null;
 }
 
-
+// 運用表示で使う列番の判定。実データが見つからない場合でも、実列番形式の番号は表示する。
+// 一方、列車番号非表示の路線が内部識別子を使っている場合は表示しない。
+function isDisplayableOperationTrainNumber(value, sourceTrain=null){
+  const no=normalizeTrainNo(value);
+  if(!no) return false;
+  if(sourceTrain && (sourceTrain.hasTrainNumber===false || sourceTrain.hideTrainNumber===true)) return false;
+  if(sourceTrain && sourceTrain.hasTrainNumber===true) return true;
+  return /^[A-Z]{0,3}\d{1,6}[A-Z]{0,3}$/i.test(no);
+}
 
 function snapshotForCurrentRegistrations(day, state, dateKey, familyFilter=null){
   const ops=[];
@@ -4267,7 +4297,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
           <img class="station-timetable-train-img" src="${escapeAttr(imgSrc)}" alt="${escapeAttr(trainDisplayNoAtStation(train,stationName))}">
           ${stationTimetableFormationHTML(train)}
           <span class="station-timetable-time">${escapeAttr(item.time)}</span>
-          ${String(train.type||'').trim()?`<span class="station-timetable-type ${escapeAttr(getExpressClass(train))}" style="${typeBadgeInlineStyle(train,(train.stops||[]).findIndex(s=>String(s?.station||'')===stationName),stationDirectionRouteColor(STATIONS.findIndex(st=>String(st?.nameJa||'')===stationName),key))}">${escapeAttr(getDetailType(train.type))}</span>`:''}
+          ${String(train.type||'').trim()?`<span class="station-timetable-type ${escapeAttr(getExpressClass(train))}" style="${typeBadgeInlineStyle(train,null,stationDirectionRouteColor(STATIONS.findIndex(st=>String(st?.nameJa||'')===stationName),key),stationName)}">${escapeAttr(getDetailType(train.type))}</span>`:''}
           <span class="station-timetable-destination"><span class="station-timetable-destination-station">${escapeAttr(getDisplayDestinationForTrain(train))}</span>${destinationGoSuffix(train)?'<span class="station-timetable-destination-go">行</span>':''}</span>
         </button>
       `;
@@ -5742,31 +5772,174 @@ function displayedRouteColorForTrainPosition(train,position=null){
   if(!a||!b) return null;
   return trainServiceColorBetweenStations(a,b,train)||activeSegmentColors(a,b)?.[0]||null;
 }
-function typeColorForTrain(train,position=null){
+function typeColorConfigForTrain(train,type){
+  const sourceColors=(train?.sourceTypeColors&&typeof train.sourceTypeColors==='object')?train.sourceTypeColors:{};
+  const configured={...sourceColors,...(activeJson?.typeColors||{}),...(activeRouteMeta?.typeColors||{})};
+  return configured[String(type||'').trim()];
+}
+function routeNameForTrainStation(train,stationName){
+  const station=String(stationName||'').trim();
+  const rows=Array.isArray(train?.stops)?train.stops:[];
+  if(!station||!rows.length) return '';
+  const idx=rows.findIndex(row=>String(row?.station||'').trim()===station);
+  if(idx<0) return '';
+  let a='',b='';
+  if(idx<rows.length-1){a=String(rows[idx]?.station||'');b=String(rows[idx+1]?.station||'');}
+  else if(idx>0){a=String(rows[idx-1]?.station||'');b=String(rows[idx]?.station||'');}
+  return a&&b ? String(preferredTrainServiceLine(a,b,train)?.name||'') : '';
+}
+function routeNameForTrainPosition(train,position){
+  if(position===null||position===undefined||!Array.isArray(STATIONS)||STATIONS.length<2) return '';
+  const q=Number(position);
+  if(!Number.isFinite(q)) return '';
+  const max=STATIONS.length-1;
+  const clamped=Math.max(0,Math.min(max,q));
+  let segIndex=Math.floor(clamped);
+  const isInteger=Math.abs(clamped-Math.round(clamped))<1e-6;
+  if(isInteger){
+    const stationIndex=Math.round(clamped);
+    const stationName=String(STATIONS[stationIndex]?.nameJa||'').trim();
+    const dir=String(train?.direction||'').toLowerCase();
+    let terminalName=getShortDest(train?.dest||'').trim();
+    let penultimateName='';
+    const trainStops=Array.isArray(train?.stops)?train.stops:[];
+    for(let i=trainStops.length-1;i>=0;i--){
+      const name=String(trainStops[i]?.station||'').trim();
+      if(!name) continue;
+      if(!terminalName) terminalName=name;
+      if(name===terminalName) continue;
+      penultimateName=name;
+      break;
+    }
+    if(stationName&&terminalName&&stationName===terminalName){
+      const prevIdx=penultimateName?STATIONS.findIndex(st=>String(st?.nameJa||'')===penultimateName):-1;
+      if(prevIdx>=0&&prevIdx!==stationIndex) segIndex=prevIdx<stationIndex?stationIndex-1:stationIndex;
+      else if(dir==='up') segIndex=stationIndex;
+      else if(dir==='down') segIndex=stationIndex-1;
+      else segIndex=Math.min(stationIndex,max-1);
+    }else if(dir==='up') segIndex=stationIndex-1;
+    else if(dir==='down') segIndex=stationIndex;
+    else segIndex=Math.min(stationIndex,max-1);
+  }
+  segIndex=Math.max(0,Math.min(max-1,segIndex));
+  const a=String(STATIONS[segIndex]?.nameJa||'');
+  const b=String(STATIONS[segIndex+1]?.nameJa||'');
+  return a&&b ? String(preferredTrainServiceLine(a,b,train)?.name||'') : '';
+}
+function routeLineColorForTypeBadge(train,position=null,stationName=''){
+  const rows=Array.isArray(train?.stops)?train.stops:[];
+  const station=String(stationName||'').trim();
+  if(station && rows.length){
+    const idx=rows.findIndex(row=>String(row?.station||'').trim()===station);
+    if(idx>=0){
+      // 駅ラベルと同じ考え方で、原則として当該駅から次駅への区間色を使用する。
+      if(idx<rows.length-1){
+        const color=trainServiceColorBetweenStations(rows[idx]?.station,rows[idx+1]?.station,train);
+        if(color) return String(color);
+      }
+      if(idx>0){
+        const color=trainServiceColorBetweenStations(rows[idx-1]?.station,rows[idx]?.station,train);
+        if(color) return String(color);
+      }
+    }
+  }
+  if(position!==null && position!==undefined){
+    const color=displayedRouteColorForTrainPosition(train,position);
+    if(color) return String(color);
+  }
+  if(train){
+    const currentPos=positionForTrain(train,currentMinutes())?.pos;
+    if(Number.isFinite(Number(currentPos))){
+      const color=displayedRouteColorForTrainPosition(train,Number(currentPos));
+      if(color) return String(color);
+    }
+  }
+  // 停車駅データだけで判定できる場合のフォールバック。
+  if(rows.length>1){
+    const color=trainServiceColorBetweenStations(rows[0]?.station,rows[1]?.station,train);
+    if(color) return String(color);
+  }
+  const served=Array.isArray(train?.servedLineNames)?train.servedLineNames:[];
+  for(const name of served){
+    const color=String(lineDefByName(name)?.color||'').trim();
+    if(color) return color;
+  }
+  return '';
+}
+
+function typeColorFromByRoute(train,type,position=null,stationName='',stationDirectionColor=null){
+  const config=typeColorConfigForTrain(train,type);
+  const byRoute=config&&typeof config==='object'&&config.byRoute&&typeof config.byRoute==='object' ? config.byRoute : null;
+  if(!byRoute) return '';
+  let lineName=routeNameForTrainStation(train,stationName);
+  if(!lineName && position!==null && position!==undefined) lineName=routeNameForTrainPosition(train,position);
+  if(!lineName && train){
+    const nowPos=positionForTrain(train,currentMinutes())?.pos;
+    if(Number.isFinite(Number(nowPos))) lineName=routeNameForTrainPosition(train,Number(nowPos));
+  }
+  if(lineName && String(byRoute[lineName]||'').trim()){
+    // 種別バッジ・列車アイコン下部の色はJSONのtypeColors.<種別>.byRouteを使用する。
+    // 線路・駅ラベルの路線色(line.color)とは別の設定なので、ここで置き換えない。
+    return String(byRoute[lineName]).trim();
+  }
+  // 1線区だけのページや駅・位置情報を持たない帳票では、所属線区の指定色を使用する。
+  const activeNames=getActiveRouteLineNames();
+  if(activeNames.length===1 && String(byRoute[activeNames[0]]||'').trim()) return String(byRoute[activeNames[0]]).trim();
+  for(const name of (Array.isArray(train?.servedLineNames)?train.servedLineNames:[])){
+    if(String(byRoute[name]||'').trim()) return String(byRoute[name]).trim();
+  }
+  for(const name of activeNames){
+    if(String(byRoute[name]||'').trim()) return String(byRoute[name]).trim();
+  }
+  return String(stationDirectionColor||'').trim();
+}
+function typeColorForTrain(train,position=null,stationName='',stationDirectionColor=null){
   const type=String(train?.type||'').trim();
-  // 種別色は、列車を読み込んだJSON側の設定を最優先する。
-  // 複数JSONを統合している場合も、primary側の色で全列車を上書きしない。
+  // JSONの通常の文字列色と、広島地区の typeColors.<種別>.byRoute の両方に対応する。
   const sourceColors=(train?.sourceTypeColors&&typeof train.sourceTypeColors==='object')?train.sourceTypeColors:{};
   const colors={...sourceColors,...(activeJson?.typeColors||{}),...(activeRouteMeta?.typeColors||{})};
+  const configured=colors[type];
+  if(configured && typeof configured==='object' && configured.byRoute && typeof configured.byRoute==='object'){
+    // 「普通／各駅停車」は独自に追加されたtypeColors.byRouteではなく、
+    // 駅ラベル・区間線に使っているJSONの実際の路線色を使用する。
+    if(!type || type==='普通' || type==='各駅停車'){
+      const actualRouteColor=routeLineColorForTypeBadge(train,position,stationName);
+      return String(actualRouteColor||stationDirectionColor||activeRouteColors()[0]||'#666');
+    }
+    const routeColor=typeColorFromByRoute(train,type,position,stationName,stationDirectionColor);
+    if(routeColor) return routeColor;
+  }
   if(Object.prototype.hasOwnProperty.call(sourceColors,type) && typeof sourceColors[type]==='string') return String(sourceColors[type]);
   if(Object.prototype.hasOwnProperty.call(colors,type) && typeof colors[type]==='string') return String(colors[type]);
   if(type==='回送') return String(colors?.回送||'#fff');
   if(type.includes('快速')) return String(colors?.快速||FAST_TYPE_COLOR||'#f39800');
   const currentRouteColor=displayedRouteColorForTrainPosition(train,position);
-  if(!type || type==='普通' || type==='各駅停車') return String(currentRouteColor||activeRouteColors()[0]||'#666');
+  if(!type || type==='普通' || type==='各駅停車') return String(currentRouteColor||stationDirectionColor||activeRouteColors()[0]||'#666');
   if(currentRouteColor) return String(currentRouteColor);
   const fallback=String(fallbackTrainServiceColor(train)||activeRouteColors()[0]||'#666');
   return fallback;
 }
-function typeBadgeInlineStyle(train,position=null,stationDirectionColor=null){
+function typeBadgeInlineStyle(train,position=null,stationDirectionColor=null,stationName=''){
   const type=String(train?.type||'普通');
   if(type==='回送') return 'background:#fff;color:#111;border:1px solid #bbb;';
   const sourceColors=(train?.sourceTypeColors&&typeof train.sourceTypeColors==='object')?train.sourceTypeColors:{};
   const configured={...sourceColors,...(activeJson?.typeColors||{}),...(activeRouteMeta?.typeColors||{})};
-  if(Object.prototype.hasOwnProperty.call(sourceColors,type) || Object.prototype.hasOwnProperty.call(configured,type)) return `background:${typeColorForTrain(train,position)};color:#fff;`;
+  const colorSpec=configured[type];
+  if(colorSpec && typeof colorSpec==='object' && colorSpec.byRoute && typeof colorSpec.byRoute==='object'){
+    const resolvedPosition=position!=null ? position : (stationName ? null : (train ? positionForTrain(train,currentMinutes())?.pos : null));
+    if(!type || type==='普通' || type==='各駅停車'){
+      // 普通の種別色は固定指定されたbyRoute色を使わず、区間の路線色と一致させる。
+      const actualRouteColor=routeLineColorForTypeBadge(train,resolvedPosition,stationName);
+      return `background:${actualRouteColor||stationDirectionColor||activeRouteColors()[0]||'#666'};color:#fff;`;
+    }
+    const routeColor=typeColorFromByRoute(train,type,resolvedPosition,stationName,stationDirectionColor);
+    if(routeColor) return `background:${routeColor};color:#fff;`;
+    if(stationDirectionColor) return `background:${stationDirectionColor};color:#fff;`;
+  }
+  if(typeof colorSpec==='string') return `background:${typeColorForTrain(train,position,stationName,stationDirectionColor)};color:#fff;`;
   if(type==='普通' && stationDirectionColor) return `background:${stationDirectionColor};color:#fff;`;
   const resolvedPosition = position!=null ? position : (train ? positionForTrain(train,currentMinutes())?.pos : null);
-  return `background:${typeColorForTrain(train,resolvedPosition)};color:#fff;`;
+  return `background:${typeColorForTrain(train,resolvedPosition,stationName,stationDirectionColor)};color:#fff;`;
 }
 function expressClassForTrain(t){
   const type=String(t?.type||'').trim();
@@ -6577,7 +6750,10 @@ initRegionNavigation();
   }
 
   function formationCountForTrain(train){
-    const routeDefault=activeJson?.formationCountDefault ?? activeRouteMeta?.formationCountDefault ?? train?.formationCount ?? DEFAULT_FORMATION_COUNT;
+    const family=String(train?.formationFamily||activeRouteMeta?.formationFamily||'').trim();
+    // 広島地区JSONは3編成連結用。データの読込順や旧JSONの有無に左右されず3枠を確保する。
+    if(family==='hiroshima') return 3;
+    const routeDefault=activeRouteMeta?.formationCountDefault ?? activeJson?.formationCountDefault ?? train?.formationCount ?? DEFAULT_FORMATION_COUNT;
     return clampFormationCount(routeDefault);
   }
   window.formationCountForTrain=formationCountForTrain;
@@ -8072,6 +8248,95 @@ initRegionNavigation();
     return [];
   }
 
+  // 区間の表示端点は、指定範囲内に実際の時刻が入っている停車情報から取得する。
+  // JSONには他路線の通過後の駅や停車時刻のない駅も同じ列車に含まれることがあるため、
+  // 単純に stops[to] を終着にすると、列番変更後の終着駅が先の駅へずれる。
+  function operationTimedBounds(stops,from,to){
+    if(!Array.isArray(stops)||!stops.length) return null;
+    const lo=Math.max(0,Math.min(stops.length-1,Number(from)||0));
+    const hi=Math.max(lo,Math.min(stops.length-1,Number(to)||0));
+    const hasTime=st=>!!String(st?.arrival||'').trim()||!!String(st?.departure||'').trim()||!!String(st?.time||'').trim();
+    const timed=[];
+    for(let i=lo;i<=hi;i++) if(hasTime(stops[i])) timed.push(i);
+    if(!timed.length) return null;
+    return {from:timed[0],to:timed[timed.length-1]};
+  }
+
+  // 列番変更による行分割専用。呼び出し元は「今日の運用」と「過去の運用」だけに限定する。
+  // train-card、列車アイコン、停車駅案内、駅時刻表では列車データ自体を分割しない。
+  function operationNumberSegments(sourceTrain,hasRealNumber=true){
+    const stops=Array.isArray(sourceTrain?.stops)?sourceTrain.stops:[];
+    if(!hasRealNumber||!stops.length) return [];
+    const numberSegments=sourceTrain?.numberSegments&&typeof sourceTrain.numberSegments==='object'
+      ? sourceTrain.numberSegments:{};
+    const edgeCount=Math.max(0,stops.length-1);
+    let routeByEdge=Array.isArray(sourceTrain?.segmentLineNames)&&sourceTrain.segmentLineNames.length===edgeCount
+      ? sourceTrain.segmentLineNames.map(x=>String(x||'')) : [];
+    if(routeByEdge.length!==edgeCount){
+      routeByEdge=[];
+      for(let i=0;i<edgeCount;i++){
+        const a=String(stops[i]?.station||''),b=String(stops[i+1]?.station||'');
+        routeByEdge.push(String(preferredTrainServiceLine(a,b,sourceTrain)?.name||''));
+      }
+    }
+    const routeRuns=new Map();
+    for(let i=0;i<routeByEdge.length;){
+      const lineName=routeByEdge[i];
+      if(!lineName){i++;continue;}
+      let j=i;
+      while(j+1<routeByEdge.length&&routeByEdge[j+1]===lineName) j++;
+      if(!routeRuns.has(lineName)) routeRuns.set(lineName,[]);
+      routeRuns.get(lineName).push({from:i,to:j+1});
+      i=j+1;
+    }
+    const hasRouteRuns=routeRuns.size>0;
+    const candidates=[];
+    for(const [lineName,list] of Object.entries(numberSegments)){
+      if(!Array.isArray(list)) continue;
+      const runs=routeRuns.get(lineName)||[];
+      for(const segment of list){
+        const no=normalizeTrainNo(segment?.no);
+        const from=Number(segment?.from),to=Number(segment?.to);
+        if(!no||!Number.isFinite(from)||!Number.isFinite(to)||from>to) continue;
+        if(runs.length){
+          // 各路線の列番区間を、その列車が実際に当該路線を走る範囲だけに限定。
+          // これにより別路線の全区間列番が、途中の番号変更を覆い隠さない。
+          for(const run of runs){
+            const clippedFrom=Math.max(0,from,run.from);
+            const clippedTo=Math.min(stops.length-1,to,run.to);
+            if(clippedFrom<=clippedTo) candidates.push({no,from:clippedFrom,to:clippedTo});
+          }
+        }else if(!hasRouteRuns){
+          candidates.push({no,from:Math.max(0,from),to:Math.min(stops.length-1,to)});
+        }
+      }
+    }
+    // 路線名が未定義の旧データは従来どおり番号区間を直接読む。
+    if(!candidates.length){
+      for(const list of Object.values(numberSegments)) if(Array.isArray(list)) for(const segment of list){
+        const no=normalizeTrainNo(segment?.no),from=Number(segment?.from),to=Number(segment?.to);
+        if(no&&Number.isFinite(from)&&Number.isFinite(to)&&from<=to) candidates.push({no,from:Math.max(0,from),to:Math.min(stops.length-1,to)});
+      }
+    }
+    if(!candidates.length){
+      const fallback=normalizeTrainNo(sourceTrain?.noSequence?.[0]||sourceTrain?.no);
+      if(fallback) candidates.push({no:fallback,from:0,to:stops.length-1});
+    }
+    candidates.sort((a,b)=>a.from-b.from||a.to-b.to||a.no.localeCompare(b.no));
+    const unique=[];const seen=new Set();
+    for(const segment of candidates){
+      const key=`${segment.no}|${segment.from}|${segment.to}`;
+      if(seen.has(key)) continue;seen.add(key);unique.push(segment);
+    }
+    const merged=[];
+    for(const segment of unique){
+      const last=merged[merged.length-1];
+      if(last&&last.no===segment.no&&segment.from<=last.to+1){last.to=Math.max(last.to,segment.to);}
+      else merged.push({...segment});
+    }
+    return merged;
+  }
+
   function operationChainForCurrentTrain(train){
     const day=currentDay;
     const info=findChain(day,String(train?.no||''));
@@ -8081,9 +8346,12 @@ initRegionNavigation();
       if(Array.isArray(candidate) && candidate.length) chain=candidate;
     }
     if(!chain){
-      // 列車番号を持たない列車では内部識別子を「仮の列番」として表示しない。
-      return [{
-        no:'',
+      // このJSONに運用連結表がない場合も、実際の列車番号と番号変更区間を表示する。
+      // 番号を持たない路線の内部IDは列番として表示しない。
+      const firstNo=normalizeTrainNo(train?.noSequence?.[0]||train?.no||'');
+      const displayNo=isDisplayableOperationTrainNumber(firstNo,train)?firstNo:'';
+      chain=[{
+        no:displayNo,
         type:String(train?.type||''),
         start:String(train?.start||train?.stops?.[0]?.station||''),
         startTime:String(train?.startTime||train?.stops?.[0]?.departure||train?.stops?.[0]?.time||''),
@@ -8097,70 +8365,48 @@ initRegionNavigation();
 
     const expanded=[];
     for(const entry of chain){
-      const entryNo=String(entry?.no||'').trim();
-      const sourceTrain=entryNo ? findOperationTrainRecord(entryNo,day) : null;
-      // 実際のJSON列車データにある番号だけを使用し、内部ID・仮番号は表示しない。
-      const hasRealNumber=!!sourceTrain && sourceTrain.hasTrainNumber!==false && !sourceTrain.hideTrainNumber;
+      const entryNo=normalizeTrainNo(entry?.no||entry||'');
+      const sameTrainNumbers=[train?.no,...(Array.isArray(train?.noSequence)?train.noSequence:[])].map(normalizeTrainNo).filter(Boolean);
+      const sourceTrain=entry?._sourceTrain || (entryNo ? findOperationTrainRecord(entryNo,day) : null)
+        || (train && entryNo && sameTrainNumbers.includes(entryNo) ? train : null)
+        || (train && !entryNo ? train : null);
+      const hasRealNumber=isDisplayableOperationTrainNumber(entryNo,sourceTrain);
       const stops=Array.isArray(sourceTrain?.stops)?sourceTrain.stops:[];
-      const rawSegments=sourceTrain?.numberSegments && typeof sourceTrain.numberSegments==='object'
-        ? Object.values(sourceTrain.numberSegments).flatMap(v=>Array.isArray(v)?v:[])
-        : [];
-      const segments=[];
-      const seen=new Set();
-      for(const seg of rawSegments){
-        const from=Number(seg?.from),to=Number(seg?.to);
-        if(!Number.isFinite(from)||!Number.isFinite(to)||from>to) continue;
-        const segNo=hasRealNumber?String(seg?.no||'').trim():'';
-        if(!segNo) continue;
-        const key=`${segNo}|${from}|${to}`;
-        if(seen.has(key)) continue;
-        seen.add(key);
-        segments.push({no:segNo,from,to});
-      }
-      segments.sort((a,b)=>a.from-b.from||a.to-b.to);
-      // 路線境界などで同じ列車番号の区間が複数登録されている場合は1つにまとめる。
-      // 番号そのものが切り替わる箇所だけを、運用の表示上の分割境界とする。
-      const mergedSegments=[];
-      for(const seg of segments){
-        const last=mergedSegments[mergedSegments.length-1];
-        if(last && last.no===seg.no && seg.from<=last.to+1){
-          last.to=Math.max(last.to,seg.to);
-        }else{
-          mergedSegments.push({...seg});
-        }
-      }
+      // 列番区間を実際の走行路線の範囲へ切り詰めてから、番号変更駅で分割する。
+      const mergedSegments=operationNumberSegments(sourceTrain,hasRealNumber);
 
-      // numberChanges により番号が途中で変わる場合は、変更駅を境界として分割する。
+      // numberChanges による番号変更駅を境界に、今日の運用欄だけで別行にする。
       if(stops.length && mergedSegments.length>1){
         for(const seg of mergedSegments){
           const from=Math.max(0,Math.min(stops.length-1,seg.from));
           const to=Math.max(from,Math.min(stops.length-1,seg.to));
-          const first=stops[from]||{};
-          const last=stops[to]||{};
+          const timedBounds=operationTimedBounds(stops,from,to);
+          if(!timedBounds) continue;
+          const displayFrom=timedBounds.from,displayTo=timedBounds.to;
+          const first=stops[displayFrom]||{};
+          const last=stops[displayTo]||{};
           const start=String(first?.station||'');
           const dest=String(last?.station||'');
           const startTime=String(first?.departure||first?.time||first?.arrival||'');
           const endTime=String(last?.arrival||last?.time||last?.departure||'');
           if(!start && !dest) continue;
           expanded.push({
-            no:seg.no,
+            no:isDisplayableOperationTrainNumber(seg.no,sourceTrain)?seg.no:'',
             type:String(entry?.type||sourceTrain?.type||''),
-            start,
-            startTime,
-            dest,
-            endTime,
+            start,startTime,dest,endTime,
             _sourceTrain:sourceTrain,
-            _fromIndex:from,
-            _toIndex:to
+            _fromIndex:displayFrom,
+            _toIndex:displayTo
           });
         }
         continue;
       }
 
-      const from=stops.length?0:0;
+      const from=0;
       const to=stops.length?stops.length-1:0;
+      const bestNo=mergedSegments[0]?.no||entryNo||trainDisplayNoAtPosition(sourceTrain,from)||'';
       expanded.push({
-        no:hasRealNumber ? (mergedSegments[0]?.no||entryNo||trainDisplayNoAtPosition(sourceTrain,from)||'') : '',
+        no:isDisplayableOperationTrainNumber(bestNo,sourceTrain)?bestNo:'',
         type:String(entry?.type||sourceTrain?.type||''),
         start:String(entry?.start||sourceTrain?.start||stops[from]?.station||''),
         startTime:String(entry?.startTime||sourceTrain?.startTime||stops[from]?.departure||stops[from]?.time||stops[from]?.arrival||''),
@@ -8171,7 +8417,7 @@ initRegionNavigation();
         _toIndex:to
       });
     }
-    return expanded.length ? expanded : [{...chain[0],no:'',_sourceTrain:train}];
+    return expanded.length ? expanded : [{no:'',type:String(train?.type||''),start:String(train?.start||''),dest:String(train?.dest||''),startTime:String(train?.startTime||''),endTime:String(train?.endTime||''),_sourceTrain:train}];
   }
 
   /* 今日の運用だけで使用する駅名略称。停車駅案内・駅時刻表などには適用しない。
@@ -8259,8 +8505,9 @@ initRegionNavigation();
 
   function operationItemHTML(entry,index,count){
     const sourceTrain=entry?._sourceTrain || findOperationTrainRecord(String(entry?.no||''),currentDay);
-    const hasRealNumber=!!sourceTrain && sourceTrain.hasTrainNumber!==false && !sourceTrain.hideTrainNumber;
-    const no=hasRealNumber ? String(entry?.no||'').trim() : '';
+    const candidateNo=normalizeTrainNo(entry?.no||'');
+    const hasRealNumber=isDisplayableOperationTrainNumber(candidateNo,sourceTrain);
+    const no=hasRealNumber ? candidateNo : '';
     const rawType=String(entry?.type||'').trim();
     const type=rawType ? getShortType(rawType,no) : '';
     const start=String(entry?.start||'').trim();
@@ -8270,7 +8517,7 @@ initRegionNavigation();
     const shortDest=operationStationLabel(dest);
     const endTime=String(entry?.endTime||'');
     const state=operationEntryState(entry,index,sourceTrain);
-    const typeBadgeStyle=rawType ? typeBadgeInlineStyle(sourceTrain || {type:rawType},null,null) : '';
+    const typeBadgeStyle=rawType ? typeBadgeInlineStyle(sourceTrain || {type:rawType},null,null,start) : '';
     const openNo=no;
     const clickAttr=openNo ? `onclick="openSheet('${escapeJs(openNo)}',false,'${escapeJs(inferDirectionFromStations(entry?.start,entry?.dest))}')"` : '';
     const rowClass=[
@@ -8310,6 +8557,55 @@ initRegionNavigation();
     });
   }
   window.refreshTrainInfoOperationState=refreshTrainInfoOperationState;
+
+  function expandHistoryEntriesByTrainNumber(chain, day){
+    const out=[];
+    const visitedParents=new Set();
+    for(const entry of (Array.isArray(chain)?chain:[])){
+      const entryNo=normalizeTrainNo(entry?.no||entry);
+      const sourceTrain=entryNo?findOperationTrainRecord(entryNo,day):null;
+      if(!sourceTrain){
+        if(entry && typeof entry==='object') out.push({...entry,no:entryNo||String(entry?.no||'')});
+        continue;
+      }
+      const stops=Array.isArray(sourceTrain.stops)?sourceTrain.stops:[];
+      const parentKey=[String(sourceTrain.no||''),String(sourceTrain.startTime||''),String(sourceTrain.endTime||'')].join('|');
+      if(visitedParents.has(parentKey)) continue;
+      visitedParents.add(parentKey);
+      const hasRealNumber=isDisplayableOperationTrainNumber(entryNo,sourceTrain);
+      const merged=operationNumberSegments(sourceTrain,hasRealNumber);
+      if(stops.length&&merged.length>1){
+        for(const seg of merged){
+          const from=Math.max(0,Math.min(stops.length-1,seg.from));
+          const to=Math.max(from,Math.min(stops.length-1,seg.to));
+          const timedBounds=operationTimedBounds(stops,from,to);
+          if(!timedBounds) continue;
+          const displayFrom=timedBounds.from,displayTo=timedBounds.to;
+          const first=stops[displayFrom]||{},last=stops[displayTo]||{};
+          const start=String(first.station||''),dest=String(last.station||'');
+          if(!start&&!dest) continue;
+          out.push({
+            no:seg.no,type:String(entry?.type||sourceTrain.type||''),start,
+            startTime:String(first.departure||first.time||first.arrival||''),dest,
+            endTime:String(last.arrival||last.time||last.departure||''),
+            _sourceTrain:sourceTrain,_fromIndex:displayFrom,_toIndex:displayTo
+          });
+        }
+      }else{
+        out.push({
+          ...(entry&&typeof entry==='object'?entry:{}),
+          no:isDisplayableOperationTrainNumber(merged[0]?.no||entryNo,sourceTrain)?(merged[0]?.no||entryNo||''):'',
+          type:String(entry?.type||sourceTrain.type||''),
+          start:String(entry?.start||sourceTrain.start||stops[0]?.station||''),
+          startTime:String(entry?.startTime||sourceTrain.startTime||stops[0]?.departure||stops[0]?.time||stops[0]?.arrival||''),
+          dest:String(entry?.dest||sourceTrain.dest||stops[stops.length-1]?.station||''),
+          endTime:String(entry?.endTime||sourceTrain.endTime||stops[stops.length-1]?.arrival||stops[stops.length-1]?.time||stops[stops.length-1]?.departure||''),
+          _sourceTrain:sourceTrain,_fromIndex:0,_toIndex:Math.max(0,stops.length-1)
+        });
+      }
+    }
+    return out;
+  }
 
   function renderFormationOperationHistory(train, visibility={}){
     // 「今日の運用」で列全体が非表示になる条件をそのまま履歴にも適用する。
@@ -8370,9 +8666,28 @@ initRegionNavigation();
         const canonicalChainIndexes=[];
         dayChains.forEach((chain,chainIndex)=>{
           if(!Array.isArray(chain)||!chain.length) return;
-          const hasExact=chain.some(entry=>normalizeTrainNo(entry?.no||entry)===assignedNo);
+          const belongsToNumber=entry=>{
+            const entryNo=normalizeTrainNo(entry?.no||entry);
+            if(entryNo===assignedNo) return true;
+            const source=entryNo?findOperationTrainRecord(entryNo,day):null;
+            if(!source) return false;
+            const all=[];
+            for(const list of Object.values(source.numberSegments||{})) if(Array.isArray(list)) list.forEach(seg=>all.push(normalizeTrainNo(seg?.no)));
+            for(const list of Object.values(source.numbersByLine||{})) if(Array.isArray(list)) list.forEach(n=>all.push(normalizeTrainNo(n)));
+            for(const list of Object.values(source.trainNumbers||{})) if(Array.isArray(list)) list.forEach(n=>all.push(normalizeTrainNo(n)));
+            return all.includes(assignedNo);
+          };
+          const hasExact=chain.some(belongsToNumber);
           if(hasExact) exactChainIndexes.push(chainIndex);
-          else if(chain.some(entry=>String(normalizeTrainNo(entry?.no||entry)||'').replace(/A$/i,'')===String(assignedNo).replace(/A$/i,''))) canonicalChainIndexes.push(chainIndex);
+          else if(chain.some(entry=>{
+            const entryNo=normalizeTrainNo(entry?.no||entry);
+            if(entryNo.replace(/A$/i,'')===assignedNo.replace(/A$/i,'')) return true;
+            const source=entryNo?findOperationTrainRecord(entryNo,day):null;
+            const values=[];
+            for(const list of Object.values(source?.numberSegments||{})) if(Array.isArray(list)) list.forEach(seg=>values.push(normalizeTrainNo(seg?.no)));
+            for(const list of Object.values(source?.numbersByLine||{})) if(Array.isArray(list)) list.forEach(n=>values.push(normalizeTrainNo(n)));
+            return values.some(n=>n.replace(/A$/i,'')===assignedNo.replace(/A$/i,''));
+          })) canonicalChainIndexes.push(chainIndex);
         });
         const chainIndexes=exactChainIndexes.length?exactChainIndexes:canonicalChainIndexes;
         if(chainIndexes.length){
@@ -8404,13 +8719,11 @@ initRegionNavigation();
       if(!entry && !sourceTrain){
         return `<div class="train-history-run train-history-run-message">この日付の時刻表データでは運用を特定できません（登録列車番号：${escapeAttr(registerNo||entryNo)}）</div>`;
       }
-      const displayNo=sourceTrain
-        ? (sourceTrain.hasTrainNumber!==false&&!sourceTrain.hideTrainNumber?entryNo:'')
-        : entryNo;
+      const displayNo=isDisplayableOperationTrainNumber(entryNo,sourceTrain)?entryNo:'';
       const rawType=String(entry?.type||sourceTrain?.type||'').trim();
       const typeLabel=rawType?getDetailType(rawType):'';
-      const badgeStyle=rawType?typeBadgeInlineStyle(sourceTrain||{type:rawType},null,null):'';
       const start=String(entry?.start||sourceTrain?.start||sourceTrain?.stops?.[0]?.station||'').trim();
+      const badgeStyle=rawType?typeBadgeInlineStyle(sourceTrain||{type:rawType},null,null,start):'';
       const dest=String(entry?.dest||sourceTrain?.dest||sourceTrain?.stops?.[sourceTrain?.stops?.length-1]?.station||'').trim();
       const startTime=String(entry?.startTime||sourceTrain?.startTime||sourceTrain?.stops?.[0]?.departure||sourceTrain?.stops?.[0]?.time||'').trim();
       const endTime=String(entry?.endTime||sourceTrain?.endTime||sourceTrain?.stops?.[sourceTrain?.stops?.length-1]?.arrival||sourceTrain?.stops?.[sourceTrain?.stops?.length-1]?.time||'').trim();
@@ -8437,7 +8750,9 @@ initRegionNavigation();
       const seenRows=new Set();
       // 同じ運用チェーンが複数の登録列車から見つかった場合は一度だけ表示する。
       for(const chainRecord of record.chains){
-        for(const entry of chainRecord.entries){
+        // 同じ運用内でも列番が変わる駅を境界にし、別の列車行として表示する。
+        const expandedEntries=expandHistoryEntriesByTrainNumber(chainRecord.entries,record.day);
+        for(const entry of expandedEntries){
           const no=normalizeTrainNo(entry?.no||entry);
           const rowKey=[no,entry?.startTime||'',entry?.endTime||'',entry?.start||'',entry?.dest||''].join('|');
           if(seenRows.has(rowKey)) continue;
@@ -8454,8 +8769,11 @@ initRegionNavigation();
             dest:sourceTrain.dest||sourceTrain.stops?.[sourceTrain.stops?.length-1]?.station,
             endTime:sourceTrain.endTime||sourceTrain.stops?.[sourceTrain.stops.length-1]?.arrival||sourceTrain.stops?.[sourceTrain.stops.length-1]?.time
           };
-          const rowKey=[entry.no,entry.startTime||'',entry.endTime||'',entry.start||'',entry.dest||''].join('|');
-          if(!seenRows.has(rowKey)){seenRows.add(rowKey);runs.push(renderRun(entry,record.day,item.trainNo));}
+          const expandedEntries=expandHistoryEntriesByTrainNumber([entry],record.day);
+          for(const expandedEntry of expandedEntries){
+            const rowKey=[expandedEntry.no,expandedEntry.startTime||'',expandedEntry.endTime||'',expandedEntry.start||'',expandedEntry.dest||''].join('|');
+            if(!seenRows.has(rowKey)){seenRows.add(rowKey);runs.push(renderRun(expandedEntry,record.day,item.trainNo));}
+          }
         }else{
           runs.push(renderRun(null,record.day,item.trainNo));
         }
