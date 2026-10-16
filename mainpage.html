@@ -453,7 +453,7 @@ button,input,select,textarea{font-family:inherit}
 .train-title{font-size:0.95rem;font-weight:700;margin-left:6px}
 .train-title.no-type{margin-left:0}
 .train-number{color:#1b6e27;font-weight:800;float:right;margin-right:15px}
-.formation-id{font-size:1.2rem;font-weight:800;color:#444 !important;margin-top:4px}
+.formation-id{font-size:1.2rem;font-weight:800;color:#444 !important;margin-top:4px;display:flex;align-items:center;flex-wrap:wrap;gap:0 6px}
 .capacity-info{color:#666;font-size:.85rem;margin-top:4px}
 
 .formation-updated-at{position:absolute;right:12px;bottom:8px;font-size:.78rem;color:#777;text-align:right;white-space:nowrap;z-index:2;}
@@ -1770,7 +1770,7 @@ function buildFormationsForJson(json){
     const prefix=displayId[0]==='S'?'S':'A';
     const img=makeImg(raw?.image,`227_${encodeURIComponent(displayId)}`);
     const cars=Array.isArray(raw?.cars)?raw.cars.length:Number(raw?.cars)||2;
-    const item={id:displayId,name:displayId,img,cars,carNames:Array.isArray(raw?.cars)?raw.cars.slice():[],family:'hiroshima'};
+    const item={id:displayId,name:displayId,type:String(raw?.type||raw?.formationType||'227系'),img,cars,carNames:Array.isArray(raw?.cars)?raw.cars.slice():[],family:'hiroshima'};
     for(const car of (Array.isArray(raw?.cars)?raw.cars:[])){
       const c=String(car||''); if(!c) continue;
       VEHICLE_TO_FORMATION[c]=item.id;
@@ -3136,7 +3136,7 @@ function formationDisplayParts(id){
 }
 function formationDisplayHTML(id){
   return formationDisplayParts(id)
-    .map(x=>`<span>${String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`).join('');
+    .map(x=>`<span>${String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`).join(' ＋ ');
 }
 
 function prescribedFormationName(t){
@@ -4462,7 +4462,7 @@ function updateSheetContent(){
             ${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}
           </div>
           ${train.formation && train.formation!==INITIAL_FORMATION_SELECTION.id
-            ? `<div class="formation-id">${selectedForm.name}</div>`
+            ? `<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`
             : `<div class="input-trigger-btn">${noFormationText}</div>`}
           ${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}
         </div>
@@ -6804,7 +6804,7 @@ initRegionNavigation();
     return parts;
   };
   formationDisplayHTML=function(id){
-    return formationDisplayParts(id).map(x=>`<span>${esc(x)}</span>`).join('');
+    return formationDisplayParts(id).map(x=>`<span>${esc(x)}</span>`).join(' ＋ ');
   };
 
   /* 表示画像は常に前寄りの編成を代表画像にする。 */
@@ -7030,8 +7030,8 @@ initRegionNavigation();
     const raw=String(input?.value||'').trim();
     if(!raw){ if(err) err.textContent='編成番号を入力してください。'; input?.focus(); return; }
     const pieces=raw.split('+').map(x=>x.trim()).filter(Boolean);
-    if(pieces.length!==count){
-      if(err) err.textContent=`この列車は${count}編成です。${count}個の編成を「+」で区切って入力してください。`;
+    if(pieces.length>count){
+      if(err) err.textContent=`この列車は最大${count}編成です。${count}個以内の編成を「+」で区切って入力してください。`;
       input?.focus();return;
     }
     const ids=[];
@@ -8180,6 +8180,16 @@ initRegionNavigation();
     const canonical=String(id||'').trim().replace(/F$/i,'');
     if(!canonical || !activeJson) return null;
     const groups=Array.isArray(activeJson?.formations)?activeJson.formations:[];
+    // 広島地区などの旧形式JSONは formations[] に編成データを直接並べる。
+    // ネストした items / variants だけを検索すると車番・形式・号車タグが取得できない。
+    const flat=groups.find(item=>{
+      if(!item || typeof item!=='object' || Array.isArray(item.items) || Array.isArray(item.variants)) return false;
+      const itemId=String(item.formation||item.id||item.name||'').trim().replace(/F$/i,'');
+      return itemId===canonical;
+    });
+    if(flat){
+      return {...flat,id:canonical,name:String(flat.name||canonical),type:String(flat.formationType||flat.type||'227系'),_groupType:String(flat.type||'227系')};
+    }
     const visitItems=(items,groupType)=>{
       for(const item of (Array.isArray(items)?items:[])){
         const iid=String(item?.id||item?.formation||item?.name||'').trim().replace(/F$/i,'');
@@ -8863,7 +8873,7 @@ initRegionNavigation();
 
     if(isEditMode && !readonly){
       /* 編成入力時は既存の編集画面をそのまま使用。 */
-      const originalSelected=selectionDisplayObjectForTrain(train,train.formation);
+      const originalSelected=selectionDisplayObjectForTrain(train,effectiveFormationId);
       content.innerHTML=`
         <div class="train-card">
           <img src="${(train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id)?originalSelected.img:defaultTrainImage(train)}" class="train-card-img">
@@ -8889,7 +8899,7 @@ initRegionNavigation();
     content.innerHTML=`
       <div class="train-card${cardClass}" ${cardClick}>
         <img src="${imgSrc}" class="train-card-img">
-        <div class="train-info-main"><div>${String(train.type||'').trim()?`<span class="type-badge ${getExpressClass(train)}" style="${typeBadgeInlineStyle(train)}">${getDetailType(train.type)}</span>`:''}<span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>${train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id?`<div class="formation-id">${selectedForm.name}</div>`:`<div class="input-trigger-btn">${noFormationText}</div>`}${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}</div>${train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id&&formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
+        <div class="train-info-main"><div>${String(train.type||'').trim()?`<span class="type-badge ${getExpressClass(train)}" style="${typeBadgeInlineStyle(train)}">${getDetailType(train.type)}</span>`:''}<span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id?`<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`:`<div class="input-trigger-btn">${noFormationText}</div>`}${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id&&formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
       </div>
 
       <div class="train-info-tabs" style="--train-info-color:${tabColor}">
