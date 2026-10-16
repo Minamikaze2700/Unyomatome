@@ -976,8 +976,8 @@ function esc(value){
 const RESET_HOUR=3;
 const RESET_DWELL_MIN=2;
 const TURNBACK_SWITCH_MIN=1;
-const TRAIN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/広島地区.json';
-const KOBE_KAIGAN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/神戸市営地下鉄.json';
+const TRAIN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/HiroshimaArea_2026.json';
+const KOBE_CITY_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/KobeCity_2026.json';
 const DEFAULT_ROUTE_TITLE='運用まとめ';
 const LAST_ROUTE_STORAGE_KEY='routeLastRoute_v1';
 const ROUTE_REGISTRY={
@@ -988,7 +988,7 @@ const ROUTE_REGISTRY={
     range:'糸崎～岩国',
     area:'JR広島',
     storageRoot:'広島地区',
-    storageArea:'JR広島',
+    storageArea:null,
     company:'JR西日本',
     formationFamily:'hiroshima',
     prependStations:[{nameJa:'糸崎',nameEn:'Itozaki'}],
@@ -1003,7 +1003,7 @@ const ROUTE_REGISTRY={
     range:'広島～あき亀山',
     area:'JR広島',
     storageRoot:'広島地区',
-    storageArea:'JR広島',
+    storageArea:null,
     company:'JR西日本',
     formationFamily:'hiroshima',
     corporateTitleColor:'#0072bc',
@@ -1017,7 +1017,7 @@ const ROUTE_REGISTRY={
     range:'糸崎～広島',
     area:'JR広島',
     storageRoot:'広島地区',
-    storageArea:'JR広島',
+    storageArea:null,
     company:'JR西日本',
     formationFamily:'hiroshima',
     corporateTitleColor:'#0072bc',
@@ -1026,7 +1026,7 @@ const ROUTE_REGISTRY={
   },
   '海岸線':{
     id:'kobe-kaigan',
-    json:KOBE_KAIGAN_DATA_URL,
+    json:KOBE_CITY_DATA_URL,
     jsonLines:['海岸線'],
     range:'新長田～三宮・花時計前',
     area:'神戸市営',
@@ -1040,7 +1040,7 @@ const ROUTE_REGISTRY={
   },
   '西神・山手線':{
     id:'kobe-seishin-yamate',
-    json:KOBE_KAIGAN_DATA_URL,
+    json:KOBE_CITY_DATA_URL,
     jsonLines:['西神・山手線'],
     range:'谷上～西神中央',
     area:'神戸市営',
@@ -1060,9 +1060,9 @@ const ROUTE_REGISTRY={
   '京浜東北・根岸線':{
     id:'keihin-tohoku',
     routeColor:'#00adcd',
-    json:'https://minamikaze2700.github.io/Unyomatome/data/JRKeihinTohoku.json',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/KeihinTohoku_2025.json',
     jsonLines:['京浜東北・根岸線'],
-    relatedJsons:['https://minamikaze2700.github.io/Unyomatome/data/JRYokohama.json'],
+    relatedJsons:['https://minamikaze2700.github.io/Unyomatome/data/Yokohama_2026.json'],
     range:'大宮～大船',
     area:'JR東日本',
     storageRoot:'京浜東北・根岸線',
@@ -1081,9 +1081,9 @@ const ROUTE_REGISTRY={
   '横浜線':{
     id:'yokohama',
     routeColor:'#72c11d',
-    json:'https://minamikaze2700.github.io/Unyomatome/data/JRYokohama.json',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/Yokohama_2026.json',
     jsonLines:['横浜線'],
-    relatedJsons:['https://minamikaze2700.github.io/Unyomatome/data/JRKeihinTohoku.json'],
+    relatedJsons:['https://minamikaze2700.github.io/Unyomatome/data/KeihinTohoku_2025.json'],
     range:'八王子～大船',
     area:'JR東日本',
     storageRoot:'横浜線',
@@ -1102,7 +1102,7 @@ const ROUTE_REGISTRY={
   '南武線':{
     id:'nambu',
     routeColor:'#fdd700',
-    json:'https://minamikaze2700.github.io/Unyomatome/data/JRENambu.json',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/Nambu_2026.json',
     jsonLines:['南武線'],
     range:'川崎～立川',
     area:'JR東日本',
@@ -1118,7 +1118,7 @@ const ROUTE_REGISTRY={
   },
   '内房線':{
     id:'uchibo',
-    json:'https://minamikaze2700.github.io/Unyomatome/data/内房線.json',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/Uchibo_2026.json',
     jsonLines:['内房線'],
     range:'千葉～安房鴨川',
     area:'JR東日本',
@@ -1132,7 +1132,7 @@ const ROUTE_REGISTRY={
   '大阪環状線':{
     id:'osaka-loop',
     routeColor:'#ee354f',
-    json:'https://minamikaze2700.github.io/Unyomatome/data/大阪環状線・ゆめ咲線.json',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/OsakaLoop_2025.json',
     jsonLines:['大阪環状線'],
     range:'天王寺～天王寺',
     area:'JR西日本',
@@ -1152,7 +1152,7 @@ const ROUTE_REGISTRY={
   'ゆめ咲線':{
     id:'yumesaki',
     routeColor:'#233f97',
-    json:'https://minamikaze2700.github.io/Unyomatome/data/大阪環状線・ゆめ咲線.json',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/OsakaLoop_2025.json',
     jsonLines:['ゆめ咲線'],
     range:'西九条～桜島',
     area:'JR西日本',
@@ -1172,7 +1172,7 @@ const ROUTE_REGISTRY={
   '日比谷線':{
     id:'hibiya',
     routeColor:'#b5b5ac',
-    json:'https://minamikaze2700.github.io/Unyomatome/data/日比谷線.json',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/TokyoMetro_Hibiya_2024.json',
     jsonLines:['日比谷線'],
     range:'中目黒～北千住',
     area:'東京メトロ',
@@ -1187,7 +1187,7 @@ const ROUTE_REGISTRY={
   },
   '福岡市地下鉄 空港線・箱崎線':{
     id:'fukuoka-kuko-hakozaki',
-    json:'https://minamikaze2700.github.io/Unyomatome/data/Fukuoka_空港線・箱崎線.json',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/FukuokaCity_KukoHakozaki_2026.json',
     jsonLines:['空港線','箱崎線'],
     range:'福岡空港～姪浜・貝塚',
     area:'福岡市地下鉄',
@@ -1205,7 +1205,7 @@ const ROUTE_REGISTRY={
   },
   '東武野田線':{
     id:'tobu-noda',
-    json:'https://minamikaze2700.github.io/Unyomatome/data/TobuNoda.json',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/TobuNoda_2024.json',
     jsonLines:['東武野田線'],
     range:'大宮～船橋',
     area:'東武鉄道',
@@ -1223,7 +1223,7 @@ const ROUTE_REGISTRY={
   },
   '長野電鉄長野線':{
     id:'nagano-line',
-    json:'https://minamikaze2700.github.io/Unyomatome/data/長野電鉄長野線.json',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/NaganoDentetsu_Nagano_2025.json',
     jsonLines:['長野電鉄長野線'],
     range:'長野～湯田中',
     area:'長野電鉄',
@@ -1245,6 +1245,86 @@ const ROUTE_REGISTRY={
     prescribedFormationRule:'nagano'
   }
 };
+
+/* 時刻表ファイルは改正年で管理し、選択日付に有効なファイルを読み込む。 */
+const ROUTE_SCHEDULE_CONFIG={
+  '山陽本線（糸崎～岩国）':[
+    {from:'2026-03-14',to:'2027-03-13',file:'HiroshimaArea_2026.json'}
+  ],
+  '可部線':[
+    {from:'2026-03-14',to:'2027-03-13',file:'HiroshimaArea_2026.json'}
+  ],
+  '呉線':[
+    {from:'2026-03-14',to:'2027-03-13',file:'HiroshimaArea_2026.json'}
+  ],
+  '海岸線':[
+    {from:'2026-03-14',to:'2027-03-13',file:'KobeCity_2026.json'}
+  ],
+  '西神・山手線':[
+    {from:'2025-03-15',to:'2027-03-13',file:'KobeCity_2026.json'}
+  ],
+  '京浜東北・根岸線':[
+    {from:'2025-03-15',to:'2027-03-13',file:'KeihinTohoku_2025.json',relatedFiles:['Yokohama_2026.json']}
+  ],
+  '横浜線':[
+    {from:'2026-03-14',to:'2027-03-13',file:'Yokohama_2026.json',relatedFiles:['KeihinTohoku_2025.json']}
+  ],
+  '南武線':[
+    {from:'2026-03-14',to:'2027-03-13',file:'Nambu_2026.json'}
+  ],
+  '内房線':[
+    {from:'2026-03-14',to:'2027-03-13',file:'Uchibo_2026.json'}
+  ],
+  '大阪環状線':[
+    {from:'2025-03-15',to:'2027-03-13',file:'OsakaLoop_2025.json'}
+  ],
+  'ゆめ咲線':[
+    {from:'2025-03-15',to:'2027-03-13',file:'OsakaLoop_2025.json'}
+  ],
+  '日比谷線':[
+    {from:'2024-03-16',to:'2027-03-13',file:'TokyoMetro_Hibiya_2024.json'}
+  ],
+  '福岡市地下鉄 空港線・箱崎線':[
+    {from:'2026-03-14',to:'2027-03-13',file:'FukuokaCity_KukoHakozaki_2026.json'}
+  ],
+  '東武野田線':[
+    {from:'2024-03-16',to:'2026-11-20',file:'TobuNoda_2024.json'},
+    {from:'2026-11-21',to:'2027-03-13',file:'TobuNoda_2026.json'}
+  ],
+  '長野電鉄長野線':[
+    {from:'2025-03-15',to:'2027-03-13',file:'NaganoDentetsu_Nagano_2025.json'}
+  ]
+};
+const ROUTE_DATA_BASE_URL='https://minamikaze2700.github.io/Unyomatome/data/';
+for(const [routeName,periods] of Object.entries(ROUTE_SCHEDULE_CONFIG)){
+  const meta=ROUTE_REGISTRY[routeName];
+  if(!meta) continue;
+  meta.scheduleVersions=periods.map(period=>({
+    from:String(period.from),to:String(period.to),
+    json:ROUTE_DATA_BASE_URL+String(period.file),
+    relatedJsons:Array.isArray(period.relatedFiles)?period.relatedFiles.map(file=>ROUTE_DATA_BASE_URL+String(file)):null,
+    file:String(period.file)
+  }));
+  if(meta.scheduleVersions[0]){
+    meta.json=meta.scheduleVersions[0].json;
+    if(meta.scheduleVersions[0].relatedJsons) meta.relatedJsons=meta.scheduleVersions[0].relatedJsons;
+  }
+}
+function routeMetaForScheduleDate(baseMeta,dateKey=selectedDateKey){
+  if(!baseMeta) return null;
+  const versions=Array.isArray(baseMeta.scheduleVersions)?baseMeta.scheduleVersions:[];
+  if(!versions.length) return baseMeta;
+  const date=String(dateKey||'');
+  const version=versions.find(item=>date>=String(item.from||'0000-00-00')&&date<=String(item.to||'9999-99-99'));
+  if(!version) return null;
+  return {...baseMeta,json:version.json,relatedJsons:version.relatedJsons||baseMeta.relatedJsons||[],scheduleVersion:version};
+}
+function routeScheduleSignature(routeName,dateKey=selectedDateKey){
+  const base=ROUTE_REGISTRY[String(routeName||'')];
+  const meta=routeMetaForScheduleDate(base,dateKey);
+  if(!meta) return '__NO_SCHEDULE__';
+  return [String(meta.json||''),...(Array.isArray(meta.relatedJsons)?meta.relatedJsons:[])].join('|');
+}
 
 // 新規路線は access を省略した場合も非公開を既定値とする。
 for(const meta of Object.values(ROUTE_REGISTRY)){
@@ -1321,7 +1401,8 @@ async function hydrateRouteNumberingImages(defs){
     for(const route of (company?.routes||[])){
       jobs.push((async()=>{
         const routeName=routeNameFromId(route?.id||route?.name||'');
-        const meta=ROUTE_REGISTRY[routeName]||{};
+        const baseMeta=ROUTE_REGISTRY[routeName]||{};
+        const meta=routeMetaForScheduleDate(baseMeta,selectedDateKey)||baseMeta;
         let json=null;
         try{
           const sameJson=!!activeJson && String(activeRouteMeta?.json||'')===String(meta?.json||'');
@@ -1357,6 +1438,8 @@ function storageFamilyForTrain(train){ return formationStorageContext(train).fam
 let activeRouteName='';
 let activeRouteMeta=null;
 let activeJson=null;
+let activeScheduleSignature='';
+let scheduleReloadSequence=0;
 let fukuokaHakozakiBranchOpen=false;
 const LINE_TRAIN_IMG='https://minamikaze2700.github.io/Unyomatome/images/227-0_noimage.png';
 const KEIHIN_TOHOKU_TRAIN_IMG=LINE_TRAIN_IMG;
@@ -2087,17 +2170,22 @@ async function loadExternalRouteJsons(routeMeta){
   return merged;
 }
 
-async function loadLineTrainData(routeName=activeRouteName){
+async function loadLineTrainData(routeName=activeRouteName,timetableDate=selectedDateKey){
   if(routeName&&ROUTE_REGISTRY[routeName]) activeRouteName=routeName;
   if(activeRouteName&&ROUTE_REGISTRY[activeRouteName]){
     try{ localStorage.setItem(LAST_ROUTE_STORAGE_KEY,activeRouteName); }catch(e){}
   }
-  activeRouteMeta=ROUTE_REGISTRY[activeRouteName];
-  if(!activeRouteMeta) throw new Error(`路線設定が見つかりません: ${activeRouteName}`);
+  const baseRouteMeta=ROUTE_REGISTRY[activeRouteName];
+  if(!baseRouteMeta) throw new Error(`路線設定が見つかりません: ${activeRouteName}`);
+  const dateKey=String(timetableDate||selectedDateKey||'');
+  const resolvedRouteMeta=routeMetaForScheduleDate(baseRouteMeta,dateKey);
+  if(!resolvedRouteMeta) throw new Error(`選択日 ${dateKey} に対応する時刻表ファイルがありません: ${activeRouteName}`);
+  activeRouteMeta=resolvedRouteMeta;
   fukuokaHakozakiBranchOpen=false;
   let json=null;
   if(!activeRouteMeta.json) throw new Error(`路線JSONの設定がありません: ${activeRouteName}`);
   json=await loadExternalRouteJsons(activeRouteMeta);
+  if(dateKey!==String(selectedDateKey||'')) return;
   activeJson=json;
   STATIONS=buildStationsForRoute(json,activeRouteMeta);
   for(const key of Object.keys(VEHICLE_TO_FORMATION)) delete VEHICLE_TO_FORMATION[key];
@@ -2149,6 +2237,40 @@ async function loadLineTrainData(routeName=activeRouteName){
   updateRouteVisuals();
   // 路線を切り替えたら、運行情報一覧も現在の路線だけに更新する。
   if(typeof renderOperationInfoList==='function') renderOperationInfoList();
+  activeScheduleSignature=routeScheduleSignature(activeRouteName,dateKey);
+}
+
+async function reloadScheduleForSelectedDateIfNeeded(){
+  const routeName=String(activeRouteName||'');
+  if(!routeName||!ROUTE_REGISTRY[routeName]) return;
+  const requestedDate=String(selectedDateKey||'');
+  const nextSignature=routeScheduleSignature(routeName,requestedDate);
+  if(nextSignature==='__NO_SCHEDULE__'){
+    const token=++scheduleReloadSequence;
+    activeScheduleSignature='__NO_SCHEDULE__';
+    STATIONS=[]; TRAINS=[]; HOLIDAY_TRAINS=[]; HOLIDAY_UP_TRAINS=[];
+    ALL_SCHEDULE_TRAINS=[]; TRAIN_INDEX={}; HOLIDAY_TRAIN_INDEX={};
+    if(currentTrainNo){currentTrainNo=null;currentTrainSnapshot=null;}
+    const label=document.getElementById('scheduleDayLabel');
+    if(label) label.textContent=`${currentDay}ダイヤ・該当期間の時刻表データなし`;
+    renderLine();
+    if(typeof renderOperationInfoList==='function') renderOperationInfoList();
+    return;
+  }
+  if(nextSignature===activeScheduleSignature) return;
+  const token=++scheduleReloadSequence;
+  try{
+    await loadLineTrainData(routeName,requestedDate);
+    if(token!==scheduleReloadSequence||requestedDate!==String(selectedDateKey||'')) return;
+    if(currentTrainNo) currentTrainSnapshot=trainForCurrentDay(currentTrainNo,currentTrainSnapshot?.direction||null);
+    renderLine();
+    if(currentTrainNo) updateSheetContent();
+  }catch(err){
+    if(token!==scheduleReloadSequence) return;
+    console.error('日付に対応する時刻表JSONの切替失敗',routeName,requestedDate,err);
+    const label=document.getElementById('scheduleDayLabel');
+    if(label) label.textContent=`${currentDay}ダイヤ・時刻表読込エラー`;
+  }
 }
 
 const STORAGE_KEY='routeTrainRegistrations_v2';
@@ -2701,10 +2823,21 @@ function getDetailType(type){
 }
 function displayTrainNo(train){ return (train && !train.hideTrainNumber) ? normalizeTrainNo(train.no) : ''; }
 function getShortDest(dest){
-  const value=String(dest||'');
+  const value=String(dest||'').trim();
   // 略称は「列車の行先」に対してだけ適用する。駅名そのものの表示には使わない。
-  const aliases=activeRouteMeta?.destinationAliases || activeJson?.destinationAliases;
-  if(aliases && typeof aliases==='object' && Object.prototype.hasOwnProperty.call(aliases,value)) return String(aliases[value]??value);
+  // 路線設定では destinationAliases、広島地区JSONでは stationAliases を使うため、両方を参照する。
+  const aliasMaps=[
+    activeRouteMeta?.destinationAliases,
+    activeRouteMeta?.stationAliases,
+    activeJson?.destinationAliases,
+    activeJson?.stationAliases
+  ];
+  for(const aliases of aliasMaps){
+    if(aliases && typeof aliases==='object' && Object.prototype.hasOwnProperty.call(aliases,value)){
+      const short=String(aliases[value]??'').trim();
+      if(short) return short;
+    }
+  }
   return value;
 }
 function nthMondayDateKey(year,month,nth){
@@ -2858,6 +2991,7 @@ function setSelectedDate(dateKey,options={}){
   if(label) label.textContent=isHistoricalSelectedDate(value) ? `${currentDay}ダイヤ・過去データ` : `${currentDay}ダイヤ`;
   saveLocalState();
   refreshAllTrainDataCache();
+  reloadScheduleForSelectedDateIfNeeded();
   loadOperationInfo();
   renderLine();
   renderOperationInfoList();
@@ -6390,16 +6524,26 @@ initRegionNavigation();
     if(!raw||typeof raw!=='object') return out;
     const area=storageAreaForFamily(family);
     if(area==='__ROOT__'){
+      const mergeDateTrains=(date,trains)=>{
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date))||!trains||typeof trains!=='object') return;
+        const existing=out[String(date)]?.__ROOT__||{};
+        const areaOut={...existing};
+        for(const [no,entry] of Object.entries(trains)){
+          const normalized=normalizeEntry(entry);
+          // すでに新しい直下パスへ保存されている値を旧データで上書きしない。
+          if(normalized && !areaOut[String(no)]) areaOut[String(no)]=normalized;
+        }
+        if(Object.keys(areaOut).length) out[String(date)]={__ROOT__:areaOut};
+      };
       for(const [date,value] of Object.entries(raw)){
         if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date))) continue;
         const trains=value&&typeof value==='object'&&value.__ROOT__&&typeof value.__ROOT__==='object' ? value.__ROOT__ : value;
-        if(!trains||typeof trains!=='object') continue;
-        const areaOut={};
-        for(const [no,entry] of Object.entries(trains)){
-          const normalized=normalizeEntry(entry);
-          if(normalized) areaOut[String(no)]=normalized;
-        }
-        if(Object.keys(areaOut).length) out[String(date)]={__ROOT__:areaOut};
+        mergeDateTrains(date,trains);
+      }
+      // 旧構造 広島地区/JR広島/{日付}/{列車番号} も新しい直下構造へ読み替える。
+      const legacyHiroshima=family==='hiroshima' ? raw?.['JR広島'] : null;
+      if(legacyHiroshima&&typeof legacyHiroshima==='object'){
+        for(const [date,trains] of Object.entries(legacyHiroshima)) mergeDateTrains(date,trains);
       }
       return out;
     }
@@ -6511,7 +6655,29 @@ initRegionNavigation();
     const ref=formationOperationRef(family);
     if(!ref) return false;
     const snap=await ref.once('value');
-    formationRemoteByFamily[family].areaStateByDate=normalizeStorageRoot(snap.val()||{},family);
+    let raw=snap.val()||{};
+    // 広島地区の旧パス「広島地区/JR広島/{日付}/{列車番号}」を、
+    // 初回読込時に「広島地区/{日付}/{列車番号}」へ統合する。既存の直下値は優先。
+    if(family==='hiroshima' && raw?.['JR広島'] && typeof raw['JR広島']==='object'){
+      const updates={};
+      for(const [date,trains] of Object.entries(raw['JR広島'])){
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date))||!trains||typeof trains!=='object') continue;
+        for(const [no,entry] of Object.entries(trains)){
+          const current=raw?.[date]?.[no];
+          if(current===undefined || current===null) updates[`${date}/${no}`]=entry;
+        }
+      }
+      updates['JR広島']=null;
+      try{
+        await ref.update(updates);
+        const migrated=await ref.once('value');
+        raw=migrated.val()||{};
+      }catch(migrationError){
+        // 書込権限がない場合も、旧構造をローカルへ読み替えて利用は継続する。
+        console.warn('広島地区Firebase旧パスの移行に失敗（旧データを読み替えて利用）',migrationError);
+      }
+    }
+    formationRemoteByFamily[family].areaStateByDate=normalizeStorageRoot(raw,family);
     syncDerivedStateForFamily(family);
     return true;
   };
