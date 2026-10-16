@@ -6995,6 +6995,7 @@ initRegionNavigation();
     }
     return true;
   }
+  window.__updateCompositeEditUI = updateCompositeEditUI;
 
   /* 既存updateSheetContentの描画結果を利用し、複数編成部分だけ差し替える。 */
   const oldUpdateSheetContent=updateSheetContent;
@@ -8937,7 +8938,13 @@ initRegionNavigation();
   };
 
   updateSheetContent=updateTrainInfoDesign;
-  window.updateSheetContent=updateTrainInfoDesign;
+  // 最終描画関数を複数編成UIでラップする。以前のラッパーが後段の再代入で失われていた。
+  const __baseUpdateSheetContentWithTrainInfoDesign=updateSheetContent;
+  updateSheetContent=function(){
+    __baseUpdateSheetContentWithTrainInfoDesign();
+    if(isEditMode && typeof window.__updateCompositeEditUI==='function') window.__updateCompositeEditUI();
+  };
+  window.updateSheetContent=updateSheetContent;
 
   const style=document.createElement('style');
   style.textContent=`
