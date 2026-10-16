@@ -1,0 +1,2653 @@
+{
+  "routeName": "東武野田線",
+  "formationFamily": "noda",
+  "formationCountDefault": 1,
+  "formationDefaultName": "普通共通",
+  "noImage": "TD_noimage.png",
+  "formationDefaultImage": "TD_noimage.png",
+  "typeColors": {
+    "急行": "#e5007f",
+    "区間急行": "#f3b6c2",
+    "普通": "#666"
+  },
+  "lines": [
+    {
+      "name": "東武野田線",
+      "nameEn": "Tobu Noda Line",
+      "color": "#00aeef",
+      "directions": {
+        "up": "大宮方面",
+        "down": "船橋方面"
+      },
+      "stations": [
+        {
+          "name": "大宮",
+          "nameEn": "Omiya"
+        },
+        {
+          "name": "北大宮",
+          "nameEn": "Kita-omiya"
+        },
+        {
+          "name": "大宮公園",
+          "nameEn": "Omiya-koen"
+        },
+        {
+          "name": "大和田",
+          "nameEn": "Owada"
+        },
+        {
+          "name": "七里",
+          "nameEn": "Nanasato"
+        },
+        {
+          "name": "岩槻",
+          "nameEn": "Iwatsuki"
+        },
+        {
+          "name": "東岩槻",
+          "nameEn": "Higashi-iwatsuki"
+        },
+        {
+          "name": "豊春",
+          "nameEn": "Toyoharu"
+        },
+        {
+          "name": "八木崎",
+          "nameEn": "Yagisaki"
+        },
+        {
+          "name": "春日部",
+          "nameEn": "Kasukabe"
+        },
+        {
+          "name": "藤の牛島",
+          "nameEn": "Fujino-ushijima"
+        },
+        {
+          "name": "南桜井",
+          "nameEn": "Minami-sakurai"
+        },
+        {
+          "name": "川間",
+          "nameEn": "Kawama"
+        },
+        {
+          "name": "七光台",
+          "nameEn": "Nanakodai"
+        },
+        {
+          "name": "清水公園",
+          "nameEn": "Shimizu-koen"
+        },
+        {
+          "name": "愛宕",
+          "nameEn": "Atago"
+        },
+        {
+          "name": "野田市",
+          "nameEn": "Nodashi"
+        },
+        {
+          "name": "梅郷",
+          "nameEn": "Umesato"
+        },
+        {
+          "name": "運河",
+          "nameEn": "Unga"
+        },
+        {
+          "name": "江戸川台",
+          "nameEn": "Edogawadai"
+        },
+        {
+          "name": "初石",
+          "nameEn": "Hatsuishi"
+        },
+        {
+          "name": "流山おおたかの森",
+          "nameEn": "Nagareyama-otakanomori"
+        },
+        {
+          "name": "豊四季",
+          "nameEn": "Toyoshiki"
+        },
+        {
+          "name": "柏",
+          "nameEn": "Kashiwa"
+        },
+        {
+          "name": "新柏",
+          "nameEn": "Shin-kashiwa"
+        },
+        {
+          "name": "増尾",
+          "nameEn": "Masuo"
+        },
+        {
+          "name": "逆井",
+          "nameEn": "Sakasai"
+        },
+        {
+          "name": "高柳",
+          "nameEn": "Takayanagi"
+        },
+        {
+          "name": "六実",
+          "nameEn": "Mutsumi"
+        },
+        {
+          "name": "新鎌ヶ谷",
+          "nameEn": "Shin-kamagaya"
+        },
+        {
+          "name": "鎌ヶ谷",
+          "nameEn": "Kamagaya"
+        },
+        {
+          "name": "馬込沢",
+          "nameEn": "Magomezawa"
+        },
+        {
+          "name": "塚田",
+          "nameEn": "Tsukada"
+        },
+        {
+          "name": "新船橋",
+          "nameEn": "Shin-funabashi"
+        },
+        {
+          "name": "船橋",
+          "nameEn": "Funabashi"
+        }
+      ]
+    }
+  ],
+  "formations": [
+    {
+      "type": "8000型",
+      "typeImg": "https://minamikaze2700.github.io/Unyomatome/images/TB8000.png",
+      "family": "noda",
+      "items": [
+        {
+          "id": "8111",
+          "name": "8111F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8111.png",
+          "family": "noda",
+          "carNames": [
+            "8411",
+            "8811",
+            "8711",
+            "8311",
+            "8211",
+            "8111"
+          ],
+          "manufacturer": "日本車輌・富士重工",
+          "type": "8000型",
+          "manufacturingYear": "1963年・1972年"
+        },
+        {
+          "id": "8158",
+          "name": "8158F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8158.png",
+          "family": "noda",
+          "carNames": [
+            "8458",
+            "8858",
+            "8758",
+            "8358",
+            "8258",
+            "8158"
+          ],
+          "manufacturer": "アルナ工機",
+          "type": "8000型",
+          "manufacturingYear": "1972年"
+        },
+        {
+          "id": "8162",
+          "name": "8162F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8162.png",
+          "family": "noda",
+          "carNames": [
+            "8462",
+            "8862",
+            "8762",
+            "8362",
+            "8262",
+            "8162"
+          ],
+          "manufacturer": "富士重工",
+          "type": "8000型",
+          "manufacturingYear": "1973年"
+        },
+        {
+          "id": "8163",
+          "name": "8163F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8163.png",
+          "family": "noda",
+          "carNames": [
+            "8463",
+            "8863",
+            "8763",
+            "8363",
+            "8263",
+            "8163"
+          ],
+          "carFeatures": {
+            "8463": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "8863": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "8763": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "8363": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "8263": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "8163": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ]
+          },
+          "manufacturer": "東急車輛",
+          "type": "8000型",
+          "manufacturingYear": "1973年"
+        },
+        {
+          "id": "8166",
+          "name": "8166F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8166.png",
+          "family": "noda",
+          "carNames": [
+            "8466",
+            "8866",
+            "8766",
+            "8366",
+            "8266",
+            "8166"
+          ],
+          "manufacturer": "アルナ工機",
+          "type": "8000型",
+          "manufacturingYear": "1974年"
+        },
+        {
+          "id": "8170",
+          "name": "8170F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8170.png",
+          "family": "noda",
+          "carNames": [
+            "8470",
+            "8870",
+            "8770",
+            "8370",
+            "8270",
+            "8170"
+          ],
+          "manufacturer": "アルナ工機",
+          "type": "8000型",
+          "manufacturingYear": "1976年"
+        },
+        {
+          "id": "8192",
+          "name": "8192F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8192.png",
+          "family": "noda",
+          "carNames": [
+            "8492",
+            "8892",
+            "8792",
+            "8392",
+            "8292",
+            "8192"
+          ],
+          "manufacturer": "東急車輛",
+          "type": "8000型",
+          "manufacturingYear": "1980年"
+        },
+        {
+          "id": "81110",
+          "name": "81110F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81110.png",
+          "family": "noda",
+          "carNames": [
+            "84110",
+            "88110",
+            "87110",
+            "83110",
+            "82110",
+            "81110"
+          ],
+          "manufacturer": "アルナ工機",
+          "type": "8000型",
+          "manufacturingYear": "1982年"
+        },
+        {
+          "id": "81113",
+          "name": "81113F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81113.png",
+          "family": "noda",
+          "carNames": [
+            "84113",
+            "88113",
+            "87113",
+            "83113",
+            "82113",
+            "81113"
+          ],
+          "manufacturer": "アルナ工機",
+          "type": "8000型",
+          "manufacturingYear": "1982年"
+        },
+        {
+          "id": "81114",
+          "name": "81114F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81114.png",
+          "family": "noda",
+          "carNames": [
+            "84114",
+            "88114",
+            "87114",
+            "83114",
+            "82114",
+            "81114"
+          ],
+          "manufacturer": "アルナ工機",
+          "type": "8000型",
+          "manufacturingYear": "1982年"
+        }
+      ],
+      "formationType": "8000型",
+      "manufacturingYear": "1963年～1983年",
+      "manufacturer": "アルナ工機（旧ナニワ工機）・日本車輌製造・汽車製造・東急車輛製造・富士重工業"
+    },
+    {
+      "type": "10030型更新",
+      "typeImg": "https://minamikaze2700.github.io/Unyomatome/images/TD10030.png",
+      "family": "noda",
+      "items": [
+        {
+          "id": "11631",
+          "name": "11631F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB11631.png",
+          "family": "noda",
+          "carNames": [
+            "16631",
+            "15631",
+            "14631",
+            "13631",
+            "12631",
+            "11631"
+          ],
+          "manufacturer": "アルナ工機",
+          "type": "10030型",
+          "manufacturingYear": "1988年"
+        },
+        {
+          "id": "11632",
+          "name": "11632F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB11632.png",
+          "family": "noda",
+          "carNames": [
+            "16632",
+            "15632",
+            "14632",
+            "13632",
+            "12632",
+            "11632"
+          ],
+          "manufacturer": "アルナ工機",
+          "type": "10030型",
+          "manufacturingYear": "1988年"
+        },
+        {
+          "id": "11633",
+          "name": "11633F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB11633.png",
+          "family": "noda",
+          "carNames": [
+            "16633",
+            "15633",
+            "14633",
+            "13633",
+            "12633",
+            "11633"
+          ],
+          "manufacturer": "富士重工",
+          "type": "10030型",
+          "manufacturingYear": "1988年"
+        },
+        {
+          "id": "11635",
+          "name": "11635F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB11635.png",
+          "family": "noda",
+          "carNames": [
+            "16635",
+            "15635",
+            "14635",
+            "13635",
+            "12635",
+            "11635"
+          ],
+          "manufacturer": "アルナ工機",
+          "type": "10030型",
+          "manufacturingYear": "1990年"
+        },
+        {
+          "id": "11636",
+          "name": "11636F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB11636.png",
+          "family": "noda",
+          "carNames": [
+            "16636",
+            "15636",
+            "14636",
+            "13636",
+            "12636",
+            "11636"
+          ],
+          "manufacturer": "アルナ工機",
+          "type": "10030型",
+          "manufacturingYear": "1990年"
+        }
+      ],
+      "formationType": "10030型",
+      "manufacturingYear": "1988年～1996年",
+      "manufacturer": "アルナ工機・東急車輛製造・富士重工業"
+    },
+    {
+      "type": "10030型未更新",
+      "typeImg": "https://minamikaze2700.github.io/Unyomatome/images/TD10050.png",
+      "family": "noda",
+      "items": [
+        {
+          "id": "11651",
+          "name": "11651F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB11651.png",
+          "family": "noda",
+          "carNames": [
+            "16651",
+            "15651",
+            "14651",
+            "13651",
+            "12651",
+            "11651"
+          ],
+          "carFeatures": {
+            "16651": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "15651": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "14651": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "13651": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "12651": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "11651": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ]
+          },
+          "manufacturer": "東急車輛",
+          "type": "10030型",
+          "manufacturingYear": "1992年"
+        },
+        {
+          "id": "11652",
+          "name": "11652F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB11652.png",
+          "family": "noda",
+          "carNames": [
+            "16652",
+            "15652",
+            "14652",
+            "13652",
+            "12652",
+            "11652"
+          ],
+          "carFeatures": {
+            "16652": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "15652": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "14652": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "13652": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "12652": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "11652": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ]
+          },
+          "manufacturer": "アルナ工機",
+          "type": "10030型",
+          "manufacturingYear": "1992年"
+        },
+        {
+          "id": "11653",
+          "name": "11653F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB11653.png",
+          "family": "noda",
+          "carNames": [
+            "16653",
+            "15653",
+            "14653",
+            "13653",
+            "12653",
+            "11653"
+          ],
+          "carFeatures": {
+            "16653": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "15653": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "14653": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "13653": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "12653": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "11653": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ]
+          },
+          "manufacturer": "アルナ工機",
+          "type": "10030型",
+          "manufacturingYear": "1992年"
+        },
+        {
+          "id": "11654",
+          "name": "11654F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB11654.png",
+          "family": "noda",
+          "carNames": [
+            "16654",
+            "15654",
+            "14654",
+            "13654",
+            "12654",
+            "11654"
+          ],
+          "carFeatures": {
+            "16654": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "15654": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "14654": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "13654": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "12654": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ],
+            "11654": [
+              {
+                "type": "機器類",
+                "name": "行先表示字幕式"
+              }
+            ]
+          },
+          "manufacturer": "アルナ工機",
+          "type": "10030型",
+          "manufacturingYear": "1992年"
+        }
+      ],
+      "formationType": "10030型",
+      "manufacturingYear": "1988年～1996年",
+      "manufacturer": "アルナ工機・東急車輛製造・富士重工業"
+    },
+    {
+      "type": "60000型6両",
+      "typeImg": "https://minamikaze2700.github.io/Unyomatome/images/TB60600.png",
+      "family": "noda",
+      "items": [
+        {
+          "id": "61611",
+          "name": "61611F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61611.png",
+          "family": "noda",
+          "carCount": 6,
+          "carNames": [
+            "66611",
+            "65611",
+            "64611",
+            "63611",
+            "62611",
+            "61611"
+          ],
+          "carFeatures": {
+            "66611": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "65611": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "64611": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "63611": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "62611": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "61611": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ]
+          },
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2015年"
+        },
+        {
+          "id": "61612",
+          "name": "61612F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61612.png",
+          "family": "noda",
+          "carCount": 6,
+          "carNames": [
+            "66612",
+            "65612",
+            "64612",
+            "63612",
+            "62612",
+            "61612"
+          ],
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2015年"
+        },
+        {
+          "id": "61613",
+          "name": "61613F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61613.png",
+          "family": "noda",
+          "carCount": 6,
+          "carNames": [
+            "66613",
+            "65613",
+            "64613",
+            "63613",
+            "62613",
+            "61613"
+          ],
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2015年"
+        },
+        {
+          "id": "61614",
+          "name": "61614F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61614.png",
+          "family": "noda",
+          "carCount": 6,
+          "carNames": [
+            "66614",
+            "65614",
+            "64614",
+            "63614",
+            "62614",
+            "61614"
+          ],
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2015年"
+        },
+        {
+          "id": "61615",
+          "name": "61615F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61615.png",
+          "family": "noda",
+          "carCount": 6,
+          "carNames": [
+            "66615",
+            "65615",
+            "64615",
+            "63615",
+            "62615",
+            "61615"
+          ],
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2015年"
+        },
+        {
+          "id": "61616",
+          "name": "61616F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61616.png",
+          "family": "noda",
+          "carCount": 6,
+          "carNames": [
+            "66616",
+            "65616",
+            "64616",
+            "63616",
+            "62616",
+            "61616"
+          ],
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2015年"
+        },
+        {
+          "id": "61617",
+          "name": "61617F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61617.png",
+          "family": "noda",
+          "carCount": 6,
+          "carNames": [
+            "66617",
+            "65617",
+            "64617",
+            "63617",
+            "62617",
+            "61617"
+          ],
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2015年"
+        },
+        {
+          "id": "61618",
+          "name": "61618F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61618.png",
+          "family": "noda",
+          "disabled": true,
+          "carCount": 6,
+          "carNames": [
+            "66618",
+            "65618",
+            "64618",
+            "63618",
+            "62618",
+            "61618"
+          ],
+          "carFeatures": {
+            "66618": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "65618": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "64618": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "63618": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "62618": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "61618": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ]
+          },
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2015年"
+        }
+      ],
+      "formationType": "60000型",
+      "manufacturingYear": "2013年～2015年",
+      "manufacturer": "日立製作所"
+    },
+    {
+      "type": "60000型5両",
+      "typeImg": "https://minamikaze2700.github.io/Unyomatome/images/TB60500.png",
+      "family": "noda",
+      "items": [
+        {
+          "id": "61501",
+          "name": "61501F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61501.png",
+          "family": "noda",
+          "carCount": 5,
+          "carNames": [
+            "65501",
+            "64501",
+            "63501",
+            "62501",
+            "61501"
+          ],
+          "carFeatures": {
+            "65501": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "64501": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "63501": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "62501": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "61501": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ]
+          },
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2013年・2025年"
+        },
+        {
+          "id": "61502",
+          "name": "61502F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61502.png",
+          "family": "noda",
+          "carCount": 5,
+          "carNames": [
+            "65502",
+            "64502",
+            "63502",
+            "62502",
+            "61502"
+          ],
+          "carFeatures": {
+            "65502": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "64502": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "63502": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "62502": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "61502": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ]
+          },
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2013年・2025年"
+        },
+        {
+          "id": "61503",
+          "name": "61503F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61503.png",
+          "family": "noda",
+          "carCount": 5,
+          "carNames": [
+            "65503",
+            "64503",
+            "63503",
+            "62503",
+            "61503"
+          ],
+          "carFeatures": {
+            "65503": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "64503": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "63503": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "62503": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "61503": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ]
+          },
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2014年・2025年"
+        },
+        {
+          "id": "61504",
+          "name": "61504F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61504.png",
+          "family": "noda",
+          "carCount": 5,
+          "carNames": [
+            "65504",
+            "64504",
+            "63504",
+            "62504",
+            "61504"
+          ],
+          "carFeatures": {
+            "65504": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "64504": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "63504": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "62504": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "61504": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ]
+          },
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2014年・2026年"
+        },
+        {
+          "id": "61505",
+          "name": "61505F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61505.png",
+          "family": "noda",
+          "carCount": 5,
+          "carNames": [
+            "65505",
+            "64505",
+            "63505",
+            "62505",
+            "61505"
+          ],
+          "carFeatures": {
+            "65505": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "64505": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "63505": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "62505": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "61505": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ]
+          },
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2014年・2025年"
+        },
+        {
+          "id": "61506",
+          "name": "61506F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61506.png",
+          "family": "noda",
+          "carCount": 5,
+          "carNames": [
+            "65506",
+            "64506",
+            "63506",
+            "62506",
+            "61506"
+          ],
+          "carFeatures": {
+            "65506": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "64506": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "63506": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "62506": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "61506": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ]
+          },
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2014年・2026年"
+        },
+        {
+          "id": "61507",
+          "name": "61507F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61507.png",
+          "family": "noda",
+          "carCount": 5,
+          "carNames": [
+            "65507",
+            "64507",
+            "63507",
+            "62507",
+            "61507"
+          ],
+          "carFeatures": {
+            "65507": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "64507": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "63507": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "62507": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "61507": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ]
+          },
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2014年・2026年"
+        },
+        {
+          "id": "61508",
+          "name": "61508F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61508.png",
+          "family": "noda",
+          "carCount": 5,
+          "carNames": [
+            "65508",
+            "64508",
+            "63508",
+            "62508",
+            "61508"
+          ],
+          "carFeatures": {
+            "65508": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "64508": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "63508": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "62508": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "61508": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ]
+          },
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2014年・2026年"
+        },
+        {
+          "id": "61509",
+          "name": "61509F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61509.png",
+          "family": "noda",
+          "disabled": true,
+          "carCount": 5,
+          "carNames": [
+            "65509",
+            "64509",
+            "63509",
+            "62509",
+            "61509"
+          ],
+          "carFeatures": {
+            "65509": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "64509": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "63509": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "62509": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "61509": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ]
+          },
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2014年・2026年"
+        },
+        {
+          "id": "61510",
+          "name": "61510F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61510.png",
+          "family": "noda",
+          "disabled": true,
+          "carCount": 5,
+          "carNames": [
+            "65510",
+            "64510",
+            "63510",
+            "62510",
+            "61510"
+          ],
+          "carFeatures": {
+            "65510": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "64510": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "63510": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "62510": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "61510": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ]
+          },
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2014年・2026年"
+        }
+      ],
+      "formationType": "60000型",
+      "manufacturingYear": "2013年～2015年",
+      "manufacturer": "日立製作所"
+    },
+    {
+      "typeImg": "https://minamikaze2700.github.io/Unyomatome/images/TB80000.png",
+      "family": "noda",
+      "type": "80000型",
+      "items": [
+        {
+          "id": "81501",
+          "name": "81501F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81501.png",
+          "family": "noda",
+          "carNames": [
+            "85501",
+            "84501",
+            "83501",
+            "82501",
+            "81501"
+          ],
+          "manufacturer": "近畿車輛",
+          "type": "80000型",
+          "manufacturingYear": "2025年"
+        },
+        {
+          "id": "81502",
+          "name": "81502F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81502.png",
+          "family": "noda",
+          "carNames": [
+            "85502",
+            "84502",
+            "83502",
+            "82502",
+            "81502"
+          ],
+          "manufacturer": "近畿車輛",
+          "type": "80000型",
+          "manufacturingYear": "2025年"
+        },
+        {
+          "id": "81503",
+          "name": "81503F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81503.png",
+          "family": "noda",
+          "carNames": [
+            "85503",
+            "84503",
+            "83503",
+            "82503",
+            "81503"
+          ],
+          "manufacturer": "近畿車輛",
+          "type": "80000型",
+          "manufacturingYear": "2025年"
+        },
+        {
+          "id": "81504",
+          "name": "81504F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81504.png",
+          "family": "noda",
+          "carNames": [
+            "85504",
+            "84504",
+            "83504",
+            "82504",
+            "81504"
+          ],
+          "manufacturer": "近畿車輛",
+          "type": "80000型",
+          "manufacturingYear": "2025年"
+        },
+        {
+          "id": "81505",
+          "name": "81505F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81505.png",
+          "family": "noda",
+          "carNames": [
+            "85505",
+            "84505",
+            "83505",
+            "82505",
+            "81505"
+          ],
+          "manufacturer": "近畿車輛",
+          "type": "80000型",
+          "manufacturingYear": "2025年"
+        }
+      ],
+      "formationType": "80000型",
+      "manufacturingYear": "2024年～2025年",
+      "manufacturer": "近畿車輛"
+    },
+    {
+      "typeImg": "https://minamikaze2700.github.io/Unyomatome/images/TB80000.png",
+      "family": "noda",
+      "type": "80050型",
+      "items": [
+        {
+          "id": "81551",
+          "name": "81551F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81551.png",
+          "family": "noda",
+          "carNames": [
+            "85551",
+            "84551",
+            "83551",
+            "82551",
+            "81551"
+          ],
+          "manufacturer": "日立製作所・近畿車輛",
+          "type": "80050型",
+          "carFeatures": {
+            "83551": [
+              {
+                "type": "車歴",
+                "name": "元60000型64602号車"
+              }
+            ]
+          },
+          "manufacturingYear": "2025年"
+        },
+        {
+          "id": "81552",
+          "name": "81552F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81552.png",
+          "family": "noda",
+          "carNames": [
+            "85552",
+            "84552",
+            "83552",
+            "82552",
+            "81552"
+          ],
+          "manufacturer": "日立製作所・近畿車輛",
+          "type": "80050型",
+          "carFeatures": {
+            "83552": [
+              {
+                "type": "車歴",
+                "name": "元60000型64603号車"
+              }
+            ]
+          },
+          "manufacturingYear": "2025年"
+        },
+        {
+          "id": "81553",
+          "name": "81553F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81553.png",
+          "family": "noda",
+          "carNames": [
+            "85553",
+            "84553",
+            "83553",
+            "82553",
+            "81553"
+          ],
+          "manufacturer": "日立製作所・近畿車輛",
+          "type": "80050型",
+          "carFeatures": {
+            "83553": [
+              {
+                "type": "車歴",
+                "name": "元60000型64605号車"
+              }
+            ]
+          },
+          "manufacturingYear": "2026年"
+        },
+        {
+          "id": "81554",
+          "name": "81554F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81554.png",
+          "family": "noda",
+          "carNames": [
+            "85554",
+            "84554",
+            "83554",
+            "82554",
+            "81554"
+          ],
+          "manufacturer": "日立製作所・近畿車輛",
+          "type": "80050型",
+          "carFeatures": {
+            "83554": [
+              {
+                "type": "車歴",
+                "name": "元60000型64607号車"
+              }
+            ]
+          },
+          "manufacturingYear": "2026年"
+        },
+        {
+          "id": "81555",
+          "name": "81555F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81555.png",
+          "disabled": true,
+          "family": "noda",
+          "carNames": [
+            "85555",
+            "84555",
+            "83555",
+            "82555",
+            "81555"
+          ],
+          "type": "80050型"
+        }
+      ],
+      "formationType": "80050型",
+      "manufacturingYear": "2025年～2026年",
+      "manufacturer": "日立製作所・近畿車輛"
+    }
+  ],
+  "vehicleToFormation": {
+    "8111": "8111",
+    "8158": "8158",
+    "8162": "8162",
+    "8163": "8163",
+    "8165": "8165",
+    "8166": "8166",
+    "8170": "8170",
+    "8192": "8192",
+    "8211": "8111",
+    "8258": "8158",
+    "8262": "8162",
+    "8263": "8163",
+    "8266": "8166",
+    "8270": "8170",
+    "8292": "8192",
+    "8311": "8111",
+    "8358": "8158",
+    "8362": "8162",
+    "8363": "8163",
+    "8366": "8166",
+    "8370": "8170",
+    "8392": "8192",
+    "8411": "8111",
+    "8458": "8158",
+    "8462": "8162",
+    "8463": "8163",
+    "8466": "8166",
+    "8470": "8170",
+    "8492": "8192",
+    "8711": "8111",
+    "8758": "8158",
+    "8762": "8162",
+    "8763": "8163",
+    "8766": "8166",
+    "8770": "8170",
+    "8792": "8192",
+    "8811": "8111",
+    "8858": "8158",
+    "8862": "8162",
+    "8863": "8163",
+    "8866": "8166",
+    "8870": "8170",
+    "8892": "8192",
+    "11631": "11631",
+    "11632": "11632",
+    "11633": "11633",
+    "11635": "11635",
+    "11636": "11636",
+    "11651": "11651",
+    "11652": "11652",
+    "11653": "11653",
+    "11654": "11654",
+    "12631": "11631",
+    "12632": "11632",
+    "12633": "11633",
+    "12635": "11635",
+    "12636": "11636",
+    "12651": "11651",
+    "12652": "11652",
+    "12653": "11653",
+    "12654": "11654",
+    "13631": "11631",
+    "13632": "11632",
+    "13633": "11633",
+    "13635": "11635",
+    "13636": "11636",
+    "13651": "11651",
+    "13652": "11652",
+    "13653": "11653",
+    "13654": "11654",
+    "14631": "11631",
+    "14632": "11632",
+    "14633": "11633",
+    "14635": "11635",
+    "14636": "11636",
+    "14651": "11651",
+    "14652": "11652",
+    "14653": "11653",
+    "14654": "11654",
+    "15631": "11631",
+    "15632": "11632",
+    "15633": "11633",
+    "15635": "11635",
+    "15636": "11636",
+    "15651": "11651",
+    "15652": "11652",
+    "15653": "11653",
+    "15654": "11654",
+    "16631": "11631",
+    "16632": "11632",
+    "16633": "11633",
+    "16635": "11635",
+    "16636": "11636",
+    "16651": "11651",
+    "16652": "11652",
+    "16653": "11653",
+    "16654": "11654",
+    "61501": "61501",
+    "61502": "61502",
+    "61503": "61503",
+    "61504": "61504",
+    "61505": "61505",
+    "61506": "61506",
+    "61507": "61507",
+    "61508": "61508",
+    "61509": "61509",
+    "61510": "61510",
+    "61609": "61609",
+    "61610": "61610",
+    "61611": "61611",
+    "61612": "61612",
+    "61613": "61613",
+    "61614": "61614",
+    "61615": "61615",
+    "61616": "61616",
+    "61617": "61617",
+    "61618": "61618",
+    "62501": "61501",
+    "62502": "61502",
+    "62503": "61503",
+    "62504": "61504",
+    "62505": "61505",
+    "62506": "61506",
+    "62507": "61507",
+    "62508": "61508",
+    "62509": "61509",
+    "62510": "61510",
+    "62609": "61609",
+    "62610": "61610",
+    "62611": "61611",
+    "62612": "61612",
+    "62613": "61613",
+    "62614": "61614",
+    "62615": "61615",
+    "62616": "61616",
+    "62617": "61617",
+    "62618": "61618",
+    "63501": "61501",
+    "63502": "61502",
+    "63503": "61503",
+    "63504": "61504",
+    "63505": "61505",
+    "63506": "61506",
+    "63507": "61507",
+    "63508": "61508",
+    "63509": "61509",
+    "63510": "61510",
+    "63609": "61609",
+    "63610": "61610",
+    "63611": "61611",
+    "63612": "61612",
+    "63613": "61613",
+    "63614": "61614",
+    "63615": "61615",
+    "63616": "61616",
+    "63617": "61617",
+    "63618": "61618",
+    "64501": "61501",
+    "64502": "61502",
+    "64503": "61503",
+    "64504": "61504",
+    "64505": "61505",
+    "64506": "61506",
+    "64507": "61507",
+    "64508": "61508",
+    "64509": "61509",
+    "64510": "61510",
+    "64609": "61609",
+    "64610": "61610",
+    "64611": "61611",
+    "64612": "61612",
+    "64613": "61613",
+    "64614": "61614",
+    "64615": "61615",
+    "64616": "61616",
+    "64617": "61617",
+    "64618": "61618",
+    "65501": "61501",
+    "65502": "61502",
+    "65503": "61503",
+    "65504": "61504",
+    "65505": "61505",
+    "65506": "61506",
+    "65507": "61507",
+    "65508": "61508",
+    "65509": "61509",
+    "65510": "61510",
+    "65609": "61609",
+    "65610": "61610",
+    "65611": "61611",
+    "65612": "61612",
+    "65613": "61613",
+    "65614": "61614",
+    "65615": "61615",
+    "65616": "61616",
+    "65617": "61617",
+    "65618": "61618",
+    "66609": "61609",
+    "66610": "61610",
+    "66611": "61611",
+    "66612": "61612",
+    "66613": "61613",
+    "66614": "61614",
+    "66615": "61615",
+    "66616": "61616",
+    "66617": "61617",
+    "66618": "61618",
+    "81110": "81110",
+    "81113": "81113",
+    "81114": "81114",
+    "81501": "81501",
+    "81502": "81502",
+    "81503": "81503",
+    "81504": "81504",
+    "81505": "81505",
+    "81551": "81551",
+    "81552": "81552",
+    "81553": "81553",
+    "81554": "81554",
+    "81565": "8165",
+    "82110": "81110",
+    "82113": "81113",
+    "82114": "81114",
+    "82501": "81501",
+    "82502": "81502",
+    "82503": "81503",
+    "82504": "81504",
+    "82505": "81505",
+    "82551": "81551",
+    "82552": "81552",
+    "82553": "81553",
+    "82554": "81554",
+    "82565": "8165",
+    "83110": "81110",
+    "83113": "81113",
+    "83114": "81114",
+    "83501": "81501",
+    "83502": "81502",
+    "83503": "81503",
+    "83504": "81504",
+    "83505": "81505",
+    "83551": "81551",
+    "83552": "81552",
+    "83553": "81553",
+    "83554": "81554",
+    "83565": "8165",
+    "84110": "81110",
+    "84113": "81113",
+    "84114": "81114",
+    "84501": "81501",
+    "84502": "81502",
+    "84503": "81503",
+    "84504": "81504",
+    "84505": "81505",
+    "84551": "81551",
+    "84552": "81552",
+    "84553": "81553",
+    "84554": "81554",
+    "84565": "8165",
+    "85501": "81501",
+    "85502": "81502",
+    "85503": "81503",
+    "85504": "81504",
+    "85505": "81505",
+    "85551": "81551",
+    "85552": "81552",
+    "85553": "81553",
+    "85554": "81554",
+    "85565": "8165",
+    "86501": "81501",
+    "86502": "81502",
+    "86503": "81503",
+    "86504": "81504",
+    "86505": "81505",
+    "86565": "8165",
+    "87110": "81110",
+    "87113": "81113",
+    "87114": "81114",
+    "87501": "81501",
+    "87502": "81502",
+    "87503": "81503",
+    "87504": "81504",
+    "87505": "81505",
+    "87565": "8165",
+    "88110": "81110",
+    "88113": "81113",
+    "88114": "81114",
+    "88501": "81501",
+    "88502": "81502",
+    "88503": "81503",
+    "88504": "81504",
+    "88505": "81505",
+    "88565": "8165",
+    "81555": "81555",
+    "82555": "81555",
+    "83555": "81555",
+    "84555": "81555",
+    "85555": "81555"
+  },
+  "trains": {
+    "平日": {
+      "上り": [
+        {
+          "no": "2026E03",
+          "type": "急行",
+          "stops": [
+            {
+              "station": "船橋",
+              "time": "11:13"
+            },
+            {
+              "station": "新船橋",
+              "time": ""
+            },
+            {
+              "station": "塚田",
+              "time": ""
+            },
+            {
+              "station": "馬込沢",
+              "time": ""
+            },
+            {
+              "station": "鎌ヶ谷",
+              "time": ""
+            },
+            {
+              "station": "新鎌ヶ谷",
+              "time": ""
+            },
+            {
+              "station": "六実",
+              "time": ""
+            },
+            {
+              "station": "高柳",
+              "time": ""
+            },
+            {
+              "station": "逆井",
+              "time": ""
+            },
+            {
+              "station": "増尾",
+              "time": ""
+            },
+            {
+              "station": "新柏",
+              "time": ""
+            },
+            {
+              "station": "柏",
+              "time": "11:32"
+            }
+          ],
+          "formation": "普通5両"
+        },
+        {
+          "no": "2026K06",
+          "type": "急行",
+          "stops": [
+            {
+              "station": "船橋",
+              "time": "19:41"
+            },
+            {
+              "station": "新船橋",
+              "time": ""
+            },
+            {
+              "station": "塚田",
+              "time": ""
+            },
+            {
+              "station": "馬込沢",
+              "time": ""
+            },
+            {
+              "station": "鎌ヶ谷",
+              "time": ""
+            },
+            {
+              "station": "新鎌ヶ谷",
+              "time": ""
+            },
+            {
+              "station": "六実",
+              "time": ""
+            },
+            {
+              "station": "高柳",
+              "time": ""
+            },
+            {
+              "station": "逆井",
+              "time": ""
+            },
+            {
+              "station": "増尾",
+              "time": ""
+            },
+            {
+              "station": "新柏",
+              "time": ""
+            },
+            {
+              "station": "柏",
+              "time": "20:00"
+            }
+          ],
+          "formation": "普通5両"
+        }
+      ],
+      "下り": [
+        {
+          "no": "2026O01",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "岩槻",
+              "time": "05:15"
+            },
+            {
+              "station": "東岩槻",
+              "time": ""
+            },
+            {
+              "station": "豊春",
+              "time": ""
+            },
+            {
+              "station": "八木崎",
+              "time": ""
+            },
+            {
+              "station": "春日部",
+              "time": "05:24"
+            },
+            {
+              "station": "藤の牛島",
+              "time": ""
+            },
+            {
+              "station": "南桜井",
+              "time": ""
+            },
+            {
+              "station": "川間",
+              "time": ""
+            },
+            {
+              "station": "七光台",
+              "time": ""
+            },
+            {
+              "station": "清水公園",
+              "time": ""
+            },
+            {
+              "station": "愛宕",
+              "time": ""
+            },
+            {
+              "station": "野田市",
+              "time": ""
+            },
+            {
+              "station": "梅郷",
+              "time": ""
+            },
+            {
+              "station": "運河",
+              "time": ""
+            },
+            {
+              "station": "江戸川台",
+              "time": ""
+            },
+            {
+              "station": "初石",
+              "time": ""
+            },
+            {
+              "station": "流山おおたかの森",
+              "time": ""
+            },
+            {
+              "station": "豊四季",
+              "time": ""
+            },
+            {
+              "station": "柏",
+              "time": ""
+            }
+          ],
+          "formation": "普通共通"
+        },
+        {
+          "no": "2026E01",
+          "type": "急行",
+          "stops": [
+            {
+              "station": "大宮",
+              "time": "11:14"
+            },
+            {
+              "station": "北大宮",
+              "time": ""
+            },
+            {
+              "station": "大宮公園",
+              "time": ""
+            },
+            {
+              "station": "大和田",
+              "time": ""
+            },
+            {
+              "station": "七里",
+              "time": ""
+            },
+            {
+              "station": "岩槻",
+              "time": ""
+            },
+            {
+              "station": "東岩槻",
+              "time": ""
+            },
+            {
+              "station": "豊春",
+              "time": ""
+            },
+            {
+              "station": "八木崎",
+              "time": ""
+            },
+            {
+              "station": "春日部",
+              "time": ""
+            },
+            {
+              "station": "藤の牛島",
+              "time": ""
+            },
+            {
+              "station": "南桜井",
+              "time": ""
+            },
+            {
+              "station": "川間",
+              "time": ""
+            },
+            {
+              "station": "七光台",
+              "time": ""
+            },
+            {
+              "station": "清水公園",
+              "time": ""
+            },
+            {
+              "station": "愛宕",
+              "time": ""
+            },
+            {
+              "station": "野田市",
+              "time": ""
+            },
+            {
+              "station": "梅郷",
+              "time": ""
+            },
+            {
+              "station": "運河",
+              "time": ""
+            },
+            {
+              "station": "江戸川台",
+              "time": ""
+            },
+            {
+              "station": "初石",
+              "time": ""
+            },
+            {
+              "station": "流山おおたかの森",
+              "time": ""
+            },
+            {
+              "station": "豊四季",
+              "time": ""
+            },
+            {
+              "station": "柏",
+              "time": "12:07"
+            }
+          ],
+          "formation": "普通共通"
+        },
+        {
+          "no": "2026E04",
+          "type": "急行",
+          "stops": [
+            {
+              "station": "柏",
+              "time": "11:38"
+            },
+            {
+              "station": "新柏",
+              "time": ""
+            },
+            {
+              "station": "増尾",
+              "time": ""
+            },
+            {
+              "station": "逆井",
+              "time": ""
+            },
+            {
+              "station": "高柳",
+              "time": ""
+            },
+            {
+              "station": "六実",
+              "time": ""
+            },
+            {
+              "station": "新鎌ヶ谷",
+              "time": ""
+            },
+            {
+              "station": "鎌ヶ谷",
+              "time": ""
+            },
+            {
+              "station": "馬込沢",
+              "time": ""
+            },
+            {
+              "station": "塚田",
+              "time": ""
+            },
+            {
+              "station": "新船橋",
+              "time": ""
+            },
+            {
+              "station": "船橋",
+              "time": "12:33"
+            }
+          ],
+          "formation": "普通5両"
+        },
+        {
+          "no": "2026E02",
+          "type": "急行",
+          "stops": [
+            {
+              "station": "柏",
+              "time": "12:12"
+            },
+            {
+              "station": "新柏",
+              "time": ""
+            },
+            {
+              "station": "増尾",
+              "time": ""
+            },
+            {
+              "station": "逆井",
+              "time": ""
+            },
+            {
+              "station": "高柳",
+              "time": ""
+            },
+            {
+              "station": "六実",
+              "time": ""
+            },
+            {
+              "station": "新鎌ヶ谷",
+              "time": ""
+            },
+            {
+              "station": "鎌ヶ谷",
+              "time": ""
+            },
+            {
+              "station": "馬込沢",
+              "time": ""
+            },
+            {
+              "station": "塚田",
+              "time": ""
+            },
+            {
+              "station": "新船橋",
+              "time": ""
+            },
+            {
+              "station": "船橋",
+              "time": "12:31"
+            }
+          ],
+          "formation": "普通5両"
+        },
+        {
+          "no": "2026K01",
+          "type": "区間急行",
+          "stops": [
+            {
+              "station": "柏",
+              "time": "6:31"
+            },
+            {
+              "station": "新柏",
+              "time": ""
+            },
+            {
+              "station": "増尾",
+              "time": ""
+            },
+            {
+              "station": "逆井",
+              "time": ""
+            },
+            {
+              "station": "高柳",
+              "time": "6:38"
+            },
+            {
+              "station": "六実",
+              "time": ""
+            },
+            {
+              "station": "新鎌ヶ谷",
+              "time": "6:42"
+            },
+            {
+              "station": "鎌ヶ谷",
+              "time": ""
+            },
+            {
+              "station": "馬込沢",
+              "time": ""
+            },
+            {
+              "station": "塚田",
+              "time": "6:49"
+            },
+            {
+              "station": "新船橋",
+              "time": "6:51"
+            },
+            {
+              "station": "船橋",
+              "time": "6:54"
+            }
+          ],
+          "formation": "普通5両"
+        },
+        {
+          "no": "2026K02",
+          "type": "区間急行",
+          "stops": [
+            {
+              "station": "柏",
+              "time": "7:00"
+            },
+            {
+              "station": "新柏",
+              "time": ""
+            },
+            {
+              "station": "増尾",
+              "time": ""
+            },
+            {
+              "station": "逆井",
+              "time": ""
+            },
+            {
+              "station": "高柳",
+              "time": "7:07"
+            },
+            {
+              "station": "六実",
+              "time": ""
+            },
+            {
+              "station": "新鎌ヶ谷",
+              "time": "7:11"
+            },
+            {
+              "station": "鎌ヶ谷",
+              "time": ""
+            },
+            {
+              "station": "馬込沢",
+              "time": ""
+            },
+            {
+              "station": "塚田",
+              "time": "7:18"
+            },
+            {
+              "station": "新船橋",
+              "time": "7:21"
+            },
+            {
+              "station": "船橋",
+              "time": "7:23"
+            }
+          ],
+          "formation": "普通5両"
+        },
+        {
+          "no": "2026K03",
+          "type": "区間急行",
+          "stops": [
+            {
+              "station": "柏",
+              "time": "7:31"
+            },
+            {
+              "station": "新柏",
+              "time": ""
+            },
+            {
+              "station": "増尾",
+              "time": ""
+            },
+            {
+              "station": "逆井",
+              "time": ""
+            },
+            {
+              "station": "高柳",
+              "time": "7:38"
+            },
+            {
+              "station": "六実",
+              "time": ""
+            },
+            {
+              "station": "新鎌ヶ谷",
+              "time": "7:42"
+            },
+            {
+              "station": "鎌ヶ谷",
+              "time": ""
+            },
+            {
+              "station": "馬込沢",
+              "time": ""
+            },
+            {
+              "station": "塚田",
+              "time": "7:50"
+            },
+            {
+              "station": "新船橋",
+              "time": "7:53"
+            },
+            {
+              "station": "船橋",
+              "time": "7:55"
+            }
+          ],
+          "formation": "普通5両"
+        },
+        {
+          "no": "2026K04",
+          "type": "区間急行",
+          "stops": [
+            {
+              "station": "柏",
+              "time": "8:02"
+            },
+            {
+              "station": "新柏",
+              "time": ""
+            },
+            {
+              "station": "増尾",
+              "time": ""
+            },
+            {
+              "station": "逆井",
+              "time": ""
+            },
+            {
+              "station": "高柳",
+              "time": "8:10"
+            },
+            {
+              "station": "六実",
+              "time": ""
+            },
+            {
+              "station": "新鎌ヶ谷",
+              "time": "8:14"
+            },
+            {
+              "station": "鎌ヶ谷",
+              "time": ""
+            },
+            {
+              "station": "馬込沢",
+              "time": ""
+            },
+            {
+              "station": "塚田",
+              "time": "8:22"
+            },
+            {
+              "station": "新船橋",
+              "time": "8:24"
+            },
+            {
+              "station": "船橋",
+              "time": "8:27"
+            }
+          ],
+          "formation": "普通5両"
+        },
+        {
+          "no": "2026K05",
+          "type": "区間急行",
+          "stops": [
+            {
+              "station": "柏",
+              "time": "8:32"
+            },
+            {
+              "station": "新柏",
+              "time": ""
+            },
+            {
+              "station": "増尾",
+              "time": ""
+            },
+            {
+              "station": "逆井",
+              "time": ""
+            },
+            {
+              "station": "高柳",
+              "time": "8:41"
+            },
+            {
+              "station": "六実",
+              "time": ""
+            },
+            {
+              "station": "新鎌ヶ谷",
+              "time": "8:45"
+            },
+            {
+              "station": "鎌ヶ谷",
+              "time": ""
+            },
+            {
+              "station": "馬込沢",
+              "time": ""
+            },
+            {
+              "station": "塚田",
+              "time": "8:52"
+            },
+            {
+              "station": "新船橋",
+              "time": "8:55"
+            },
+            {
+              "station": "船橋",
+              "time": "8:57"
+            }
+          ],
+          "formation": "普通5両"
+        }
+      ]
+    },
+    "休日": {
+      "上り": [],
+      "下り": []
+    }
+  },
+  "operationChains": {
+    "平日": [],
+    "休日": []
+  },
+  "holidayPositionCorrections": {}
+}
