@@ -1415,9 +1415,6 @@ async function hydrateRouteNumberingImages(defs){
         const routeId=String(route?.id||routeName||'');
         const btn=Array.from(document.querySelectorAll('.route-button[data-route-id]')).find(el=>el.getAttribute('data-route-id')===routeId);
         if(!btn) return;
-        const box=btn.querySelector('.route-numbering');
-        if(!box) return;
-        box.innerHTML=images.map(src=>`<img class="route-numbering-image" src="${escapeAttr(src)}" alt="" aria-hidden="true" loading="eager">`).join('');
       })());
     }
   }
@@ -6114,7 +6111,7 @@ function openRegionSheet(region){
 <p class="terms-end">以上</p><p class="terms-date">制定日：2026年9月18日</p>
 </div>`
     : (defs.length
-      ? defs.map(c=>`<section class="company-block"><h2 class="company-name">${esc(c.company)}</h2><div class="route-list">${c.routes.map(r=>`<button type="button" class="route-button" data-route-id="${esc(r.id||r.name)}" onclick="selectRoute('${escapeJs(r.id||r.name)}')"><span class="route-numbering" aria-hidden="true"></span><span class="route-label">${esc(r.name)}</span></button>`).join('')}</div></section>`).join('')
+      ? defs.map(c=>`<section class="company-block"><h2 class="company-name">${esc(c.company)}</h2><div class="route-list">${c.routes.map(r=>`<button type="button" class="route-button" data-route-id="${esc(r.id||r.name)}" onclick="selectRoute('${escapeJs(r.id||r.name)}')"></span><span class="route-label">${esc(r.name)}</span></button>`).join('')}</div></section>`).join('')
       : `<section class="company-block"><h2 class="company-name">この地域の路線は未登録です。</h2></section>`);
   content.innerHTML=inner;
   if(region!=='利用規約' && defs.length) hydrateRouteNumberingImages(defs);
@@ -6242,22 +6239,6 @@ function initRegionNavigation(){
       align-items:center;
       gap:8px;
       transition:background .15s ease,border-color .15s ease;
-    }
-    .route-numbering{
-      flex:0 0 auto;
-      display:inline-flex;
-      align-items:center;
-      justify-content:flex-start;
-      gap:2px;
-      min-width:0;
-      line-height:0;
-    }
-    .route-numbering-image{
-      width:auto;
-      height:28px;
-      max-width:34px;
-      display:block;
-      object-fit:contain;
     }
     .route-label{
       flex:1 1 auto;
