@@ -1767,7 +1767,18 @@
       "directions": {
         "up": "中目黒方面",
         "down": "北千住方面"
-      }
+      },
+      "segmentColorRules": [
+        {
+          "stationPairs": [
+            [
+              "上野",
+              "新越谷"
+            ]
+          ],
+          "useLine": "東武スカイツリーライン"
+        }
+      ]
     },
     {
       "name": "東武スカイツリーライン",
@@ -1779,9 +1790,44 @@
           "abbr": "北千"
         },
         {
+          "name": "竹ノ塚",
+          "nameEn": "Takenotsuka",
+          "abbr": "竹塚"
+        },
+        {
+          "name": "草加",
+          "nameEn": "Soka"
+        },
+        {
+          "name": "新越谷",
+          "nameEn": "Shin-koshigaya"
+        },
+        {
           "name": "北越谷",
           "nameEn": "Kita-koshigaya",
           "abbr": "北越"
+        },
+        {
+          "name": "せんげん台",
+          "nameEn": "Sengendai"
+        },
+        {
+          "name": "春日部",
+          "nameEn": "Kasukabe"
+        },
+        {
+          "name": "北春日部",
+          "nameEn": "Kita-kasukabe",
+          "abbr": "北春"
+        },
+        {
+          "name": "東武動物公園",
+          "nameEn": "Tobu-dobutsu-koen",
+          "abbr": "杉戸"
+        },
+        {
+          "name": "久喜",
+          "nameEn": "Kuki"
         },
         {
           "name": "南栗橋",
@@ -24345,12 +24391,32 @@
               "routeColor": "#B5B5AC"
             },
             {
+              "station": "新越谷",
+              "time": "17:53",
+              "routeColor": "#0055b8"
+            },
+            {
+              "station": "せんげん台",
+              "time": "18:00",
+              "routeColor": "#0055b8"
+            },
+            {
+              "station": "春日部",
+              "time": "18:05",
+              "routeColor": "#0055b8"
+            },
+            {
+              "station": "東武動物公園",
+              "time": "18:11",
+              "routeColor": "#0055b8"
+            },
+            {
               "station": "久喜",
               "time": "18:19",
               "routeColor": "#0055b8"
             }
           ],
-          "type": "普通",
+          "type": "THライナー",
           "start": "霞ケ関",
           "startTime": "17:02",
           "dest": "久喜",
@@ -27380,12 +27446,32 @@
               "routeColor": "#B5B5AC"
             },
             {
+              "station": "新越谷",
+              "time": "18:53",
+              "routeColor": "#0055b8"
+            },
+            {
+              "station": "せんげん台",
+              "time": "19:00",
+              "routeColor": "#0055b8"
+            },
+            {
+              "station": "春日部",
+              "time": "19:05",
+              "routeColor": "#0055b8"
+            },
+            {
+              "station": "東武動物公園",
+              "time": "19:11",
+              "routeColor": "#0055b8"
+            },
+            {
               "station": "久喜",
               "time": "19:19",
               "routeColor": "#0055b8"
             }
           ],
-          "type": "普通",
+          "type": "THライナー",
           "start": "霞ケ関",
           "startTime": "18:02",
           "dest": "久喜",
