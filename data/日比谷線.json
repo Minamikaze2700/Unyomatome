@@ -1804,11 +1804,13 @@
           "stops": [
             {
               "station": "南千住",
-              "time": "05:02"
+              "time": "05:02",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "北千住",
-              "time": "05:04"
+              "time": "05:04",
+              "routeColor": "#0055b8"
             }
           ],
           "type": "普通",
@@ -1822,16 +1824,21 @@
           "trainNumbers": {
             "日比谷線": [
               "B536S"
+            ],
+            "東武スカイツリーライン": [
+              "B536S"
             ]
           },
           "stops": [
             {
               "station": "南千住",
-              "time": "05:09"
+              "time": "05:09",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "北千住",
-              "time": "05:12"
+              "time": "05:12",
+              "routeColor": "#0055b8"
             },
             {
               "station": "北越谷",
@@ -1850,72 +1857,91 @@
           "trainNumbers": {
             "日比谷線": [
               "B558S"
+            ],
+            "東武スカイツリーライン": [
+              "B558S"
             ]
           },
           "stops": [
             {
               "station": "霞ケ関",
-              "time": "05:00"
+              "time": "05:00",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "日比谷",
-              "time": "05:02"
+              "time": "05:02",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "銀座",
-              "time": "05:04"
+              "time": "05:04",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "東銀座",
-              "time": "05:06"
+              "time": "05:06",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "築地",
-              "time": "05:07"
+              "time": "05:07",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "八丁堀",
-              "time": "05:10"
+              "time": "05:10",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "茅場町",
-              "time": "05:11"
+              "time": "05:11",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "人形町",
-              "time": "05:14"
+              "time": "05:14",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "小伝馬町",
-              "time": "05:15"
+              "time": "05:15",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "秋葉原",
-              "time": "05:17"
+              "time": "05:17",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "仲御徒町",
-              "time": "05:19"
+              "time": "05:19",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "上野",
-              "time": "05:21"
+              "time": "05:21",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "入谷",
-              "time": "05:23"
+              "time": "05:23",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "三ノ輪",
-              "time": "05:25"
+              "time": "05:25",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "南千住",
-              "time": "05:27"
+              "time": "05:27",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "北千住",
-              "time": "05:30"
+              "time": "05:30",
+              "routeColor": "#0055b8"
             },
             {
               "station": "南栗橋",
@@ -1939,67 +1965,83 @@
           "stops": [
             {
               "station": "霞ケ関",
-              "time": "05:00"
+              "time": "05:00",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "日比谷",
-              "time": "05:02"
+              "time": "05:02",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "銀座",
-              "time": "05:04"
+              "time": "05:04",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "東銀座",
-              "time": "05:06"
+              "time": "05:06",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "築地",
-              "time": "05:07"
+              "time": "05:07",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "八丁堀",
-              "time": "05:10"
+              "time": "05:10",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "茅場町",
-              "time": "05:11"
+              "time": "05:11",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "人形町",
-              "time": "05:14"
+              "time": "05:14",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "小伝馬町",
-              "time": "05:15"
+              "time": "05:15",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "秋葉原",
-              "time": "05:17"
+              "time": "05:17",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "仲御徒町",
-              "time": "05:19"
+              "time": "05:19",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "上野",
-              "time": "05:21"
+              "time": "05:21",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "入谷",
-              "time": "05:23"
+              "time": "05:23",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "三ノ輪",
-              "time": "05:25"
+              "time": "05:25",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "南千住",
-              "time": "05:34"
+              "time": "05:34",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "北千住",
-              "time": "05:37"
+              "time": "05:37",
+              "routeColor": "#0055b8"
             }
           ],
           "type": "普通",
@@ -2013,96 +2055,121 @@
           "trainNumbers": {
             "日比谷線": [
               "B566S"
+            ],
+            "東武スカイツリーライン": [
+              "B566S"
             ]
           },
           "stops": [
             {
               "station": "中目黒",
-              "time": "05:00"
+              "time": "05:00",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "恵比寿",
-              "time": "05:02"
+              "time": "05:02",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "広尾",
-              "time": "05:05"
+              "time": "05:05",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "六本木",
-              "time": "05:08"
+              "time": "05:08",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "神谷町",
-              "time": "05:12"
+              "time": "05:12",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "虎ノ門ヒルズ",
-              "time": "05:13"
+              "time": "05:13",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "霞ケ関",
-              "time": "05:15"
+              "time": "05:15",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "日比谷",
-              "time": "05:17"
+              "time": "05:17",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "銀座",
-              "time": "05:19"
+              "time": "05:19",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "東銀座",
-              "time": "05:21"
+              "time": "05:21",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "築地",
-              "time": "05:23"
+              "time": "05:23",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "八丁堀",
-              "time": "05:25"
+              "time": "05:25",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "茅場町",
-              "time": "05:27"
+              "time": "05:27",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "人形町",
-              "time": "05:29"
+              "time": "05:29",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "小伝馬町",
-              "time": "05:30"
+              "time": "05:30",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "秋葉原",
-              "time": "05:32"
+              "time": "05:32",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "仲御徒町",
-              "time": "05:34"
+              "time": "05:34",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "上野",
-              "time": "05:36"
+              "time": "05:36",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "入谷",
-              "time": "05:38"
+              "time": "05:38",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "三ノ輪",
-              "time": "05:40"
+              "time": "05:40",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "南千住",
-              "time": "05:42"
+              "time": "05:42",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "北千住",
-              "time": "05:45"
+              "time": "05:45",
+              "routeColor": "#0055b8"
             },
             {
               "station": "北越谷",
@@ -2121,96 +2188,121 @@
           "trainNumbers": {
             "日比谷線": [
               "B568S"
+            ],
+            "東武スカイツリーライン": [
+              "B568S"
             ]
           },
           "stops": [
             {
               "station": "中目黒",
-              "time": "05:12"
+              "time": "05:12",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "恵比寿",
-              "time": "05:15"
+              "time": "05:15",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "広尾",
-              "time": "05:18"
+              "time": "05:18",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "六本木",
-              "time": "05:21"
+              "time": "05:21",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "神谷町",
-              "time": "05:24"
+              "time": "05:24",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "虎ノ門ヒルズ",
-              "time": "05:26"
+              "time": "05:26",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "霞ケ関",
-              "time": "05:28"
+              "time": "05:28",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "日比谷",
-              "time": "05:30"
+              "time": "05:30",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "銀座",
-              "time": "05:32"
+              "time": "05:32",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "東銀座",
-              "time": "05:34"
+              "time": "05:34",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "築地",
-              "time": "05:36"
+              "time": "05:36",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "八丁堀",
-              "time": "05:38"
+              "time": "05:38",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "茅場町",
-              "time": "05:39"
+              "time": "05:39",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "人形町",
-              "time": "05:42"
+              "time": "05:42",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "小伝馬町",
-              "time": "05:43"
+              "time": "05:43",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "秋葉原",
-              "time": "05:45"
+              "time": "05:45",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "仲御徒町",
-              "time": "05:47"
+              "time": "05:47",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "上野",
-              "time": "05:49"
+              "time": "05:49",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "入谷",
-              "time": "05:51"
+              "time": "05:51",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "三ノ輪",
-              "time": "05:53"
+              "time": "05:53",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "南千住",
-              "time": "05:55"
+              "time": "05:55",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "北千住",
-              "time": "05:58"
+              "time": "05:58",
+              "routeColor": "#0055b8"
             },
             {
               "station": "北越谷",
@@ -2238,11 +2330,13 @@
           "stops": [
             {
               "station": "南千住",
-              "time": "05:02"
+              "time": "05:02",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "北千住",
-              "time": "05:04"
+              "time": "05:04",
+              "routeColor": "#0055b8"
             }
           ],
           "type": "普通",
@@ -2256,16 +2350,21 @@
           "trainNumbers": {
             "日比谷線": [
               "B536S"
+            ],
+            "東武スカイツリーライン": [
+              "B536S"
             ]
           },
           "stops": [
             {
               "station": "南千住",
-              "time": "05:09"
+              "time": "05:09",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "北千住",
-              "time": "05:12"
+              "time": "05:12",
+              "routeColor": "#0055b8"
             },
             {
               "station": "北越谷",
@@ -2284,72 +2383,91 @@
           "trainNumbers": {
             "日比谷線": [
               "B558S"
+            ],
+            "東武スカイツリーライン": [
+              "B558S"
             ]
           },
           "stops": [
             {
               "station": "霞ケ関",
-              "time": "05:00"
+              "time": "05:00",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "日比谷",
-              "time": "05:02"
+              "time": "05:02",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "銀座",
-              "time": "05:04"
+              "time": "05:04",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "東銀座",
-              "time": "05:06"
+              "time": "05:06",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "築地",
-              "time": "05:07"
+              "time": "05:07",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "八丁堀",
-              "time": "05:10"
+              "time": "05:10",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "茅場町",
-              "time": "05:11"
+              "time": "05:11",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "人形町",
-              "time": "05:14"
+              "time": "05:14",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "小伝馬町",
-              "time": "05:15"
+              "time": "05:15",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "秋葉原",
-              "time": "05:17"
+              "time": "05:17",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "仲御徒町",
-              "time": "05:19"
+              "time": "05:19",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "上野",
-              "time": "05:21"
+              "time": "05:21",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "入谷",
-              "time": "05:23"
+              "time": "05:23",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "三ノ輪",
-              "time": "05:25"
+              "time": "05:25",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "南千住",
-              "time": "05:27"
+              "time": "05:27",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "北千住",
-              "time": "05:30"
+              "time": "05:30",
+              "routeColor": "#0055b8"
             },
             {
               "station": "南栗橋",
@@ -2373,67 +2491,83 @@
           "stops": [
             {
               "station": "霞ケ関",
-              "time": "05:00"
+              "time": "05:00",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "日比谷",
-              "time": "05:02"
+              "time": "05:02",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "銀座",
-              "time": "05:04"
+              "time": "05:04",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "東銀座",
-              "time": "05:06"
+              "time": "05:06",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "築地",
-              "time": "05:07"
+              "time": "05:07",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "八丁堀",
-              "time": "05:10"
+              "time": "05:10",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "茅場町",
-              "time": "05:11"
+              "time": "05:11",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "人形町",
-              "time": "05:14"
+              "time": "05:14",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "小伝馬町",
-              "time": "05:15"
+              "time": "05:15",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "秋葉原",
-              "time": "05:17"
+              "time": "05:17",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "仲御徒町",
-              "time": "05:19"
+              "time": "05:19",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "上野",
-              "time": "05:21"
+              "time": "05:21",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "入谷",
-              "time": "05:23"
+              "time": "05:23",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "三ノ輪",
-              "time": "05:25"
+              "time": "05:25",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "南千住",
-              "time": "05:34"
+              "time": "05:34",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "北千住",
-              "time": "05:37"
+              "time": "05:37",
+              "routeColor": "#0055b8"
             }
           ],
           "type": "普通",
@@ -2447,96 +2581,121 @@
           "trainNumbers": {
             "日比谷線": [
               "B566S"
+            ],
+            "東武スカイツリーライン": [
+              "B566S"
             ]
           },
           "stops": [
             {
               "station": "中目黒",
-              "time": "05:00"
+              "time": "05:00",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "恵比寿",
-              "time": "05:02"
+              "time": "05:02",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "広尾",
-              "time": "05:05"
+              "time": "05:05",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "六本木",
-              "time": "05:08"
+              "time": "05:08",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "神谷町",
-              "time": "05:12"
+              "time": "05:12",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "虎ノ門ヒルズ",
-              "time": "05:13"
+              "time": "05:13",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "霞ケ関",
-              "time": "05:15"
+              "time": "05:15",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "日比谷",
-              "time": "05:17"
+              "time": "05:17",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "銀座",
-              "time": "05:19"
+              "time": "05:19",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "東銀座",
-              "time": "05:21"
+              "time": "05:21",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "築地",
-              "time": "05:23"
+              "time": "05:23",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "八丁堀",
-              "time": "05:25"
+              "time": "05:25",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "茅場町",
-              "time": "05:27"
+              "time": "05:27",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "人形町",
-              "time": "05:29"
+              "time": "05:29",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "小伝馬町",
-              "time": "05:30"
+              "time": "05:30",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "秋葉原",
-              "time": "05:32"
+              "time": "05:32",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "仲御徒町",
-              "time": "05:34"
+              "time": "05:34",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "上野",
-              "time": "05:36"
+              "time": "05:36",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "入谷",
-              "time": "05:38"
+              "time": "05:38",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "三ノ輪",
-              "time": "05:40"
+              "time": "05:40",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "南千住",
-              "time": "05:42"
+              "time": "05:42",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "北千住",
-              "time": "05:45"
+              "time": "05:45",
+              "routeColor": "#0055b8"
             },
             {
               "station": "北越谷",
@@ -2555,96 +2714,121 @@
           "trainNumbers": {
             "日比谷線": [
               "B568S"
+            ],
+            "東武スカイツリーライン": [
+              "B568S"
             ]
           },
           "stops": [
             {
               "station": "中目黒",
-              "time": "05:12"
+              "time": "05:12",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "恵比寿",
-              "time": "05:15"
+              "time": "05:15",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "広尾",
-              "time": "05:18"
+              "time": "05:18",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "六本木",
-              "time": "05:21"
+              "time": "05:21",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "神谷町",
-              "time": "05:24"
+              "time": "05:24",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "虎ノ門ヒルズ",
-              "time": "05:26"
+              "time": "05:26",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "霞ケ関",
-              "time": "05:28"
+              "time": "05:28",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "日比谷",
-              "time": "05:30"
+              "time": "05:30",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "銀座",
-              "time": "05:32"
+              "time": "05:32",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "東銀座",
-              "time": "05:34"
+              "time": "05:34",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "築地",
-              "time": "05:36"
+              "time": "05:36",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "八丁堀",
-              "time": "05:38"
+              "time": "05:38",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "茅場町",
-              "time": "05:39"
+              "time": "05:39",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "人形町",
-              "time": "05:42"
+              "time": "05:42",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "小伝馬町",
-              "time": "05:43"
+              "time": "05:43",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "秋葉原",
-              "time": "05:45"
+              "time": "05:45",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "仲御徒町",
-              "time": "05:47"
+              "time": "05:47",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "上野",
-              "time": "05:49"
+              "time": "05:49",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "入谷",
-              "time": "05:51"
+              "time": "05:51",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "三ノ輪",
-              "time": "05:53"
+              "time": "05:53",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "南千住",
-              "time": "05:55"
+              "time": "05:55",
+              "routeColor": "#B5B5AC"
             },
             {
               "station": "北千住",
-              "time": "05:58"
+              "time": "05:58",
+              "routeColor": "#0055b8"
             },
             {
               "station": "北越谷",
@@ -2678,7 +2862,10 @@
     "中目黒": "中目",
     "恵比寿": "恵比",
     "六本木": "六本",
-    "南千住": "南千"
+    "南千住": "南千",
+    "東武動物公園": "杉戸",
+    "北春日部": "北春",
+    "竹ノ塚": "竹塚"
   },
   "destinationAliases": {
     "南栗橋": "南栗",
