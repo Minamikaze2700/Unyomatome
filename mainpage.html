@@ -892,6 +892,37 @@ body{padding-bottom:42px !important;}
   background-image:var(--route-line-bottom-bg,linear-gradient(to right,var(--station-route-color),var(--station-route-color))) !important;
 }
 </style>
+<style id="dotted-multicolor-continuous-rendering">
+/* 破線はマスク、色分けは背景グラデーションとして独立させる。
+   このため破線区間でも色は各ダッシュごとに変わらず、駅間の指定位置で切り替わる。 */
+.timetable-item::before{
+  background-image:var(--route-line-top-bg,linear-gradient(to bottom,var(--primary),var(--primary))) !important;
+  background-size:var(--route-line-top-size,100% 200%) !important;
+  background-position:var(--route-line-top-position,0 100%) !important;
+  background-repeat:no-repeat !important;
+  -webkit-mask-image:var(--route-line-top-mask,none) !important;
+  mask-image:var(--route-line-top-mask,none) !important;
+  -webkit-mask-size:100% 100% !important;mask-size:100% 100% !important;
+  -webkit-mask-repeat:repeat-y !important;mask-repeat:repeat-y !important;
+}
+.timetable-item::after{
+  background-image:var(--route-line-bottom-bg,linear-gradient(to bottom,var(--primary),var(--primary))) !important;
+  background-size:var(--route-line-bottom-size,100% 200%) !important;
+  background-position:var(--route-line-bottom-position,0 0) !important;
+  background-repeat:no-repeat !important;
+  -webkit-mask-image:var(--route-line-bottom-mask,none) !important;
+  mask-image:var(--route-line-bottom-mask,none) !important;
+  -webkit-mask-size:100% 100% !important;mask-size:100% 100% !important;
+  -webkit-mask-repeat:repeat-y !important;mask-repeat:repeat-y !important;
+}
+/* 破線指定は色そのものを塗り替えず、線の見える箇所だけをマスクする。 */
+.timetable-item.dotted-route-guide::before,.timetable-item.dotted-route-guide::after{
+  background-image:var(--route-line-top-bg,linear-gradient(to bottom,var(--station-route-color,var(--primary)),var(--station-route-color,var(--primary)))) !important;
+}
+.timetable-item.dotted-route-guide::after{
+  background-image:var(--route-line-bottom-bg,linear-gradient(to bottom,var(--station-route-color,var(--primary)),var(--station-route-color,var(--primary)))) !important;
+}
+</style>
 </head>
 <body>
 
@@ -1964,6 +1995,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
       segmentColors:Array.isArray(st?.segmentColors)
         ? st.segmentColors.map(c=>String(c||'').trim()).filter(Boolean)
         : undefined,
+      // 色の位置(position)はJSONから読み込まず、表示用の駅間線を作る段階で色数から自動計算する。
       boardingOnly:st?.boardingOnly===true,
       alightingOnly:st?.alightingOnly===true,
       prescribedFormation:String(st?.prescribedFormation||'').trim()||undefined,
@@ -2412,11 +2444,19 @@ function buildTimetableRows(stops){
     }
     const grouped=scheduled.slice(i,j);
     const dottedBefore=grouped.some(st=>st?.dottedBefore===true);
-    const segmentColors=[...new Set(grouped.flatMap(st=>Array.isArray(st?.segmentColors)?st.segmentColors:[])
-      .map(c=>String(c||'').trim()).filter(Boolean))];
+    // segmentColors に列挙された色を保持する。重複駅レコードをまとめる際も、配列内の色数と順序は維持する。
+    const configuredColors=grouped.find(st=>Array.isArray(st?.segmentColors)&&st.segmentColors.length)?.segmentColors;
+    const segmentColors=Array.isArray(configuredColors)
+      ? configuredColors.map(c=>String(c||'').trim()).filter(Boolean) : [];
+    // 色境界は色数からHTML側で自動計算する。2色なら0/50%、3色なら0/33.333/66.667%。
+    // segmentColorsは区間の終点駅に設定し、駅間全体を色数と同じ数に等分する。
+    const segmentColorStops=segmentColors.map((color,colorIndex)=>({
+      color,
+      position:segmentColors.length ? colorIndex*100/segmentColors.length : 0
+    }));
     const boardingOnly=grouped.some(st=>st?.boardingOnly===true);
     const alightingOnly=grouped.some(st=>st?.alightingOnly===true);
-    rows.push({station,times:times.slice(0,2),dottedBefore,segmentColors,boardingOnly,alightingOnly});
+    rows.push({station,times:times.slice(0,2),dottedBefore,segmentColors,segmentColorStops,boardingOnly,alightingOnly});
     i=j;
   }
   return rows;
@@ -2490,6 +2530,7 @@ function timetableRowsHTML(stops,trainContext=null){
     const bottom=lineBg(nextColors,globalDotted||nextDotted);
     const classes=['timetable-item',globalDotted?'dotted-route-guide':''].filter(Boolean).join(' ');
     const markerClass=row.boardingOnly?' boarding-only':(row.alightingOnly?' alighting-only':'');
+    const markerTitle=row.boardingOnly?'乗車専用駅':(row.alightingOnly?'降車専用駅':'');
     return `<div class="${classes}" style="--route-line-top-bg:${top.images};--route-line-top-size:${top.sizes};--route-line-top-position:${top.positions};--route-line-top-repeat:${top.repeat};--route-line-top-mask:${top.mask};--route-line-bottom-bg:${bottom.images};--route-line-bottom-size:${bottom.sizes};--route-line-bottom-position:${bottom.positions};--route-line-bottom-repeat:${bottom.repeat};--route-line-bottom-mask:${bottom.mask};--station-route-color:${dotColor};--station-route-color-bg:${dotColor}"><div class="time-dot${markerClass}"${markerTitle?` title="${markerTitle}" aria-label="${markerTitle}"`:''}></div><div class="time-text${twoLine?' two-line':''}">${times.map(t=>`<span>${t}</span>`).join('')}</div><div class="station-text">${row.station}</div></div>`;
   }).join('');
 }
@@ -5865,18 +5906,42 @@ function trainRouteColor(train,position=null){
 }
 function timetableSegmentColors(a,b,trainContext=null){ return [trainServiceColorBetweenStations(a,b,trainContext)]; }
 function timetableSegmentColorList(rows,endIndex,startIndex,trainContext=null){
-  const configured=Array.isArray(rows?.[endIndex]?.segmentColors)
-    ? rows[endIndex].segmentColors.map(c=>String(c||'').trim()).filter(Boolean) : [];
+  const row=rows?.[endIndex];
+  // 色順はJSONのsegmentColorsだけで指定する。各色のpositionはbuildTimetableRowsで色数から自動生成。
+  const configured=Array.isArray(row?.segmentColors)
+    ? row.segmentColors.map(c=>String(c||'').trim()).filter(Boolean) : [];
   if(configured.length) return configured;
   const fallback=timetableSegmentColors(rows?.[startIndex]?.station,rows?.[endIndex]?.station,trainContext)
     .map(c=>String(c||'').trim()).filter(Boolean);
   return fallback.length?fallback:['#666'];
 }
-function timetableLineBackground(colors){
+function timetableLineBackground(colors,colorStops=null){
   const list=(Array.isArray(colors)?colors:[]).map(c=>String(c||'').trim()).filter(Boolean);
   const safe=list.length?list:['#666'];
-  const stops=safe.map((color,i)=>`${color} ${(i/safe.length)*100}% ${((i+1)/safe.length)*100}%`).join(',');
-  return `linear-gradient(to bottom,${stops})`;
+  let ranges=[];
+  const positioned=(Array.isArray(colorStops)?colorStops:[])
+    .map(item=>({color:String(item?.color||'').trim(),position:Number(item?.position ?? item?.at) }))
+    .filter(item=>item.color && Number.isFinite(item.position))
+    .map(item=>({...item,position:Math.max(0,Math.min(100,item.position))}))
+    .sort((a,b)=>a.position-b.position);
+  if(positioned.length){
+    // {color, position} はその位置から次の色の位置までを塗る。最初の色は線の始端まで延長。
+    const normalized=[];
+    for(const item of positioned){
+      if(normalized.length && normalized[normalized.length-1].position===item.position) normalized[normalized.length-1]=item;
+      else normalized.push(item);
+    }
+    if(normalized[0].position>0) normalized.unshift({...normalized[0],position:0});
+    ranges=normalized.map((item,i)=>{
+      const start=item.position;
+      const end=i<normalized.length-1?normalized[i+1].position:100;
+      return `${item.color} ${start}% ${Math.max(start,end)}%`;
+    }).filter((_,i)=>i===normalized.length-1 || normalized[i].position<normalized[i+1].position);
+  }else{
+    // 位置情報がない単色・互換データも、色数と同じ個数で駅間を等分する。
+    ranges=safe.map((color,i)=>`${color} ${(i/safe.length)*100}% ${((i+1)/safe.length)*100}%`);
+  }
+  return `linear-gradient(to bottom,${ranges.join(',')})`;
 }
 function stationDotColors(rows,index,trainContext=null){
   // 停車駅案内の駅色は、その駅から「次の停車駅」までの区間カラーを使用する。
@@ -5924,10 +5989,12 @@ function timetableRowsHTML(stops,trainContext=null){
     if(rows.length===1) prevColors=nextColors=[dotColor];
     const prevDotted=index>0&&isDottedRouteSegment(rows[index-1]?.station,row.station,index);
     const nextDotted=index<rows.length-1&&isDottedRouteSegment(row.station,rows[index+1]?.station,index+1);
-    const topBg=timetableLineBackground(prevColors);
-    const bottomBg=timetableLineBackground(nextColors);
-    const topMask=prevDotted?dottedMask:'none';
-    const bottomMask=nextDotted?dottedMask:'none';
+    const prevStops=index>0?rows[index]?.segmentColorStops:null;
+    const nextStops=index<rows.length-1?rows[index+1]?.segmentColorStops:null;
+    const topBg=timetableLineBackground(prevColors,prevStops);
+    const bottomBg=timetableLineBackground(nextColors,nextStops);
+    const topMask=(prevDotted||activeRouteMeta?.dottedTimetableGuide)?dottedMask:'none';
+    const bottomMask=(nextDotted||activeRouteMeta?.dottedTimetableGuide)?dottedMask:'none';
     const markerClass=row.boardingOnly?' boarding-only':(row.alightingOnly?' alighting-only':'');
     const markerTitle=row.boardingOnly?'乗車専用駅':(row.alightingOnly?'降車専用駅':'');
     const classes=['timetable-item',activeRouteMeta?.dottedTimetableGuide?'dotted-route-guide':'',prevDotted?'dotted-route-guide-prev':'',nextDotted?'dotted-route-guide-next':''].filter(Boolean).join(' ');
