@@ -2490,7 +2490,6 @@ function timetableRowsHTML(stops,trainContext=null){
     const bottom=lineBg(nextColors,globalDotted||nextDotted);
     const classes=['timetable-item',globalDotted?'dotted-route-guide':''].filter(Boolean).join(' ');
     const markerClass=row.boardingOnly?' boarding-only':(row.alightingOnly?' alighting-only':'');
-    const markerTitle=row.boardingOnly?'乗車専用駅':(row.alightingOnly?'降車専用駅':'');
     return `<div class="${classes}" style="--route-line-top-bg:${top.images};--route-line-top-size:${top.sizes};--route-line-top-position:${top.positions};--route-line-top-repeat:${top.repeat};--route-line-top-mask:${top.mask};--route-line-bottom-bg:${bottom.images};--route-line-bottom-size:${bottom.sizes};--route-line-bottom-position:${bottom.positions};--route-line-bottom-repeat:${bottom.repeat};--route-line-bottom-mask:${bottom.mask};--station-route-color:${dotColor};--station-route-color-bg:${dotColor}"><div class="time-dot${markerClass}"${markerTitle?` title="${markerTitle}" aria-label="${markerTitle}"`:''}></div><div class="time-text${twoLine?' two-line':''}">${times.map(t=>`<span>${t}</span>`).join('')}</div><div class="station-text">${row.station}</div></div>`;
   }).join('');
 }
