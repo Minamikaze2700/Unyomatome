@@ -481,7 +481,7 @@ button,input,select,textarea{font-family:inherit}
 .option-disabled{opacity:.42;cursor:not-allowed!important;}
 .timetable-list{background:#fff;border-radius:8px;padding:12px 20px}
 .timetable-item{display:flex;align-items:center;padding:8px 0;position:relative;height:56px;min-height:56px;box-sizing:border-box}
-/* 停車駅案内：各駅に設定された直前／直後区間の色を描画。複数色は横並びの帯にする。 */
+/* 停車駅案内：駅の丸に隠れる区間線を、駅間全体で連続する縦方向の複数色にする。 */
 .timetable-item::before,.timetable-item::after{
   content:'';position:absolute;left:7px;width:4px;z-index:1;
   background-repeat:no-repeat;
@@ -490,15 +490,15 @@ button,input,select,textarea{font-family:inherit}
 .timetable-item::before{
   top:0;bottom:50%;
   background-image:var(--route-line-top-bg,linear-gradient(to bottom,var(--primary),var(--primary)));
-  background-size:var(--route-line-top-size,100% 100%);
-  background-position:var(--route-line-top-position,0 0);
+  background-size:var(--route-line-top-size,100% 200%);
+  background-position:var(--route-line-top-position,0 100%);
   background-repeat:var(--route-line-top-repeat,no-repeat);
 }
 .timetable-item::after{
   top:50%;bottom:0;
   mask-image:var(--route-line-bottom-mask,none);-webkit-mask-image:var(--route-line-bottom-mask,none);
   background-image:var(--route-line-bottom-bg,linear-gradient(to bottom,var(--primary),var(--primary)));
-  background-size:var(--route-line-bottom-size,100% 100%);
+  background-size:var(--route-line-bottom-size,100% 200%);
   background-position:var(--route-line-bottom-position,0 0);
   background-repeat:var(--route-line-bottom-repeat,no-repeat);
 }
@@ -5930,7 +5930,7 @@ function timetableRowsHTML(stops,trainContext=null){
     const markerClass=row.boardingOnly?' boarding-only':(row.alightingOnly?' alighting-only':'');
     const markerTitle=row.boardingOnly?'乗車専用駅':(row.alightingOnly?'降車専用駅':'');
     const classes=['timetable-item',activeRouteMeta?.dottedTimetableGuide?'dotted-route-guide':'',prevDotted?'dotted-route-guide-prev':'',nextDotted?'dotted-route-guide-next':''].filter(Boolean).join(' ');
-    return `<div class="${classes}" style="--route-line-top-bg:${escapeAttr(topBg)};--route-line-bottom-bg:${escapeAttr(bottomBg)};--route-line-top-mask:${escapeAttr(topMask)};--route-line-bottom-mask:${escapeAttr(bottomMask)};--station-route-color:${escapeAttr(dotColor)};--station-route-color-bg:${escapeAttr(dotColor)}"><div class="time-dot${markerClass}"${markerTitle?` title="${markerTitle}" aria-label="${markerTitle}"`:''}></div><div class="time-text${twoLine?' two-line':''}">${times.map(t=>`<span>${escapeAttr(t)}</span>`).join('')}</div><div class="station-text">${escapeAttr(row.station)}</div></div>`;
+    return `<div class="${classes}" style="--route-line-top-bg:${escapeAttr(topBg)};--route-line-bottom-bg:${escapeAttr(bottomBg)};--route-line-top-size:100% 200%;--route-line-bottom-size:100% 200%;--route-line-top-position:0 100%;--route-line-bottom-position:0 0;--route-line-top-mask:${escapeAttr(topMask)};--route-line-bottom-mask:${escapeAttr(bottomMask)};--station-route-color:${escapeAttr(dotColor)};--station-route-color-bg:${escapeAttr(dotColor)}"><div class="time-dot${markerClass}"${markerTitle?` title="${markerTitle}" aria-label="${markerTitle}"`:''}></div><div class="time-text${twoLine?' two-line':''}">${times.map(t=>`<span>${escapeAttr(t)}</span>`).join('')}</div><div class="station-text">${escapeAttr(row.station)}</div></div>`;
   }).join('');
 }
 
