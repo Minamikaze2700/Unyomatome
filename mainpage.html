@@ -5877,7 +5877,7 @@ function timetableLineBackground(colors){
   const list=(Array.isArray(colors)?colors:[]).map(c=>String(c||'').trim()).filter(Boolean);
   const safe=list.length?list:['#666'];
   const stops=safe.map((color,i)=>`${color} ${(i/safe.length)*100}% ${((i+1)/safe.length)*100}%`).join(',');
-  return `linear-gradient(to right,${stops})`;
+  return `linear-gradient(to bottom,${stops})`;
 }
 function stationDotColors(rows,index,trainContext=null){
   // 停車駅案内の駅色は、その駅から「次の停車駅」までの区間カラーを使用する。
