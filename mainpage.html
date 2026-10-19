@@ -5917,9 +5917,11 @@ function timetableRowsHTML(stops,trainContext=null){
     const twoLine=times.length>=2;
     let prevColors=index>0?colorsForSegment(index-1,index):[];
     let nextColors=index<rows.length-1?colorsForSegment(index,index+1):[];
-    const dotColor=String(stationDotColors(rows,index,trainContext)[0]||'#666');
+    // 駅の丸は、駅に接する線の端の色に合わせる。
+    // 縦方向に色分割した場合、次区間の駅側は先頭色、前区間の駅側は末尾色。
     if(rows.length>1&&index===0) prevColors=nextColors;
     if(rows.length>1&&index===rows.length-1) nextColors=prevColors;
+    const dotColor=String((index<rows.length-1 ? nextColors[0] : prevColors[prevColors.length-1]) || stationDotColors(rows,index,trainContext)[0] || '#666');
     if(rows.length===1) prevColors=nextColors=[dotColor];
     const prevDotted=index>0&&isDottedRouteSegment(rows[index-1]?.station,row.station,index);
     const nextDotted=index<rows.length-1&&isDottedRouteSegment(row.station,rows[index+1]?.station,index+1);
