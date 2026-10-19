@@ -976,8 +976,8 @@ function esc(value){
 const RESET_HOUR=3;
 const RESET_DWELL_MIN=2;
 const TURNBACK_SWITCH_MIN=1;
-const TRAIN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/HiroshimaArea_2026.json';
-const KOBE_CITY_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/KobeCity_2026.json';
+const TRAIN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/SanyoHiroshima_2026.json';
+const KOBE_KAIGAN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/KobeCity_Kaigan_2026.json';
 const DEFAULT_ROUTE_TITLE='運用まとめ';
 const LAST_ROUTE_STORAGE_KEY='routeLastRoute_v1';
 const ROUTE_REGISTRY={
@@ -1026,7 +1026,7 @@ const ROUTE_REGISTRY={
   },
   '海岸線':{
     id:'kobe-kaigan',
-    json:KOBE_CITY_DATA_URL,
+    json:KOBE_KAIGAN_DATA_URL,
     jsonLines:['海岸線'],
     range:'新長田～三宮・花時計前',
     area:'神戸市営',
@@ -1040,7 +1040,7 @@ const ROUTE_REGISTRY={
   },
   '西神・山手線':{
     id:'kobe-seishin-yamate',
-    json:KOBE_CITY_DATA_URL,
+    json:KOBE_KAIGAN_DATA_URL,
     jsonLines:['西神・山手線'],
     range:'谷上～西神中央',
     area:'神戸市営',
@@ -1249,19 +1249,19 @@ const ROUTE_REGISTRY={
 /* 時刻表ファイルは改正年で管理し、選択日付に有効なファイルを読み込む。 */
 const ROUTE_SCHEDULE_CONFIG={
   '山陽本線（糸崎～岩国）':[
-    {from:'2026-03-14',to:'2027-03-13',file:'HiroshimaArea_2026.json'}
+    {from:'2026-03-14',to:'2027-03-13',file:'SanyoHiroshima_2026.json'}
   ],
   '可部線':[
-    {from:'2026-03-14',to:'2027-03-13',file:'HiroshimaArea_2026.json'}
+    {from:'2026-03-14',to:'2027-03-13',file:'Kabe_2026.json'}
   ],
   '呉線':[
-    {from:'2026-03-14',to:'2027-03-13',file:'HiroshimaArea_2026.json'}
+    {from:'2026-03-14',to:'2027-03-13',file:'Kure_2026.json'}
   ],
   '海岸線':[
-    {from:'2026-03-14',to:'2027-03-13',file:'KobeCity_2026.json'}
+    {from:'2026-03-14',to:'2027-03-13',file:'KobeCity_Kaigan_2026.json'}
   ],
   '西神・山手線':[
-    {from:'2025-03-15',to:'2027-03-13',file:'KobeCity_2026.json'}
+    {from:'2025-03-15',to:'2027-03-13',file:'KobeCity_SeishinYamate_2025.json'}
   ],
   '京浜東北・根岸線':[
     {from:'2025-03-15',to:'2027-03-13',file:'KeihinTohoku_2025.json',relatedFiles:['Yokohama_2026.json']}
@@ -1415,6 +1415,9 @@ async function hydrateRouteNumberingImages(defs){
         const routeId=String(route?.id||routeName||'');
         const btn=Array.from(document.querySelectorAll('.route-button[data-route-id]')).find(el=>el.getAttribute('data-route-id')===routeId);
         if(!btn) return;
+        const box=btn.querySelector('.route-numbering');
+        if(!box) return;
+        box.innerHTML=images.map(src=>`<img class="route-numbering-image" src="${escapeAttr(src)}" alt="" aria-hidden="true" loading="eager">`).join('');
       })());
     }
   }
@@ -1903,6 +1906,8 @@ function normalizeExternalTrain(raw,day,direction,meta){
       arrival:String(st?.arrival||''),
       departure:String(st?.departure||''),
       time:String(st?.time||st?.departure||st?.arrival||''),
+      routeColor:String(st?.routeColor||'').trim()||undefined,
+      dottedBefore:st?.dottedBefore===true,
       platform:st?.platform||undefined,
       isStop:hasTime
     };
@@ -2345,7 +2350,8 @@ function buildTimetableRows(stops){
       if(d && !times.includes(d)) times.push(d);
       j++;
     }
-    rows.push({station,times:times.slice(0,2)});
+    const dottedBefore=scheduled.slice(i,j).some(st=>st?.dottedBefore===true);
+    rows.push({station,times:times.slice(0,2),dottedBefore});
     i=j;
   }
   return rows;
@@ -2367,11 +2373,6 @@ function fukuokaChikuhiStationSet(json=activeJson){
   return new Set(chikuhi.flatMap(line=>Array.isArray(line?.stations)?line.stations:[])
     .map(st=>String(st?.name||st?.nameJa||st?.station||'').trim()).filter(Boolean));
 }
-function isTobuSkytreeDottedSegment(a,b){
-  if(String(activeRouteMeta?.id||'')!=='hibiya' && String(activeRouteName||'')!=='日比谷線') return false;
-  const line=lineDefByName('東武スカイツリーライン');
-  return !!line && lineContainsStops(line,String(a||''),String(b||''));
-}
 function timetableRowsHTML(stops,trainContext=null){
   // 停車駅案内は現在の路線外の停車駅も含める。時刻未設定の駅は表示しない。
   const visibleStops=(stops||[]).filter(st=>!!String(st?.arrival||st?.departure||st?.time||'').trim());
@@ -2384,7 +2385,7 @@ function timetableRowsHTML(stops,trainContext=null){
   };
   const chikuhiStations=fukuokaChikuhiStationSet();
   const isChikuhiSegment=(a,b)=>chikuhiStations.has(String(a||''))&&chikuhiStations.has(String(b||''))&&String(a||'')!==String(b||'');
-  const isDottedRouteSegment=(a,b)=>isChikuhiSegment(a,b)||isTobuSkytreeDottedSegment(a,b);
+  const isDottedRouteSegment=(a,b,arrivalIndex=-1)=>isChikuhiSegment(a,b)||(arrivalIndex>=0&&rows[arrivalIndex]?.dottedBefore===true);
   const globalDotted=!!activeRouteMeta?.dottedTimetableGuide;
   const solidLineBg=color=>`linear-gradient(to bottom,${color},${color})`;
   const dottedLineBg=color=>`repeating-linear-gradient(to bottom,${color} 0 7px,transparent 7px 14px)`;
@@ -2399,8 +2400,8 @@ function timetableRowsHTML(stops,trainContext=null){
     if(rows.length>1&&index===0) prevColor=nextColor;
     if(rows.length>1&&index===rows.length-1) nextColor=prevColor;
     if(rows.length===1) prevColor=nextColor=dotColor;
-    const prevDotted=index>0&&isDottedRouteSegment(rows[index-1]?.station,row.station);
-    const nextDotted=index<rows.length-1&&isDottedRouteSegment(row.station,rows[index+1]?.station);
+    const prevDotted=index>0&&isDottedRouteSegment(rows[index-1]?.station,row.station,index);
+    const nextDotted=index<rows.length-1&&isDottedRouteSegment(row.station,rows[index+1]?.station,index+1);
     const topBg=prevDotted?dottedLineBg(prevColor):solidLineBg(prevColor);
     const bottomBg=nextDotted?dottedLineBg(nextColor):solidLineBg(nextColor);
     const classes=['timetable-item',globalDotted?'dotted-route-guide':''].filter(Boolean).join(' ');
@@ -2797,6 +2798,8 @@ function getShortType(type, trainNo=''){
   const meta=activeRouteMeta||{};
   const direct=meta.typeShortMap?.[value];
   if(direct!==undefined) return String(direct);
+  const jsonDirect=activeJson?.typeShortMap?.[value];
+  if(jsonDirect!==undefined) return String(jsonDirect);
   for(const rule of (Array.isArray(meta.typeShortRules)?meta.typeShortRules:[])){
     const containsAll=Array.isArray(rule.containsAll)?rule.containsAll:[];
     if(containsAll.length && !containsAll.every(x=>value.includes(String(x)))) continue;
@@ -2826,8 +2829,10 @@ function getShortDest(dest){
   const aliasMaps=[
     activeRouteMeta?.destinationAliases,
     activeRouteMeta?.stationAliases,
+    activeRouteMeta?.stationShortMap,
     activeJson?.destinationAliases,
-    activeJson?.stationAliases
+    activeJson?.stationAliases,
+    activeJson?.stationShortMap
   ];
   for(const aliases of aliasMaps){
     if(aliases && typeof aliases==='object' && Object.prototype.hasOwnProperty.call(aliases,value)){
@@ -5802,7 +5807,7 @@ function timetableRowsHTML(stops,trainContext=null){
   const segmentColor=(aIndex,bIndex)=>String(timetableSegmentColors(rows[aIndex]?.station,rows[bIndex]?.station,trainContext)[0]||'#666');
   const chikuhiStations=fukuokaChikuhiStationSet();
   const isChikuhiSegment=(a,b)=>isFukuoka && !!a && !!b && a!==b && chikuhiStations.has(String(a)) && chikuhiStations.has(String(b));
-  const isDottedRouteSegment=(a,b)=>isChikuhiSegment(a,b)||isTobuSkytreeDottedSegment(a,b);
+  const isDottedRouteSegment=(a,b,arrivalIndex=-1)=>isChikuhiSegment(a,b)||(arrivalIndex>=0&&rows[arrivalIndex]?.dottedBefore===true);
   return rows.map((row,index)=>{
     const rawTimes=row.times.length>=2?row.times.slice(0,2):row.times.slice(0,1);
     const formattedTimes=rawTimes.map(formatRailwayDisplayTime);
@@ -5816,8 +5821,8 @@ function timetableRowsHTML(stops,trainContext=null){
     if(rows.length===1) prevColor=nextColor=dotColor;
     const prevChikuhi=index>0&&isChikuhiSegment(rows[index-1]?.station,row.station);
     const nextChikuhi=index<rows.length-1&&isChikuhiSegment(row.station,rows[index+1]?.station);
-    const prevDotted=index>0&&isDottedRouteSegment(rows[index-1]?.station,row.station);
-    const nextDotted=index<rows.length-1&&isDottedRouteSegment(row.station,rows[index+1]?.station);
+    const prevDotted=index>0&&isDottedRouteSegment(rows[index-1]?.station,row.station,index);
+    const nextDotted=index<rows.length-1&&isDottedRouteSegment(row.station,rows[index+1]?.station,index+1);
     // CSS の background-image には色コード単体を渡せないため、必ず画像値の gradient にする。
     // 以前ここへ #xxxxxx を直接渡したことで、共通の停車駅案内線が無効になっていた。
     const solidLineBg=color=>`linear-gradient(to bottom,${color},${color})`;
@@ -6054,7 +6059,11 @@ function typeBadgeInlineStyle(train,position=null,stationDirectionColor=null,sta
     if(routeColor) return `background:${routeColor};color:#fff;`;
     if(stationDirectionColor) return `background:${stationDirectionColor};color:#fff;`;
   }
-  if(typeof colorSpec==='string') return `background:${typeColorForTrain(train,position,stationName,stationDirectionColor)};color:#fff;`;
+  if(typeof colorSpec==='string'){
+    const resolvedColor=String(typeColorForTrain(train,position,stationName,stationDirectionColor)).trim();
+    const isWhite=/^#(?:fff|ffffff)$/i.test(resolvedColor);
+    return `background:${resolvedColor};color:${isWhite?'#111':'#fff'};${isWhite?'border:1px solid #bbb;':''}`;
+  }
   if(type==='普通' && stationDirectionColor) return `background:${stationDirectionColor};color:#fff;`;
   const resolvedPosition = position!=null ? position : (train ? positionForTrain(train,currentMinutes())?.pos : null);
   return `background:${typeColorForTrain(train,resolvedPosition,stationName,stationDirectionColor)};color:#fff;`;
@@ -6111,7 +6120,7 @@ function openRegionSheet(region){
 <p class="terms-end">以上</p><p class="terms-date">制定日：2026年9月18日</p>
 </div>`
     : (defs.length
-      ? defs.map(c=>`<section class="company-block"><h2 class="company-name">${esc(c.company)}</h2><div class="route-list">${c.routes.map(r=>`<button type="button" class="route-button" data-route-id="${esc(r.id||r.name)}" onclick="selectRoute('${escapeJs(r.id||r.name)}')"></span><span class="route-label">${esc(r.name)}</span></button>`).join('')}</div></section>`).join('')
+      ? defs.map(c=>`<section class="company-block"><h2 class="company-name">${esc(c.company)}</h2><div class="route-list">${c.routes.map(r=>`<button type="button" class="route-button" data-route-id="${esc(r.id||r.name)}" onclick="selectRoute('${escapeJs(r.id||r.name)}')"><span class="route-numbering" aria-hidden="true"></span><span class="route-label">${esc(r.name)}</span></button>`).join('')}</div></section>`).join('')
       : `<section class="company-block"><h2 class="company-name">この地域の路線は未登録です。</h2></section>`);
   content.innerHTML=inner;
   if(region!=='利用規約' && defs.length) hydrateRouteNumberingImages(defs);
@@ -6239,6 +6248,22 @@ function initRegionNavigation(){
       align-items:center;
       gap:8px;
       transition:background .15s ease,border-color .15s ease;
+    }
+    .route-numbering{
+      flex:0 0 auto;
+      display:inline-flex;
+      align-items:center;
+      justify-content:flex-start;
+      gap:2px;
+      min-width:0;
+      line-height:0;
+    }
+    .route-numbering-image{
+      width:auto;
+      height:28px;
+      max-width:34px;
+      display:block;
+      object-fit:contain;
     }
     .route-label{
       flex:1 1 auto;
