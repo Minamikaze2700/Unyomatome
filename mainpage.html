@@ -481,17 +481,39 @@ button,input,select,textarea{font-family:inherit}
 .option-disabled{opacity:.42;cursor:not-allowed!important;}
 .timetable-list{background:#fff;border-radius:8px;padding:12px 20px}
 .timetable-item{display:flex;align-items:center;padding:8px 0;position:relative;height:56px;min-height:56px;box-sizing:border-box}
-/* 停車駅案内：路線JSONの区間カラーを使用 */
+/* 停車駅案内：各駅に設定された直前／直後区間の色を描画。複数色は横並びの帯にする。 */
+.timetable-item::before,.timetable-item::after{
+  content:'';position:absolute;left:7px;width:4px;z-index:1;
+  background-repeat:no-repeat;
+}
 .timetable-item::before{
-  content:'';position:absolute;left:7px;top:0;bottom:0;width:4px;
-  background:linear-gradient(to bottom,var(--route-line-top,var(--primary)) 0 50%,var(--route-line-bottom,var(--primary)) 50% 100%);
-  z-index:1;
+  top:0;bottom:50%;
+  background-image:var(--route-line-top-bg,linear-gradient(to bottom,var(--primary),var(--primary)));
+  background-size:var(--route-line-top-size,100% 100%);
+  background-position:var(--route-line-top-position,0 0);
+  background-repeat:var(--route-line-top-repeat,no-repeat);
+}
+.timetable-item::after{
+  top:50%;bottom:0;
+  background-image:var(--route-line-bottom-bg,linear-gradient(to bottom,var(--primary),var(--primary)));
+  background-size:var(--route-line-bottom-size,100% 100%);
+  background-position:var(--route-line-bottom-position,0 0);
+  background-repeat:var(--route-line-bottom-repeat,no-repeat);
 }
 .timetable-item:first-child::before{top:50%}
-.timetable-item.dotted-route-guide::before{background:repeating-linear-gradient(to bottom,var(--station-route-color,var(--primary)) 0 7px,transparent 7px 14px) !important;}
-.timetable-item.dotted-route-guide:first-child::before{background:repeating-linear-gradient(to bottom,transparent 0 7px,var(--station-route-color,var(--primary)) 7px 14px) !important;}
-.timetable-item:last-child::before{bottom:50%}
-.time-dot{width:18px;height:18px;background:var(--station-route-color,var(--primary));border-radius:50%;z-index:2;margin-right:16px}
+.timetable-item:last-child::after{bottom:50%}
+.timetable-item.dotted-route-guide::before,.timetable-item.dotted-route-guide::after{
+  background-image:repeating-linear-gradient(to bottom,var(--station-route-color,var(--primary)) 0 7px,transparent 7px 14px) !important;
+  background-size:100% 100% !important;background-position:0 0 !important;background-repeat:repeat-y !important;
+}
+.time-dot{position:relative;width:18px;height:18px;background:var(--station-route-color,var(--primary));border-radius:50%;z-index:2;margin-right:16px;flex:none}
+.time-dot.boarding-only::after,.time-dot.alighting-only::after{
+  position:absolute;left:0;right:0;top:0;display:block;text-align:center;
+  color:#fff;font-size:9px;font-weight:900;line-height:18px;height:18px;
+  text-shadow:0 0 1px rgba(0,0,0,.12);pointer-events:none;
+}
+.time-dot.boarding-only::after{content:'▼';}
+.time-dot.alighting-only::after{content:'▲';}
 .time-text{width:58px;font-weight:700;display:flex;flex-direction:column;justify-content:center;line-height:1.05;gap:0;height:40px;flex:none}.time-text span{display:block;height:20px;line-height:20px;white-space:nowrap}.time-text.two-line span:first-child{font-size:1rem}.time-text.two-line span:last-child{font-size:1rem}
 .station-text{font-weight:700;font-size:1.05rem;line-height:1.2;display:flex;align-items:center;min-height:40px}
 .select-box-container{position:relative;width:100%;margin:12px 0}
@@ -720,13 +742,7 @@ button,input,select,textarea{font-family:inherit}
   #viewportCanvas{padding-bottom:var(--region-nav-height,64px) !important;}
   .region-nav{pointer-events:auto !important;}
   .region-nav button{pointer-events:auto !important;position:relative;z-index:15001;}
-  /* 停車駅案内：上半分/下半分をそれぞれ路線カラーの多色グラデーションで描画。入れ子gradientを避けて線切れを防ぐ。 */
-  .timetable-item::before{
-    background-image:var(--route-line-top-bg),var(--route-line-bottom-bg) !important;
-    background-size:100% 50%,100% 50% !important;
-    background-position:top,bottom !important;
-    background-repeat:no-repeat !important;
-  }
+  /* 停車駅案内はPCと同じ駅単位の破線・複数色設定を使う。 */
   .time-dot{background:var(--station-route-color-bg) !important;}
 </style>
 <style id="hiroshima-ui-overrides">
@@ -1908,6 +1924,12 @@ function normalizeExternalTrain(raw,day,direction,meta){
       time:String(st?.time||st?.departure||st?.arrival||''),
       routeColor:String(st?.routeColor||'').trim()||undefined,
       dottedBefore:st?.dottedBefore===true,
+      segmentColors:Array.isArray(st?.segmentColors)
+        ? st.segmentColors.map(c=>String(c||'').trim()).filter(Boolean)
+        : undefined,
+      boardingOnly:st?.boardingOnly===true,
+      alightingOnly:st?.alightingOnly===true,
+      prescribedFormation:String(st?.prescribedFormation||'').trim()||undefined,
       platform:st?.platform||undefined,
       isStop:hasTime
     };
@@ -1986,6 +2008,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
     startTime:String(raw?.startTime||firstTimed.departure||firstTimed.arrival||firstTimed.time||''),
     dest:String(raw?.dest||lastTimed.station||''),
     endTime:String(raw?.endTime||lastTimed.arrival||lastTimed.departure||lastTimed.time||''),
+    prescribedFormation:String(raw?.prescribedFormation||raw?.prescribedFormationName||'').trim(),
     circular:raw?.circular===true,
     trainNumbers:(raw?.trainNumbers&&typeof raw.trainNumbers==='object')?raw.trainNumbers:(rawNo?{[String(servedLineNames[0]||raw?.lineKind||meta?.lineKind||'route')]:[rawNo]}:{}),
     servedLineNames,
@@ -2350,8 +2373,13 @@ function buildTimetableRows(stops){
       if(d && !times.includes(d)) times.push(d);
       j++;
     }
-    const dottedBefore=scheduled.slice(i,j).some(st=>st?.dottedBefore===true);
-    rows.push({station,times:times.slice(0,2),dottedBefore});
+    const grouped=scheduled.slice(i,j);
+    const dottedBefore=grouped.some(st=>st?.dottedBefore===true);
+    const segmentColors=[...new Set(grouped.flatMap(st=>Array.isArray(st?.segmentColors)?st.segmentColors:[])
+      .map(c=>String(c||'').trim()).filter(Boolean))];
+    const boardingOnly=grouped.some(st=>st?.boardingOnly===true);
+    const alightingOnly=grouped.some(st=>st?.alightingOnly===true);
+    rows.push({station,times:times.slice(0,2),dottedBefore,segmentColors,boardingOnly,alightingOnly});
     i=j;
   }
   return rows;
@@ -2379,33 +2407,50 @@ function timetableRowsHTML(stops,trainContext=null){
   const rows=buildTimetableRows(visibleStops);
   if(!rows.length) return '';
   const stationColor=index=>routeColorForStopIndex(rows,index,trainContext);
-  const segmentColor=(aIndex,bIndex)=>{
+  const fallbackSegmentColor=(aIndex,bIndex)=>{
     if(aIndex<0||bIndex<0||aIndex>=rows.length||bIndex>=rows.length) return routeColorForTrainFallback(trainContext);
     return routeColorForStopSegment(rows[aIndex]?.station,rows[bIndex]?.station,trainContext);
+  };
+  // segmentColors は「区間の終点駅」に登録する。終点駅の直前の線に適用する。
+  const colorsForIncomingSegment=(endIndex,startIndex)=>{
+    const configured=Array.isArray(rows[endIndex]?.segmentColors)
+      ? rows[endIndex].segmentColors.map(c=>String(c||'').trim()).filter(Boolean) : [];
+    return configured.length ? configured : [fallbackSegmentColor(startIndex,endIndex)];
   };
   const chikuhiStations=fukuokaChikuhiStationSet();
   const isChikuhiSegment=(a,b)=>chikuhiStations.has(String(a||''))&&chikuhiStations.has(String(b||''))&&String(a||'')!==String(b||'');
   const isDottedRouteSegment=(a,b,arrivalIndex=-1)=>isChikuhiSegment(a,b)||(arrivalIndex>=0&&rows[arrivalIndex]?.dottedBefore===true);
   const globalDotted=!!activeRouteMeta?.dottedTimetableGuide;
-  const solidLineBg=color=>`linear-gradient(to bottom,${color},${color})`;
-  const dottedLineBg=color=>`repeating-linear-gradient(to bottom,${color} 0 7px,transparent 7px 14px)`;
+  const lineBg=(colors,dotted=false)=>{
+    const list=(Array.isArray(colors)?colors:[]).map(c=>String(c||'').trim()).filter(Boolean);
+    const safe=list.length?list:['#666'];
+    const n=safe.length;
+    const images=safe.map(c=>dotted
+      ? `repeating-linear-gradient(to bottom,${c} 0 7px,transparent 7px 14px)`
+      : `linear-gradient(to bottom,${c},${c})`);
+    const sizes=safe.map(()=>`${100/n}% 100%`);
+    const positions=safe.map((_,i)=>`${n===1?0:(i/(n-1))*100}% 0`);
+    return {images:images.join(','),sizes:sizes.join(','),positions:positions.join(','),repeat:safe.map(()=> 'no-repeat').join(',')};
+  };
   return rows.map((row,index)=>{
     const rawTimes=rows[index].times.length>=2?rows[index].times.slice(0,2):rows[index].times.slice(0,1);
     const formattedTimes=rawTimes.map(formatRailwayDisplayTime);
     const times=(formattedTimes.length>=2&&formattedTimes[0]===formattedTimes[1])?[formattedTimes[0]]:formattedTimes;
     const twoLine=times.length>=2;
-    let prevColor=segmentColor(index-1,index);
-    let nextColor=segmentColor(index,index+1);
+    let prevColors=index>0?colorsForIncomingSegment(index,index-1):[];
+    let nextColors=index<rows.length-1?colorsForIncomingSegment(index+1,index):[];
     const dotColor=stationColor(index);
-    if(rows.length>1&&index===0) prevColor=nextColor;
-    if(rows.length>1&&index===rows.length-1) nextColor=prevColor;
-    if(rows.length===1) prevColor=nextColor=dotColor;
+    if(rows.length>1&&index===0) prevColors=nextColors;
+    if(rows.length>1&&index===rows.length-1) nextColors=prevColors;
+    if(rows.length===1) prevColors=nextColors=[dotColor];
     const prevDotted=index>0&&isDottedRouteSegment(rows[index-1]?.station,row.station,index);
     const nextDotted=index<rows.length-1&&isDottedRouteSegment(row.station,rows[index+1]?.station,index+1);
-    const topBg=prevDotted?dottedLineBg(prevColor):solidLineBg(prevColor);
-    const bottomBg=nextDotted?dottedLineBg(nextColor):solidLineBg(nextColor);
+    const top=lineBg(prevColors,globalDotted||prevDotted);
+    const bottom=lineBg(nextColors,globalDotted||nextDotted);
     const classes=['timetable-item',globalDotted?'dotted-route-guide':''].filter(Boolean).join(' ');
-    return `<div class="${classes}" style="--route-line-top:${prevColor};--route-line-bottom:${nextColor};--station-route-color:${dotColor};--route-line-top-bg:${topBg};--route-line-bottom-bg:${bottomBg};--station-route-color-bg:${dotColor}"><div class="time-dot"></div><div class="time-text${twoLine?' two-line':''}">${times.map(t=>`<span>${t}</span>`).join('')}</div><div class="station-text">${row.station}</div></div>`;
+    const markerClass=row.boardingOnly?' boarding-only':(row.alightingOnly?' alighting-only':'');
+    const markerTitle=row.boardingOnly?'乗車専用駅':(row.alightingOnly?'降車専用駅':'');
+    return `<div class="${classes}" style="--route-line-top-bg:${top.images};--route-line-top-size:${top.sizes};--route-line-top-position:${top.positions};--route-line-top-repeat:${top.repeat};--route-line-bottom-bg:${bottom.images};--route-line-bottom-size:${bottom.sizes};--route-line-bottom-position:${bottom.positions};--route-line-bottom-repeat:${bottom.repeat};--station-route-color:${dotColor};--station-route-color-bg:${dotColor}"><div class="time-dot${markerClass}"${markerTitle?` title="${markerTitle}" aria-label="${markerTitle}"`:''}></div><div class="time-text${twoLine?' two-line':''}">${times.map(t=>`<span>${t}</span>`).join('')}</div><div class="station-text">${row.station}</div></div>`;
   }).join('');
 }
 let TIMETABLE_HTML_CACHE = new Map();
@@ -3276,6 +3321,8 @@ function formationDisplayHTML(id){
 }
 
 function prescribedFormationName(t){
+  const explicit=String(t?.prescribedFormation||t?.rawTrain?.prescribedFormation||t?.rawTrain?.prescribedFormationName||'').trim();
+  if(explicit) return explicit;
   const meta=ROUTE_REGISTRY[String(t?.routeName||activeRouteName)]||activeRouteMeta||{};
   const rule=String(meta?.prescribedFormationRule||'');
   if(rule==='nagano'){
@@ -4039,12 +4086,11 @@ function renderTrainPositions(){
       // innerHTML再生成の有無に関係なく毎フレーム更新することで、
       // 山陽本線の緑→赤の境界通過時などに以前の色が残らないようにする。
       const trainLabelEl=el.querySelector('.train-label');
-      if(trainLabelEl && getMainLabelClass(t.type)==='route-normal'){
+      if(trainLabelEl){
         trainLabelEl.style.display='block';
         trainLabelEl.style.visibility='visible';
         trainLabelEl.style.opacity='1';
-        trainLabelEl.style.background=currentTrainTypeColor;
-        trainLabelEl.style.color='#fff';
+        applyTypeBadgeAppearance(trainLabelEl,t,item.pos);
       }
       el.style.transition='none';
       const rr=rowRectAt(item.pos) || {centerY:layerRect.top+layerRect.height/2};
@@ -6042,31 +6088,28 @@ function typeColorForTrain(train,position=null,stationName='',stationDirectionCo
   const fallback=String(fallbackTrainServiceColor(train)||activeRouteColors()[0]||'#666');
   return fallback;
 }
-function typeBadgeInlineStyle(train,position=null,stationDirectionColor=null,stationName=''){
+function typeBadgeAppearance(train,position=null,stationDirectionColor=null,stationName=''){
   const type=String(train?.type||'普通');
-  if(type==='回送') return 'background:#fff;color:#111;border:1px solid #bbb;';
-  const sourceColors=(train?.sourceTypeColors&&typeof train.sourceTypeColors==='object')?train.sourceTypeColors:{};
-  const configured={...sourceColors,...(activeJson?.typeColors||{}),...(activeRouteMeta?.typeColors||{})};
-  const colorSpec=configured[type];
-  if(colorSpec && typeof colorSpec==='object' && colorSpec.byRoute && typeof colorSpec.byRoute==='object'){
-    const resolvedPosition=position!=null ? position : (stationName ? null : (train ? positionForTrain(train,currentMinutes())?.pos : null));
-    if(!type || type==='普通' || type==='各駅停車'){
-      // 普通の種別色は固定指定されたbyRoute色を使わず、区間の路線色と一致させる。
-      const actualRouteColor=routeLineColorForTypeBadge(train,resolvedPosition,stationName);
-      return `background:${actualRouteColor||stationDirectionColor||activeRouteColors()[0]||'#666'};color:#fff;`;
-    }
-    const routeColor=typeColorFromByRoute(train,type,resolvedPosition,stationName,stationDirectionColor);
-    if(routeColor) return `background:${routeColor};color:#fff;`;
-    if(stationDirectionColor) return `background:${stationDirectionColor};color:#fff;`;
-  }
-  if(typeof colorSpec==='string'){
-    const resolvedColor=String(typeColorForTrain(train,position,stationName,stationDirectionColor)).trim();
-    const isWhite=/^#(?:fff|ffffff)$/i.test(resolvedColor);
-    return `background:${resolvedColor};color:${isWhite?'#111':'#fff'};${isWhite?'border:1px solid #bbb;':''}`;
-  }
-  if(type==='普通' && stationDirectionColor) return `background:${stationDirectionColor};color:#fff;`;
-  const resolvedPosition = position!=null ? position : (train ? positionForTrain(train,currentMinutes())?.pos : null);
-  return `background:${typeColorForTrain(train,resolvedPosition,stationName,stationDirectionColor)};color:#fff;`;
+  if(type==='回送') return {background:'#fff',color:'#111',border:'1px solid #bbb'};
+  const resolvedPosition=position!=null
+    ? position
+    : (stationName ? null : (train ? positionForTrain(train,currentMinutes())?.pos : null));
+  const background=String(typeColorForTrain(train,resolvedPosition,stationName,stationDirectionColor)||'#666').trim();
+  // 種別色から文字色を決定。列車アイコン下部と train-card が同じ計算を使う。
+  const color=stationEnglishTextColor(background);
+  const lightBackground=color==='#000' || /^#(?:fff|ffffff)$/i.test(background);
+  return {background,color,border:lightBackground?'1px solid #bbb':'1px solid transparent'};
+}
+function typeBadgeInlineStyle(train,position=null,stationDirectionColor=null,stationName=''){
+  const appearance=typeBadgeAppearance(train,position,stationDirectionColor,stationName);
+  return `background:${appearance.background};color:${appearance.color};border:${appearance.border};`;
+}
+function applyTypeBadgeAppearance(element,train,position=null,stationDirectionColor=null,stationName=''){
+  if(!element) return;
+  const appearance=typeBadgeAppearance(train,position,stationDirectionColor,stationName);
+  element.style.background=appearance.background;
+  element.style.color=appearance.color;
+  element.style.border=appearance.border;
 }
 function expressClassForTrain(t){
   const type=String(t?.type||'').trim();
@@ -8246,7 +8289,7 @@ initRegionNavigation();
         }
         const color=typeColorForTrain(t,item.pos);el.style.setProperty('--train-type-color',color);
         const trainLabelEl=el.querySelector('.train-label');
-        if(trainLabelEl&&getMainLabelClass(t.type)==='route-normal'){trainLabelEl.style.background=color;trainLabelEl.style.color='#fff';}
+        if(trainLabelEl) applyTypeBadgeAppearance(trainLabelEl,t,item.pos);
         const stageWidth=metrics.width;
         // 横方向は「内回り／外回り」で線路の内外を決める。
         // 左右どちらの線路でも、線路中心からの距離は常に同じにする。
