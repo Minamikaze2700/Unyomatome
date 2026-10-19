@@ -1994,7 +1994,11 @@
               "station": "南栗橋",
               "time": "06:47",
               "routeColor": "#0055b8",
-              "dottedBefore": true
+              "dottedBefore": true,
+              "segmentColors": [
+                "#0055b8",
+                "#ffa600"
+              ]
             }
           ],
           "type": "普通",
@@ -2446,7 +2450,11 @@
               "station": "南栗橋",
               "time": "07:20",
               "routeColor": "#0055b8",
-              "dottedBefore": true
+              "dottedBefore": true,
+              "segmentColors": [
+                "#0055b8",
+                "#ffa600"
+              ]
             }
           ],
           "type": "普通",
@@ -2898,7 +2906,11 @@
               "station": "南栗橋",
               "time": "07:56",
               "routeColor": "#0055b8",
-              "dottedBefore": true
+              "dottedBefore": true,
+              "segmentColors": [
+                "#0055b8",
+                "#ffa600"
+              ]
             }
           ],
           "type": "普通",
@@ -19501,7 +19513,11 @@
               "station": "南栗橋",
               "time": "15:54",
               "routeColor": "#0055b8",
-              "dottedBefore": true
+              "dottedBefore": true,
+              "segmentColors": [
+                "#0055b8",
+                "#ffa600"
+              ]
             }
           ],
           "type": "普通",
@@ -20537,7 +20553,11 @@
               "station": "南栗橋",
               "time": "16:31",
               "routeColor": "#0055b8",
-              "dottedBefore": true
+              "dottedBefore": true,
+              "segmentColors": [
+                "#0055b8",
+                "#ffa600"
+              ]
             }
           ],
           "type": "普通",
@@ -22618,7 +22638,11 @@
               "station": "南栗橋",
               "time": "17:52",
               "routeColor": "#0055b8",
-              "dottedBefore": true
+              "dottedBefore": true,
+              "segmentColors": [
+                "#0055b8",
+                "#ffa600"
+              ]
             }
           ],
           "type": "普通",
@@ -24461,59 +24485,90 @@
             {
               "station": "霞ケ関",
               "time": "17:02",
-              "routeColor": "#B5B5AC"
+              "routeColor": "#B5B5AC",
+              "boardingOnly": true
             },
             {
               "station": "銀座",
               "time": "17:06",
-              "routeColor": "#B5B5AC"
+              "routeColor": "#B5B5AC",
+              "boardingOnly": true
             },
             {
               "station": "茅場町",
               "time": "17:14",
-              "routeColor": "#B5B5AC"
+              "routeColor": "#B5B5AC",
+              "boardingOnly": true
             },
             {
               "station": "秋葉原",
               "time": "17:21",
-              "routeColor": "#B5B5AC"
+              "routeColor": "#B5B5AC",
+              "boardingOnly": true
             },
             {
               "station": "上野",
               "time": "17:25",
-              "routeColor": "#B5B5AC"
+              "routeColor": "#B5B5AC",
+              "boardingOnly": true
             },
             {
               "station": "新越谷",
               "time": "17:53",
-              "routeColor": "#0055b8"
+              "routeColor": "#0055b8",
+              "alightingOnly": true,
+              "segmentColors": [
+                "#B5B5AC",
+                "#0055b8"
+              ]
             },
             {
               "station": "せんげん台",
               "time": "18:00",
-              "routeColor": "#0055b8"
+              "routeColor": "#0055b8",
+              "alightingOnly": true,
+              "segmentColors": [
+                "#0055b8",
+                "#ff0000"
+              ]
             },
             {
               "station": "春日部",
               "time": "18:05",
-              "routeColor": "#0055b8"
+              "routeColor": "#0055b8",
+              "alightingOnly": true,
+              "segmentColors": [
+                "#0055b8",
+                "#ff0000"
+              ]
             },
             {
               "station": "東武動物公園",
               "time": "18:11",
-              "routeColor": "#0055b8"
+              "routeColor": "#0055b8",
+              "alightingOnly": true,
+              "segmentColors": [
+                "#0055b8",
+                "#ff0000"
+              ]
             },
             {
               "station": "久喜",
               "time": "18:19",
-              "routeColor": "#0055b8"
+              "routeColor": "#0055b8",
+              "alightingOnly": true,
+              "segmentColors": [
+                "#0055b8",
+                "#ff0000"
+              ]
             }
           ],
           "type": "THライナー",
           "start": "霞ケ関",
           "startTime": "17:02",
           "dest": "久喜",
-          "endTime": "18:19"
+          "endTime": "18:19",
+          "prescribedFormation": "70090型"
         },
         {
           "no": "B1664S",
@@ -25810,7 +25865,11 @@
               "station": "南栗橋",
               "time": "19:17",
               "routeColor": "#0055b8",
-              "dottedBefore": true
+              "dottedBefore": true,
+              "segmentColors": [
+                "#0055b8",
+                "#ffa600"
+              ]
             }
           ],
           "type": "普通",
@@ -26596,7 +26655,11 @@
               "station": "南栗橋",
               "time": "19:35",
               "routeColor": "#0055b8",
-              "dottedBefore": true
+              "dottedBefore": true,
+              "segmentColors": [
+                "#0055b8",
+                "#ffa600"
+              ]
             }
           ],
           "type": "普通",
@@ -27530,59 +27593,90 @@
             {
               "station": "霞ケ関",
               "time": "18:02",
-              "routeColor": "#B5B5AC"
+              "routeColor": "#B5B5AC",
+              "boardingOnly": true
             },
             {
               "station": "銀座",
               "time": "18:06",
-              "routeColor": "#B5B5AC"
+              "routeColor": "#B5B5AC",
+              "boardingOnly": true
             },
             {
               "station": "茅場町",
               "time": "18:14",
-              "routeColor": "#B5B5AC"
+              "routeColor": "#B5B5AC",
+              "boardingOnly": true
             },
             {
               "station": "秋葉原",
               "time": "18:21",
-              "routeColor": "#B5B5AC"
+              "routeColor": "#B5B5AC",
+              "boardingOnly": true
             },
             {
               "station": "上野",
               "time": "18:25",
-              "routeColor": "#B5B5AC"
+              "routeColor": "#B5B5AC",
+              "boardingOnly": true
             },
             {
               "station": "新越谷",
               "time": "18:53",
-              "routeColor": "#0055b8"
+              "routeColor": "#0055b8",
+              "alightingOnly": true,
+              "segmentColors": [
+                "#B5B5AC",
+                "#0055b8"
+              ]
             },
             {
               "station": "せんげん台",
               "time": "19:00",
-              "routeColor": "#0055b8"
+              "routeColor": "#0055b8",
+              "alightingOnly": true,
+              "segmentColors": [
+                "#0055b8",
+                "#ff0000"
+              ]
             },
             {
               "station": "春日部",
               "time": "19:05",
-              "routeColor": "#0055b8"
+              "routeColor": "#0055b8",
+              "alightingOnly": true,
+              "segmentColors": [
+                "#0055b8",
+                "#ff0000"
+              ]
             },
             {
               "station": "東武動物公園",
               "time": "19:11",
-              "routeColor": "#0055b8"
+              "routeColor": "#0055b8",
+              "alightingOnly": true,
+              "segmentColors": [
+                "#0055b8",
+                "#ff0000"
+              ]
             },
             {
               "station": "久喜",
               "time": "19:19",
-              "routeColor": "#0055b8"
+              "routeColor": "#0055b8",
+              "alightingOnly": true,
+              "segmentColors": [
+                "#0055b8",
+                "#ff0000"
+              ]
             }
           ],
           "type": "THライナー",
           "start": "霞ケ関",
           "startTime": "18:02",
           "dest": "久喜",
-          "endTime": "19:19"
+          "endTime": "19:19",
+          "prescribedFormation": "70090型"
         },
         {
           "no": "B1719T",
@@ -29332,7 +29426,11 @@
               "station": "南栗橋",
               "time": "06:47",
               "routeColor": "#0055b8",
-              "dottedBefore": true
+              "dottedBefore": true,
+              "segmentColors": [
+                "#0055b8",
+                "#ffa600"
+              ]
             }
           ],
           "type": "普通",
