@@ -3312,6 +3312,27 @@ function formationDisplayGroups(groups){
         routeNames:formationRouteNamesFromConfig(g)
       });
     }else{
+      // normalizeFormationGroups() がJSONの variants をFORMATIONSへ展開した場合、
+      // ここで個体差選択肢を必ず引き継ぐ。これがないと10030型更新などが消えてしまう。
+      for(const rawVariant of (Array.isArray(g?.variants)?g.variants:[])){
+        const variantId=String(rawVariant?.id||rawVariant?.name||'').trim().replace(/F$/i,'');
+        const variantName=String(rawVariant?.name||variantId).trim();
+        if(!variantId || !variantName) continue;
+        // 同じ個体差が複数グループから来た場合は重複させない。
+        if(group.variants.some(v=>String(v?.id||'').replace(/F$/i,'')===variantId)) continue;
+        group.variants.push({
+          ...rawVariant,
+          id:variantId,
+          name:variantName,
+          img:rawVariant?.img||g?.typeImg||fallbackTrainImageUrl(),
+          items:Array.isArray(rawVariant?.items)?rawVariant.items:[],
+          family:rawVariant?.family||g?.family||group.family,
+          kind:'variant',
+          generic:true,
+          displayAsFullName:rawVariant?.displayAsFullName!==false,
+          routeNames:formationRouteNamesFromConfig(rawVariant,formationRouteNamesFromConfig(g))
+        });
+      }
       group.items.push(...(Array.isArray(g?.items)?g.items:[]));
     }
   }
