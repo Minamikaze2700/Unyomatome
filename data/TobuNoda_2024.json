@@ -383,9 +383,23 @@
       "manufacturer": "アルナ工機（旧ナニワ工機）・日本車輌製造・汽車製造・東急車輛製造・富士重工業"
     },
     {
-      "type": "10030型更新",
+      "type": "10030型",
       "typeImg": "https://minamikaze2700.github.io/Unyomatome/images/TD10030.png",
       "family": "noda",
+      "variants": [
+        {
+          "id": "10030型更新",
+          "name": "10030型更新",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TD10030.png",
+          "items": []
+        },
+        {
+          "id": "10030型未更新",
+          "name": "10030型未更新",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TD10050.png",
+          "items": []
+        }
+      ],
       "items": [
         {
           "id": "11631",
@@ -471,17 +485,7 @@
           "manufacturer": "アルナ工機",
           "type": "10030型",
           "manufacturingYear": "1990年"
-        }
-      ],
-      "formationType": "10030型",
-      "manufacturingYear": "1988年～1996年",
-      "manufacturer": "アルナ工機・東急車輛製造・富士重工業"
-    },
-    {
-      "type": "10030型未更新",
-      "typeImg": "https://minamikaze2700.github.io/Unyomatome/images/TD10050.png",
-      "family": "noda",
-      "items": [
+        },
         {
           "id": "11651",
           "name": "11651F",
@@ -708,240 +712,23 @@
       "manufacturer": "アルナ工機・東急車輛製造・富士重工業"
     },
     {
-      "type": "60000型6両",
+      "type": "60000型",
       "typeImg": "https://minamikaze2700.github.io/Unyomatome/images/TB60600.png",
       "family": "noda",
-      "items": [
+      "variants": [
         {
-          "id": "61611",
-          "name": "61611F",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61611.png",
-          "family": "noda",
-          "carCount": 6,
-          "carNames": [
-            "66611",
-            "65611",
-            "64611",
-            "63611",
-            "62611",
-            "61611"
-          ],
-          "carFeatures": {
-            "66611": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "65611": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "64611": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "63611": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "62611": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "61611": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ]
-          },
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2015年"
+          "id": "60000型5両",
+          "name": "60000型5両",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB60500.png",
+          "items": []
         },
         {
-          "id": "61612",
-          "name": "61612F",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61612.png",
-          "family": "noda",
-          "carCount": 6,
-          "carNames": [
-            "66612",
-            "65612",
-            "64612",
-            "63612",
-            "62612",
-            "61612"
-          ],
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2015年"
-        },
-        {
-          "id": "61613",
-          "name": "61613F",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61613.png",
-          "family": "noda",
-          "carCount": 6,
-          "carNames": [
-            "66613",
-            "65613",
-            "64613",
-            "63613",
-            "62613",
-            "61613"
-          ],
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2015年"
-        },
-        {
-          "id": "61614",
-          "name": "61614F",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61614.png",
-          "family": "noda",
-          "carCount": 6,
-          "carNames": [
-            "66614",
-            "65614",
-            "64614",
-            "63614",
-            "62614",
-            "61614"
-          ],
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2015年"
-        },
-        {
-          "id": "61615",
-          "name": "61615F",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61615.png",
-          "family": "noda",
-          "carCount": 6,
-          "carNames": [
-            "66615",
-            "65615",
-            "64615",
-            "63615",
-            "62615",
-            "61615"
-          ],
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2015年"
-        },
-        {
-          "id": "61616",
-          "name": "61616F",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61616.png",
-          "family": "noda",
-          "carCount": 6,
-          "carNames": [
-            "66616",
-            "65616",
-            "64616",
-            "63616",
-            "62616",
-            "61616"
-          ],
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2015年"
-        },
-        {
-          "id": "61617",
-          "name": "61617F",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61617.png",
-          "family": "noda",
-          "carCount": 6,
-          "carNames": [
-            "66617",
-            "65617",
-            "64617",
-            "63617",
-            "62617",
-            "61617"
-          ],
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2015年"
-        },
-        {
-          "id": "61618",
-          "name": "61618F",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61618.png",
-          "family": "noda",
-          "disabled": true,
-          "carCount": 6,
-          "carNames": [
-            "66618",
-            "65618",
-            "64618",
-            "63618",
-            "62618",
-            "61618"
-          ],
-          "carFeatures": {
-            "66618": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "65618": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "64618": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "63618": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "62618": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "61618": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ]
-          },
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2015年"
+          "id": "60000型6両",
+          "name": "60000型6両",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB60600.png",
+          "items": []
         }
       ],
-      "formationType": "60000型",
-      "manufacturingYear": "2013年～2015年",
-      "manufacturer": "日立製作所"
-    },
-    {
-      "type": "60000型5両",
-      "typeImg": "https://minamikaze2700.github.io/Unyomatome/images/TB60500.png",
-      "family": "noda",
       "items": [
         {
           "id": "61501",
@@ -1434,6 +1221,227 @@
           "manufacturer": "日立製作所",
           "type": "60000型",
           "manufacturingYear": "2014年・2026年"
+        },
+        {
+          "id": "61611",
+          "name": "61611F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61611.png",
+          "family": "noda",
+          "carCount": 6,
+          "carNames": [
+            "66611",
+            "65611",
+            "64611",
+            "63611",
+            "62611",
+            "61611"
+          ],
+          "carFeatures": {
+            "66611": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "65611": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "64611": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "63611": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "62611": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "61611": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ]
+          },
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2015年"
+        },
+        {
+          "id": "61612",
+          "name": "61612F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61612.png",
+          "family": "noda",
+          "carCount": 6,
+          "carNames": [
+            "66612",
+            "65612",
+            "64612",
+            "63612",
+            "62612",
+            "61612"
+          ],
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2015年"
+        },
+        {
+          "id": "61613",
+          "name": "61613F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61613.png",
+          "family": "noda",
+          "carCount": 6,
+          "carNames": [
+            "66613",
+            "65613",
+            "64613",
+            "63613",
+            "62613",
+            "61613"
+          ],
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2015年"
+        },
+        {
+          "id": "61614",
+          "name": "61614F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61614.png",
+          "family": "noda",
+          "carCount": 6,
+          "carNames": [
+            "66614",
+            "65614",
+            "64614",
+            "63614",
+            "62614",
+            "61614"
+          ],
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2015年"
+        },
+        {
+          "id": "61615",
+          "name": "61615F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61615.png",
+          "family": "noda",
+          "carCount": 6,
+          "carNames": [
+            "66615",
+            "65615",
+            "64615",
+            "63615",
+            "62615",
+            "61615"
+          ],
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2015年"
+        },
+        {
+          "id": "61616",
+          "name": "61616F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61616.png",
+          "family": "noda",
+          "carCount": 6,
+          "carNames": [
+            "66616",
+            "65616",
+            "64616",
+            "63616",
+            "62616",
+            "61616"
+          ],
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2015年"
+        },
+        {
+          "id": "61617",
+          "name": "61617F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61617.png",
+          "family": "noda",
+          "carCount": 6,
+          "carNames": [
+            "66617",
+            "65617",
+            "64617",
+            "63617",
+            "62617",
+            "61617"
+          ],
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2015年"
+        },
+        {
+          "id": "61618",
+          "name": "61618F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61618.png",
+          "family": "noda",
+          "disabled": true,
+          "carCount": 6,
+          "carNames": [
+            "66618",
+            "65618",
+            "64618",
+            "63618",
+            "62618",
+            "61618"
+          ],
+          "carFeatures": {
+            "66618": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "65618": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "64618": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "63618": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "62618": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ],
+            "61618": [
+              {
+                "type": "機器類",
+                "name": "行先表示FC"
+              }
+            ]
+          },
+          "manufacturer": "日立製作所",
+          "type": "60000型",
+          "manufacturingYear": "2015年"
         }
       ],
       "formationType": "60000型",
@@ -1441,9 +1449,23 @@
       "manufacturer": "日立製作所"
     },
     {
+      "type": "80000系",
       "typeImg": "https://minamikaze2700.github.io/Unyomatome/images/TB80000.png",
       "family": "noda",
-      "type": "80000型",
+      "variants": [
+        {
+          "id": "80000系みまモニあり",
+          "name": "80000系みまモニあり",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB80000.png",
+          "items": []
+        },
+        {
+          "id": "80000系みまモニなし",
+          "name": "80000系みまモニなし",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB80000.png",
+          "items": []
+        }
+      ],
       "items": [
         {
           "id": "81501",
@@ -1524,17 +1546,7 @@
           "manufacturer": "近畿車輛",
           "type": "80000型",
           "manufacturingYear": "2025年"
-        }
-      ],
-      "formationType": "80000型",
-      "manufacturingYear": "2024年～2025年",
-      "manufacturer": "近畿車輛"
-    },
-    {
-      "typeImg": "https://minamikaze2700.github.io/Unyomatome/images/TB80000.png",
-      "family": "noda",
-      "type": "80050型",
-      "items": [
+        },
         {
           "id": "81551",
           "name": "81551F",
@@ -1647,9 +1659,9 @@
           "type": "80050型"
         }
       ],
-      "formationType": "80050型",
-      "manufacturingYear": "2025年～2026年",
-      "manufacturer": "日立製作所・近畿車輛"
+      "formationType": "80000系",
+      "manufacturingYear": "2024年～2026年",
+      "manufacturer": "近畿車輛・日立製作所"
     }
   ],
   "vehicleToFormation": {
