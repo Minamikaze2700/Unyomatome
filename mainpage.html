@@ -1287,6 +1287,25 @@ const ROUTE_REGISTRY={
     formationInputExample:'04 / K01 / W01',
     prescribedFormationRule:'common'
   },
+  '福岡市地下鉄 七隈線':{
+    id:'fukuoka-nanakuma',
+    routeColor:'#a4cc37',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/FukuokaCity_Nanakuma_2026.json',
+    jsonLines:['七隈線'],
+    range:'橋本～博多',
+    area:'福岡市地下鉄',
+    storageRoot:'福岡市地下鉄 七隈線',
+    storageArea:null,
+    company:'福岡市地下鉄',
+    formationFamily:'fukuoka-nanakuma',
+    defaultFormationName:'4両',
+    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/FukuchikaNanakuma_noimage.png',
+    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/FukuchikaNanakuma_noimage.png',
+    noImage:'https://minamikaze2700.github.io/Unyomatome/images/FukuchikaNanakuma_noimage.png',
+    prescribedFormationRule:'common',
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'3000系 / 3000A系 / 01'
+  },
   '東武野田線':{
     id:'tobu-noda',
     json:'https://minamikaze2700.github.io/Unyomatome/data/TobuNoda_2024.json',
@@ -1388,6 +1407,9 @@ const ROUTE_SCHEDULE_CONFIG={
   ],
   '福岡市地下鉄 空港線・箱崎線':[
     {from:'2026-03-14',to:'2027-03-13',file:'FukuokaCity_KukoHakozaki_2026.json'}
+  ],
+  '福岡市地下鉄 七隈線':[
+    {from:'2026-04-01',to:'2027-03-13',file:'FukuokaCity_Nanakuma_2026.json'}
   ],
   '東武野田線':[
     {from:'2024-03-16',to:'2026-11-20',file:'TobuNoda_2024.json'},
