@@ -1836,7 +1836,7 @@ function buildFormationsForJson(json){
         const variantName=String(rawVariant?.name||variantId).trim();
         if(!variantId || !variantName) continue;
         const variantItems=normalizeItems(rawVariant?.items);
-        if(!variantItems.length) continue;
+        // 空のitemsを持つ個体差も選択肢として表示する（全編成を親カテゴリ直下に並べる構成に対応）。
         variants.push({
           id:variantId.replace(/F$/i,''),
           name:variantName,
