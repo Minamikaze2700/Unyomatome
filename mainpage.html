@@ -481,7 +481,7 @@ button,input,select,textarea{font-family:inherit}
 .option-disabled{opacity:.42;cursor:not-allowed!important;}
 .timetable-list{background:#fff;border-radius:8px;padding:12px 20px}
 .timetable-item{display:flex;align-items:center;padding:8px 0;position:relative;height:56px;min-height:56px;box-sizing:border-box}
-/* 停車駅案内：各駅に設定された直前／直後区間の色を描画。複数色は横並びの帯にする。 */
+/* 停車駅案内：駅の丸に隠れる区間線を、駅間全体で連続する縦方向の複数色にする。 */
 .timetable-item::before,.timetable-item::after{
   content:'';position:absolute;left:7px;width:4px;z-index:1;
   background-repeat:no-repeat;
@@ -490,15 +490,15 @@ button,input,select,textarea{font-family:inherit}
 .timetable-item::before{
   top:0;bottom:50%;
   background-image:var(--route-line-top-bg,linear-gradient(to bottom,var(--primary),var(--primary)));
-  background-size:var(--route-line-top-size,100% 100%);
-  background-position:var(--route-line-top-position,0 0);
+  background-size:var(--route-line-top-size,100% 200%);
+  background-position:var(--route-line-top-position,0 100%);
   background-repeat:var(--route-line-top-repeat,no-repeat);
 }
 .timetable-item::after{
   top:50%;bottom:0;
   mask-image:var(--route-line-bottom-mask,none);-webkit-mask-image:var(--route-line-bottom-mask,none);
   background-image:var(--route-line-bottom-bg,linear-gradient(to bottom,var(--primary),var(--primary)));
-  background-size:var(--route-line-bottom-size,100% 100%);
+  background-size:var(--route-line-bottom-size,100% 200%);
   background-position:var(--route-line-bottom-position,0 0);
   background-repeat:var(--route-line-bottom-repeat,no-repeat);
 }
@@ -892,6 +892,37 @@ body{padding-bottom:42px !important;}
   background-image:var(--route-line-bottom-bg,linear-gradient(to right,var(--station-route-color),var(--station-route-color))) !important;
 }
 </style>
+<style id="dotted-multicolor-continuous-rendering">
+/* 破線はマスク、色分けは背景グラデーションとして独立させる。
+   このため破線区間でも色は各ダッシュごとに変わらず、駅間の指定位置で切り替わる。 */
+.timetable-item::before{
+  background-image:var(--route-line-top-bg,linear-gradient(to bottom,var(--primary),var(--primary))) !important;
+  background-size:var(--route-line-top-size,100% 200%) !important;
+  background-position:var(--route-line-top-position,0 100%) !important;
+  background-repeat:no-repeat !important;
+  -webkit-mask-image:var(--route-line-top-mask,none) !important;
+  mask-image:var(--route-line-top-mask,none) !important;
+  -webkit-mask-size:100% 100% !important;mask-size:100% 100% !important;
+  -webkit-mask-repeat:repeat-y !important;mask-repeat:repeat-y !important;
+}
+.timetable-item::after{
+  background-image:var(--route-line-bottom-bg,linear-gradient(to bottom,var(--primary),var(--primary))) !important;
+  background-size:var(--route-line-bottom-size,100% 200%) !important;
+  background-position:var(--route-line-bottom-position,0 0) !important;
+  background-repeat:no-repeat !important;
+  -webkit-mask-image:var(--route-line-bottom-mask,none) !important;
+  mask-image:var(--route-line-bottom-mask,none) !important;
+  -webkit-mask-size:100% 100% !important;mask-size:100% 100% !important;
+  -webkit-mask-repeat:repeat-y !important;mask-repeat:repeat-y !important;
+}
+/* 破線指定は色そのものを塗り替えず、線の見える箇所だけをマスクする。 */
+.timetable-item.dotted-route-guide::before,.timetable-item.dotted-route-guide::after{
+  background-image:var(--route-line-top-bg,linear-gradient(to bottom,var(--station-route-color,var(--primary)),var(--station-route-color,var(--primary)))) !important;
+}
+.timetable-item.dotted-route-guide::after{
+  background-image:var(--route-line-bottom-bg,linear-gradient(to bottom,var(--station-route-color,var(--primary)),var(--station-route-color,var(--primary)))) !important;
+}
+</style>
 </head>
 <body>
 
@@ -1029,7 +1060,7 @@ function esc(value){
 const RESET_HOUR=3;
 const RESET_DWELL_MIN=2;
 const TURNBACK_SWITCH_MIN=1;
-const TRAIN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/SanyoHiroshima_2026.json';
+const TRAIN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/HiroshimaArea_2026.json';
 const KOBE_KAIGAN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/KobeCity_Kaigan_2026.json';
 const DEFAULT_ROUTE_TITLE='運用まとめ';
 const LAST_ROUTE_STORAGE_KEY='routeLastRoute_v1';
@@ -1238,24 +1269,6 @@ const ROUTE_REGISTRY={
     formationInputExample:'TRTA13000 / TRTA13101 / TB70000 / TB71701 / TB70090 / TB71791',
     prescribedFormationRule:'common'
   },
-  '福岡市地下鉄 七隈線':{
-    id:'fukuoka-nanakuma',
-    json:'https://minamikaze2700.github.io/Unyomatome/data/FukuokaCity_Nanakuma_2026.json',
-    jsonLines:['七隈線'],
-    range:'博多～橋本',
-    area:'福岡市地下鉄',
-    storageRoot:'福岡市地下鉄 七隈線',
-    storageArea:null,
-    company:'福岡市地下鉄',
-    formationFamily:'fukuoka-nanakuma',
-    typeColors:{'普通':'#9fa0a0'},
-    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/FukuchikaNanakuma_noimage.png',
-    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/FukuchikaNanakuma_noimage.png',
-    noImage:'https://minamikaze2700.github.io/Unyomatome/images/FukuchikaNanakuma_noimage.png',
-    access:{public:false,routeAdmins:['fulnishi39']},
-    formationInputExample:'3000系 / 01 / 3000A系 / 18',
-    prescribedFormationRule:'common'
-  },
   '福岡市地下鉄 空港線・箱崎線':{
     id:'fukuoka-kuko-hakozaki',
     json:'https://minamikaze2700.github.io/Unyomatome/data/FukuokaCity_KukoHakozaki_2026.json',
@@ -1270,9 +1283,28 @@ const ROUTE_REGISTRY={
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
-    access:{public:false,routeAdmins:[]},
+    access:{public:false,routeAdmins:['fulnishi39']},
     formationInputExample:'04 / K01 / W01',
     prescribedFormationRule:'common'
+  },
+  '福岡市地下鉄 七隈線':{
+    id:'fukuoka-nanakuma',
+    routeColor:'#a4cc37',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/FukuokaCity_Nanakuma_2026.json',
+    jsonLines:['七隈線'],
+    range:'橋本～博多',
+    area:'福岡市地下鉄',
+    storageRoot:'福岡市地下鉄 七隈線',
+    storageArea:null,
+    company:'福岡市地下鉄',
+    formationFamily:'fukuoka-nanakuma',
+    defaultFormationName:'4両',
+    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/FukuchikaNanakuma_noimage.png',
+    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/FukuchikaNanakuma_noimage.png',
+    noImage:'https://minamikaze2700.github.io/Unyomatome/images/FukuchikaNanakuma_noimage.png',
+    prescribedFormationRule:'common',
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'3000系 / 3000A系 / 01'
   },
   '東武野田線':{
     id:'tobu-noda',
@@ -1291,6 +1323,24 @@ const ROUTE_REGISTRY={
     access:{public:true,routeAdmins:[]},
     formationInputExample:'81501 / 81501F / 80000系',
     prescribedFormationRule:'common'
+  },
+  '水島臨海鉄道':{
+    id:'mizushima-rinkai',
+    routeColor:'#0089a8',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/Mizushima_2026.json',
+    jsonLines:['水島臨海鉄道'],
+    range:'倉敷市～三菱自工前',
+    area:'水島臨海鉄道',
+    storageRoot:'水島臨海鉄道',
+    storageArea:null,
+    company:'水島臨海鉄道',
+    formationFamily:'mizushima',
+    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Mizushima_noimage.png',
+    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Mizushima_noimage.png',
+    noImage:'https://minamikaze2700.github.io/Unyomatome/images/Mizushima_noimage.png',
+    prescribedFormationRule:'mizushima',
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'301 / 301F / 100 / 100F'
   },
   '長野電鉄長野線':{
     id:'nagano-line',
@@ -1320,13 +1370,13 @@ const ROUTE_REGISTRY={
 /* 時刻表ファイルは改正年で管理し、選択日付に有効なファイルを読み込む。 */
 const ROUTE_SCHEDULE_CONFIG={
   '山陽本線（糸崎～岩国）':[
-    {from:'2026-03-14',to:'2027-03-13',file:'SanyoHiroshima_2026.json'}
+    {from:'2026-03-14',to:'2027-03-13',file:'HiroshimaArea_2026.json'}
   ],
   '可部線':[
-    {from:'2026-03-14',to:'2027-03-13',file:'Kabe_2026.json'}
+    {from:'2026-03-14',to:'2027-03-13',file:'HiroshimaArea_2026.json'}
   ],
   '呉線':[
-    {from:'2026-03-14',to:'2027-03-13',file:'Kure_2026.json'}
+    {from:'2026-03-14',to:'2027-03-13',file:'HiroshimaArea_2026.json'}
   ],
   '海岸線':[
     {from:'2026-03-14',to:'2027-03-13',file:'KobeCity_Kaigan_2026.json'}
@@ -1355,15 +1405,18 @@ const ROUTE_SCHEDULE_CONFIG={
   '日比谷線':[
     {from:'2024-03-16',to:'2027-03-13',file:'TokyoMetro_Hibiya_2024.json'}
   ],
-  '福岡市地下鉄 七隈線':[
-    {from:'2026-03-14',to:'2027-03-13',file:'FukuokaCity_Nanakuma_2026.json'}
-  ],
   '福岡市地下鉄 空港線・箱崎線':[
     {from:'2026-03-14',to:'2027-03-13',file:'FukuokaCity_KukoHakozaki_2026.json'}
+  ],
+  '福岡市地下鉄 七隈線':[
+    {from:'2026-04-01',to:'2027-03-13',file:'FukuokaCity_Nanakuma_2026.json'}
   ],
   '東武野田線':[
     {from:'2024-03-16',to:'2026-11-20',file:'TobuNoda_2024.json'},
     {from:'2026-11-21',to:'2027-03-13',file:'TobuNoda_2026.json'}
+  ],
+  '水島臨海鉄道':[
+    {from:'2026-03-14',to:'2027-03-13',file:'Mizushima_2026.json'}
   ],
   '長野電鉄長野線':[
     {from:'2025-03-15',to:'2027-03-13',file:'NaganoDentetsu_Nagano_2025.json'}
@@ -1826,7 +1879,7 @@ function buildFormationsForJson(json){
         const variantName=String(rawVariant?.name||variantId).trim();
         if(!variantId || !variantName) continue;
         const variantItems=normalizeItems(rawVariant?.items);
-        if(!variantItems.length) continue;
+        // 空のitemsを持つ個体差も選択肢として表示する（全編成を親カテゴリ直下に並べる構成に対応）。
         variants.push({
           id:variantId.replace(/F$/i,''),
           name:variantName,
@@ -1985,6 +2038,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
       segmentColors:Array.isArray(st?.segmentColors)
         ? st.segmentColors.map(c=>String(c||'').trim()).filter(Boolean)
         : undefined,
+      // 色の位置(position)はJSONから読み込まず、表示用の駅間線を作る段階で色数から自動計算する。
       boardingOnly:st?.boardingOnly===true,
       alightingOnly:st?.alightingOnly===true,
       prescribedFormation:String(st?.prescribedFormation||'').trim()||undefined,
@@ -2433,11 +2487,19 @@ function buildTimetableRows(stops){
     }
     const grouped=scheduled.slice(i,j);
     const dottedBefore=grouped.some(st=>st?.dottedBefore===true);
-    const segmentColors=[...new Set(grouped.flatMap(st=>Array.isArray(st?.segmentColors)?st.segmentColors:[])
-      .map(c=>String(c||'').trim()).filter(Boolean))];
+    // segmentColors に列挙された色を保持する。重複駅レコードをまとめる際も、配列内の色数と順序は維持する。
+    const configuredColors=grouped.find(st=>Array.isArray(st?.segmentColors)&&st.segmentColors.length)?.segmentColors;
+    const segmentColors=Array.isArray(configuredColors)
+      ? configuredColors.map(c=>String(c||'').trim()).filter(Boolean) : [];
+    // 色境界は色数からHTML側で自動計算する。2色なら0/50%、3色なら0/33.333/66.667%。
+    // segmentColorsは区間の終点駅に設定し、駅間全体を色数と同じ数に等分する。
+    const segmentColorStops=segmentColors.map((color,colorIndex)=>({
+      color,
+      position:segmentColors.length ? colorIndex*100/segmentColors.length : 0
+    }));
     const boardingOnly=grouped.some(st=>st?.boardingOnly===true);
     const alightingOnly=grouped.some(st=>st?.alightingOnly===true);
-    rows.push({station,times:times.slice(0,2),dottedBefore,segmentColors,boardingOnly,alightingOnly});
+    rows.push({station,times:times.slice(0,2),dottedBefore,segmentColors,segmentColorStops,boardingOnly,alightingOnly});
     i=j;
   }
   return rows;
@@ -3262,7 +3324,7 @@ function formationDisplayGroups(groups){
         type:baseType,
         typeImg:g?.typeImg||fallbackTrainImageUrl(),
         family:g?.family||activeRouteMeta?.formationFamily||'',
-        selectableType:true,
+        selectableType:g?.selectableType!==false,
         selectableId:baseType,
         routeNames:[],
         variants:[],
@@ -3293,6 +3355,27 @@ function formationDisplayGroups(groups){
         routeNames:formationRouteNamesFromConfig(g)
       });
     }else{
+      // normalizeFormationGroups() がJSONの variants をFORMATIONSへ展開した場合、
+      // ここで個体差選択肢を必ず引き継ぐ。これがないと10030型更新などが消えてしまう。
+      for(const rawVariant of (Array.isArray(g?.variants)?g.variants:[])){
+        const variantId=String(rawVariant?.id||rawVariant?.name||'').trim().replace(/F$/i,'');
+        const variantName=String(rawVariant?.name||variantId).trim();
+        if(!variantId || !variantName) continue;
+        // 同じ個体差が複数グループから来た場合は重複させない。
+        if(group.variants.some(v=>String(v?.id||'').replace(/F$/i,'')===variantId)) continue;
+        group.variants.push({
+          ...rawVariant,
+          id:variantId,
+          name:variantName,
+          img:rawVariant?.img||g?.typeImg||fallbackTrainImageUrl(),
+          items:Array.isArray(rawVariant?.items)?rawVariant.items:[],
+          family:rawVariant?.family||g?.family||group.family,
+          kind:'variant',
+          generic:true,
+          displayAsFullName:rawVariant?.displayAsFullName!==false,
+          routeNames:formationRouteNamesFromConfig(rawVariant,formationRouteNamesFromConfig(g))
+        });
+      }
       group.items.push(...(Array.isArray(g?.items)?g.items:[]));
     }
   }
@@ -3383,9 +3466,25 @@ function formationDisplayHTML(id){
 }
 
 function prescribedFormationName(t){
+  const meta=ROUTE_REGISTRY[String(t?.routeName||activeRouteName)]||activeRouteMeta||{};
+  if(String(meta?.formationFamily||'')==='mizushima' || String(meta?.prescribedFormationRule||'')==='mizushima'){
+    const vehicleClass=String(t?.rawTrain?.class||t?.rawTrain?.vehicleClass||t?.vehicleClass||'').trim().toLowerCase();
+    if(vehicleClass==='kiha'){
+      const dateKey=String(selectedDateKey||operationDateKey());
+      const monthDay=dateKey.slice(5);
+      const yearEndException=(monthDay>='12-29' || monthDay<='01-03');
+      let holiday=false;
+      if(/^\d{4}-\d{2}-\d{2}$/.test(dateKey)){
+        holiday=getScheduleDayForDate(new Date(`${dateKey}T00:00:00`))==='休日';
+      }else{
+        holiday=currentDay==='休日';
+      }
+      return holiday||yearEndException ? 'MRT300形' : '旧国鉄車両キハ';
+    }
+    return 'MRT300形';
+  }
   const explicit=String(t?.prescribedFormation||t?.rawTrain?.prescribedFormation||t?.rawTrain?.prescribedFormationName||'').trim();
   if(explicit) return explicit;
-  const meta=ROUTE_REGISTRY[String(t?.routeName||activeRouteName)]||activeRouteMeta||{};
   const rule=String(meta?.prescribedFormationRule||'');
   if(rule==='nagano'){
     const type=String(t?.type||'');
@@ -5408,6 +5507,11 @@ const REGION_DEFINITIONS={
       {name:'可部線',id:'kabe'},
       {name:'呉線',id:'kure'}
     ]
+  },{
+    company:'水島臨海鉄道',
+    routes:[
+      {name:'水島臨海鉄道',id:'mizushima-rinkai'}
+    ]
   }],
   '四国':[],
   '九州':[{
@@ -5887,18 +5991,42 @@ function trainRouteColor(train,position=null){
 }
 function timetableSegmentColors(a,b,trainContext=null){ return [trainServiceColorBetweenStations(a,b,trainContext)]; }
 function timetableSegmentColorList(rows,endIndex,startIndex,trainContext=null){
-  const configured=Array.isArray(rows?.[endIndex]?.segmentColors)
-    ? rows[endIndex].segmentColors.map(c=>String(c||'').trim()).filter(Boolean) : [];
+  const row=rows?.[endIndex];
+  // 色順はJSONのsegmentColorsだけで指定する。各色のpositionはbuildTimetableRowsで色数から自動生成。
+  const configured=Array.isArray(row?.segmentColors)
+    ? row.segmentColors.map(c=>String(c||'').trim()).filter(Boolean) : [];
   if(configured.length) return configured;
   const fallback=timetableSegmentColors(rows?.[startIndex]?.station,rows?.[endIndex]?.station,trainContext)
     .map(c=>String(c||'').trim()).filter(Boolean);
   return fallback.length?fallback:['#666'];
 }
-function timetableLineBackground(colors){
+function timetableLineBackground(colors,colorStops=null){
   const list=(Array.isArray(colors)?colors:[]).map(c=>String(c||'').trim()).filter(Boolean);
   const safe=list.length?list:['#666'];
-  const stops=safe.map((color,i)=>`${color} ${(i/safe.length)*100}% ${((i+1)/safe.length)*100}%`).join(',');
-  return `linear-gradient(to bottom,${stops})`;
+  let ranges=[];
+  const positioned=(Array.isArray(colorStops)?colorStops:[])
+    .map(item=>({color:String(item?.color||'').trim(),position:Number(item?.position ?? item?.at) }))
+    .filter(item=>item.color && Number.isFinite(item.position))
+    .map(item=>({...item,position:Math.max(0,Math.min(100,item.position))}))
+    .sort((a,b)=>a.position-b.position);
+  if(positioned.length){
+    // {color, position} はその位置から次の色の位置までを塗る。最初の色は線の始端まで延長。
+    const normalized=[];
+    for(const item of positioned){
+      if(normalized.length && normalized[normalized.length-1].position===item.position) normalized[normalized.length-1]=item;
+      else normalized.push(item);
+    }
+    if(normalized[0].position>0) normalized.unshift({...normalized[0],position:0});
+    ranges=normalized.map((item,i)=>{
+      const start=item.position;
+      const end=i<normalized.length-1?normalized[i+1].position:100;
+      return `${item.color} ${start}% ${Math.max(start,end)}%`;
+    }).filter((_,i)=>i===normalized.length-1 || normalized[i].position<normalized[i+1].position);
+  }else{
+    // 位置情報がない単色・互換データも、色数と同じ個数で駅間を等分する。
+    ranges=safe.map((color,i)=>`${color} ${(i/safe.length)*100}% ${((i+1)/safe.length)*100}%`);
+  }
+  return `linear-gradient(to bottom,${ranges.join(',')})`;
 }
 function stationDotColors(rows,index,trainContext=null){
   // 停車駅案内の駅色は、その駅から「次の停車駅」までの区間カラーを使用する。
@@ -5938,20 +6066,24 @@ function timetableRowsHTML(stops,trainContext=null){
     const twoLine=times.length>=2;
     let prevColors=index>0?colorsForSegment(index-1,index):[];
     let nextColors=index<rows.length-1?colorsForSegment(index,index+1):[];
-    const dotColor=String(stationDotColors(rows,index,trainContext)[0]||'#666');
+    // 駅の丸は、駅に接する線の端の色に合わせる。
+    // 縦方向に色分割した場合、次区間の駅側は先頭色、前区間の駅側は末尾色。
     if(rows.length>1&&index===0) prevColors=nextColors;
     if(rows.length>1&&index===rows.length-1) nextColors=prevColors;
+    const dotColor=String((index<rows.length-1 ? nextColors[0] : prevColors[prevColors.length-1]) || stationDotColors(rows,index,trainContext)[0] || '#666');
     if(rows.length===1) prevColors=nextColors=[dotColor];
     const prevDotted=index>0&&isDottedRouteSegment(rows[index-1]?.station,row.station,index);
     const nextDotted=index<rows.length-1&&isDottedRouteSegment(row.station,rows[index+1]?.station,index+1);
-    const topBg=timetableLineBackground(prevColors);
-    const bottomBg=timetableLineBackground(nextColors);
-    const topMask=prevDotted?dottedMask:'none';
-    const bottomMask=nextDotted?dottedMask:'none';
+    const prevStops=index>0?rows[index]?.segmentColorStops:null;
+    const nextStops=index<rows.length-1?rows[index+1]?.segmentColorStops:null;
+    const topBg=timetableLineBackground(prevColors,prevStops);
+    const bottomBg=timetableLineBackground(nextColors,nextStops);
+    const topMask=(prevDotted||activeRouteMeta?.dottedTimetableGuide)?dottedMask:'none';
+    const bottomMask=(nextDotted||activeRouteMeta?.dottedTimetableGuide)?dottedMask:'none';
     const markerClass=row.boardingOnly?' boarding-only':(row.alightingOnly?' alighting-only':'');
     const markerTitle=row.boardingOnly?'乗車専用駅':(row.alightingOnly?'降車専用駅':'');
     const classes=['timetable-item',activeRouteMeta?.dottedTimetableGuide?'dotted-route-guide':'',prevDotted?'dotted-route-guide-prev':'',nextDotted?'dotted-route-guide-next':''].filter(Boolean).join(' ');
-    return `<div class="${classes}" style="--route-line-top-bg:${escapeAttr(topBg)};--route-line-bottom-bg:${escapeAttr(bottomBg)};--route-line-top-mask:${escapeAttr(topMask)};--route-line-bottom-mask:${escapeAttr(bottomMask)};--station-route-color:${escapeAttr(dotColor)};--station-route-color-bg:${escapeAttr(dotColor)}"><div class="time-dot${markerClass}"${markerTitle?` title="${markerTitle}" aria-label="${markerTitle}"`:''}></div><div class="time-text${twoLine?' two-line':''}">${times.map(t=>`<span>${escapeAttr(t)}</span>`).join('')}</div><div class="station-text">${escapeAttr(row.station)}</div></div>`;
+    return `<div class="${classes}" style="--route-line-top-bg:${escapeAttr(topBg)};--route-line-bottom-bg:${escapeAttr(bottomBg)};--route-line-top-size:100% 200%;--route-line-bottom-size:100% 200%;--route-line-top-position:0 100%;--route-line-bottom-position:0 0;--route-line-top-mask:${escapeAttr(topMask)};--route-line-bottom-mask:${escapeAttr(bottomMask)};--station-route-color:${escapeAttr(dotColor)};--station-route-color-bg:${escapeAttr(dotColor)}"><div class="time-dot${markerClass}"${markerTitle?` title="${markerTitle}" aria-label="${markerTitle}"`:''}></div><div class="time-text${twoLine?' two-line':''}">${times.map(t=>`<span>${escapeAttr(t)}</span>`).join('')}</div><div class="station-text">${escapeAttr(row.station)}</div></div>`;
   }).join('');
 }
 
