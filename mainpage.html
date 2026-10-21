@@ -1283,7 +1283,7 @@ const ROUTE_REGISTRY={
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
-    access:{public:false,routeAdmins:['fulnishi39']},
+    access:{public:false,routeAdmins:[]},
     formationInputExample:'04 / K01 / W01',
     prescribedFormationRule:'common'
   },
@@ -1364,7 +1364,26 @@ const ROUTE_REGISTRY={
     access:{public:true,routeAdmins:[]},
     formationInputExample:'8500系 / T1',
     prescribedFormationRule:'nagano'
-  }
+  },
+  '関西本線（名古屋～亀山）':{
+    id:'jr-tokai-kansai',
+    routeColor:'#16b68f',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/JR_Tokai_KansaiMain_2026.json',
+    jsonLines:['関西本線'],
+    range:'名古屋～亀山',
+    area:'JR東海',
+    storageRoot:'関西本線（名古屋～亀山）',
+    storageArea:null,
+    company:'JR東海',
+    formationFamily:'jr-tokai-315',
+    typeColors:{'普通':'#666666','区間快速':'#9acd32','快速':'#0072bc'},
+    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/315_noimage.png',
+    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/315_noimage.png',
+    noImage:'https://minamikaze2700.github.io/Unyomatome/images/315_noimage.png',
+    prescribedFormationRule:'common',
+    access:{public:true,routeAdmins:[]},
+    formationInputExample:'C101 / C126'
+  },
 };
 
 /* 時刻表ファイルは改正年で管理し、選択日付に有効なファイルを読み込む。 */
@@ -1420,6 +1439,9 @@ const ROUTE_SCHEDULE_CONFIG={
   ],
   '長野電鉄長野線':[
     {from:'2025-03-15',to:'2027-03-13',file:'NaganoDentetsu_Nagano_2025.json'}
+  ],
+  '関西本線（名古屋～亀山）':[
+    {from:'2026-03-14',to:'2027-03-13',file:'JR_Tokai_KansaiMain_2026.json'}
   ]
 };
 const ROUTE_DATA_BASE_URL='https://minamikaze2700.github.io/Unyomatome/data/';
@@ -5486,7 +5508,12 @@ const REGION_DEFINITIONS={
       {name:'長野電鉄長野線',id:'nagano-line'}
     ]
   }],
-  '東海':[],
+  '東海':[{
+    company:'JR東海',
+    routes:[
+      {name:'関西本線（名古屋～亀山）',id:'jr-tokai-kansai'}
+    ]
+  }],
   '近畿':[{
     company:'JR西日本',
     routes:[
