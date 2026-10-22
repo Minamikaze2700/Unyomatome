@@ -6845,6 +6845,54 @@ initRegionNavigation();
   }
   window.normalizeStorageRoot=normalizeStorageRoot;
 
+  // Firebaseの個別投稿履歴を、その列車・日付の「最後に登録された編成」の参照元として保持する。
+  // train-card側の表示は上書き保存ノードだけでなく、このFirebase履歴の最新投稿を優先する。
+  const formationInputHistoryLatestByFamily={};
+  function refreshFormationInputHistoryLatestForFamily(family,rawRoot){
+    const area=storageAreaForFamily(family);
+    const historyRoot=rawRoot?.__formationInputHistory;
+    const areaHistory=area==='__ROOT__' ? historyRoot : historyRoot?.[area];
+    const next={};
+    if(areaHistory && typeof areaHistory==='object'){
+      for(const [date,dateValue] of Object.entries(areaHistory)){
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date)) || !dateValue || typeof dateValue!=='object') continue;
+        const latestByNo={};
+        for(const [trainNo,postsValue] of Object.entries(dateValue)){
+          if(!postsValue || typeof postsValue!=='object') continue;
+          let latest=null;
+          for(const [postKey,rawPost] of Object.entries(postsValue)){
+            if(!rawPost || typeof rawPost!=='object') continue;
+            const formation=normalizeStoredFormationId(rawPost.f||rawPost.formation||'');
+            if(!formation) continue;
+            const candidate={...rawPost,key:String(postKey),f:formation};
+            const candidateTime=Number(candidate.at??candidate.createdAt)||0;
+            const latestTime=Number(latest?.at??latest?.createdAt)||0;
+            if(!latest || candidateTime>latestTime || (candidateTime===latestTime && String(candidate.key).localeCompare(String(latest.key))>0)) latest=candidate;
+          }
+          if(latest) latestByNo[String(trainNo)]=latest;
+        }
+        next[String(date)]=latestByNo;
+      }
+    }
+    formationInputHistoryLatestByFamily[family]=next;
+  }
+  function latestFormationInputHistoryEntry(family,date,trainNo){
+    const day=String(date||formationDateKey()).trim();
+    const no=String(trainNo||'').trim();
+    if(!family||!day||!no) return null;
+    const byNo=formationInputHistoryLatestByFamily[family]?.[day]||{};
+    if(byNo[no]?.f) return byNo[no];
+    const normalized=typeof normalizeTrainNo==='function' ? normalizeTrainNo(no) : no;
+    if(!normalized) return null;
+    for(const [savedNo,entry] of Object.entries(byNo)){
+      if(entry?.f && (typeof normalizeTrainNo==='function' ? normalizeTrainNo(savedNo) : savedNo)===normalized) return entry;
+    }
+    return null;
+  }
+  window.latestFirebaseFormationForTrainNo=function(family,date,trainNo){
+    return String(latestFormationInputHistoryEntry(family,date,trainNo)?.f||'').trim();
+  };
+
   function syncDerivedStateForFamily(family){
     const remote=formationRemoteByFamily[family];
     if(!remote) return;
@@ -6880,14 +6928,14 @@ initRegionNavigation();
     return db&&root ? db.ref(root) : null;
   };
   // 編成の最新状態とは分離して、列車・日付ごとに入力投稿を追記保存する。
-  window.formationInputHistoryRefForTrain=function(train,date){
+  window.formationInputHistoryRefForTrain=function(train,date,trainNoOverride){
     if(!train) return null;
     const family=formationFamilyForTrain(train);
     const db=firebaseDatabaseForFamily(family);
     const root=storageRootForFamily(family);
     const area=storageAreaForFamily(family);
     const day=String(date||formationDateKey()).trim();
-    const no=String(train.no||'').trim();
+    const no=String(trainNoOverride||train.no||'').trim();
     if(!db||!root||!no||!/^\d{4}-\d{2}-\d{2}$/.test(day)) return null;
     let ref=db.ref(root).child('__formationInputHistory');
     if(area!=='__ROOT__') ref=ref.child(area);
@@ -6923,11 +6971,22 @@ initRegionNavigation();
       return '';
     };
 
-    const ownValue=getSavedValue(no);
-    if(ownValue) return ownValue;
-
+    // まずFirebase履歴の最新投稿を列車チェーン内で探す。
+    // これにより旧「最新状態」ノードに値が残っていても、履歴とカード表示が食い違わない。
+    const ownHistoryValue=String(latestFormationInputHistoryEntry(family,date,no)?.f||'').trim();
+    if(ownHistoryValue) return ownHistoryValue;
     const chainInfo=findChain(currentDay,no);
     const chain=chainInfo ? (OPERATION_CHAINS?.[currentDay]?.[chainInfo.chainIndex]||[]) : [];
+    for(const entry of chain){
+      const linkedNo=String(entry?.no||entry||'').trim();
+      if(!linkedNo || linkedNo===no) continue;
+      const historyValue=String(latestFormationInputHistoryEntry(family,date,linkedNo)?.f||'').trim();
+      if(historyValue) return historyValue;
+    }
+
+    // 履歴のない旧データのみ、従来の最新状態ノードから補完する。
+    const ownValue=getSavedValue(no);
+    if(ownValue) return ownValue;
     for(const entry of chain){
       const linkedNo=String(entry?.no||entry||'').trim();
       if(!linkedNo || linkedNo===no) continue;
@@ -6974,6 +7033,7 @@ initRegionNavigation();
         console.warn('広島地区Firebase旧パスの移行に失敗（旧データを読み替えて利用）',migrationError);
       }
     }
+    refreshFormationInputHistoryLatestForFamily(family,raw);
     formationRemoteByFamily[family].areaStateByDate=normalizeStorageRoot(raw,family);
     syncDerivedStateForFamily(family);
     return true;
@@ -7000,7 +7060,9 @@ initRegionNavigation();
       if(!ref) continue;
       try{firebaseFormationListenerRefs[family]?.off();}catch(e){}
       const handler=snap=>{
-        formationRemoteByFamily[family].areaStateByDate=normalizeStorageRoot(snap.val()||{},family);
+        const rawRoot=snap.val()||{};
+        refreshFormationInputHistoryLatestForFamily(family,rawRoot);
+        formationRemoteByFamily[family].areaStateByDate=normalizeStorageRoot(rawRoot,family);
         syncDerivedStateForFamily(family);
         if(family===storageFamilyForActiveRoute()){
           registrationState=isHistoricalSelectedDate(selectedDateKey)?historicalStateForDate(selectedDateKey):cloneState(remoteRoot.stateByDay[currentDay]||{});
@@ -8668,15 +8730,57 @@ initRegionNavigation();
   let formationInputHistoryContext=null;
   let formationInputHistoryRecords=[];
 
+  function formationInputHistorySourceNoFor(train,date){
+    const displayedNo=String(train?.no||currentTrainNo||'').trim();
+    if(!displayedNo||!train) return displayedNo;
+    try{
+      const family=typeof formationFamilyForTrain==='function' ? formationFamilyForTrain(train) : '';
+      const area=typeof window.storageAreaForFamily==='function' ? String(window.storageAreaForFamily(family)||'__ROOT__') : '__ROOT__';
+      const day=String(date||selectedDateKey||operationDateKey()).trim();
+      const stored=formationRemoteByFamily?.[family]?.areaStateByDate?.[day]?.[area]||{};
+      const getSavedValue=(trainNo)=>{
+        const key=String(trainNo||'').trim();
+        if(!key) return '';
+        const direct=String(stored?.[key]?.f||'').trim();
+        if(direct) return direct;
+        const normalized=normalizeTrainNo(key);
+        if(!normalized) return '';
+        for(const [savedNo,entry] of Object.entries(stored)){
+          if(normalizeTrainNo(savedNo)===normalized){
+            const value=String(entry?.f||'').trim();
+            if(value) return value;
+          }
+        }
+        return '';
+      };
+      // train-card と一致するよう、最初にFirebase履歴の最新投稿の列番を探す。
+      if(String(window.latestFirebaseFormationForTrainNo?.(family,day,displayedNo)||'').trim()) return displayedNo;
+      const chainInfo=typeof findChain==='function' ? findChain(currentDay,displayedNo) : null;
+      const chain=chainInfo ? (OPERATION_CHAINS?.[currentDay]?.[chainInfo.chainIndex]||[]) : [];
+      for(const entry of chain){
+        const linkedNo=String(entry?.no||entry||'').trim();
+        if(linkedNo && linkedNo!==displayedNo && String(window.latestFirebaseFormationForTrainNo?.(family,day,linkedNo)||'').trim()) return linkedNo;
+      }
+      // 履歴がない旧データのみ、従来の保存状態を使う。
+      if(getSavedValue(displayedNo)) return displayedNo;
+      for(const entry of chain){
+        const linkedNo=String(entry?.no||entry||'').trim();
+        if(linkedNo && linkedNo!==displayedNo && getSavedValue(linkedNo)) return linkedNo;
+      }
+    }catch(e){ console.warn('編成入力履歴の対象列番判定に失敗しました',e); }
+    return displayedNo;
+  }
+
   function formationInputHistoryContextFor(train){
     const date=String(selectedDateKey||operationDateKey()).trim();
     const no=String(train?.no||currentTrainNo||'').trim();
     const family=typeof formationFamilyForTrain==='function' ? formationFamilyForTrain(train) : '';
     const area=typeof window.storageAreaForFamily==='function' ? String(window.storageAreaForFamily(family)||'__ROOT__') : '__ROOT__';
     const route=String(activeRouteName||'');
-    const key=[family,area,date,no,route].join('|');
-    const ref=typeof window.formationInputHistoryRefForTrain==='function' ? window.formationInputHistoryRefForTrain(train,date) : null;
-    return {key,date,no,family,area,route,train,ref};
+    const historyNo=formationInputHistorySourceNoFor(train,date);
+    const key=[family,area,date,no,historyNo,route].join('|');
+    const ref=typeof window.formationInputHistoryRefForTrain==='function' ? window.formationInputHistoryRefForTrain(train,date,historyNo) : null;
+    return {key,date,no,historyNo,family,area,route,train,ref};
   }
 
   function attachFormationInputHistoryListener(train){
@@ -8698,7 +8802,8 @@ initRegionNavigation();
       formationInputHistoryRecords=Object.entries(raw)
         .filter(([key,post])=>!!key && post && typeof post==='object' && String(post.f||'').trim())
         .map(([key,post])=>({key,...post}))
-        .sort((a,b)=>(Number(b.at||b.createdAt)||0)-(Number(a.at||a.createdAt)||0));
+        // 古い投稿から新しい投稿へ並べ、最後の行が最新の登録になるようにする。
+        .sort((a,b)=>((Number(a.at||a.createdAt)||0)-(Number(b.at||b.createdAt)||0)) || String(a.key).localeCompare(String(b.key)));
       const openNo=String(currentTrainSnapshot?.no||currentTrainNo||'').trim();
       if(openNo===context.no && currentTrainInfoTab==='operation' && !isEditMode && typeof updateSheetContent==='function'){
         updateSheetContent();
