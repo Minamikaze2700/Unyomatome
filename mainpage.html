@@ -1303,7 +1303,7 @@ const ROUTE_REGISTRY={
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/FukuchikaNanakuma_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/FukuchikaNanakuma_noimage.png',
     prescribedFormationRule:'common',
-    access:{public:true,routeAdmins:[]},
+    access:{public:false,routeAdmins:[]},
     formationInputExample:'3000系 / 3000A系 / 01'
   },
   '東武野田線':{
@@ -6847,8 +6847,9 @@ initRegionNavigation();
   window.normalizeStorageRoot=normalizeStorageRoot;
 
   // Firebaseの個別投稿履歴を、その列車・日付の「最後に登録された編成」の参照元として保持する。
-  // train-card側の表示は上書き保存ノードだけでなく、このFirebase履歴の最新投稿を優先する。
+  // 最後の投稿を削除した場合は別ノードに「全削除済み」を記録し、古い状態ノードへ戻らないようにする。
   const formationInputHistoryLatestByFamily={};
+  const formationInputHistoryClearedByFamily={};
   function refreshFormationInputHistoryLatestForFamily(family,rawRoot){
     const area=storageAreaForFamily(family);
     const historyRoot=rawRoot?.__formationInputHistory;
@@ -6875,7 +6876,24 @@ initRegionNavigation();
         next[String(date)]=latestByNo;
       }
     }
+    const clearedRoot=rawRoot?.__formationInputHistoryCleared;
+    const areaCleared=area==='__ROOT__' ? clearedRoot : clearedRoot?.[area];
+    const clearedByDate={};
+    if(areaCleared && typeof areaCleared==='object'){
+      for(const [date,dateValue] of Object.entries(areaCleared)){
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date)) || !dateValue || typeof dateValue!=='object') continue;
+        const clearedNos={};
+        for(const [trainNo,cleared] of Object.entries(dateValue)) if(cleared) clearedNos[String(trainNo)]=true;
+        if(Object.keys(clearedNos).length) clearedByDate[String(date)]=clearedNos;
+      }
+    }
     formationInputHistoryLatestByFamily[family]=next;
+    formationInputHistoryClearedByFamily[family]=clearedByDate;
+  }
+  function wasFormationInputHistoryCleared(family,date,trainNo){
+    const day=String(date||formationDateKey()).trim();
+    const no=String(trainNo||'').trim();
+    return !!(family && day && no && formationInputHistoryClearedByFamily[family]?.[day]?.[no]);
   }
   function latestFormationInputHistoryEntry(family,date,trainNo){
     const day=String(date||formationDateKey()).trim();
@@ -6978,12 +6996,18 @@ initRegionNavigation();
     if(ownHistoryValue) return ownHistoryValue;
     const chainInfo=findChain(currentDay,no);
     const chain=chainInfo ? (OPERATION_CHAINS?.[currentDay]?.[chainInfo.chainIndex]||[]) : [];
+    const chainNos=[no];
     for(const entry of chain){
       const linkedNo=String(entry?.no||entry||'').trim();
       if(!linkedNo || linkedNo===no) continue;
+      chainNos.push(linkedNo);
       const historyValue=String(latestFormationInputHistoryEntry(family,date,linkedNo)?.f||'').trim();
       if(historyValue) return historyValue;
     }
+
+    // この運用チェーン内で履歴を全削除した列車があれば、旧状態ノードへフォールバックしない。
+    // これにより最後の履歴を削除すると、train-cardも「編成未選択」になる。
+    if(chainNos.some(trainNo=>wasFormationInputHistoryCleared(family,date,trainNo))) return null;
 
     // 履歴のない旧データのみ、従来の最新状態ノードから補完する。
     const ownValue=getSavedValue(no);
@@ -7180,6 +7204,10 @@ initRegionNavigation();
                 r:String(roleCode||'')
               };
               await historyRef.push().set(historyPost);
+              // 新しい投稿が復活したら、以前の「履歴全削除済み」マーカーを解除する。
+              let clearedRef=db.ref(root).child('__formationInputHistoryCleared');
+              if(area!=='__ROOT__') clearedRef=clearedRef.child(area);
+              await clearedRef.child(date).child(String(no)).remove();
             }catch(historyError){
               // 履歴書き込みに失敗しても、成功した最新編成の保存は成功扱いにする。
               console.warn('編成入力履歴の保存に失敗しました',historyError);
@@ -8870,6 +8898,36 @@ initRegionNavigation();
     if(!key||!post||!context?.ref || typeof window.canDeleteFormationInputHistoryRecord!=='function' || !window.canDeleteFormationInputHistoryRecord(post)) return false;
     try{
       await context.ref.child(key).remove();
+      // 削除後に投稿が1件も残っていなければ、編成未選択を永続化する。
+      // 古い「最新状態」ノードやローカルキャッシュから編成が復活するのを防止。
+      const remainingSnapshot=await context.ref.once('value');
+      const remaining=remainingSnapshot?.val()||{};
+      const hasRemainingPost=Object.values(remaining).some(item=>item&&typeof item==='object'&&String(item.f||item.formation||'').trim());
+      if(!hasRemainingPost){
+        const db=typeof firebaseDatabaseForFamily==='function' ? firebaseDatabaseForFamily(context.family) : null;
+        const root=typeof storageRootForFamily==='function' ? storageRootForFamily(context.family) : '';
+        if(db&&root&&context.historyNo&&context.date){
+          let clearedRef=db.ref(root).child('__formationInputHistoryCleared');
+          if(context.area!=='__ROOT__') clearedRef=clearedRef.child(context.area);
+          await clearedRef.child(context.date).child(String(context.historyNo)).set(true);
+          const savedRef=context.area==='__ROOT__'
+            ? db.ref(root).child(context.date).child(String(context.historyNo))
+            : db.ref(root).child(context.area).child(context.date).child(String(context.historyNo));
+          await savedRef.remove();
+          // 同時に新しい投稿が追加された場合は、クリアマーカーを残さない。
+          const verifySnapshot=await context.ref.once('value');
+          const verify=verifySnapshot?.val()||{};
+          const hasConcurrentPost=Object.values(verify).some(item=>item&&typeof item==='object'&&String(item.f||item.formation||'').trim());
+          if(hasConcurrentPost) await clearedRef.child(context.date).child(String(context.historyNo)).remove();
+          await loadFormationFamilyFromFirebase(context.family);
+          if(typeof mergeFormationRemoteIntoLegacyState==='function') mergeFormationRemoteIntoLegacyState();
+          if(typeof applyRegistrationState==='function') applyRegistrationState();
+          if(typeof saveLocalState==='function') saveLocalState();
+          if(typeof refreshAllTrainDataCache==='function') refreshAllTrainDataCache();
+          if(typeof syncStatus==='function') syncStatus('編成入力履歴を削除しました');
+          if(typeof updateSheetContent==='function' && currentTrainInfoTab==='operation' && !isEditMode) updateSheetContent();
+        }
+      }
       return true;
     }catch(error){
       console.error('編成入力履歴の削除に失敗しました',error);
