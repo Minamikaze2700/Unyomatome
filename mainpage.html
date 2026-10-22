@@ -6879,6 +6879,20 @@ initRegionNavigation();
     const root=storageRootForFamily(family);
     return db&&root ? db.ref(root) : null;
   };
+  // 編成の最新状態とは分離して、列車・日付ごとに入力投稿を追記保存する。
+  window.formationInputHistoryRefForTrain=function(train,date){
+    if(!train) return null;
+    const family=formationFamilyForTrain(train);
+    const db=firebaseDatabaseForFamily(family);
+    const root=storageRootForFamily(family);
+    const area=storageAreaForFamily(family);
+    const day=String(date||formationDateKey()).trim();
+    const no=String(train.no||'').trim();
+    if(!db||!root||!no||!/^\d{4}-\d{2}-\d{2}$/.test(day)) return null;
+    let ref=db.ref(root).child('__formationInputHistory');
+    if(area!=='__ROOT__') ref=ref.child(area);
+    return ref.child(day).child(no);
+  };
 
   registeredFormationForTrain=function(train){
     if(!train) return null;
@@ -7088,6 +7102,25 @@ initRegionNavigation();
             const payload={f:normalized,t:stamp};
             if(roleCode) payload.r=roleCode;
             await ref.set(payload);
+            // 履歴は最新状態の上書きとは別に、入力投稿ごとに追加する。
+            try{
+              let historyRef=db.ref(root).child('__formationInputHistory');
+              if(area!=='__ROOT__') historyRef=historyRef.child(area);
+              historyRef=historyRef.child(date).child(String(no));
+              const historyPost={
+                f:normalized,
+                at:Date.now(),
+                author:String(currentUserProfile?.name||currentAuthUser?.displayName||currentUserProfile?.id||'ユーザー').trim(),
+                uid:String(currentAuthUser?.uid||currentUserProfile?.uid||''),
+                userId:String(currentUserProfile?.id||''),
+                route:String(activeRouteName||''),
+                r:String(roleCode||'')
+              };
+              await historyRef.push().set(historyPost);
+            }catch(historyError){
+              // 履歴書き込みに失敗しても、成功した最新編成の保存は成功扱いにする。
+              console.warn('編成入力履歴の保存に失敗しました',historyError);
+            }
           }else await ref.remove();
         }
         await loadFormationFamilyFromFirebase(family);
@@ -7924,6 +7957,17 @@ initRegionNavigation();
     if(isAdminUser()) return 'a';
     return isRouteAdminFor(route)?'l':'';
   };
+  window.canDeleteFormationInputHistoryRecord=function(record){
+    if(!record || !authStateReady || !currentAuthUser) return false;
+    const route=normalizeId(record.route||activeRouteName);
+    const role=window.currentPermissionCodeForRoute?.(route)||'';
+    if(role==='a'||role==='l') return true;
+    const recordUid=normalizeId(record.uid);
+    if(recordUid) return recordUid===normalizeId(currentAuthUser.uid);
+    // 旧形式の履歴にUIDがない場合だけ、登録者IDで本人判定する。
+    const recordUserId=normalizeId(record.userId);
+    return !!recordUserId && recordUserId===normalizeId(currentUserProfile?.id);
+  };
 
   function roleLabel(code){ return code==='a'?'管理人':code==='l'?'路線管理人':''; }
   function roleTag(code){
@@ -8618,6 +8662,115 @@ initRegionNavigation();
 <script id="train-info-design-update">
 (function(){
   let currentTrainInfoTab='stops';
+  let formationInputHistoryListenerRef=null;
+  let formationInputHistoryListenerCallback=null;
+  let formationInputHistoryListenerKey='';
+  let formationInputHistoryContext=null;
+  let formationInputHistoryRecords=[];
+
+  function formationInputHistoryContextFor(train){
+    const date=String(selectedDateKey||operationDateKey()).trim();
+    const no=String(train?.no||currentTrainNo||'').trim();
+    const family=typeof formationFamilyForTrain==='function' ? formationFamilyForTrain(train) : '';
+    const area=typeof window.storageAreaForFamily==='function' ? String(window.storageAreaForFamily(family)||'__ROOT__') : '__ROOT__';
+    const route=String(activeRouteName||'');
+    const key=[family,area,date,no,route].join('|');
+    const ref=typeof window.formationInputHistoryRefForTrain==='function' ? window.formationInputHistoryRefForTrain(train,date) : null;
+    return {key,date,no,family,area,route,train,ref};
+  }
+
+  function attachFormationInputHistoryListener(train){
+    const context=formationInputHistoryContextFor(train);
+    if(context.key===formationInputHistoryListenerKey && formationInputHistoryListenerRef) return;
+    if(formationInputHistoryListenerRef && formationInputHistoryListenerCallback){
+      try{formationInputHistoryListenerRef.off('value',formationInputHistoryListenerCallback);}catch(e){}
+    }
+    formationInputHistoryListenerRef=null;
+    formationInputHistoryListenerCallback=null;
+    formationInputHistoryListenerKey=context.key;
+    formationInputHistoryContext=context;
+    formationInputHistoryRecords=[];
+    if(!context.ref) return;
+    formationInputHistoryListenerRef=context.ref;
+    formationInputHistoryListenerCallback=function(snapshot){
+      if(context.key!==formationInputHistoryListenerKey) return;
+      const raw=snapshot?.val()||{};
+      formationInputHistoryRecords=Object.entries(raw)
+        .filter(([key,post])=>!!key && post && typeof post==='object' && String(post.f||'').trim())
+        .map(([key,post])=>({key,...post}))
+        .sort((a,b)=>(Number(b.at||b.createdAt)||0)-(Number(a.at||a.createdAt)||0));
+      const openNo=String(currentTrainSnapshot?.no||currentTrainNo||'').trim();
+      if(openNo===context.no && currentTrainInfoTab==='operation' && !isEditMode && typeof updateSheetContent==='function'){
+        updateSheetContent();
+      }
+    };
+    context.ref.on('value',formationInputHistoryListenerCallback);
+  }
+
+  function formatFormationInputHistoryDateTime(post,dateFallback){
+    let date=null;
+    const numeric=Number(post?.at??post?.createdAt);
+    if(Number.isFinite(numeric)&&numeric>0) date=new Date(numeric);
+    if(!date || Number.isNaN(date.getTime())){
+      const raw=String(post?.t||'');
+      const match=raw.match(/(?:^|\D)(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
+      if(match){
+        const yy=Number(match[1]),mm=Number(match[2]),dd=Number(match[3]),hh=Number(match[4]),mi=Number(match[5]);
+        if(mm>=1&&mm<=12&&dd>=1&&dd<=31&&hh<=23&&mi<=59) date=new Date(2000+yy,mm-1,dd,hh,mi);
+      }
+    }
+    if(!date || Number.isNaN(date.getTime())){
+      const fallback=String(dateFallback||'');
+      return fallback ? `${fallback.replaceAll('-','/')} --:--` : '--/--/-- --:--';
+    }
+    return `${date.getFullYear()}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getDate()).padStart(2,'0')} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+  }
+
+  function renderFormationInputHistory(train){
+    attachFormationInputHistoryListener(train);
+    const context=formationInputHistoryContext;
+    const posts=formationInputHistoryRecords.slice();
+    const rows=posts.map(post=>{
+      const ids=String(post.f||'').split('+').map(v=>v.trim()).filter(Boolean);
+      const displayObjects=ids.map(id=>{
+        try{return selectionDisplayObjectForTrain(train,id)||selectionDisplayObject(id)||formationById(id)||{};}catch(e){return selectionDisplayObject(id)||formationById(id)||{};}
+      });
+      const names=ids.map((id,index)=>String(displayObjects[index]?.name||formationById(id)?.name||id));
+      const first=displayObjects[0]||{};
+      const image=String(first.img||first.image||jsonNoImageUrl()||'');
+      const author=String(post.author||post.userName||post.userId||'登録者不明');
+      const datetime=formatFormationInputHistoryDateTime(post,context?.date);
+      const canDelete=typeof window.canDeleteFormationInputHistoryRecord==='function' && window.canDeleteFormationInputHistoryRecord(post);
+      const deleteButton=canDelete
+        ? `<button type="button" class="formation-input-history-delete" aria-label="この編成入力履歴を削除" onclick="if(confirm('この編成入力履歴を削除しますか？'))window.deleteFormationInputHistoryRecord('${escapeJs(post.key)}')">削除</button>`
+        : '';
+      return `<div class="formation-input-history-item" data-history-key="${escapeAttr(post.key)}">
+        <img class="formation-input-history-image" src="${escapeAttr(image)}" alt="${escapeAttr(names.join('・'))}" onerror="this.onerror=null;this.src=jsonNoImageUrl()">
+        <div class="formation-input-history-formation" title="${escapeAttr(names.join(' + '))}">${escapeAttr(names.join(' + '))}</div>
+        <div class="formation-input-history-meta"><span class="formation-input-history-datetime">${escapeAttr(datetime)}</span><span class="formation-input-history-author">${escapeAttr(author)}</span></div>
+        ${deleteButton}
+      </div>`;
+    }).join('');
+    return `<section class="formation-input-history-section">
+      <div class="formation-input-history-heading">編成入力履歴</div>
+      <div class="formation-input-history-list">${rows||'<div class="formation-input-history-empty">この日の編成入力履歴はありません。</div>'}</div>
+    </section>`;
+  }
+
+  window.deleteFormationInputHistoryRecord=async function(recordKey){
+    const key=String(recordKey||'').trim();
+    const post=formationInputHistoryRecords.find(item=>String(item.key)===key);
+    const context=formationInputHistoryContext;
+    if(!key||!post||!context?.ref || typeof window.canDeleteFormationInputHistoryRecord!=='function' || !window.canDeleteFormationInputHistoryRecord(post)) return false;
+    try{
+      await context.ref.child(key).remove();
+      return true;
+    }catch(error){
+      console.error('編成入力履歴の削除に失敗しました',error);
+      if(typeof syncStatus==='function') syncStatus('編成入力履歴の削除に失敗しました');
+      return false;
+    }
+  };
 
   function primaryTrainInfoColor(){
     try{
@@ -9360,7 +9513,7 @@ initRegionNavigation();
 
       <div class="train-info-content-panel">
         ${activeStops?`<div class="timetable-list train-stop-guide-list">${timetableHTMLForCurrentDay(train)}</div>`:''}
-        ${activeOp?`<div class="station-timetable-frame train-operation-frame"><div class="${operationWrapClasses}">${opHtml || '<div class="train-info-empty">この列車の運用情報はありません。</div>'}</div></div>`:''}
+        ${activeOp?`${renderFormationInputHistory(train)}<div class="station-timetable-frame train-operation-frame"><div class="${operationWrapClasses}">${opHtml || '<div class="train-info-empty">この列車の運用情報はありません。</div>'}</div></div>`:''}
         ${activeForm?`<div class="train-info-formation-wrap">${renderFormationInfo(train)}</div>`:''}
         ${activeHistory?renderFormationOperationHistory(train,{hideNumber:!hasOperationNumber,hideType:!hasOperationType}):''}
       </div>
@@ -9714,6 +9867,46 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
       .train-history-run.train-operation-row.hide-operation-number{grid-template-columns:50px 49px minmax(0,1fr) 13px 49px minmax(0,1fr)!important;}
       .train-history-run.train-operation-row.hide-operation-type{grid-template-columns:45px 49px minmax(0,1fr) 13px 49px minmax(0,1fr)!important;}
       .train-history-run.train-operation-row.hide-operation-number.hide-operation-type{grid-template-columns:49px minmax(0,1fr) 13px 49px minmax(0,1fr)!important;}
+    }
+
+    /* 今日の運用の各列車も運用履歴と同じ縦幅・文字サイズに揃える。 */
+    #sheetContent .train-operation-wrap .train-operation-row{
+      min-height:46px!important;height:46px!important;padding:3px 8px!important;column-gap:6px!important;
+    }
+    #sheetContent .train-operation-wrap .train-operation-number{font-size:16px!important;}
+    #sheetContent .train-operation-wrap .train-operation-type{min-height:24px!important;height:24px!important;padding:2px 3px!important;font-size:12px!important;line-height:1.05!important;}
+    #sheetContent .train-operation-wrap .train-operation-time{font-size:14px!important;}
+    #sheetContent .train-operation-wrap .train-operation-station{font-size:14px!important;line-height:1.1!important;white-space:normal!important;max-height:2.2em;overflow:hidden;overflow-wrap:anywhere;word-break:normal;}
+    #sheetContent .train-operation-wrap .train-operation-arrow{font-size:16px!important;}
+
+    /* 編成入力履歴は1投稿1行。運用履歴と同じ46px（スマホ42px）で揃える。 */
+    .formation-input-history-section{margin:0 0 10px;width:100%;min-width:0;background:#fff;border-radius:8px;overflow:hidden;}
+    .formation-input-history-heading{font-size:15px;line-height:1.2;font-weight:800;padding:7px 9px;background:#f1f1f1;border-bottom:1px solid #ccc;}
+    .formation-input-history-list{width:100%;min-width:0;}
+    .formation-input-history-item{display:grid;grid-template-columns:52px minmax(90px,1.05fr) minmax(145px,1.2fr) auto;align-items:center;column-gap:8px;width:100%;height:46px;min-height:46px;box-sizing:border-box;padding:3px 8px;border-bottom:1px solid #bbb;background:#fff;}
+    .formation-input-history-item:nth-child(even){background:#cfcfcf;}
+    .formation-input-history-image{display:block;width:48px;height:38px;object-fit:contain;justify-self:center;background:transparent;}
+    .formation-input-history-formation{min-width:0;font-size:14px;line-height:1.1;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .formation-input-history-meta{display:flex;flex-direction:column;justify-content:center;gap:2px;min-width:0;font-size:11px;line-height:1.1;}
+    .formation-input-history-datetime,.formation-input-history-author{display:block;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .formation-input-history-author{color:#555;}
+    .formation-input-history-delete{justify-self:end;align-self:center;border:0;border-radius:5px;padding:5px 8px;background:#b3261e;color:#fff;font:700 12px/1 inherit;white-space:nowrap;cursor:pointer;}
+    .formation-input-history-delete:hover{filter:brightness(.92);}
+    .formation-input-history-empty{height:46px;min-height:46px;display:flex;align-items:center;padding:0 9px;font-size:12px;color:#666;background:#fff;}
+    @media(max-width:520px){
+      #sheetContent .train-operation-wrap .train-operation-row{min-height:42px!important;height:42px!important;padding:2px 4px!important;column-gap:3px!important;}
+      #sheetContent .train-operation-wrap .train-operation-number{font-size:12px!important;}
+      #sheetContent .train-operation-wrap .train-operation-type{min-height:21px!important;height:21px!important;padding:0 2px!important;font-size:10px!important;}
+      #sheetContent .train-operation-wrap .train-operation-time{font-size:11px!important;}
+      #sheetContent .train-operation-wrap .train-operation-station{font-size:11px!important;line-height:1.05!important;max-height:2.1em;}
+      #sheetContent .train-operation-wrap .train-operation-arrow{font-size:13px!important;}
+      .formation-input-history-heading{font-size:12px;padding:5px 6px;}
+      .formation-input-history-item{grid-template-columns:38px minmax(72px,.9fr) minmax(85px,1.15fr) auto;column-gap:4px;height:42px;min-height:42px;padding:2px 4px;}
+      .formation-input-history-image{width:36px;height:30px;}
+      .formation-input-history-formation{font-size:11px;}
+      .formation-input-history-meta{font-size:9px;gap:1px;}
+      .formation-input-history-delete{padding:4px 5px;font-size:10px;}
+      .formation-input-history-empty{height:42px;min-height:42px;font-size:10px;padding:0 6px;}
     }
   `;
   document.head.appendChild(style);
