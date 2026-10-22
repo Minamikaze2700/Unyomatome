@@ -106,8 +106,6 @@ button,input,select,textarea{font-family:inherit}
 .station-row.fukuoka-branch-anchor-row .connection-button{appearance:none;border:2px solid var(--button-color);border-radius:7px;padding:8px 18px;background:#fff;color:var(--button-color);box-shadow:0 2px 7px rgba(0,0,0,.20);font:700 15px/1.2 inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-width:150px;transition:filter .12s,transform .12s,background .12s,color .12s;}
 .station-row.fukuoka-branch-anchor-row .connection-button:hover{filter:brightness(.96);transform:translateY(-1px);}
 .station-row.fukuoka-branch-anchor-row .connection-button.active{background:var(--button-color);color:#fff;}
-.station-row.fukuoka-hakozaki-start .station-badge{--primary:#0072BC;}
-.station-row.fukuoka-hakozaki-start .station-name-en{--station-label-bg:#0072BC;}
 .station-badge{
   position:relative;width:384px;min-width:384px;height:auto;aspect-ratio:480 / 90;
   border:4px solid var(--primary);border-radius:40px;
@@ -643,6 +641,8 @@ button,input,select,textarea{font-family:inherit}
 .auth-error{min-height:1.2em;margin-top:8px;color:#c62828;font-size:.88rem;line-height:1.4}
 @media(max-width:700px){#operationInfoBtn{right:88px;padding-left:10px;padding-right:10px}#siteMenuBtn{right:0;width:88px;height:58px;font-size:30px}.site-menu-panel{right:8px;top:62px;width:calc(100vw - 16px)}.auth-panel{top:62px;width:calc(100vw - 16px)}}
 #operationInfoBtn:hover{filter:brightness(.96)}
+#operationInfoBtn .operation-info-prefix{color:var(--control-accent,#808080);font-weight:inherit}
+#operationInfoBtn .operation-info-status-text{font-weight:800;color:#16803c}
 .operation-info-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1200;display:none}.operation-info-backdrop.active{display:block}
 .operation-info-panel{position:fixed;left:50%;top:72px;transform:translateX(-50%);width:min(900px,calc(100vw - 24px));max-height:calc(100vh - 96px);overflow:auto;background:#eee;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.3);z-index:1201;display:none}.operation-info-panel.active{display:block}
 .operation-info-header{position:sticky;top:0;z-index:3;background:#c8a600;color:#111;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;font-weight:800;border-radius:16px 16px 0 0}.operation-info-header button{border:0;background:transparent;color:#111;font-size:20px;cursor:pointer}
@@ -926,7 +926,7 @@ body{padding-bottom:42px !important;}
 </head>
 <body>
 
-<h1 id="title"><span id="titleText">運用まとめ</span><button id="operationInfoBtn" type="button" onclick="openOperationInfo()">運行情報</button><button id="siteMenuBtn" type="button" onclick="toggleSiteMenu(event)" aria-label="メニュー" aria-expanded="false">☰</button></h1>
+<h1 id="title"><span id="titleText">運用まとめ</span><button id="operationInfoBtn" type="button" onclick="openOperationInfo()" aria-label="運行情報：平常運転"><span class="operation-info-prefix">運行情報：</span><span id="operationInfoStatusText" class="operation-info-status-text">平常運転</span></button><button id="siteMenuBtn" type="button" onclick="toggleSiteMenu(event)" aria-label="メニュー" aria-expanded="false">☰</button></h1>
 <div class="control-bar">
   <div class="day-filter">
     <input id="dateInput" class="date-input" type="date">
@@ -1061,7 +1061,7 @@ const RESET_HOUR=3;
 const RESET_DWELL_MIN=2;
 const TURNBACK_SWITCH_MIN=1;
 const TRAIN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/HiroshimaArea_2026.json';
-const KOBE_KAIGAN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/KobeCity_Kaigan_2026.json';
+const KOBE_KAIGAN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/KobeCity_2026.json';
 const DEFAULT_ROUTE_TITLE='運用まとめ';
 const LAST_ROUTE_STORAGE_KEY='routeLastRoute_v1';
 const ROUTE_REGISTRY={
@@ -1076,7 +1076,6 @@ const ROUTE_REGISTRY={
     company:'JR西日本',
     formationFamily:'hiroshima',
     prependStations:[{nameJa:'糸崎',nameEn:'Itozaki'}],
-    corporateTitleColor:'#0072bc',
     access:{public:true,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
@@ -1090,7 +1089,6 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'JR西日本',
     formationFamily:'hiroshima',
-    corporateTitleColor:'#0072bc',
     access:{public:true,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
@@ -1104,7 +1102,6 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'JR西日本',
     formationFamily:'hiroshima',
-    corporateTitleColor:'#0072bc',
     access:{public:true,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
@@ -1118,7 +1115,6 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'神戸市営地下鉄',
     formationFamily:'kobe',
-    corporateTitleColor:'#0072bc',
     access:{public:true,routeAdmins:[]},
     formationInputExample:'5101 / 5101F / 5000系'
   },
@@ -1132,7 +1128,6 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'神戸市営地下鉄',
     formationFamily:'kobe',
-    corporateTitleColor:'#0072bc',
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png',
     formationType:'6000形',
     formationTypeImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobecity6000.png',
@@ -1143,7 +1138,6 @@ const ROUTE_REGISTRY={
   },
   '京浜東北・根岸線':{
     id:'keihin-tohoku',
-    routeColor:'#00adcd',
     json:'https://minamikaze2700.github.io/Unyomatome/data/KeihinTohoku_2025.json',
     jsonLines:['京浜東北・根岸線'],
     relatedJsons:['https://minamikaze2700.github.io/Unyomatome/data/Yokohama_2026.json'],
@@ -1155,8 +1149,8 @@ const ROUTE_REGISTRY={
     formationFamily:'keihin',
     typeShortMap:{'普通':'各停','各駅停車':'各停','区間急行':'区急'},
     typeDetailMap:{'普通':'各駅停車','各停':'各駅停車'},
-    typeClassMap:{'快速':'keihin-express','普通':'keihin-local','各停':'keihin-local'},
     destinationAliases:{'南浦和':'南浦','東十条':'東十','東神奈川':'東神','桜木町':'桜木','八王子':'八王'},
+    typeClassMap:{'快速':'keihin-express','普通':'keihin-local','各停':'keihin-local'},
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Keihin-Tohoku_noimage.png',
     access:{public:true,routeAdmins:[]},
     formationInputExample:'E233系1000番台 / 101 / 101F',
@@ -1164,7 +1158,6 @@ const ROUTE_REGISTRY={
   },
   '横浜線':{
     id:'yokohama',
-    routeColor:'#72c11d',
     json:'https://minamikaze2700.github.io/Unyomatome/data/Yokohama_2026.json',
     jsonLines:['横浜線'],
     relatedJsons:['https://minamikaze2700.github.io/Unyomatome/data/KeihinTohoku_2025.json'],
@@ -1177,7 +1170,6 @@ const ROUTE_REGISTRY={
     typeShortMap:{'普通':'各停','各駅停車':'各停','区間急行':'区急'},
     typeDetailMap:{'普通':'各駅停車','各停':'各駅停車'},
     typeClassMap:{'快速':'yokohama-express','普通':'yokohama-local','各停':'yokohama-local'},
-    segmentColorRules:[{whenStationsAllPresent:['東神奈川','横浜','桜木町','関内','石川町','山手','根岸','磯子','新杉田','洋光台','港南台','本郷台','大船'],useLine:'京浜東北・根岸線'}],
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Yokohama_noimage.png',
     access:{public:true,routeAdmins:[]},
     formationInputExample:'E233系6000番台 / H001 / H001F',
@@ -1185,7 +1177,6 @@ const ROUTE_REGISTRY={
   },
   '南武線':{
     id:'nambu',
-    routeColor:'#fdd700',
     json:'https://minamikaze2700.github.io/Unyomatome/data/Nambu_2026.json',
     jsonLines:['南武線'],
     range:'川崎～立川',
@@ -1215,7 +1206,6 @@ const ROUTE_REGISTRY={
   },
   '大阪環状線':{
     id:'osaka-loop',
-    routeColor:'#ee354f',
     json:'https://minamikaze2700.github.io/Unyomatome/data/OsakaLoop_2025.json',
     jsonLines:['大阪環状線'],
     range:'天王寺～天王寺',
@@ -1235,7 +1225,6 @@ const ROUTE_REGISTRY={
   },
   'ゆめ咲線':{
     id:'yumesaki',
-    routeColor:'#233f97',
     json:'https://minamikaze2700.github.io/Unyomatome/data/OsakaLoop_2025.json',
     jsonLines:['ゆめ咲線'],
     range:'西九条～桜島',
@@ -1255,7 +1244,6 @@ const ROUTE_REGISTRY={
   },
   '日比谷線':{
     id:'hibiya',
-    routeColor:'#b5b5ac',
     json:'https://minamikaze2700.github.io/Unyomatome/data/TokyoMetro_Hibiya_2024.json',
     jsonLines:['日比谷線'],
     range:'中目黒～北千住',
@@ -1325,7 +1313,6 @@ const ROUTE_REGISTRY={
   },
   '水島臨海鉄道':{
     id:'mizushima-rinkai',
-    routeColor:'#0089a8',
     json:'https://minamikaze2700.github.io/Unyomatome/data/Mizushima_2026.json',
     jsonLines:['水島臨海鉄道'],
     range:'倉敷市～三菱自工前',
@@ -1366,7 +1353,6 @@ const ROUTE_REGISTRY={
   },
   '関西本線（名古屋～亀山）':{
     id:'jr-tokai-kansai',
-    routeColor:'#16b68f',
     json:'https://minamikaze2700.github.io/Unyomatome/data/JR_Tokai_KansaiMain_2026.json',
     jsonLines:['関西本線'],
     range:'名古屋～亀山',
@@ -1397,10 +1383,10 @@ const ROUTE_SCHEDULE_CONFIG={
     {from:'2026-03-14',to:'2027-03-13',file:'HiroshimaArea_2026.json'}
   ],
   '海岸線':[
-    {from:'2026-03-14',to:'2027-03-13',file:'KobeCity_Kaigan_2026.json'}
+    {from:'2026-03-14',to:'2027-03-13',file:'KobeCity_2026.json'}
   ],
   '西神・山手線':[
-    {from:'2025-03-15',to:'2027-03-13',file:'KobeCity_SeishinYamate_2025.json'}
+    {from:'2026-03-14',to:'2027-03-13',file:'KobeCity_2026.json'}
   ],
   '京浜東北・根岸線':[
     {from:'2025-03-15',to:'2027-03-13',file:'KeihinTohoku_2025.json',relatedFiles:['Yokohama_2026.json']}
@@ -2918,48 +2904,76 @@ function getVisibleTrains(){
 }
 function getShortType(type, trainNo=''){
   const value=String(type||'');
-  const meta=activeRouteMeta||{};
-  const direct=meta.typeShortMap?.[value];
-  if(direct!==undefined) return String(direct);
-  const jsonDirect=activeJson?.typeShortMap?.[value];
-  if(jsonDirect!==undefined) return String(jsonDirect);
-  for(const rule of (Array.isArray(meta.typeShortRules)?meta.typeShortRules:[])){
+  if(!value) return '';
+  const routeMeta=activeRouteMeta||{};
+  const direct=routeMeta.typeShortMap?.[value];
+  if(direct!==undefined && direct!==null && String(direct).trim()) return String(direct);
+  const jsonMaps=[activeJson?.typeShortMap,activeJson?.typeAbbreviations,activeJson?.route?.abbreviations?.types];
+  for(const map of jsonMaps){
+    if(!map) continue;
+    if(!Array.isArray(map) && typeof map==='object' && Object.prototype.hasOwnProperty.call(map,value)){
+      const result=map[value];
+      if(result!==undefined && result!==null && String(result).trim()) return String(result);
+    }
+    if(Array.isArray(map)){
+      const match=map.find(item=>String(item?.name??item?.type??item?.targetName??'').trim()===value);
+      if(match){const result=match.value??match.abbr??match.short;if(result!==undefined&&result!==null&&String(result).trim())return String(result);}
+    }
+  }
+  const jsonTypes=Array.isArray(activeJson?.types)?activeJson.types:[];
+  const typeEntry=jsonTypes.find(item=>String(item?.name??item?.label??'').trim()===value);
+  const directAbbr=String(typeEntry?.abbr??typeEntry?.abbreviation??typeEntry?.shortName??'').trim();
+  if(directAbbr) return directAbbr;
+  const abbreviationEntries=activeJson?.route?.abbreviations?.types;
+  if(Array.isArray(abbreviationEntries)){
+    const matched=abbreviationEntries.find(item=>String(item?.targetId??'')===String(typeEntry?.id??''));
+    const result=String(matched?.value??matched?.abbr??'').trim();
+    if(result) return result;
+  }
+  const rules=[
+    ...(Array.isArray(routeMeta.typeShortRules)?routeMeta.typeShortRules:[]),
+    ...(Array.isArray(activeJson?.typeShortRules)?activeJson.typeShortRules:[])
+  ];
+  for(const rule of rules){
     const containsAll=Array.isArray(rule.containsAll)?rule.containsAll:[];
     if(containsAll.length && !containsAll.every(x=>value.includes(String(x)))) continue;
     if(rule.contains && !value.includes(String(rule.contains))) continue;
     if(rule.trainNoSuffix && !String(trainNo||'').toUpperCase().endsWith(String(rule.trainNoSuffix).toUpperCase())) continue;
-    if(rule.result!==undefined) return String(rule.result);
+    if(rule.result!==undefined && String(rule.result).trim()) return String(rule.result);
   }
   if(value==='区間急行') return '区急';
-  // JSONの「各駅停車」を「普通」へ勝手に変換しない。
-  // 路線側で略称が必要な場合は typeShortMap で明示的に定義する。
   if(value==='各駅停車') return '各停';
   return value;
 }
 function getDetailType(type){
   const value=String(type||'');
-  const mapped=activeRouteMeta?.typeDetailMap?.[value];
+  const routeMapped=activeRouteMeta?.typeDetailMap?.[value];
+  if(routeMapped!==undefined) return String(routeMapped);
+  const mapped=activeJson?.typeDetailMap?.[value];
   if(mapped!==undefined) return String(mapped);
-  // 「各停」は駅時刻表などの詳細表示では「各駅停車」に戻す。
   if(value==='各停') return '各駅停車';
   return value;
 }
 function displayTrainNo(train){ return (train && !train.hideTrainNumber) ? normalizeTrainNo(train.no) : ''; }
 function getShortDest(dest){
   const value=String(dest||'').trim();
-  // 略称は「列車の行先」に対してだけ適用する。駅名そのものの表示には使わない。
-  // 路線設定では destinationAliases、広島地区JSONでは stationAliases を使うため、両方を参照する。
   const aliasMaps=[
     activeRouteMeta?.destinationAliases,
     activeRouteMeta?.stationAliases,
     activeRouteMeta?.stationShortMap,
     activeJson?.destinationAliases,
     activeJson?.stationAliases,
-    activeJson?.stationShortMap
+    activeJson?.stationShortMap,
+    activeJson?.stationAbbreviations
   ];
   for(const aliases of aliasMaps){
-    if(aliases && typeof aliases==='object' && Object.prototype.hasOwnProperty.call(aliases,value)){
+    if(aliases && typeof aliases==='object' && !Array.isArray(aliases) && Object.prototype.hasOwnProperty.call(aliases,value)){
       const short=String(aliases[value]??'').trim();
+      if(short) return short;
+    }
+    if(Array.isArray(aliases)){
+      const match=aliases.find(item=>String(item?.name??item?.station??'').trim()===value);
+      const short=String(match?.value??match?.abbr??match?.short??'').trim();
       if(short) return short;
     }
   }
@@ -3637,8 +3651,8 @@ function buildFukuokaScreenRows(){
     return [name,String(m.nameEn||'')];
   });
   const junction=String(fukuokaDiagramConfig(activeJson,activeRouteMeta)?.junctionStation||'中洲川端').trim()||'中洲川端';
-  const hakoColor=String(lineDefByName('箱崎線')?.color||'#0072BC');
-  const kukoColor=String(lineDefByName('空港線')?.color||'#F58220');
+  const hakoColor=String(lineDefByName('箱崎線')?.color||'#666');
+  const kukoColor=String(lineDefByName('空港線')?.color||'#666');
   const branchOpen=fukuokaHakozakiBranchOpen;
 
   for(let i=0;i<main.length;i++){
@@ -3754,7 +3768,7 @@ function renderLine(){
       const branchButton=document.createElement('button');
       branchButton.type='button';
       branchButton.className='connection-button'+(fukuokaHakozakiBranchOpen?' active':'');
-      branchButton.style.setProperty('--button-color',String(lineDefByName('箱崎線')?.color||'#0072BC'));
+      branchButton.style.setProperty('--button-color',String(lineDefByName('箱崎線')?.color||'#666'));
       branchButton.textContent=fukuokaBranchToggleLabel();
       branchButton.setAttribute('aria-expanded',String(fukuokaHakozakiBranchOpen));
       branchButton.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();toggleFukuokaHakozakiBranch();});
@@ -5081,7 +5095,7 @@ function operationInfoEntryBelongsToCurrentRoute(entry){
   return e.stations.every(st=>currentStations.has(operationInfoNormalizeName(st)));
 }
 function operationInfoDateKey(){return String(selectedDateKey||operationDateKey());}
-function loadOperationInfo(){try{const all=JSON.parse(localStorage.getItem(OPERATION_INFO_STORAGE_KEY)||'{}');operationInfoEntries=(Array.isArray(all?.[operationInfoDateKey()])?all[operationInfoDateKey()]:[]).map(normalizeOperationEntry).filter(Boolean);}catch(e){operationInfoEntries=[];}}
+function loadOperationInfo(){try{const all=JSON.parse(localStorage.getItem(OPERATION_INFO_STORAGE_KEY)||'{}');operationInfoEntries=(Array.isArray(all?.[operationInfoDateKey()])?all[operationInfoDateKey()]:[]).map(normalizeOperationEntry).filter(Boolean);}catch(e){operationInfoEntries=[];}updateOperationInfoStatus();}
 function saveOperationInfo(){try{const all=JSON.parse(localStorage.getItem(OPERATION_INFO_STORAGE_KEY)||'{}');all[operationInfoDateKey()]=operationInfoEntries;localStorage.setItem(OPERATION_INFO_STORAGE_KEY,JSON.stringify(all));}catch(e){}}
 function formatTimestampShort(ts){if(!ts)return '';const d=new Date(Number(ts));if(Number.isNaN(d.getTime()))return '';const now=new Date();const hhmm=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()&&d.getDate()===now.getDate()?hhmm:`${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${hhmm}`;}
 function operationInfoFirebasePayload(entry){return{id:String(entry.id),route:String(entry.route||activeRouteName||''),start:operationInfoNormalizeName(entry.start),end:operationInfoNormalizeName(entry.end),stations:Array.isArray(entry.stations)?entry.stations.map(operationInfoNormalizeName):[],status:entry.status==='suspend'?'suspend':'delay',delay:operationInfoDelayValue(entry.delay),reason:String(entry.reason||OPERATION_INFO_REASONS[0]),createdAt:Number(entry.createdAt)||Date.now(),operationDate:operationInfoDateKey()};}
@@ -5153,7 +5167,34 @@ function addOperationInfo(){
 function deleteOperationInfo(id){operationInfoEntries=operationInfoEntries.filter(x=>String(x.id)!==String(id));saveOperationInfo();renderOperationInfoList();renderOperationInfoZones();saveOperationInfoToFirebase();}
 function showOperationInfoDetail(id){const e=operationInfoEntries.find(x=>String(x.id)===String(id));if(!e)return;const body=document.getElementById('operationInfoDetailBody');if(!body)return;const txt=e.status==='suspend'?'運転見合わせ':operationInfoDelayText(e.delay);const posted=formatTimestampShort(e.createdAt);body.innerHTML=`<div class="operation-info-detail-status ${e.status==='suspend'?'suspend':'delay'}">${esc(txt)}</div><div><strong>区間：</strong>${esc(`${e.start} ⇄ ${e.end}`)}</div><div><strong>理由：</strong>${esc(e.reason||OPERATION_INFO_REASONS[0])}</div><div><strong>投稿時刻：</strong>${esc(posted)}</div>`;document.getElementById('operationInfoDetailBackdrop')?.classList.add('active');document.getElementById('operationInfoDetail')?.classList.add('active');}
 function hideOperationInfoDetail(){document.getElementById('operationInfoDetailBackdrop')?.classList.remove('active');document.getElementById('operationInfoDetail')?.classList.remove('active');}
-function renderOperationInfoList(){const box=document.getElementById('operationInfoList');if(!box)return;const visibleEntries=operationInfoEntries.filter(operationInfoEntryBelongsToCurrentRoute);if(!visibleEntries.length){box.innerHTML='<div class="operation-info-empty">この路線に登録されている運行情報はありません。</div>';return;}box.innerHTML=visibleEntries.map(x=>{const txt=x.status==='suspend'?'運転見合わせ':operationInfoDelayText(x.delay);return `<div class="operation-info-card ${x.status==='suspend'?'suspend':'delay'}"><button type="button" class="operation-info-card-main" onclick="showOperationInfoDetail('${esc(x.id)}')"><div class="operation-info-card-title">${esc(x.start)} ⇄ ${esc(x.end)}</div><div class="operation-info-card-meta">${esc(txt)}</div><div class="operation-info-card-reason">${esc(x.reason||OPERATION_INFO_REASONS[0])}</div></button><button class="operation-info-card-delete" type="button" onclick="deleteOperationInfo('${esc(x.id)}')">削除</button></div>`;}).join('');}
+function updateOperationInfoStatus(){
+  const button=document.getElementById('operationInfoBtn');
+  if(!button) return;
+  const entries=(Array.isArray(operationInfoEntries)?operationInfoEntries:[])
+    .map(normalizeOperationEntry).filter(Boolean).filter(operationInfoEntryBelongsToCurrentRoute);
+  let label='平常運転',color='#16803c';
+  if(entries.some(entry=>entry.status==='suspend')){
+    label='運転見合わせ'; color='#d62828';
+  }else if(entries.length){
+    const knownDelays=entries.map(entry=>operationInfoDelayValue(entry.delay)).filter(value=>value!=='unknown'&&Number.isFinite(Number(value))&&Number(value)>0).map(Number);
+    label=knownDelays.length?`遅延${Math.max(...knownDelays)}分`:'遅延時間不明';
+    color='#c69c00';
+  }
+  const statusText=button.querySelector('#operationInfoStatusText');
+  if(statusText){statusText.textContent=label;statusText.style.color=color;}
+  else{button.textContent=`運行情報：${label}`;}
+  button.style.color='';
+  button.setAttribute('aria-label',`運行情報：${label}`);
+  button.dataset.serviceStatus=entries.some(entry=>entry.status==='suspend')?'suspend':entries.length?'delay':'normal';
+}
+function renderOperationInfoList(){
+  updateOperationInfoStatus();
+  const box=document.getElementById('operationInfoList');
+  if(!box)return;
+  const visibleEntries=operationInfoEntries.filter(operationInfoEntryBelongsToCurrentRoute);
+  if(!visibleEntries.length){box.innerHTML='<div class="operation-info-empty">この路線に登録されている運行情報はありません。</div>';return;}
+  box.innerHTML=visibleEntries.map(x=>{const txt=x.status==='suspend'?'運転見合わせ':operationInfoDelayText(x.delay);return `<div class="operation-info-card ${x.status==='suspend'?'suspend':'delay'}"><button type="button" class="operation-info-card-main" onclick="showOperationInfoDetail('${esc(x.id)}')"><div class="operation-info-card-title">${esc(x.start)} ⇄ ${esc(x.end)}</div><div class="operation-info-card-meta">${esc(txt)}</div><div class="operation-info-card-reason">${esc(x.reason||OPERATION_INFO_REASONS[0])}</div></button><button class="operation-info-card-delete" type="button" onclick="deleteOperationInfo('${esc(x.id)}')">削除</button></div>`;}).join('');
+}
 function operationInfoVisibleSegments(){
   const rows=[...document.querySelectorAll('.station-row')];
   const byRouteName=new Map();
@@ -5672,7 +5713,6 @@ function jsonSegmentColorForStations(a,b,lineNames=getActiveRouteLineNames()){
 function trainServiceColorBetweenStations(a,b,trainContext=null){
   const aa=String(a||''),bb=String(b||'');
   if(!aa||!bb||aa===bb) return fallbackTrainServiceColor(trainContext);
-  const routeOverride=String(activeRouteMeta?.routeColor||'').trim();
   // 路線の表示範囲外にある終点は、列車JSONの終点stop.routeColorで区間色を指定できる。
   const ctxStops=Array.isArray(trainContext?.stops)?trainContext.stops:[];
   for(let i=0;i<ctxStops.length-1;i++){
@@ -5700,13 +5740,13 @@ function trainServiceColorBetweenStations(a,b,trainContext=null){
       return (Array.isArray(rule?.stationPairs)&&rule.stationPairs.some(pair=>Array.isArray(pair)&&pair.length>=2&&((String(pair[0])===aa&&String(pair[1])===bb)||(String(pair[1])===aa&&String(pair[0])===bb))))
         || (Array.isArray(rule?.whenStationsAllPresent)&&rule.whenStationsAllPresent.includes(aa)&&rule.whenStationsAllPresent.includes(bb));
     }));
-    if(yamatoRule && routeOverride) return routeOverride;
+    if(yamatoRule){const loopColor=String(lineDefByName('大阪環状線')?.color||'').trim();if(loopColor)return loopColor;}
     const jsonSegment=jsonSegmentColorForStations(aa,bb,getActiveRouteLineNames());
     if(jsonSegment) return jsonSegment;
     const line=preferredTrainServiceLine(aa,bb,trainContext);
     const direct=String(line?.color||'').trim();
     if(direct && direct!==String(lineDefByName('大和路線')?.color||'')) return direct;
-    return routeOverride||fallbackTrainServiceColor(trainContext);
+    return fallbackTrainServiceColor(trainContext);
   }
   // 日比谷線は北千住から東武線へ直通するため、登録された基本色で全区間を固定しない。
   // 各区間が属する線区のJSONカラー（例：東武線の青）を優先する。
@@ -5718,7 +5758,6 @@ function trainServiceColorBetweenStations(a,b,trainContext=null){
     const serviceColor=String(serviceLine?.color||'').trim();
     if(serviceColor) return serviceColor;
   }
-  if(routeOverride) return routeOverride;
   const jsonSegment=jsonSegmentColorForStations(aa,bb,getActiveRouteLineNames());
   if(jsonSegment) return jsonSegment;
   const line=preferredTrainServiceLine(aa,bb,trainContext);
@@ -5761,14 +5800,12 @@ function singleColorGradient(color,direction='to right'){
 }
 function getActiveRouteLineNames(){ return ROUTE_REGISTRY[activeRouteName]?.jsonLines||[]; }
 function activeRouteColors(){
-  const override=String(activeRouteMeta?.routeColor||'').trim();
-  if(override) return [override];
   return getActiveRouteLineNames().map(name=>String(lineDefByName(name)?.color||'')).filter(Boolean);
 }
 function activeSegmentColors(a,b){
   const aa=String(a||''),bb=String(b||'');
   if(isFukuokaCompositeRoute(activeRouteMeta) && fukuokaHakozakiBranchOpen){
-    const hakoColor=String(lineDefByName('箱崎線')?.color||'#0072BC');
+    const hakoColor=String(lineDefByName('箱崎線')?.color||'#666');
     const branchNames=new Set(fukuokaBranchStationNames(activeJson,activeRouteMeta));
     const d=fukuokaDiagramConfig(activeJson,activeRouteMeta);
     const insertAfter=String(d?.insertAfter||'').trim();
@@ -5779,9 +5816,7 @@ function activeSegmentColors(a,b){
       return [hakoColor];
     }
   }
-  const meta=activeRouteMeta||{};
-  const routeOverride=String(meta?.routeColor||'').trim();
-  const segmentRules=[...(Array.isArray(meta.segmentColorRules)?meta.segmentColorRules:[])];
+  const segmentRules=Array.isArray(activeJson?.segmentColorRules)?[...activeJson.segmentColorRules]:[];
   const lineDefs=Array.isArray(activeJson?.lines)?activeJson.lines:[];
   for(const line of lineDefs){
     if(!getActiveRouteLineNames().includes(String(line?.name||''))) continue;
@@ -5802,8 +5837,6 @@ function activeSegmentColors(a,b){
       if(color) return [color];
     }
   }
-  // 現在選択中の路線に固有色が指定されている場合は、それを最優先する。
-  if(routeOverride) return [routeOverride];
   const jsonSegment=jsonSegmentColorForStations(aa,bb,getActiveRouteLineNames());
   if(jsonSegment) return [jsonSegment];
   const line=preferredTrainServiceLine(aa,bb,{servedLineNames:getActiveRouteLineNames()});
@@ -5811,8 +5844,8 @@ function activeSegmentColors(a,b){
 }
 function circularStationLabelDisplayColor(stationName){
   const name=String(stationName||'');
-  const loopColor=String(lineDefByName('大阪環状線')?.color||'#ee354f');
-  const yamatoColor=String(lineDefByName('大和路線')?.color||'#02ad73');
+  const loopColor=String(lineDefByName('大阪環状線')?.color||'#666');
+  const yamatoColor=String(lineDefByName('大和路線')?.color||'#666');
   return activeJson?.circular===true ? (name==='新今宮'?yamatoColor:loopColor) : null;
 }
 function stationLabelColor(index){
@@ -5825,8 +5858,8 @@ function stationLabelColor(index){
     const branchNames=new Set(fukuokaBranchStationNames(activeJson,activeRouteMeta));
     const insertAfter=String(diagram?.insertAfter||'祇園').trim()||'祇園';
     const junction=String(diagram?.junctionStation||'中洲川端').trim()||'中洲川端';
-    if(cur===insertAfter || cur===junction) return String(lineDefByName('空港線')?.color||activeRouteColors()[0]||'#F58220');
-    if(fukuokaHakozakiBranchOpen && branchNames.has(cur)) return String(lineDefByName('箱崎線')?.color||'#0072BC');
+    if(cur===insertAfter || cur===junction) return String(lineDefByName('空港線')?.color||activeRouteColors()[0]||'#666');
+    if(fukuokaHakozakiBranchOpen && branchNames.has(cur)) return String(lineDefByName('箱崎線')?.color||'#666');
   }
   const prev=i>0?STATIONS[i-1]?.nameJa:null;
   const next=i<STATIONS.length-1?STATIONS[i+1]?.nameJa:null;
@@ -5915,8 +5948,8 @@ function renderRailLineSegments(){
       const d=fukuokaDiagramConfig(activeJson,activeRouteMeta);
       const insertAfter=String(d?.insertAfter||'祇園').trim()||'祇園';
       const junction=String(d?.junctionStation||'中洲川端').trim()||'中洲川端';
-      const hakoColor=String(lineDefByName('箱崎線')?.color||'#0072BC');
-      const kukoColor=String(lineDefByName('空港線')?.color||'#F58220');
+      const hakoColor=String(lineDefByName('箱崎線')?.color||'#666');
+      const kukoColor=String(lineDefByName('空港線')?.color||'#666');
       /* 箱崎線開放時の「祇園→貝塚」は、駅間の中点まで空港線色を徐々に透明にする。
          中点から貝塚側は線を描かず、貝塚を始発駅として見せる。 */
       const branchOrder=fukuokaBranchStationNames(activeJson,activeRouteMeta);
@@ -6414,10 +6447,10 @@ function initRegionNavigation(){
     .rail-segment{position:absolute;left:0;width:100%;}
     .timetable-item::before{background:linear-gradient(to bottom,var(--route-line-top-bg,#666) 0 50%,var(--route-line-bottom-bg,#666) 50% 100%);}
     .timetable-item.chikuhi-next::before{
-      background:linear-gradient(to bottom,var(--route-line-top,#666) 0 50%,transparent 50% 100%),repeating-linear-gradient(to bottom,#800080 0 7px,transparent 7px 14px);
+      background:linear-gradient(to bottom,var(--route-line-top,#666) 0 50%,transparent 50% 100%),repeating-linear-gradient(to bottom,var(--station-route-color,#666) 0 7px,transparent 7px 14px);
     }
     .timetable-item.chikuhi-prev::before{
-      background:linear-gradient(to bottom,transparent 0 50%,var(--route-line-bottom,#666) 50% 100%),repeating-linear-gradient(to bottom,#800080 0 7px,transparent 7px 14px);
+      background:linear-gradient(to bottom,transparent 0 50%,var(--route-line-bottom,#666) 50% 100%),repeating-linear-gradient(to bottom,var(--station-route-color,#666) 0 7px,transparent 7px 14px);
     }
     .time-dot{background:var(--station-route-color-bg,#666);}
     .train-label.route-normal,.station-timetable-type.route-normal,.type-badge.route-normal{background:var(--train-type-color,#666);color:#fff;}
@@ -6541,8 +6574,7 @@ function updateRouteVisuals(){
     bar.style.borderBottomColor='#ddd';
     bar.style.setProperty('--control-accent',h1Color);
   }
-  const op=document.getElementById('operationInfoBtn');
-  if(op) op.style.color=h1Color;
+  updateOperationInfoStatus();
   document.querySelectorAll('.station-badge').forEach((badge,i)=>{ applyStationLabelColors(badge,i); });
   if(document.getElementById('railLine')) renderRailLineSegments();
   syncRegionNavLayout();
@@ -8342,8 +8374,8 @@ initRegionNavigation();
     stage.style.height=`${stageHeight}px`; stage.style.minHeight=`${stageHeight}px`;
     // 上端は大阪環状線色、下端（新今宮⇄天王寺）は大和路線色を明示。
     // routeColor の上書きで大和路線色が赤へ戻ることを防ぐ。
-    const loopLineColor=String(lineDefByName('大阪環状線')?.color||'#ee354f');
-    const yamatoLineColor=String(lineDefByName('大和路線')?.color||'#02ad73');
+    const loopLineColor=String(lineDefByName('大阪環状線')?.color||'#666');
+    const yamatoLineColor=String(lineDefByName('大和路線')?.color||'#666');
     stage.style.setProperty('--circular-top-color',loopLineColor);
     stage.style.setProperty('--circular-bottom-color',yamatoLineColor);
     const metrics=circularStageMetrics();
@@ -9292,28 +9324,32 @@ initRegionNavigation();
     const value=String(name||'').trim();
     if(!value) return '';
 
-    // 路線設定・JSONに直接用意された駅名→略称マップ。
     const registryMeta=(typeof ROUTE_REGISTRY==='object' && ROUTE_REGISTRY && activeRouteName && ROUTE_REGISTRY[activeRouteName]) ? ROUTE_REGISTRY[activeRouteName] : null;
     const maps=[
       registryMeta?.stationShortMap,
       registryMeta?.stationAbbreviations,
+      registryMeta?.destinationAliases,
       activeRouteMeta?.stationShortMap,
       activeRouteMeta?.stationAbbreviations,
       activeRouteMeta?.stationAliases,
+      activeRouteMeta?.destinationAliases,
       activeJson?.stationShortMap,
       activeJson?.stationAbbreviations,
       activeJson?.stationAliases,
-      activeRouteMeta?.destinationAliases
+      activeJson?.destinationAliases
     ];
     for(const map of maps){
-      if(map && typeof map==='object' && Object.prototype.hasOwnProperty.call(map,value)){
+      if(map && typeof map==='object' && !Array.isArray(map) && Object.prototype.hasOwnProperty.call(map,value)){
         const short=String(map[value]??'').trim();
+        if(short) return short;
+      }
+      if(Array.isArray(map)){
+        const match=map.find(item=>String(item?.name??item?.station??'').trim()===value);
+        const short=String(match?.value??match?.abbr??match?.short??'').trim();
         if(short) return short;
       }
     }
 
-    // データベース作成HTMLの駅名略称形式
-    // { route:{ abbreviations:{ stations:[{targetId,value}] } }, stations:[{id,name,abbr}] }
     const dbStations=Array.isArray(activeJson?.stations)?activeJson.stations:[];
     const dbStation=dbStations.find(st=>String(st?.name||'').trim()===value);
     const directAbbr=String(dbStation?.abbr||'').trim();
@@ -9324,8 +9360,6 @@ initRegionNavigation();
       const short=String(hit?.value||'').trim();
       if(short) return short;
     }
-
-    // 通常の路線JSONの lines[].stations[].abbr にも対応
     const lineStations=Array.isArray(activeJson?.lines)
       ? activeJson.lines.flatMap(line=>Array.isArray(line?.stations)?line.stations:[])
       : [];
@@ -9334,6 +9368,7 @@ initRegionNavigation();
     if(lineAbbr) return lineAbbr;
 
     const rules=[
+      ...(Array.isArray(registryMeta?.stationShortRules)?registryMeta.stationShortRules:[]),
       ...(Array.isArray(activeRouteMeta?.stationShortRules)?activeRouteMeta.stationShortRules:[]),
       ...(Array.isArray(activeJson?.stationShortRules)?activeJson.stationShortRules:[])
     ];
