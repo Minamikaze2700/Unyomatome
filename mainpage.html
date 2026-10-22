@@ -2700,6 +2700,16 @@ function liveTrain(no,direction=null){
   return TRAIN_DATA_CACHE.get(trainCacheKey(currentDay,key,''))||baseTrainForDay(key,null,currentDay)||TRAIN_INDEX[key]||null;
 }
 function trainForCurrentDay(trainNo,direction=null){return liveTrain(String(trainNo??''),direction)||baseTrainForDay(String(trainNo??''),direction,currentDay);}
+// Firebase更新後、列車情報シートが保持している古いtrain.formationも更新する。
+// liveTrainのキャッシュだけを更新してもcurrentTrainSnapshotは独立したオブジェクトなので、
+// ここを同期しないとシートを閉じるまで以前の編成が表示され続ける。
+function refreshCurrentTrainSnapshotFromCache(){
+  if(!currentTrainNo || !currentTrainSnapshot || isEditMode) return false;
+  const source=liveTrain(currentTrainNo,currentTrainSnapshot?.direction||null)||currentTrainSnapshot;
+  const formation=registeredFormationForTrain(source);
+  currentTrainSnapshot={...currentTrainSnapshot,formation:formation||null};
+  return true;
+}
 function refreshVisibleUI(){
   if(isEditMode) return;
   refreshAllTrainDataCache();
@@ -7120,7 +7130,11 @@ initRegionNavigation();
           applyRegistrationState();
           saveLocalState();
           refreshAllTrainDataCache();
-          if(!isEditMode){renderTrainPositions();if(currentTrainNo)updateSheetContent();}
+          if(!isEditMode){
+            refreshCurrentTrainSnapshotFromCache();
+            renderTrainPositions();
+            if(currentTrainNo) updateSheetContent();
+          }
         }
       };
       ref.on('value',handler);
@@ -8966,6 +8980,7 @@ initRegionNavigation();
           if(typeof applyRegistrationState==='function') applyRegistrationState();
           if(typeof saveLocalState==='function') saveLocalState();
           if(typeof refreshAllTrainDataCache==='function') refreshAllTrainDataCache();
+          if(typeof refreshCurrentTrainSnapshotFromCache==='function') refreshCurrentTrainSnapshotFromCache();
           if(typeof syncStatus==='function') syncStatus('編成入力履歴を削除しました');
           if(typeof updateSheetContent==='function' && currentTrainInfoTab==='operation' && !isEditMode) updateSheetContent();
         }
