@@ -6769,9 +6769,19 @@ initRegionNavigation();
   }
   window.canonicalFormationId=canonicalFormationId;
 
+  // 履歴に残る「編成未選択」や旧UIのプレースホルダーを、実編成IDとして扱わない。
+  function isUnselectedFormationId(value){
+    const raw=String(value??'').trim();
+    return raw==='__INITIAL__' || raw==='編成未選択' || /^(?:unselected|none|null|undefined)$/i.test(raw);
+  }
+  window.isUnselectedFormationId=isUnselectedFormationId;
   normalizeStoredFormationId=function(value){
     if(value===null||value===undefined||String(value).trim()==='') return null;
-    const ids=String(value).split('+').map(x=>canonicalFormationId(x)||String(x).replace(/F$/i,'').trim()).filter(Boolean);
+    const ids=String(value).split('+').map(x=>{
+      const part=String(x??'').trim();
+      if(!part||isUnselectedFormationId(part)) return '';
+      return canonicalFormationId(part)||part.replace(/F$/i,'').trim();
+    }).filter(Boolean);
     return ids.length?ids.join('+'):null;
   };
 
@@ -6794,7 +6804,11 @@ initRegionNavigation();
   function normalizeEntry(entry){
     if(entry===null||entry===undefined) return null;
     const rawValue=typeof entry==='object' ? (entry.f??entry.formation??'') : entry;
-    const ids=String(rawValue??'').split('+').map(x=>canonicalFormationId(x)||String(x).replace(/F$/i,'').trim()).filter(Boolean);
+    const ids=String(rawValue??'').split('+').map(x=>{
+      const part=String(x??'').trim();
+      if(!part||isUnselectedFormationId(part)) return '';
+      return canonicalFormationId(part)||part.replace(/F$/i,'').trim();
+    }).filter(Boolean);
     if(!ids.length) return null;
     const meta=parseStoredMeta(typeof entry==='object' ? (entry.t??entry.time??'') : '');
     const out={f:ids.join('+'),t:meta.time ? (meta.stamp ? `${meta.stamp}${meta.author?`@${meta.author}`:''}` : `${meta.time}${meta.author?`@${meta.author}`:''}`) : ''};
@@ -6864,9 +6878,13 @@ initRegionNavigation();
           let latest=null;
           for(const [postKey,rawPost] of Object.entries(postsValue)){
             if(!rawPost || typeof rawPost!=='object') continue;
-            const formation=normalizeStoredFormationId(rawPost.f||rawPost.formation||'');
-            if(!formation) continue;
-            const candidate={...rawPost,key:String(postKey),f:formation};
+            const hasFormationField=Object.prototype.hasOwnProperty.call(rawPost,'f')||Object.prototype.hasOwnProperty.call(rawPost,'formation');
+            const rawFormation=rawPost.f??rawPost.formation??'';
+            const explicitlyUnselected=isUnselectedFormationId(rawFormation)||(hasFormationField&&String(rawFormation).trim()==='');
+            const formation=explicitlyUnselected?'':String(normalizeStoredFormationId(rawFormation)||'').trim();
+            // 編成未選択の投稿も最新イベントとして保持するが、編成IDとしては扱わない。
+            if(!formation&&!explicitlyUnselected) continue;
+            const candidate={...rawPost,key:String(postKey),f:formation,unselected:!formation&&explicitlyUnselected};
             const candidateTime=Number(candidate.at??candidate.createdAt)||0;
             const latestTime=Number(latest?.at??latest?.createdAt)||0;
             if(!latest || candidateTime>latestTime || (candidateTime===latestTime && String(candidate.key).localeCompare(String(latest.key))>0)) latest=candidate;
@@ -6900,16 +6918,19 @@ initRegionNavigation();
     const no=String(trainNo||'').trim();
     if(!family||!day||!no) return null;
     const byNo=formationInputHistoryLatestByFamily[family]?.[day]||{};
-    if(byNo[no]?.f) return byNo[no];
+    if(Object.prototype.hasOwnProperty.call(byNo,no)) return byNo[no];
     const normalized=typeof normalizeTrainNo==='function' ? normalizeTrainNo(no) : no;
     if(!normalized) return null;
     for(const [savedNo,entry] of Object.entries(byNo)){
-      if(entry?.f && (typeof normalizeTrainNo==='function' ? normalizeTrainNo(savedNo) : savedNo)===normalized) return entry;
+      if((typeof normalizeTrainNo==='function' ? normalizeTrainNo(savedNo) : savedNo)===normalized) return entry;
     }
     return null;
   }
   window.latestFirebaseFormationForTrainNo=function(family,date,trainNo){
     return String(latestFormationInputHistoryEntry(family,date,trainNo)?.f||'').trim();
+  };
+  window.hasFirebaseFormationInputHistoryForTrainNo=function(family,date,trainNo){
+    return !!latestFormationInputHistoryEntry(family,date,trainNo);
   };
 
   function syncDerivedStateForFamily(family){
@@ -6992,8 +7013,11 @@ initRegionNavigation();
 
     // まずFirebase履歴の最新投稿を列車チェーン内で探す。
     // これにより旧「最新状態」ノードに値が残っていても、履歴とカード表示が食い違わない。
-    const ownHistoryValue=String(latestFormationInputHistoryEntry(family,date,no)?.f||'').trim();
-    if(ownHistoryValue) return ownHistoryValue;
+    const ownHistoryEntry=latestFormationInputHistoryEntry(family,date,no);
+    if(ownHistoryEntry){
+      if(String(ownHistoryEntry.f||'').trim()) return String(ownHistoryEntry.f).trim();
+      if(ownHistoryEntry.unselected) return null;
+    }
     const chainInfo=findChain(currentDay,no);
     const chain=chainInfo ? (OPERATION_CHAINS?.[currentDay]?.[chainInfo.chainIndex]||[]) : [];
     const chainNos=[no];
@@ -7001,8 +7025,10 @@ initRegionNavigation();
       const linkedNo=String(entry?.no||entry||'').trim();
       if(!linkedNo || linkedNo===no) continue;
       chainNos.push(linkedNo);
-      const historyValue=String(latestFormationInputHistoryEntry(family,date,linkedNo)?.f||'').trim();
+      const historyEntry=latestFormationInputHistoryEntry(family,date,linkedNo);
+      const historyValue=String(historyEntry?.f||'').trim();
       if(historyValue) return historyValue;
+      if(historyEntry?.unselected) return null;
     }
 
     // この運用チェーン内で履歴を全削除した列車があれば、旧状態ノードへフォールバックしない。
@@ -7331,6 +7357,7 @@ initRegionNavigation();
     const raw=String(value).trim();
     const ids=raw.split('+').map(x=>x.trim()).filter(Boolean);
     const normalized=ids.map(one=>{
+      if(window.isUnselectedFormationId?.(one)) return '';
       const v=oldNormalizeStoredFormationId(one);
       return v==null?'':String(v).replace(/F$/i,'');
     }).filter(Boolean);
@@ -7392,7 +7419,8 @@ initRegionNavigation();
   };
 
   function selectedIdsForTrain(train){
-    const current=formationIds(registeredFormationForTrain(train)||train?.formation||'');
+    const raw=registeredFormationForTrain(train)||train?.formation||'';
+    const current=formationIds(raw).filter(id=>!window.isUnselectedFormationId?.(id));
     const out=[];
     for(let i=0;i<MAX_FORMATION_SLOTS;i++) out.push(current[i]||'');
     return out;
@@ -8782,13 +8810,15 @@ initRegionNavigation();
         }
         return '';
       };
-      // train-card と一致するよう、最初にFirebase履歴の最新投稿の列番を探す。
-      if(String(window.latestFirebaseFormationForTrainNo?.(family,day,displayedNo)||'').trim()) return displayedNo;
+      // train-card と一致するよう、編成未選択の投稿も含めてFirebase履歴の最新投稿の列番を探す。
+      if(window.hasFirebaseFormationInputHistoryForTrainNo?.(family,day,displayedNo)
+          || String(window.latestFirebaseFormationForTrainNo?.(family,day,displayedNo)||'').trim()) return displayedNo;
       const chainInfo=typeof findChain==='function' ? findChain(currentDay,displayedNo) : null;
       const chain=chainInfo ? (OPERATION_CHAINS?.[currentDay]?.[chainInfo.chainIndex]||[]) : [];
       for(const entry of chain){
         const linkedNo=String(entry?.no||entry||'').trim();
-        if(linkedNo && linkedNo!==displayedNo && String(window.latestFirebaseFormationForTrainNo?.(family,day,linkedNo)||'').trim()) return linkedNo;
+        if(linkedNo && linkedNo!==displayedNo && (window.hasFirebaseFormationInputHistoryForTrainNo?.(family,day,linkedNo)
+            || String(window.latestFirebaseFormationForTrainNo?.(family,day,linkedNo)||'').trim())) return linkedNo;
       }
       // 履歴がない旧データのみ、従来の保存状態を使う。
       if(getSavedValue(displayedNo)) return displayedNo;
@@ -8829,8 +8859,19 @@ initRegionNavigation();
       if(context.key!==formationInputHistoryListenerKey) return;
       const raw=snapshot?.val()||{};
       formationInputHistoryRecords=Object.entries(raw)
-        .filter(([key,post])=>!!key && post && typeof post==='object' && String(post.f||'').trim())
-        .map(([key,post])=>({key,...post}))
+        .filter(([key,post])=>{
+          if(!key||!post||typeof post!=='object') return false;
+          const hasFormationField=Object.prototype.hasOwnProperty.call(post,'f')||Object.prototype.hasOwnProperty.call(post,'formation');
+          const rawFormation=post.f??post.formation??'';
+          return !!String(rawFormation).trim() || !!window.isUnselectedFormationId?.(rawFormation) || (hasFormationField&&String(rawFormation).trim()==='');
+        })
+        .map(([key,post])=>{
+          const hasFormationField=Object.prototype.hasOwnProperty.call(post,'f')||Object.prototype.hasOwnProperty.call(post,'formation');
+          const rawFormation=post.f??post.formation??'';
+          const unselected=!!window.isUnselectedFormationId?.(rawFormation)||(hasFormationField&&String(rawFormation).trim()==='');
+          const normalized=unselected?'':String(window.normalizeStoredFormationId?.(rawFormation)||rawFormation||'').trim();
+          return {key,...post,f:normalized,unselected:unselected&&!normalized};
+        })
         // 古い投稿から新しい投稿へ並べ、最後の行が最新の登録になるようにする。
         .sort((a,b)=>((Number(a.at||a.createdAt)||0)-(Number(b.at||b.createdAt)||0)) || String(a.key).localeCompare(String(b.key)));
       const openNo=String(currentTrainSnapshot?.no||currentTrainNo||'').trim();
@@ -8865,13 +8906,14 @@ initRegionNavigation();
     const context=formationInputHistoryContext;
     const posts=formationInputHistoryRecords.slice();
     const rows=posts.map(post=>{
-      const ids=String(post.f||'').split('+').map(v=>v.trim()).filter(Boolean);
+      const isUnselected=!!post.unselected||!!window.isUnselectedFormationId?.(post.f||post.formation||'');
+      const ids=isUnselected?[]:String(post.f||'').split('+').map(v=>v.trim()).filter(Boolean);
       const displayObjects=ids.map(id=>{
         try{return selectionDisplayObjectForTrain(train,id)||selectionDisplayObject(id)||formationById(id)||{};}catch(e){return selectionDisplayObject(id)||formationById(id)||{};}
       });
-      const names=ids.map((id,index)=>String(displayObjects[index]?.name||formationById(id)?.name||id));
+      const names=ids.length?ids.map((id,index)=>String(displayObjects[index]?.name||formationById(id)?.name||id)):['編成未選択'];
       const first=displayObjects[0]||{};
-      const image=String(first.img||first.image||jsonNoImageUrl()||'');
+      const image=String(first.img||first.image||(isUnselected?jsonNoImageUrl():jsonNoImageUrl())||'');
       const author=String(post.author||post.userName||post.userId||'登録者不明');
       const datetime=formatFormationInputHistoryDateTime(post,context?.date);
       const canDelete=typeof window.canDeleteFormationInputHistoryRecord==='function' && window.canDeleteFormationInputHistoryRecord(post);
