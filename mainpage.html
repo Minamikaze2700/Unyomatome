@@ -7194,30 +7194,34 @@ initRegionNavigation();
             const payload={f:normalized,t:stamp};
             if(roleCode) payload.r=roleCode;
             await ref.set(payload);
-            // 履歴は最新状態の上書きとは別に、入力投稿ごとに追加する。
-            try{
-              let historyRef=db.ref(root).child('__formationInputHistory');
-              if(area!=='__ROOT__') historyRef=historyRef.child(area);
-              historyRef=historyRef.child(date).child(String(no));
-              const historyPost={
-                f:normalized,
-                at:Date.now(),
-                author:String(currentUserProfile?.name||currentAuthUser?.displayName||currentUserProfile?.id||'ユーザー').trim(),
-                uid:String(currentAuthUser?.uid||currentUserProfile?.uid||''),
-                userId:String(currentUserProfile?.id||''),
-                route:String(activeRouteName||''),
-                r:String(roleCode||'')
-              };
-              await historyRef.push().set(historyPost);
-              // 新しい投稿が復活したら、以前の「履歴全削除済み」マーカーを解除する。
-              let clearedRef=db.ref(root).child('__formationInputHistoryCleared');
-              if(area!=='__ROOT__') clearedRef=clearedRef.child(area);
-              await clearedRef.child(date).child(String(no)).remove();
-            }catch(historyError){
-              // 履歴書き込みに失敗しても、成功した最新編成の保存は成功扱いにする。
-              console.warn('編成入力履歴の保存に失敗しました',historyError);
-            }
-          }else await ref.remove();
+          }else{
+            // プルダウンで「編成未選択」を選んだときは、現在状態を削除する。
+            await ref.remove();
+          }
+          // 通常の編成登録だけでなく「編成未選択」も最新イベントとして記録する。
+          // 未選択イベントがないと、古い履歴の編成が選択状態へ復活してしまう。
+          try{
+            let historyRef=db.ref(root).child('__formationInputHistory');
+            if(area!=='__ROOT__') historyRef=historyRef.child(area);
+            historyRef=historyRef.child(date).child(String(no));
+            const historyPost={
+              f:normalized||INITIAL_FORMATION_SELECTION.id,
+              at:Date.now(),
+              author:String(currentUserProfile?.name||currentAuthUser?.displayName||currentUserProfile?.id||'ユーザー').trim(),
+              uid:String(currentAuthUser?.uid||currentUserProfile?.uid||''),
+              userId:String(currentUserProfile?.id||''),
+              route:String(activeRouteName||''),
+              r:String(roleCode||'')
+            };
+            await historyRef.push().set(historyPost);
+            // 新しい登録・未選択イベントが追加されたら、以前の全削除マーカーを解除する。
+            let clearedRef=db.ref(root).child('__formationInputHistoryCleared');
+            if(area!=='__ROOT__') clearedRef=clearedRef.child(area);
+            await clearedRef.child(date).child(String(no)).remove();
+          }catch(historyError){
+            // 履歴書き込みに失敗しても、成功した現在状態の更新は成功扱いにする。
+            console.warn('編成入力履歴の保存に失敗しました',historyError);
+          }
         }
         await loadFormationFamilyFromFirebase(family);
       }
