@@ -7024,15 +7024,12 @@ initRegionNavigation();
     const no=String(train.no||'').trim();
     if(!no) return null;
 
-    // Firebaseには入力対象の列車番号ごとに保存する。
-    // 読み込み時は、まず表示中の列番を優先し、登録がなければ
-    // 同じ日の運用チェーンに含まれる全列番を順番に確認する。
+    // Firebaseの現在状態。列番の表記揺れは正規化後の完全一致で補完する。
     const stored=formationRemoteByFamily[family]?.areaStateByDate?.[date]?.[area]||{};
     const getSavedEntry=(trainNo)=>{
       const key=String(trainNo||'').trim();
       if(!key) return null;
       if(stored?.[key] && typeof stored[key]==='object') return stored[key];
-      // 古いデータに列番表記の揺れがある場合のみ、正規化後の完全一致で補完する。
       const normalized=normalizeTrainNo(key);
       if(!normalized) return null;
       for(const [savedNo,entry] of Object.entries(stored)){
@@ -7040,44 +7037,60 @@ initRegionNavigation();
       }
       return null;
     };
-    const getSavedValue=(trainNo)=>String(getSavedEntry(trainNo)?.f||'').trim();
 
+    // 接続運用は必ず始発側から終着側の順に並べる。
+    // 以前は「選択中の列番→チェーン先頭」の順で確認していたため、Cを選ぶと
+    // AとBの両方に登録があっても、先に見つかったAの編成が誤って採用されていた。
     const chainInfo=findChain(currentDay,no);
     const chain=chainInfo ? (OPERATION_CHAINS?.[currentDay]?.[chainInfo.chainIndex]||[]) : [];
-    const chainNos=[no];
+    let chainNos=[];
     for(const entry of chain){
       const linkedNo=String(entry?.no||entry||'').trim();
-      if(linkedNo && !chainNos.includes(linkedNo)) chainNos.push(linkedNo);
+      if(linkedNo && !chainNos.some(existing=>normalizeTrainNo(existing)===normalizeTrainNo(linkedNo))) chainNos.push(linkedNo);
+    }
+    const normalizedNo=normalizeTrainNo(no);
+    let targetIndex=chainNos.findIndex(linkedNo=>normalizeTrainNo(linkedNo)===normalizedNo);
+    if(targetIndex<0){
+      const canonicalNo=normalizedNo.replace(/A$/i,'');
+      targetIndex=chainNos.findIndex(linkedNo=>normalizeTrainNo(linkedNo).replace(/A$/i,'')===canonicalNo);
+    }
+    if(targetIndex<0){
+      chainNos=[no];
+      targetIndex=0;
+    }else if(normalizeTrainNo(chainNos[targetIndex])!==normalizedNo){
+      // A付き・Aなしなどの表記揺れに対し、選択中の列番自身の登録も確認する。
+      chainNos.splice(targetIndex,0,no);
     }
 
-    // 列車チェーンで優先される最新履歴と、Firebaseの現在状態を同じ列番で比較する。
-    // 現在状態の更新が履歴追記より新しい（または同じ分）ならFirebaseの現在状態を採用し、
-    // 履歴投稿が明確に新しい場合は履歴を採用する。明示的な「編成未選択」は同分の旧状態で覆さない。
-    let historyEntry=null,historySourceNo='';
-    for(const candidateNo of chainNos){
-      const candidate=latestFormationInputHistoryEntry(family,date,candidateNo);
-      if(candidate){historyEntry=candidate;historySourceNo=candidateNo;break;}
-    }
-    if(historyEntry){
-      const stateEntry=getSavedEntry(historySourceNo);
-      const stateValue=String(stateEntry?.f||'').trim();
-      if(stateValue && storedFormationIsNewerThanHistory(stateEntry,historyEntry)) return stateValue;
-      if(String(historyEntry.f||'').trim()) return String(historyEntry.f).trim();
-      if(historyEntry.unselected) return null;
-    }
+    const resolveForNo=(candidateNo)=>{
+      const saved=getSavedEntry(candidateNo);
+      const historyEntry=latestFormationInputHistoryEntry(family,date,candidateNo);
+      if(historyEntry){
+        const stateValue=String(saved?.f||'').trim();
+        if(stateValue && storedFormationIsNewerThanHistory(saved,historyEntry)) return {found:true,value:stateValue};
+        if(String(historyEntry.f||'').trim()) return {found:true,value:String(historyEntry.f).trim()};
+        if(historyEntry.unselected) return {found:true,value:'',explicitlyUnselected:true};
+      }
+      // 最後の履歴が削除された列番は、古い状態ノードを再利用しない。
+      if(wasFormationInputHistoryCleared(family,date,candidateNo)) return {found:true,value:'',explicitlyUnselected:true};
+      const value=String(saved?.f||'').trim();
+      if(value) return {found:true,value};
+      return {found:false,value:''};
+    };
 
-    // この運用チェーン内で履歴を全削除した列車があれば、旧状態ノードへフォールバックしない。
-    // これにより最後の履歴を削除すると、train-cardも「編成未選択」になる。
-    if(chainNos.some(trainNo=>wasFormationInputHistoryCleared(family,date,trainNo))) return null;
-
-    // 履歴がない場合はFirebaseの現在状態を使用する。
-    for(const candidateNo of chainNos){
-      const value=getSavedValue(candidateNo);
-      if(value) return value;
+    // 選択中の列車自身、次に直前列車、さらにその前の列車の順で確認する。
+    // これにより A→B→C で A・B に登録があり、Cを選択した場合はBの編成になる。
+    for(let i=targetIndex;i>=0;i--){
+      const result=resolveForNo(chainNos[i]);
+      if(result.found) return result.value||null;
+    }
+    // 選択位置までに登録がなければ、接続運用内で最後に登録された列車を使う。
+    for(let i=chainNos.length-1;i>targetIndex;i--){
+      const result=resolveForNo(chainNos[i]);
+      if(result.found) return result.value||null;
     }
     return null;
   };
-
   applyRegistrationState=function(){
     const seen=new Set();
     [...TRAINS,...HOLIDAY_TRAINS].forEach(t=>{
