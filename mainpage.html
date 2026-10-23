@@ -8927,6 +8927,37 @@ initRegionNavigation();
     context.ref.on('value',formationInputHistoryListenerCallback);
   }
 
+  // 投稿キーなどの保存用識別子だけを除き、記録された情報が完全一致する履歴をまとめる。
+  // 形成ID・時刻・登録者・UID・路線・権限その他の保存フィールドが1つでも異なれば別グループにする。
+  function stableFormationHistoryValue(value){
+    if(Array.isArray(value)) return value.map(stableFormationHistoryValue);
+    if(value && typeof value==='object'){
+      const normalized={};
+      for(const key of Object.keys(value).sort()) normalized[key]=stableFormationHistoryValue(value[key]);
+      return normalized;
+    }
+    return value;
+  }
+  function formationInputHistoryIdentity(post){
+    const data={};
+    for(const key of Object.keys(post||{}).sort()){
+      if(key==='key'||key==='isFirebaseCurrentSnapshot') continue;
+      // false は選択済みを示す派生値なので省略して同じ情報として比較し、true（未選択）は区別する。
+      if(key==='unselected'&&!post[key]) continue;
+      data[key]=stableFormationHistoryValue(post[key]);
+    }
+    return JSON.stringify(data);
+  }
+  function groupFormationInputHistoryPosts(posts){
+    const groups=new Map();
+    for(const post of posts||[]){
+      const identity=formationInputHistoryIdentity(post);
+      if(!groups.has(identity)) groups.set(identity,{post,posts:[]});
+      groups.get(identity).posts.push(post);
+    }
+    return Array.from(groups.values());
+  }
+
   function formatFormationInputHistoryDateTime(post,dateFallback){
     let date=null;
     const numeric=Number(post?.at??post?.createdAt);
@@ -8952,7 +8983,9 @@ initRegionNavigation();
     const posts=formationInputHistoryRecords.slice();
     const firebaseCurrent=formationInputHistoryLatestFirebaseRecord(context,posts);
     const displayPosts=firebaseCurrent?[firebaseCurrent,...posts]:posts;
-    const rows=displayPosts.map(post=>{
+    const displayGroups=groupFormationInputHistoryPosts(displayPosts);
+    const rows=displayGroups.map(group=>{
+      const post=group.post;
       const isUnselected=!!post.unselected||!!window.isUnselectedFormationId?.(post.f||post.formation||'');
       const ids=isUnselected?[]:String(post.f||'').split('+').map(v=>v.trim()).filter(Boolean);
       const displayObjects=ids.map(id=>{
@@ -8963,11 +8996,13 @@ initRegionNavigation();
       const image=String(first.img||first.image||(isUnselected?jsonNoImageUrl():jsonNoImageUrl())||'');
       const author=String(post.author||post.userName||post.userId||'登録者不明');
       const datetime=formatFormationInputHistoryDateTime(post,context?.date);
-      const canDelete=!post.isFirebaseCurrentSnapshot && typeof window.canDeleteFormationInputHistoryRecord==='function' && window.canDeleteFormationInputHistoryRecord(post);
-      const deleteButton=canDelete
-        ? `<button type="button" class="formation-input-history-delete" aria-label="この編成入力履歴を削除" onclick="window.deleteFormationInputHistoryRecord('${escapeJs(post.key)}')">削除</button>`
+      const deletableKeys=[...new Set(group.posts
+        .filter(item=>!item.isFirebaseCurrentSnapshot && typeof window.canDeleteFormationInputHistoryRecord==='function' && window.canDeleteFormationInputHistoryRecord(item))
+        .map(item=>String(item.key||'').trim()).filter(Boolean))];
+      const deleteButton=deletableKeys.length
+        ? `<button type="button" class="formation-input-history-delete" aria-label="この編成入力履歴を削除" onclick="window.deleteFormationInputHistoryRecord('${escapeJs(deletableKeys.join('|'))}')">削除</button>`
         : '';
-      return `<div class="formation-input-history-item" data-history-key="${escapeAttr(post.key)}">
+      return `<div class="formation-input-history-item" data-history-key="${escapeAttr(post.key)}" data-history-duplicates="${group.posts.length}">
         <img class="formation-input-history-image" src="${escapeAttr(image)}" alt="${escapeAttr(names.join('・'))}" onerror="this.onerror=null;this.src=jsonNoImageUrl()">
         <div class="formation-input-history-formation" title="${escapeAttr(names.join(' + '))}">${escapeAttr(names.join(' + '))}</div>
         <div class="formation-input-history-meta"><span class="formation-input-history-datetime">${escapeAttr(datetime)}</span><span class="formation-input-history-author">${escapeAttr(author)}</span></div>
@@ -8981,12 +9016,14 @@ initRegionNavigation();
   }
 
   window.deleteFormationInputHistoryRecord=async function(recordKey){
-    const key=String(recordKey||'').trim();
-    const post=formationInputHistoryRecords.find(item=>String(item.key)===key);
+    const requestedKeys=[...new Set(String(recordKey||'').split('|').map(key=>key.trim()).filter(Boolean))];
+    const targetPosts=requestedKeys.map(key=>formationInputHistoryRecords.find(item=>String(item.key)===key)).filter(Boolean);
     const context=formationInputHistoryContext;
-    if(!key||!post||!context?.ref || typeof window.canDeleteFormationInputHistoryRecord!=='function' || !window.canDeleteFormationInputHistoryRecord(post)) return false;
+    if(!requestedKeys.length||!targetPosts.length||!context?.ref || typeof window.canDeleteFormationInputHistoryRecord!=='function') return false;
+    const deletableKeys=[...new Set(targetPosts.filter(post=>!post.isFirebaseCurrentSnapshot && window.canDeleteFormationInputHistoryRecord(post)).map(post=>String(post.key||'').trim()).filter(Boolean))];
+    if(!deletableKeys.length) return false;
     try{
-      await context.ref.child(key).remove();
+      await Promise.all(deletableKeys.map(key=>context.ref.child(key).remove()));
       // 削除後、Firebaseの現在状態を残った履歴の最新投稿に同期する。
       // 投稿がなくなった場合は未選択マーカーを立て、古い状態ノードから復活しないようにする。
       const remainingSnapshot=await context.ref.once('value');
@@ -9731,8 +9768,18 @@ initRegionNavigation();
             return {label,type};
           }).filter(Boolean);
           const featureTypeClass=type=>type==='外観'?'car-feature-type-appearance':type==='内装'?'car-feature-type-interior':type==='機器類'?'car-feature-type-equipment':'';
-          return `<div class="train-formation-car-row"><b>${i+1}号車</b><span class="train-formation-car-number">${escapeAttr(car)}</span><div class="train-formation-car-feature-viewport">${features.length?`<div class="train-formation-car-feature-track"><div class="train-formation-car-feature-group">${features.map(feature=>`<span class="permission-tag car-feature-tag ${featureTypeClass(feature.type)}"${feature.type?` data-feature-type="${escapeAttr(feature.type)}"`:''}>${escapeAttr(feature.label)}</span>`).join('')}</div></div>`:''}</div></div>`;
-        }).join(''):'<div class="train-formation-car-row"><b>—</b><span class="train-formation-car-number"></span><div class="train-formation-car-feature-viewport"></div></div>'}</div></div>`;
+          const carPosition=i+1;
+          const womenOnlyCars=Array.isArray(raw?.womenOnlyCars)?raw.womenOnlyCars:[];
+          const weakCoolingCars=Array.isArray(raw?.weakCoolingCars)?raw.weakCoolingCars:[];
+          const isWomenOnly=womenOnlyCars.some(n=>Number(n)===carPosition);
+          const isWeakCooling=weakCoolingCars.some(n=>Number(n)===carPosition);
+          const carServiceClass=[isWomenOnly?'women-only-car':'',isWeakCooling?'weak-cooling-car':''].filter(Boolean).join(' ');
+          const serviceTags=[
+            isWeakCooling?'<span class="permission-tag car-feature-tag car-service-tag weak-cooling-tag">弱冷房車</span>':'',
+            isWomenOnly?'<span class="permission-tag car-feature-tag car-service-tag women-only-tag">女性専用車</span>':''
+          ].filter(Boolean).join('');
+          return `<div class="train-formation-car-row${carServiceClass?' '+carServiceClass:''}"><b>${i+1}号車</b><span class="train-formation-car-number">${escapeAttr(car)}</span><div class="train-formation-car-feature-viewport">${features.length?`<div class="train-formation-car-feature-track"><div class="train-formation-car-feature-group">${features.map(feature=>`<span class="permission-tag car-feature-tag ${featureTypeClass(feature.type)}"${feature.type?` data-feature-type="${escapeAttr(feature.type)}"`:''}>${escapeAttr(feature.label)}</span>`).join('')}</div></div>`:''}</div><div class="train-formation-car-service-tags">${serviceTags}</div></div>`;
+        }).join(''):'<div class="train-formation-car-row"><b>—</b><span class="train-formation-car-number"></span><div class="train-formation-car-feature-viewport"></div><div class="train-formation-car-service-tags"></div></div>'}</div></div>`;
       return `<section class="train-formation-card" style="--train-info-color:${color}">
         <div class="train-formation-card-title">${escapeAttr(name)}</div>
         <div class="train-formation-detail-row train-formation-type-row"><span>形式</span><strong>${escapeAttr(type)}</strong></div>
@@ -10062,11 +10109,18 @@ initRegionNavigation();
     .train-formation-detail-row.train-formation-cars-row{display:block;}
     .train-formation-cars-row>span:first-child{display:block;margin-bottom:5px;}
     .train-formation-cars{display:flex;flex-direction:column;gap:3px;min-width:0;width:100%;}
-    .train-formation-cars>.train-formation-car-row{display:grid;grid-template-columns:70px max-content minmax(0,1fr);gap:8px;align-items:center;min-width:0;width:100%;}
+    /* 全号車で同じ余白・列幅を確保し、背景色の有無によって車番やタグの位置がずれないようにする。 */
+    .train-formation-cars>.train-formation-car-row{display:grid;grid-template-columns:70px max-content minmax(0,1fr) 100px;gap:8px;align-items:center;min-width:0;width:100%;padding:3px 6px;border-radius:3px;}
+    .train-formation-cars>.train-formation-car-row.women-only-car{background:#fde7ef;}
+    .train-formation-cars>.train-formation-car-row.weak-cooling-car{background:#e3f3fc;}
     .train-formation-car-number{white-space:nowrap;overflow-wrap:normal;word-break:normal;min-width:max-content;}
     .train-formation-cars b{font-weight:700;}
     .train-formation-car-number{min-width:0;overflow-wrap:anywhere;}
     .train-formation-car-feature-viewport{min-width:0;width:100%;overflow:hidden;white-space:nowrap;align-self:center;}
+    .train-formation-car-service-tags{display:flex;align-items:center;justify-content:flex-end;gap:4px;min-width:0;width:100%;white-space:nowrap;}
+    .train-formation-car-service-tags .car-service-tag{border:0;font-size:.82rem;font-weight:400;line-height:1.2;padding:2px 6px;}
+    .train-formation-car-service-tags .weak-cooling-tag{background:#58a9d8;color:#fff;}
+    .train-formation-car-service-tags .women-only-tag{background:#e56f99;color:#fff;}
     /* 特徴タグは分類別の背景色。説明用の凡例は表示しない。 */
     .train-formation-car-feature-group .car-feature-tag{border:0;}
     .train-formation-car-feature-group .car-feature-type-appearance{background:#2869a6;color:#fff;}
@@ -10077,6 +10131,10 @@ initRegionNavigation();
     .train-formation-car-feature-group .permission-tag{font-size:.86rem;font-weight:400;line-height:1.2;}
     .train-formation-car-feature-track.is-scrolling{animation:train-car-feature-marquee var(--feature-marquee-duration,12s) linear infinite;will-change:transform;}
     @keyframes train-car-feature-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+    @media(max-width:520px){
+      .train-formation-cars>.train-formation-car-row{grid-template-columns:52px max-content minmax(0,1fr) 94px;gap:5px;padding:3px 4px;}
+      .train-formation-car-service-tags .car-service-tag{font-size:.72rem;padding:2px 4px;}
+    }
     @media(prefers-reduced-motion:reduce){.train-formation-car-feature-track.is-scrolling{animation:none;}}
 font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-break:break-word;}
     .train-info-empty{padding:22px 14px;text-align:center;color:#555;font-weight:700;}
