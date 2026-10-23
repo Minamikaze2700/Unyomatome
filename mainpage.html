@@ -7003,6 +7003,19 @@ initRegionNavigation();
     return ref.child(day).child(no);
   };
 
+  // 履歴表示用。日付・列車番号で限定せず、その路線エリアの履歴全体を購読する。
+  window.formationInputHistoryRootRefForTrain=function(train){
+    if(!train) return null;
+    const family=formationFamilyForTrain(train);
+    const db=firebaseDatabaseForFamily(family);
+    const root=storageRootForFamily(family);
+    const area=storageAreaForFamily(family);
+    if(!db||!root) return null;
+    let ref=db.ref(root).child('__formationInputHistory');
+    if(area!=='__ROOT__') ref=ref.child(area);
+    return ref;
+  };
+
   registeredFormationForTrain=function(train){
     if(!train) return null;
     const family=formationFamilyForTrain(train);
@@ -8809,6 +8822,7 @@ initRegionNavigation();
 <script id="train-info-design-update">
 (function(){
   let currentTrainInfoTab='stops';
+  let currentTrainHistoryView='operation';
   let formationInputHistoryListenerRef=null;
   let formationInputHistoryListenerCallback=null;
   let formationInputHistoryListenerKey='';
@@ -8829,34 +8843,22 @@ initRegionNavigation();
   function formationInputHistoryLatestFirebaseRecord(context,posts){
     if(!context?.family||!context?.date||!context?.historyNo) return null;
     if(window.wasFirebaseFormationInputHistoryCleared?.(context.family,context.date,context.historyNo)) return null;
-    // 履歴投稿が存在しない場合、運用チェーン内に全削除済みマーカーがあれば
-    // 別の列番に残った古いFirebase状態を最上段へ復活させない。
-    if(!posts.length){
-      const chainNos=[String(context.no||''),String(context.historyNo||'')].filter(Boolean);
-      try{
-        const chainInfo=typeof findChain==='function'?findChain(currentDay,String(context.no||'')):null;
-        const chain=chainInfo?(OPERATION_CHAINS?.[currentDay]?.[chainInfo.chainIndex]||[]):[];
-        for(const entry of chain){
-          const linkedNo=String(entry?.no||entry||'').trim();
-          if(linkedNo&&!chainNos.includes(linkedNo)) chainNos.push(linkedNo);
-        }
-      }catch(e){}
-      if(chainNos.some(trainNo=>window.wasFirebaseFormationInputHistoryCleared?.(context.family,context.date,trainNo))) return null;
-    }
+    const normalizeNo=value=>typeof normalizeTrainNo==='function'?normalizeTrainNo(value):String(value||'').trim();
+    const todayPosts=(posts||[]).filter(post=>String(post?._historyDate||'')===String(context.date)
+      && normalizeNo(post?._historyTrainNo)===normalizeNo(context.historyNo))
+      .sort((a,b)=>(formationInputHistoryTimestamp(b,context.date)-formationInputHistoryTimestamp(a,context.date))||String(b.key).localeCompare(String(a.key)));
     const areaState=formationRemoteByFamily?.[context.family]?.areaStateByDate?.[context.date]?.[context.area]||{};
     const saved=areaState?.[String(context.historyNo)]||null;
     const rawFormation=String(saved?.f||saved?.formation||'').trim();
     const formation=String(window.normalizeStoredFormationId?.(rawFormation)||'').trim();
     if(!formation) return null;
-    const newestPost=posts[0]||null;
+    const newestPost=todayPosts[0]||null;
     if(newestPost){
       const newestFormation=String(newestPost.f||'').trim();
-      // 同じ編成なら実際の投稿をそのまま最上段に残し、重複表示しない。
       if(!newestPost.unselected && newestFormation===formation) return null;
       const stateAt=Number(window.storedFormationTimestampMs?.(saved))||0;
       const postAt=formationInputHistoryTimestamp(newestPost,context.date);
       if(newestPost.unselected){
-        // 明示的な未選択投稿は、Firebase状態が後の分に更新された場合だけ上書きする。
         if(!stateAt||!postAt||Math.floor(stateAt/60000)<=Math.floor(postAt/60000)) return null;
       }else if(!stateAt||!postAt||Math.floor(stateAt/60000)<Math.floor(postAt/60000)){
         return null;
@@ -8866,15 +8868,32 @@ initRegionNavigation();
     const at=Number(window.storedFormationTimestampMs?.(saved))||0;
     return {
       key:`__firebase_current__${context.date}_${context.historyNo}`,
-      f:formation,
-      at,
-      t:String(saved?.t??saved?.time??''),
+      f:formation,at,t:String(saved?.t??saved?.time??''),
       author:String(meta.author||saved?.author||saved?.userName||'登録者不明'),
-      uid:String(saved?.uid||''),
-      userId:String(saved?.userId||''),
-      r:String(saved?.r||''),
+      uid:String(saved?.uid||''),userId:String(saved?.userId||''),r:String(saved?.r||''),
+      _historyDate:context.date,_historyTrainNo:String(context.historyNo),
       isFirebaseCurrentSnapshot:true
     };
+  }
+
+  function historyScheduleDayForDate(date){
+    const key=String(date||'').trim();
+    const d=/^\d{4}-\d{2}-\d{2}$/.test(key)?new Date(`${key}T12:00:00`):new Date();
+    return typeof getScheduleDayForDate==='function'?getScheduleDayForDate(d):currentDay;
+  }
+
+  function historyChainNumbersForDate(trainNo,date){
+    const day=historyScheduleDayForDate(date);
+    const numbers=new Set();
+    const base=String(trainNo||'').trim();
+    if(base) numbers.add(base);
+    const info=typeof findChain==='function'?findChain(day,base):null;
+    const chain=info?(OPERATION_CHAINS?.[day]?.[info.chainIndex]||[]):[];
+    for(const entry of chain){
+      const no=String(entry?.no||entry||'').trim();
+      if(no) numbers.add(no);
+    }
+    return {day,numbers};
   }
 
   function formationInputHistorySourceNoFor(train,date){
@@ -8883,8 +8902,9 @@ initRegionNavigation();
     try{
       const family=typeof formationFamilyForTrain==='function' ? formationFamilyForTrain(train) : '';
       const area=typeof window.storageAreaForFamily==='function' ? String(window.storageAreaForFamily(family)||'__ROOT__') : '__ROOT__';
-      const day=String(date||selectedDateKey||operationDateKey()).trim();
+      const day=String(date||operationDateKey()).trim();
       const stored=formationRemoteByFamily?.[family]?.areaStateByDate?.[day]?.[area]||{};
+      const {day:scheduleDay,numbers}=historyChainNumbersForDate(displayedNo,day);
       const getSavedValue=(trainNo)=>{
         const key=String(trainNo||'').trim();
         if(!key) return '';
@@ -8900,36 +8920,30 @@ initRegionNavigation();
         }
         return '';
       };
-      // train-card と一致するよう、編成未選択の投稿も含めてFirebase履歴の最新投稿の列番を探す。
-      if(window.hasFirebaseFormationInputHistoryForTrainNo?.(family,day,displayedNo)
-          || String(window.latestFirebaseFormationForTrainNo?.(family,day,displayedNo)||'').trim()) return displayedNo;
-      const chainInfo=typeof findChain==='function' ? findChain(currentDay,displayedNo) : null;
-      const chain=chainInfo ? (OPERATION_CHAINS?.[currentDay]?.[chainInfo.chainIndex]||[]) : [];
-      for(const entry of chain){
-        const linkedNo=String(entry?.no||entry||'').trim();
-        if(linkedNo && linkedNo!==displayedNo && (window.hasFirebaseFormationInputHistoryForTrainNo?.(family,day,linkedNo)
-            || String(window.latestFirebaseFormationForTrainNo?.(family,day,linkedNo)||'').trim())) return linkedNo;
+      for(const linkedNo of numbers){
+        if(window.hasFirebaseFormationInputHistoryForTrainNo?.(family,day,linkedNo)
+            || String(window.latestFirebaseFormationForTrainNo?.(family,day,linkedNo)||'').trim()) return linkedNo;
       }
-      // 履歴がない旧データのみ、従来の保存状態を使う。
-      if(getSavedValue(displayedNo)) return displayedNo;
-      for(const entry of chain){
-        const linkedNo=String(entry?.no||entry||'').trim();
-        if(linkedNo && linkedNo!==displayedNo && getSavedValue(linkedNo)) return linkedNo;
-      }
+      for(const linkedNo of numbers) if(getSavedValue(linkedNo)) return linkedNo;
     }catch(e){ console.warn('編成入力履歴の対象列番判定に失敗しました',e); }
     return displayedNo;
   }
 
   function formationInputHistoryContextFor(train){
-    const date=String(selectedDateKey||operationDateKey()).trim();
+    // 履歴の表示対象日は表示中の日付ではなく、現在の日付に固定する。
+    const date=String(operationDateKey(new Date())||operationDateKey()).trim();
     const no=String(train?.no||currentTrainNo||'').trim();
     const family=typeof formationFamilyForTrain==='function' ? formationFamilyForTrain(train) : '';
     const area=typeof window.storageAreaForFamily==='function' ? String(window.storageAreaForFamily(family)||'__ROOT__') : '__ROOT__';
     const route=String(activeRouteName||'');
     const historyNo=formationInputHistorySourceNoFor(train,date);
     const key=[family,area,date,no,historyNo,route].join('|');
-    const ref=typeof window.formationInputHistoryRefForTrain==='function' ? window.formationInputHistoryRefForTrain(train,date,historyNo) : null;
+    const ref=typeof window.formationInputHistoryRootRefForTrain==='function' ? window.formationInputHistoryRootRefForTrain(train) : null;
     return {key,date,no,historyNo,family,area,route,train,ref};
+  }
+
+  function historyRecordToken(date,trainNo,postKey){
+    return encodeURIComponent(JSON.stringify([String(date||''),String(trainNo||''),String(postKey||'')]));
   }
 
   function attachFormationInputHistoryListener(train){
@@ -8948,24 +8962,34 @@ initRegionNavigation();
     formationInputHistoryListenerCallback=function(snapshot){
       if(context.key!==formationInputHistoryListenerKey) return;
       const raw=snapshot?.val()||{};
-      formationInputHistoryRecords=Object.entries(raw)
-        .filter(([key,post])=>{
-          if(!key||!post||typeof post!=='object') return false;
-          const hasFormationField=Object.prototype.hasOwnProperty.call(post,'f')||Object.prototype.hasOwnProperty.call(post,'formation');
-          const rawFormation=post.f??post.formation??'';
-          return !!String(rawFormation).trim() || !!window.isUnselectedFormationId?.(rawFormation) || (hasFormationField&&String(rawFormation).trim()==='');
-        })
-        .map(([key,post])=>{
-          const hasFormationField=Object.prototype.hasOwnProperty.call(post,'f')||Object.prototype.hasOwnProperty.call(post,'formation');
-          const rawFormation=post.f??post.formation??'';
-          const unselected=!!window.isUnselectedFormationId?.(rawFormation)||(hasFormationField&&String(rawFormation).trim()==='');
-          const normalized=unselected?'':String(window.normalizeStoredFormationId?.(rawFormation)||rawFormation||'').trim();
-          return {key,...post,f:normalized,unselected:unselected&&!normalized};
-        })
-        // Firebaseの最新投稿が履歴の一番上に来るよう、新しい順に並べる。
-        .sort((a,b)=>(formationInputHistoryTimestamp(b,context.date)-formationInputHistoryTimestamp(a,context.date)) || String(b.key).localeCompare(String(a.key)));
+      const records=[];
+      const today=String(context.date||operationDateKey()).trim();
+      const normalizeNo=value=>typeof normalizeTrainNo==='function'?normalizeTrainNo(value):String(value||'').trim();
+      for(const [date,dateValue] of Object.entries(raw)){
+        const dateKey=String(date||'');
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(dateKey)||dateKey>today||!dateValue||typeof dateValue!=='object') continue;
+        const {numbers}=historyChainNumbersForDate(context.no,dateKey);
+        // 同じ運用チェーン内で日付により列番が変わっている場合も、その日の全ての列番を照合する。
+        const normalizedNumbers=new Set([...numbers].map(normalizeNo).filter(Boolean));
+        if(context.historyNo){numbers.add(context.historyNo);const normalized=normalizeNo(context.historyNo);if(normalized)normalizedNumbers.add(normalized);}
+        for(const [sourceNo,postsValue] of Object.entries(dateValue)){
+          const normalizedSourceNo=normalizeNo(sourceNo);
+          if(!numbers.has(String(sourceNo))&&(!normalizedSourceNo||!normalizedNumbers.has(normalizedSourceNo))) continue;
+          if(!postsValue||typeof postsValue!=='object') continue;
+          for(const [postKey,post] of Object.entries(postsValue)){
+            if(!postKey||!post||typeof post!=='object') continue;
+            const hasFormationField=Object.prototype.hasOwnProperty.call(post,'f')||Object.prototype.hasOwnProperty.call(post,'formation');
+            const rawFormation=post.f??post.formation??'';
+            if(!(String(rawFormation).trim()||window.isUnselectedFormationId?.(rawFormation)||(hasFormationField&&String(rawFormation).trim()===''))) continue;
+            const unselected=!!window.isUnselectedFormationId?.(rawFormation)||(hasFormationField&&String(rawFormation).trim()==='');
+            const normalized=unselected?'':String(window.normalizeStoredFormationId?.(rawFormation)||rawFormation||'').trim();
+            records.push({...post,key:String(postKey),f:normalized,unselected:unselected&&!normalized,_historyDate:dateKey,_historyTrainNo:String(sourceNo),_recordId:historyRecordToken(dateKey,sourceNo,postKey)});
+          }
+        }
+      }
+      formationInputHistoryRecords=records.sort((a,b)=>(formationInputHistoryTimestamp(b,b._historyDate)-formationInputHistoryTimestamp(a,a._historyDate)) || String(b.key).localeCompare(String(a.key)));
       const openNo=String(currentTrainSnapshot?.no||currentTrainNo||'').trim();
-      if(openNo===context.no && currentTrainInfoTab==='operation' && !isEditMode && typeof updateSheetContent==='function'){
+      if(openNo===context.no && (currentTrainInfoTab==='operation' || (currentTrainInfoTab==='history' && currentTrainHistoryView==='formation')) && !isEditMode && typeof updateSheetContent==='function'){
         updateSheetContent();
       }
     };
@@ -8986,7 +9010,7 @@ initRegionNavigation();
   function formationInputHistoryIdentity(post){
     const data={};
     for(const key of Object.keys(post||{}).sort()){
-      if(key==='key'||key==='isFirebaseCurrentSnapshot') continue;
+      if(key==='key'||key==='isFirebaseCurrentSnapshot'||key==='_historyDate'||key==='_historyTrainNo'||key==='_recordId') continue;
       // false は選択済みを示す派生値なので省略して同じ情報として比較し、true（未選択）は区別する。
       if(key==='unselected'&&!post[key]) continue;
       data[key]=stableFormationHistoryValue(post[key]);
@@ -9022,11 +9046,13 @@ initRegionNavigation();
     return `${date.getFullYear()}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getDate()).padStart(2,'0')} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
   }
 
-  function renderFormationInputHistory(train){
+  function renderFormationInputHistory(train, heading='編成入力履歴', includeAllDates=false){
     attachFormationInputHistoryListener(train);
     const context=formationInputHistoryContext;
-    const posts=formationInputHistoryRecords.slice();
-    const firebaseCurrent=formationInputHistoryLatestFirebaseRecord(context,posts);
+    const allPosts=formationInputHistoryRecords.slice();
+    const displayDate=String(selectedDateKey||operationDateKey()).trim();
+    const posts=includeAllDates?allPosts:allPosts.filter(post=>String(post?._historyDate||'')===displayDate);
+    const firebaseCurrent=(includeAllDates||displayDate===String(context?.date||''))?formationInputHistoryLatestFirebaseRecord(context,includeAllDates?allPosts:posts):null;
     const displayPosts=firebaseCurrent?[firebaseCurrent,...posts]:posts;
     const displayGroups=groupFormationInputHistoryPosts(displayPosts);
     const rows=displayGroups.map(group=>{
@@ -9040,14 +9066,14 @@ initRegionNavigation();
       const first=displayObjects[0]||{};
       const image=String(first.img||first.image||(isUnselected?jsonNoImageUrl():jsonNoImageUrl())||'');
       const author=String(post.author||post.userName||post.userId||'登録者不明');
-      const datetime=formatFormationInputHistoryDateTime(post,context?.date);
+      const datetime=formatFormationInputHistoryDateTime(post,post?._historyDate||context?.date);
       const deletableKeys=[...new Set(group.posts
         .filter(item=>!item.isFirebaseCurrentSnapshot && typeof window.canDeleteFormationInputHistoryRecord==='function' && window.canDeleteFormationInputHistoryRecord(item))
-        .map(item=>String(item.key||'').trim()).filter(Boolean))];
+        .map(item=>String(item._recordId||'').trim()).filter(Boolean))];
       const deleteButton=deletableKeys.length
         ? `<button type="button" class="formation-input-history-delete" aria-label="この編成入力履歴を削除" onclick="window.deleteFormationInputHistoryRecord('${escapeJs(deletableKeys.join('|'))}')">削除</button>`
         : '';
-      return `<div class="formation-input-history-item" data-history-key="${escapeAttr(post.key)}" data-history-duplicates="${group.posts.length}">
+      return `<div class="formation-input-history-item" data-history-key="${escapeAttr(post._recordId||post.key)}" data-history-duplicates="${group.posts.length}">
         <img class="formation-input-history-image" src="${escapeAttr(image)}" alt="${escapeAttr(names.join('・'))}" onerror="this.onerror=null;this.src=jsonNoImageUrl()">
         <div class="formation-input-history-formation" title="${escapeAttr(names.join(' + '))}">${escapeAttr(names.join(' + '))}</div>
         <div class="formation-input-history-meta"><span class="formation-input-history-datetime">${escapeAttr(datetime)}</span><span class="formation-input-history-author">${escapeAttr(author)}</span></div>
@@ -9055,97 +9081,80 @@ initRegionNavigation();
       </div>`;
     }).join('');
     return `<section class="formation-input-history-section">
-      <div class="formation-input-history-heading">編成入力履歴</div>
-      <div class="formation-input-history-list">${rows||'<div class="formation-input-history-empty">この日の編成入力履歴はありません。</div>'}</div>
+      <div class="formation-input-history-heading">${escapeAttr(heading)}</div>
+      <div class="formation-input-history-list">${rows||'<div class="formation-input-history-empty">該当する編成入力履歴はありません。</div>'}</div>
     </section>`;
   }
 
   window.deleteFormationInputHistoryRecord=async function(recordKey){
-    const requestedKeys=[...new Set(String(recordKey||'').split('|').map(key=>key.trim()).filter(Boolean))];
-    const targetPosts=requestedKeys.map(key=>formationInputHistoryRecords.find(item=>String(item.key)===key)).filter(Boolean);
+    const requestedTokens=[...new Set(String(recordKey||'').split('|').map(key=>key.trim()).filter(Boolean))];
+    const targetPosts=requestedTokens.map(token=>formationInputHistoryRecords.find(item=>String(item._recordId||'')===token)).filter(Boolean);
     const context=formationInputHistoryContext;
-    if(!requestedKeys.length||!targetPosts.length||!context?.ref || typeof window.canDeleteFormationInputHistoryRecord!=='function') return false;
-    const deletableKeys=[...new Set(targetPosts.filter(post=>!post.isFirebaseCurrentSnapshot && window.canDeleteFormationInputHistoryRecord(post)).map(post=>String(post.key||'').trim()).filter(Boolean))];
-    if(!deletableKeys.length) return false;
+    if(!requestedTokens.length||!targetPosts.length||!context?.ref||typeof window.canDeleteFormationInputHistoryRecord!=='function') return false;
+    const deletable=targetPosts.filter(post=>!post.isFirebaseCurrentSnapshot&&window.canDeleteFormationInputHistoryRecord(post));
+    if(!deletable.length) return false;
+    const unique=new Map();
+    for(const post of deletable) unique.set(String(post._recordId||''),post);
+    const groups=new Map();
+    for(const post of unique.values()){
+      const date=String(post._historyDate||'');
+      const no=String(post._historyTrainNo||'');
+      const groupKey=`${date}\u0000${no}`;
+      if(!groups.has(groupKey)) groups.set(groupKey,{date,no,posts:[]});
+      groups.get(groupKey).posts.push(post);
+    }
     try{
-      await Promise.all(deletableKeys.map(key=>context.ref.child(key).remove()));
-      // 削除後、Firebaseの現在状態を残った履歴の最新投稿に同期する。
-      // 投稿がなくなった場合は未選択マーカーを立て、古い状態ノードから復活しないようにする。
-      const remainingSnapshot=await context.ref.once('value');
-      const remaining=remainingSnapshot?.val()||{};
-      const remainingPosts=Object.entries(remaining)
-        .filter(([postKey,item])=>!!postKey&&item&&typeof item==='object'&&(Object.prototype.hasOwnProperty.call(item,'f')||Object.prototype.hasOwnProperty.call(item,'formation')))
-        .map(([postKey,item])=>{
-          const rawF=item.f??item.formation??'';
-          const unselected=!!window.isUnselectedFormationId?.(rawF)||String(rawF).trim()==='';
-          return {key:String(postKey),...item,f:unselected?'':String(window.normalizeStoredFormationId?.(rawF)||rawF||'').trim(),unselected};
-        })
-        .sort((a,b)=>(formationInputHistoryTimestamp(b,context.date)-formationInputHistoryTimestamp(a,context.date))||String(b.key).localeCompare(String(a.key)));
-      const db=typeof firebaseDatabaseForFamily==='function' ? firebaseDatabaseForFamily(context.family) : null;
-      const root=typeof storageRootForFamily==='function' ? storageRootForFamily(context.family) : '';
-      if(db&&root&&context.historyNo&&context.date){
-        let clearedRef=db.ref(root).child('__formationInputHistoryCleared');
-        if(context.area!=='__ROOT__') clearedRef=clearedRef.child(context.area);
-        const trainNoRef=clearedRef.child(context.date).child(String(context.historyNo));
-        const savedRef=context.area==='__ROOT__'
-          ? db.ref(root).child(context.date).child(String(context.historyNo))
-          : db.ref(root).child(context.area).child(context.date).child(String(context.historyNo));
-        const latestRemaining=remainingPosts[0]||null;
-        const latestFormation=String(latestRemaining?.f||'').trim();
-        if(latestRemaining && latestFormation){
-          const at=formationInputHistoryTimestamp(latestRemaining,context.date)||Date.now();
-          const d=new Date(at);
-          const stamp=`${String(d.getFullYear()%100).padStart(2,'0')}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;
-          const author=String(latestRemaining.author||latestRemaining.userName||'').trim();
-          const payload={f:latestFormation,t:`${stamp}${author?`@${author}`:''}`};
-          if(latestRemaining.r) payload.r=String(latestRemaining.r);
-          await savedRef.set(payload);
-          await trainNoRef.remove();
-        }else if(!remainingPosts.length){
-          await trainNoRef.set(true);
-          await savedRef.remove();
-        }else{
-          // 最上段が編成未選択なら、選択済みの古い履歴へ戻さない。
-          await savedRef.remove();
-          await trainNoRef.remove();
-        }
-        // 削除と同時に別投稿が追加されていた場合も、最後に確認した最新状態へ合わせ直す。
-        const verifySnapshot=await context.ref.once('value');
-        const verify=verifySnapshot?.val()||{};
-        const verifyPosts=Object.entries(verify)
+      const db=typeof firebaseDatabaseForFamily==='function'?firebaseDatabaseForFamily(context.family):null;
+      const root=typeof storageRootForFamily==='function'?storageRootForFamily(context.family):'';
+      if(!db||!root) return false;
+      for(const group of groups.values()){
+        const {date,no,posts}=group;
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||date>String(context.date)||!no) continue;
+        const nodeRef=context.ref.child(date).child(no);
+        await Promise.all(posts.map(post=>nodeRef.child(String(post.key)).remove()));
+        const remainingSnapshot=await nodeRef.once('value');
+        const remaining=remainingSnapshot?.val()||{};
+        const remainingPosts=Object.entries(remaining)
           .filter(([postKey,item])=>!!postKey&&item&&typeof item==='object'&&(Object.prototype.hasOwnProperty.call(item,'f')||Object.prototype.hasOwnProperty.call(item,'formation')))
           .map(([postKey,item])=>{
             const rawF=item.f??item.formation??'';
             const unselected=!!window.isUnselectedFormationId?.(rawF)||String(rawF).trim()==='';
             return {key:String(postKey),...item,f:unselected?'':String(window.normalizeStoredFormationId?.(rawF)||rawF||'').trim(),unselected};
           })
-          .sort((a,b)=>(formationInputHistoryTimestamp(b,context.date)-formationInputHistoryTimestamp(a,context.date))||String(b.key).localeCompare(String(a.key)));
-        const verifyLatest=verifyPosts[0]||null;
-        if(verifyLatest?.f){
-          const at=formationInputHistoryTimestamp(verifyLatest,context.date)||Date.now();
+          .sort((a,b)=>(formationInputHistoryTimestamp(b,date)-formationInputHistoryTimestamp(a,date))||String(b.key).localeCompare(String(a.key)));
+        let clearedRef=db.ref(root).child('__formationInputHistoryCleared');
+        if(context.area!=='__ROOT__') clearedRef=clearedRef.child(context.area);
+        const clearNode=clearedRef.child(date).child(no);
+        const savedRef=context.area==='__ROOT__'
+          ? db.ref(root).child(date).child(no)
+          : db.ref(root).child(context.area).child(date).child(no);
+        const latest=remainingPosts[0]||null;
+        const latestFormation=String(latest?.f||'').trim();
+        if(latest&&latestFormation){
+          const at=formationInputHistoryTimestamp(latest,date)||Date.now();
           const d=new Date(at);
           const stamp=`${String(d.getFullYear()%100).padStart(2,'0')}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;
-          const author=String(verifyLatest.author||verifyLatest.userName||'').trim();
-          const payload={f:String(verifyLatest.f),t:`${stamp}${author?`@${author}`:''}`};
-          if(verifyLatest.r) payload.r=String(verifyLatest.r);
+          const author=String(latest.author||latest.userName||'').trim();
+          const payload={f:latestFormation,t:`${stamp}${author?`@${author}`:''}`};
+          if(latest.r) payload.r=String(latest.r);
           await savedRef.set(payload);
-          await trainNoRef.remove();
-        }else if(!verifyPosts.length){
-          await trainNoRef.set(true);
+          await clearNode.remove();
+        }else if(!remainingPosts.length){
+          await clearNode.set(true);
           await savedRef.remove();
         }else{
           await savedRef.remove();
-          await trainNoRef.remove();
+          await clearNode.remove();
         }
-        await loadFormationFamilyFromFirebase(context.family);
-        if(typeof mergeFormationRemoteIntoLegacyState==='function') mergeFormationRemoteIntoLegacyState();
-        if(typeof applyRegistrationState==='function') applyRegistrationState();
-        if(typeof saveLocalState==='function') saveLocalState();
-        if(typeof refreshAllTrainDataCache==='function') refreshAllTrainDataCache();
-        if(typeof refreshCurrentTrainSnapshotFromCache==='function') refreshCurrentTrainSnapshotFromCache();
-        if(typeof syncStatus==='function') syncStatus('編成入力履歴を削除しました');
-        if(typeof updateSheetContent==='function' && currentTrainInfoTab==='operation' && !isEditMode) updateSheetContent();
       }
+      await loadFormationFamilyFromFirebase(context.family);
+      if(typeof mergeFormationRemoteIntoLegacyState==='function') mergeFormationRemoteIntoLegacyState();
+      if(typeof applyRegistrationState==='function') applyRegistrationState();
+      if(typeof saveLocalState==='function') saveLocalState();
+      if(typeof refreshAllTrainDataCache==='function') refreshAllTrainDataCache();
+      if(typeof refreshCurrentTrainSnapshotFromCache==='function') refreshCurrentTrainSnapshotFromCache();
+      if(typeof syncStatus==='function') syncStatus('編成入力履歴を削除しました');
+      if(typeof updateSheetContent==='function'&&(currentTrainInfoTab==='operation'||(currentTrainInfoTab==='history'&&currentTrainHistoryView==='formation'))&&!isEditMode) updateSheetContent();
       return true;
     }catch(error){
       console.error('編成入力履歴の削除に失敗しました',error);
@@ -9594,11 +9603,237 @@ initRegionNavigation();
     return out;
   }
 
+  function registeredFormationForHistoryDate(train,date){
+    const family=typeof formationFamilyForTrain==='function'?formationFamilyForTrain(train):'';
+    const area=typeof window.storageAreaForFamily==='function'?String(window.storageAreaForFamily(family)||'__ROOT__'):'__ROOT__';
+    const no=String(train?.no||'').trim();
+    if(!family||!no) return '';
+    const day=historyScheduleDayForDate(date);
+    const assignments=formationRemoteByFamily?.[family]?.areaStateByDate?.[date]?.[area]||{};
+    const chainInfo=typeof findChain==='function'?findChain(day,no):null;
+    const chain=chainInfo?(OPERATION_CHAINS?.[day]?.[chainInfo.chainIndex]||[]):[];
+    const chainNos=[no];
+    for(const entry of chain){const linkedNo=String(entry?.no||entry||'').trim();if(linkedNo&&!chainNos.includes(linkedNo))chainNos.push(linkedNo);}
+    const getSavedValue=trainNo=>{
+      const key=String(trainNo||'').trim();
+      const direct=String(assignments?.[key]?.f||'').trim();
+      if(direct) return direct;
+      const normalized=normalizeTrainNo(key);
+      for(const [savedNo,entry] of Object.entries(assignments)) if(normalizeTrainNo(savedNo)===normalized&&String(entry?.f||'').trim()) return String(entry.f).trim();
+      return '';
+    };
+    for(const candidateNo of chainNos){
+      const value=getSavedValue(candidateNo);
+      if(value) return value;
+    }
+    return '';
+  }
+
+  function latestRegisteredFormationForHistory(train,currentDate){
+    const family=typeof formationFamilyForTrain==='function'?formationFamilyForTrain(train):'';
+    const dates=Object.keys(formationRemoteByFamily?.[family]?.areaStateByDate||{})
+      .filter(date=>/^\d{4}-\d{2}-\d{2}$/.test(String(date))&&String(date)<=String(currentDate))
+      .sort((a,b)=>String(b).localeCompare(String(a)));
+    for(const date of dates){
+      const value=registeredFormationForHistoryDate(train,date);
+      if(value) return value;
+    }
+    return '';
+  }
+
+  function historyOperationNumberAliases(entry,day){
+    const aliases=new Set();
+    const add=value=>{
+      if(value&&typeof value==='object'){
+        add(value.no??value.number??value.trainNo??value.trainNumber);
+        return;
+      }
+      const normalized=normalizeTrainNo(value);
+      if(normalized) aliases.add(normalized);
+    };
+    const entryNo=String(entry?.no||entry||'').trim();
+    add(entryNo);
+    const source=entryNo?findOperationTrainRecord(entryNo,day):null;
+    for(const field of ['numberSegments','numbersByLine','trainNumbers']){
+      for(const list of Object.values(source?.[field]||{})){
+        if(Array.isArray(list)) list.forEach(add);
+      }
+    }
+    return aliases;
+  }
+
+  function historyChainsForTrainNumber(trainNo,day){
+    const target=normalizeTrainNo(trainNo);
+    if(!target) return [];
+    const chains=Array.isArray(OPERATION_CHAINS?.[day])?OPERATION_CHAINS[day]:[];
+    const exact=[],canonical=[];
+    const targetCanonical=target.replace(/A$/i,'');
+    chains.forEach((entries,chainIndex)=>{
+      if(!Array.isArray(entries)||!entries.length) return;
+      const aliases=new Set();
+      entries.forEach(entry=>historyOperationNumberAliases(entry,day).forEach(no=>aliases.add(no)));
+      if(aliases.has(target)){
+        exact.push({chainIndex,entries});
+        return;
+      }
+      if([...aliases].some(no=>no.replace(/A$/i,'')===targetCanonical)) canonical.push({chainIndex,entries});
+    });
+    // A付き／Aなしの別列車がある場合は、完全一致する運用だけを優先する。
+    return exact.length?exact:canonical;
+  }
+
+  function renderTrainNumberFormationHistory(train){
+    const currentDate=String(operationDateKey(new Date())||operationDateKey()).trim();
+    const trainNo=String(trainDisplayNoAtTime(train,currentMinutes())||train?.no||currentTrainNo||'').trim();
+    const targetNo=normalizeTrainNo(trainNo);
+    const targetCanonical=targetNo.replace(/A$/i,'');
+    const family=typeof formationFamilyForTrain==='function'?formationFamilyForTrain(train):'';
+    const area=typeof window.storageAreaForFamily==='function'?String(window.storageAreaForFamily(family)||'__ROOT__'):'__ROOT__';
+    const allDates=formationRemoteByFamily?.[family]?.areaStateByDate||{};
+    const records=[];
+    const seenRecords=new Set();
+    const emptyText='この列車番号に該当する編成履歴はありません。';
+    const empty=`<div class="station-timetable-frame train-history-frame"><div class="train-history-wrap"><div class="formation-input-history-list train-number-history-list"><div class="formation-input-history-empty">${emptyText}</div></div></div></div>`;
+    if(!family||!targetNo) return empty;
+
+    const canonicalNo=value=>normalizeTrainNo(value).replace(/A$/i,'');
+    const formationValueOf=stored=>String(stored?.f??stored?.formation??'').trim();
+    const formationIdentity=value=>String(window.normalizeStoredFormationId?.(value)||value||'').split('+').map(id=>id.trim().replace(/F$/i,'')).filter(Boolean).join('+');
+    const historyPostFor=function(date,savedNo,stored){
+      let post=null;
+      try{post=latestFormationInputHistoryEntry(family,date,savedNo);}catch(e){}
+      if(!post||post.unselected) return null;
+      const postValue=formationValueOf(post);
+      return postValue&&formationIdentity(postValue)===formationIdentity(formationValueOf(stored))?post:null;
+    };
+    const assignmentForNumber=function(assignments,number,date){
+      const normalized=normalizeTrainNo(number);
+      if(!normalized) return null;
+      const entries=Object.entries(assignments||{}).filter(([savedNo,stored])=>normalizeTrainNo(savedNo)&&stored&&typeof stored==='object')
+        .map(([savedNo,stored])=>({savedNo:String(savedNo),normalizedNo:normalizeTrainNo(savedNo),stored}));
+      // 完全一致の保存番号があればそちらを優先する。明示的な未選択も別番号へフォールバックしない。
+      let matches=entries.filter(item=>item.normalizedNo===normalized);
+      if(!matches.length) matches=entries.filter(item=>canonicalNo(item.normalizedNo)===canonicalNo(normalized));
+      if(!matches.length) return null;
+      matches.sort((a,b)=>{
+        const aExact=a.normalizedNo===normalized?1:0,bExact=b.normalizedNo===normalized?1:0;
+        if(aExact!==bExact) return bExact-aExact;
+        return String(a.savedNo).localeCompare(String(b.savedNo),'ja',{numeric:true});
+      });
+      const item=matches[0];
+      const rawFormation=formationValueOf(item.stored);
+      if(!rawFormation||window.isUnselectedFormationId?.(rawFormation)||window.wasFirebaseFormationInputHistoryCleared?.(family,date,item.savedNo)) return null;
+      const value=String(window.normalizeStoredFormationId?.(rawFormation)||rawFormation).trim();
+      const ids=value.split('+').map(id=>id.trim()).filter(id=>id&&!window.isUnselectedFormationId?.(id));
+      if(!ids.length) return null;
+      const post=historyPostFor(date,item.savedNo,item.stored);
+      return {savedNo:item.savedNo,normalizedNo:item.normalizedNo,stored:item.stored,value,ids,identity:formationIdentity(value),post};
+    };
+    const assignmentTime=function(assignment,date){
+      const source=assignment?.post||{};
+      const direct=Number(source.at??source.createdAt)||0;
+      if(direct>0) return direct;
+      const raw=String(source.t||assignment?.stored?.t||'');
+      const match=raw.match(/(?:^|\D)(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
+      if(match){
+        const stamp=new Date(2000+Number(match[1]),Number(match[2])-1,Number(match[3]),Number(match[4]),Number(match[5])).getTime();
+        if(Number.isFinite(stamp)) return stamp;
+      }
+      const meta=typeof parseStoredMeta==='function'?parseStoredMeta(raw):null;
+      const mins=Number(meta?.time);
+      if(Number.isFinite(mins)&&mins>=0&&mins<1440){
+        const [year,month,dayNum]=String(date).split('-').map(Number);
+        return new Date(year,month-1,dayNum,Math.floor(mins/60),mins%60).getTime();
+      }
+      return new Date(`${date}T00:00:00`).getTime();
+    };
+
+    const dates=Object.keys(allDates)
+      .filter(date=>/^\d{4}-\d{2}-\d{2}$/.test(String(date))&&String(date)<=currentDate)
+      .sort((a,b)=>String(b).localeCompare(String(a)));
+
+    for(const date of dates){
+      const dateObj=new Date(`${date}T12:00:00`);
+      if(Number.isNaN(dateObj.getTime())) continue;
+      const day=getScheduleDayForDate(dateObj);
+      const relevantChains=historyChainsForTrainNumber(trainNo,day);
+      if(!relevantChains.length) continue;
+      const assignments=allDates?.[date]?.[area]||{};
+
+      for(const chainRecord of relevantChains){
+        // 運用の接続順に列車番号を展開し、選択中の列車番号がある位置を特定する。
+        const expanded=expandHistoryEntriesByTrainNumber(chainRecord.entries,day);
+        let orderedNumbers=(expanded.length?expanded:chainRecord.entries).map(entry=>normalizeTrainNo(entry?.no||entry)).filter(Boolean);
+        orderedNumbers=orderedNumbers.filter((number,index)=>index===0||number!==orderedNumbers[index-1]);
+        let targetIndex=orderedNumbers.findIndex(number=>number===targetNo);
+        if(targetIndex<0) targetIndex=orderedNumbers.findIndex(number=>canonicalNo(number)===targetCanonical);
+        if(targetIndex<0){
+          const sourceIndex=chainRecord.entries.findIndex(entry=>historyOperationNumberAliases(entry,day).has(targetNo));
+          if(sourceIndex>=0){
+            const sourceNo=normalizeTrainNo(chainRecord.entries[sourceIndex]?.no||chainRecord.entries[sourceIndex]);
+            targetIndex=orderedNumbers.findIndex(number=>number===sourceNo||canonicalNo(number)===canonicalNo(sourceNo));
+          }
+        }
+        if(targetIndex<0) continue;
+
+        const assignedByIndex=orderedNumbers.map(number=>assignmentForNumber(assignments,number,date));
+        // まず選択中の列車までに最後に登録された編成を採用。
+        let chosen=null;
+        for(let i=0;i<=targetIndex;i++) if(assignedByIndex[i]) chosen=assignedByIndex[i];
+        // 後続列車にも登録がある場合、異なる編成が現れたらその直前の編成で止める。
+        // 同じ編成の登録が続く間は、より後ろの登録を採用して時刻・登録者も最新にする。
+        for(let i=targetIndex+1;i<assignedByIndex.length;i++){
+          const next=assignedByIndex[i];
+          if(!next) continue;
+          if(!chosen){chosen=next;continue;}
+          if(next.identity!==chosen.identity) break;
+          chosen=next;
+        }
+        // 選択中の列車から先にも登録がなく、前にもなければ、運用中で最後に登録された編成を使う。
+        if(!chosen){
+          for(let i=assignedByIndex.length-1;i>=0;i--){if(assignedByIndex[i]){chosen=assignedByIndex[i];break;}}
+        }
+        if(!chosen) continue;
+        const recordKey=[date,chainRecord.chainIndex,chosen.savedNo,chosen.identity].join('|');
+        if(seenRecords.has(recordKey)) continue;
+        seenRecords.add(recordKey);
+        records.push({date,day,assignment:chosen});
+      }
+    }
+
+    if(!records.length) return empty;
+    records.sort((a,b)=>String(b.date).localeCompare(String(a.date))||assignmentTime(b.assignment,b.date)-assignmentTime(a.assignment,a.date));
+    const rows=records.map(record=>{
+      const assignment=record.assignment;
+      const displayObjects=assignment.ids.map(id=>{
+        try{return selectionDisplayObjectForTrain(train,id)||selectionDisplayObject(id)||formationById(id)||{};}
+        catch(e){return selectionDisplayObject(id)||formationById(id)||{};}
+      });
+      const names=assignment.ids.map((id,index)=>String(displayObjects[index]?.name||formationById(id)?.name||id));
+      const image=String(displayObjects[0]?.img||displayObjects[0]?.image||jsonNoImageUrl()||fallbackTrainImageUrl());
+      const historyPost=assignment.post||{};
+      const metaRaw=String(historyPost.t||assignment.stored?.t||'');
+      const datetime=formatFormationInputHistoryDateTime({at:historyPost.at??historyPost.createdAt,t:metaRaw},record.date);
+      const storedMeta=typeof parseStoredMeta==='function'?parseStoredMeta(metaRaw):{};
+      const author=String(historyPost.author||historyPost.userName||historyPost.userId||storedMeta?.author||'登録者不明');
+      const dateLabel=String(record.date||'').replace(/^(\d{4})-(\d{2})-(\d{2})$/,'$1/$2/$3');
+      return `<div class="formation-input-history-item train-number-history-item" title="${escapeAttr(record.date)}">
+        <div class="train-number-history-date">${escapeAttr(dateLabel)}</div>
+        <img class="formation-input-history-image" src="${escapeAttr(image)}" alt="${escapeAttr(names.join('・'))}" onerror="this.onerror=null;this.src=jsonNoImageUrl()">
+        <div class="formation-input-history-formation" title="${escapeAttr(names.join(' + '))}">${escapeAttr(names.join(' + '))}</div>
+        <div class="formation-input-history-meta"><span class="formation-input-history-datetime">${escapeAttr(datetime)}</span><span class="formation-input-history-author">${escapeAttr(author)}</span></div>
+      </div>`;
+    }).join('');
+    return `<div class="station-timetable-frame train-history-frame"><div class="train-history-wrap"><div class="formation-input-history-list train-number-history-list">${rows||'<div class="formation-input-history-empty">'+emptyText+'</div>'}</div></div></div>`;
+  }
+
   function renderFormationOperationHistory(train, visibility={}){
     // 「今日の運用」で列全体が非表示になる条件をそのまま履歴にも適用する。
     const hideHistoryNumber=visibility.hideNumber===true;
     const hideHistoryType=visibility.hideType===true;
-    const assignedValue=String(registeredFormationForTrain(train)||train?.formation||'').trim();
+    const currentDate=operationDateKey(new Date());
+    // 表示中の日付ではなく、今日までの最新登録編成を基準に全期間の運用履歴を表示する。
+    const assignedValue=String(latestRegisteredFormationForHistory(train,currentDate)||'').trim();
     const emptyHistoryFrame='<div class="station-timetable-frame train-history-frame"><div class="train-history-wrap"></div></div>';
     if(!assignedValue){
       return emptyHistoryFrame;
@@ -9625,7 +9860,6 @@ initRegionNavigation();
       ? String(window.storageAreaForFamily(family)||'__ROOT__')
       : String(formationStorageContext(train)?.area||'__ROOT__');
     const allDates=formationRemoteByFamily?.[family]?.areaStateByDate||{};
-    const currentDate=operationDateKey();
     const records=[];
 
     for(const [date,areaMap] of Object.entries(allDates)){
@@ -9696,7 +9930,7 @@ initRegionNavigation();
 
     records.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
     if(!records.length){
-      return '<div class="train-info-empty">当日を含む、登録済み編成の運用履歴はありません。</div>';
+      return '<div class="train-info-empty">今日までの登録編成に該当する運用履歴はありません。</div>';
     }
 
     const weekdayNames=['日','月','火','水','木','金','土'];
@@ -9856,6 +10090,14 @@ initRegionNavigation();
     const operation=operationChainForCurrentTrain(train);
     const hasOperationNumber=operation.some(entry=>String(entry?.no||'').trim()!=='');
     const hasOperationType=operation.some(entry=>String(entry?.type||'').trim()!=='');
+    const historyCurrentDate=String(operationDateKey(new Date())||operationDateKey()).trim();
+    const visibleHistoryTrainNumber=String(trainDisplayNoAtTime(train,currentMinutes())||'').trim();
+    const historyTrainLabel=visibleHistoryTrainNumber||'列車番号';
+    const historyFormationValue=String(latestRegisteredFormationForHistory(train,historyCurrentDate)||registeredFormationForTrain(train)||train.formation||'').trim();
+    const historyFormationIds=historyFormationValue.split('+').map(value=>value.trim()).filter(value=>value&&!window.isUnselectedFormationId?.(value)&&value!==INITIAL_FORMATION_SELECTION.id);
+    const historyFormationLabel=historyFormationIds.length?historyFormationIds.map(id=>{
+      try{return String(selectionDisplayObjectForTrain(train,id)?.name||formationById(id)?.name||id);}catch(e){return String(formationById(id)?.name||id);}
+    }).join('+'):'編成番号';
     const operationWrapClasses=[
       'station-timetable-wrap',
       'train-operation-wrap',
@@ -9910,7 +10152,13 @@ initRegionNavigation();
         ${activeStops?`<div class="timetable-list train-stop-guide-list">${timetableHTMLForCurrentDay(train)}</div>`:''}
         ${activeOp?`${renderFormationInputHistory(train)}<div class="station-timetable-frame train-operation-frame"><div class="${operationWrapClasses}">${opHtml || '<div class="train-info-empty">この列車の運用情報はありません。</div>'}</div></div>`:''}
         ${activeForm?`<div class="train-info-formation-wrap">${renderFormationInfo(train)}</div>`:''}
-        ${activeHistory?renderFormationOperationHistory(train,{hideNumber:!hasOperationNumber,hideType:!hasOperationType}):''}
+        ${activeHistory?`<div class="train-info-tabs train-history-subtabs" style="--train-info-color:${tabColor}">
+          <button type="button" class="train-info-tab ${currentTrainHistoryView==='operation'?'active':''}" aria-pressed="${currentTrainHistoryView==='operation'?'true':'false'}" title="${escapeAttr(historyTrainLabel)}の履歴" onclick="window.__selectTrainHistoryView('operation')">${escapeAttr(historyTrainLabel)}の履歴</button>
+          <button type="button" class="train-info-tab ${currentTrainHistoryView==='formation'?'active':''}" aria-pressed="${currentTrainHistoryView==='formation'?'true':'false'}" title="${escapeAttr(historyFormationLabel)}の履歴" onclick="window.__selectTrainHistoryView('formation')">${escapeAttr(historyFormationLabel)}の履歴</button>
+        </div>
+        ${currentTrainHistoryView==='formation'
+          ?renderFormationOperationHistory(train,{hideNumber:!hasOperationNumber,hideType:!hasOperationType})
+          :renderTrainNumberFormationHistory(train)}`:''}
       </div>
     `;
     if(activeForm) initCarFeatureMarquees(content);
@@ -9945,6 +10193,11 @@ initRegionNavigation();
 
   window.__selectTrainInfoTab=function(tab){
     currentTrainInfoTab=(tab==='operation'||tab==='formation'||tab==='history'||tab==='stops')?tab:'stops';
+    if(typeof updateSheetContent==='function') updateSheetContent();
+  };
+
+  window.__selectTrainHistoryView=function(view){
+    currentTrainHistoryView=(view==='formation')?'formation':'operation';
     if(typeof updateSheetContent==='function') updateSheetContent();
   };
 
@@ -10006,6 +10259,7 @@ initRegionNavigation();
 
     /* タブの下は常に同じ「内容領域」。表示内容だけを差し替える。 */
     .train-info-content-panel{width:100%;min-width:0;}
+    .train-history-subtabs.train-info-tabs{margin:0 0 12px;padding:5px;}
 
     /* 停車駅：従来の停車駅案内をそのまま表示 */
     .train-stop-guide-list{margin-top:0;}
@@ -10201,6 +10455,12 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     .train-history-date{font-size:13px;font-weight:800;line-height:1.2;}
     .train-history-day{font-size:11px;font-weight:700;color:#555;white-space:nowrap;}
     .train-history-runs{padding:0;}
+    .train-history-formation-assignment{display:grid;grid-template-columns:56px minmax(0,1fr);align-items:center;gap:8px;min-height:48px;padding:4px 8px;border-bottom:1px solid rgba(0,0,0,.08);background:#fff;box-sizing:border-box;}
+    .train-history-formation-assignment:nth-child(even){background:#cfcfcf;}
+    .train-history-formation-image{display:block;width:52px;height:40px;object-fit:contain;justify-self:center;}
+    .train-history-formation-main{display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0;line-height:1.15;}
+    .train-history-formation-main strong{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .train-history-formation-main span{font-size:11px;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .train-history-run.train-operation-row{width:100%;min-height:46px;height:46px;grid-template-columns:72px 66px 62px minmax(0,1fr) 20px 62px minmax(0,1fr)!important;column-gap:6px;padding:3px 8px;cursor:default;}
     .train-history-run.train-operation-row:hover{filter:none;}
     .train-history-run .train-operation-number{font-size:16px;}
@@ -10256,6 +10516,11 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
       .train-history-card-header{min-height:24px;padding:3px 6px;gap:5px;}
       .train-history-date{font-size:11px;}
       .train-history-day{font-size:10px;}
+      .train-history-formation-assignment{grid-template-columns:40px minmax(0,1fr);gap:5px;min-height:42px;padding:3px 5px;}
+      .train-history-formation-image{width:37px;height:31px;}
+      .train-history-formation-main{gap:2px;}
+      .train-history-formation-main strong{font-size:11px;}
+      .train-history-formation-main span{font-size:9px;}
       .train-history-run.train-operation-row{min-height:42px;height:42px;grid-template-columns:45px 50px 49px minmax(0,1fr) 13px 49px minmax(0,1fr)!important;column-gap:3px;padding:2px 4px;}
       .train-history-run .train-operation-number{font-size:12px;}
       .train-history-run .train-operation-type{min-height:21px;height:21px;padding:0 2px;font-size:10px;}
@@ -10299,6 +10564,11 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     .formation-input-history-delete{justify-self:end;align-self:center;border:0;border-radius:5px;padding:5px 8px;background:#b3261e;color:#fff;font:700 12px/1 inherit;white-space:nowrap;cursor:pointer;}
     .formation-input-history-delete:hover{filter:brightness(.92);}
     .formation-input-history-empty{height:46px;min-height:46px;display:flex;align-items:center;padding:0 9px;font-size:12px;color:#666;background:#fff;}
+    /* 列車番号の履歴は日付を列車アイコンの左側に置き、行高を約1.25倍にする。 */
+    .train-number-history-list .formation-input-history-item{grid-template-columns:76px 52px minmax(90px,1.05fr) minmax(145px,1.2fr);height:58px;min-height:58px;column-gap:8px;}
+    .train-number-history-list .train-number-history-date{font-size:14px;line-height:1.1;font-weight:800;text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums;}
+    .train-number-history-list .formation-input-history-image{height:46px;}
+
     @media(max-width:520px){
       #sheetContent .train-operation-wrap .train-operation-row{min-height:42px!important;height:42px!important;padding:2px 4px!important;column-gap:3px!important;}
       #sheetContent .train-operation-wrap .train-operation-number{font-size:12px!important;}
@@ -10313,6 +10583,9 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
       .formation-input-history-meta{font-size:9px;gap:1px;}
       .formation-input-history-delete{padding:4px 5px;font-size:10px;}
       .formation-input-history-empty{height:42px;min-height:42px;font-size:10px;padding:0 6px;}
+      .train-number-history-list .formation-input-history-item{grid-template-columns:62px 38px minmax(55px,.9fr) minmax(78px,1.15fr);height:53px;min-height:53px;column-gap:3px;padding:2px 4px;}
+      .train-number-history-list .train-number-history-date{font-size:11px;}
+      .train-number-history-list .formation-input-history-image{height:38px;width:36px;}
     }
   `;
   document.head.appendChild(style);
