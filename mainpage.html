@@ -10566,7 +10566,7 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     .formation-input-history-empty{height:46px;min-height:46px;display:flex;align-items:center;padding:0 9px;font-size:12px;color:#666;background:#fff;}
     /* 列車番号の履歴は日付を列車アイコンの左側に置き、行高を約1.25倍にする。 */
     .train-number-history-list .formation-input-history-item{grid-template-columns:76px 52px minmax(90px,1.05fr) minmax(145px,1.2fr);height:58px;min-height:58px;column-gap:8px;}
-    .train-number-history-list .train-number-history-date{font-size:14px;line-height:1.1;font-weight:800;text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums;}
+    .train-number-history-list .train-number-history-date{font-size:12px;line-height:1.1;font-weight:800;text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums;}
     .train-number-history-list .formation-input-history-image{height:46px;}
 
     @media(max-width:520px){
@@ -10584,9 +10584,21 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
       .formation-input-history-delete{padding:4px 5px;font-size:10px;}
       .formation-input-history-empty{height:42px;min-height:42px;font-size:10px;padding:0 6px;}
       .train-number-history-list .formation-input-history-item{grid-template-columns:62px 38px minmax(55px,.9fr) minmax(78px,1.15fr);height:53px;min-height:53px;column-gap:3px;padding:2px 4px;}
-      .train-number-history-list .train-number-history-date{font-size:11px;}
+      .train-number-history-list .train-number-history-date{font-size:10px;}
       .train-number-history-list .formation-input-history-image{height:38px;width:36px;}
     }
+
+    /* 今日の運用の時刻は端末幅によらず同じ文字サイズに固定。 */
+    .train-operation-row:not(.train-history-run) .train-operation-time{font-size:18px!important;}
+    #sheetContent .train-operation-wrap .train-operation-row:not(.train-history-run) .train-operation-time{font-size:18px!important;}
+
+    /* 現在の運用は内側の枠線で強調し、通常行と各パーツの位置を揃える。 */
+    .train-operation-row.current-operation{
+      border:0!important;
+      box-shadow:inset 0 0 0 3px var(--train-info-color,var(--primary))!important;
+    }
+    /* 次の運用には装飾の影を付けない。 */
+    .train-operation-row.next-operation{box-shadow:none!important;}
   `;
   document.head.appendChild(style);
 })();
