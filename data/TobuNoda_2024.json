@@ -1933,6 +1933,54 @@
             "81555"
           ],
           "type": "80050型",
+          "manufacturer": "日立製作所・近畿車輛",
+          "manufacturingYear": "2026年",
+          "weakCoolingCars": [
+            3
+          ],
+          "womenOnlyCars": [
+            5
+          ]
+        },
+        {
+          "id": "81556",
+          "name": "81556F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81556.png",
+          "disabled": true,
+          "family": "noda",
+          "carNames": [
+            "85556",
+            "84556",
+            "83556",
+            "82556",
+            "81556"
+          ],
+          "type": "80050型",
+          "manufacturer": "日立製作所・近畿車輛",
+          "manufacturingYear": "2026年",
+          "weakCoolingCars": [
+            3
+          ],
+          "womenOnlyCars": [
+            5
+          ]
+        },
+        {
+          "id": "81557",
+          "name": "81557F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81557.png",
+          "disabled": true,
+          "family": "noda",
+          "carNames": [
+            "85557",
+            "84557",
+            "83557",
+            "82557",
+            "81557"
+          ],
+          "type": "80050型",
+          "manufacturer": "日立製作所・近畿車輛",
+          "manufacturingYear": "2026年",
           "weakCoolingCars": [
             3
           ],
@@ -1941,9 +1989,9 @@
           ]
         }
       ],
-      "formationType": "80000系",
+      "formationType": "80050型",
       "manufacturingYear": "2024年～2026年",
-      "manufacturer": "近畿車輛・日立製作所"
+      "manufacturer": "日立製作所・近畿車輛"
     }
   ],
   "vehicleToFormation": {
