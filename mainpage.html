@@ -253,7 +253,8 @@ button,input,select,textarea{font-family:inherit}
   width:100%;
   min-height:108px;
   display:grid;
-  grid-template-columns:68px 82px 92px 92px minmax(0,1fr);
+  /* 始発ラベル用の列を常に確保し、途中駅の列車も各パーツの位置をそろえる。 */
+  grid-template-columns:42px 68px 82px 92px 92px minmax(0,1fr);
   align-items:center;
   column-gap:8px;
   padding:8px 12px;
@@ -267,6 +268,14 @@ button,input,select,textarea{font-family:inherit}
 .station-timetable-row:nth-child(even){background:#cfcfcf;}
 .station-timetable-row:hover{filter:brightness(.97);}
 .station-timetable-row:focus-visible{outline:3px solid rgba(0,0,0,.35);outline-offset:-3px;}
+.station-timetable-start-label{
+  width:42px;height:28px;border-radius:5px;
+  display:flex;align-items:center;justify-content:center;justify-self:center;
+  background:var(--station-start-color,var(--primary));color:#fff;
+  font-family:inherit;font-size:15px;line-height:1;font-weight:800;
+  box-sizing:border-box;flex:none;
+}
+.station-timetable-start-label.placeholder{visibility:hidden;}
 .station-timetable-train-img{
   width:68px;
   height:86px;
@@ -339,13 +348,16 @@ button,input,select,textarea{font-family:inherit}
   }
   .station-timetable-row{
     min-height:20.3773585cqw;
-    grid-template-columns:12.8301887cqw 15.4716981cqw 17.3584906cqw 17.3584906cqw minmax(0,1fr);
+    grid-template-columns:7.9245283cqw 12.8301887cqw 15.4716981cqw 17.3584906cqw 17.3584906cqw minmax(0,1fr);
     column-gap:1.509434cqw;
     padding:1.509434cqw 2.264151cqw;
   }
   .station-timetable-row:focus-visible{
     outline-width:.5660377cqw;
     outline-offset:-.5660377cqw;
+  }
+  .station-timetable-start-label{
+    width:7.9245283cqw;height:5.2830189cqw;border-radius:.9433962cqw;font-size:2.4528302cqw;
   }
   .station-timetable-train-img{
     width:12.8301887cqw;
@@ -4588,6 +4600,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
       const imgSrc=imageForTrain(train);
       const destination=`${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}`;
       const isNext=index===nextIndex;
+      const isOrigin=String(train?.start||'')===stationName;
 
       return `
         <button
@@ -4597,6 +4610,9 @@ function stationTimetableHTML(station, selectedDirection='up'){
           title="列車 ${escapeAttr(trainDisplayNoAtStation(train,stationName))} / ${escapeAttr(item.time)} / ${escapeAttr(destination)}"
           onclick="openSheet('${escapeJs(train.no)}',true,'${escapeJs(train.direction||stationTimetableDirection)}')"
         >
+          ${isOrigin
+            ? '<span class="station-timetable-start-label" aria-label="始発">始発</span>'
+            : '<span class="station-timetable-start-label placeholder" aria-hidden="true"></span>'}
           <img class="station-timetable-train-img" src="${escapeAttr(imgSrc)}" alt="${escapeAttr(trainDisplayNoAtStation(train,stationName))}">
           ${stationTimetableFormationHTML(train)}
           <span class="station-timetable-time">${escapeAttr(item.time)}</span>
