@@ -1,0 +1,5520 @@
+{
+  "routeName": "樽見鉄道樽見線",
+  "formationFamily": "tarumi",
+  "formationCountDefault": 1,
+  "formationDefaultName": "編成未選択",
+  "noImage": "Tarumi_noimage.png",
+  "formationDefaultImage": "Tarumi_noimage.png",
+  "typeColors": {
+    "普通": "#666666"
+  },
+  "lines": [
+    {
+      "name": "樽見鉄道樽見線",
+      "nameEn": "Tarumi Railway Tarumi Line",
+      "color": "#1687b5",
+      "directions": {
+        "up": "大垣方面",
+        "down": "樽見方面"
+      },
+      "stations": [
+        {
+          "name": "大垣",
+          "nameEn": "Ogaki"
+        },
+        {
+          "name": "東大垣",
+          "nameEn": "Higashi-ogaki"
+        },
+        {
+          "name": "横屋",
+          "nameEn": "Yokoya"
+        },
+        {
+          "name": "十九条",
+          "nameEn": "Jukujo"
+        },
+        {
+          "name": "美江寺",
+          "nameEn": "Mieji"
+        },
+        {
+          "name": "北方真桑",
+          "nameEn": "Kitagata-makuwa"
+        },
+        {
+          "name": "モレラ岐阜",
+          "nameEn": "Malera-gifu"
+        },
+        {
+          "name": "糸貫",
+          "nameEn": "Itonuki"
+        },
+        {
+          "name": "本巣",
+          "nameEn": "Motosu"
+        },
+        {
+          "name": "織部",
+          "nameEn": "Oribe"
+        },
+        {
+          "name": "木知原",
+          "nameEn": "Kochibora"
+        },
+        {
+          "name": "谷汲口",
+          "nameEn": "Tanigumiguchi"
+        },
+        {
+          "name": "神海",
+          "nameEn": "Koumi"
+        },
+        {
+          "name": "高科",
+          "nameEn": "Takashina"
+        },
+        {
+          "name": "鍋原",
+          "nameEn": "Nabera"
+        },
+        {
+          "name": "日当",
+          "nameEn": "Hinata"
+        },
+        {
+          "name": "高尾",
+          "nameEn": "Takao"
+        },
+        {
+          "name": "水鳥",
+          "nameEn": "Midori"
+        },
+        {
+          "name": "樽見",
+          "nameEn": "Tarumi"
+        }
+      ]
+    }
+  ],
+  "formations": [
+    {
+      "type": "樽見鉄道車両",
+      "typeImg": "Tarumi_noimage.png",
+      "family": "tarumi",
+      "selectableType": false,
+      "items": [
+        {
+          "id": "315",
+          "name": "ハイモ295-315",
+          "img": "Tarumi_315.png",
+          "carCount": 1,
+          "carNames": [
+            "315"
+          ],
+          "type": "ハイモ295-315",
+          "family": "tarumi"
+        },
+        {
+          "id": "516",
+          "name": "ハイモ295-516",
+          "img": "Tarumi_516.png",
+          "carCount": 1,
+          "carNames": [
+            "516"
+          ],
+          "type": "ハイモ295-516",
+          "family": "tarumi"
+        },
+        {
+          "id": "617",
+          "name": "ハイモ295-617",
+          "img": "Tarumi_617.png",
+          "carCount": 1,
+          "carNames": [
+            "617"
+          ],
+          "type": "ハイモ295-617",
+          "family": "tarumi"
+        },
+        {
+          "id": "701",
+          "name": "ハイモ330-701",
+          "img": "Tarumi_701.png",
+          "carCount": 1,
+          "carNames": [
+            "701"
+          ],
+          "type": "ハイモ330-701",
+          "family": "tarumi"
+        },
+        {
+          "id": "702",
+          "name": "ハイモ330-702",
+          "img": "Tarumi_702.png",
+          "carCount": 1,
+          "carNames": [
+            "702"
+          ],
+          "type": "ハイモ330-702",
+          "family": "tarumi"
+        },
+        {
+          "id": "703",
+          "name": "ハイモ330-703",
+          "img": "Tarumi_703.png",
+          "carCount": 1,
+          "carNames": [
+            "703"
+          ],
+          "type": "ハイモ330-703",
+          "family": "tarumi"
+        }
+      ]
+    }
+  ],
+  "vehicleToFormation": {
+    "315": "315",
+    "516": "516",
+    "617": "617",
+    "701": "701",
+    "702": "702",
+    "703": "703"
+  },
+  "trains": {
+    "平日": {
+      "下り": [
+        {
+          "no": "1",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "6:30",
+              "time": "6:30"
+            },
+            {
+              "station": "織部",
+              "time": "6:32"
+            },
+            {
+              "station": "木知原",
+              "time": "6:37"
+            },
+            {
+              "station": "谷汲口",
+              "time": "6:40"
+            },
+            {
+              "station": "神海",
+              "time": "6:44"
+            },
+            {
+              "station": "高科",
+              "time": "6:47"
+            },
+            {
+              "station": "鍋原",
+              "time": "6:49"
+            },
+            {
+              "station": "日当",
+              "time": "6:52"
+            },
+            {
+              "station": "高尾",
+              "time": "6:56"
+            },
+            {
+              "station": "水鳥",
+              "time": "6:59"
+            },
+            {
+              "station": "樽見",
+              "time": "7:03"
+            }
+          ]
+        },
+        {
+          "no": "3",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "6:21"
+            },
+            {
+              "station": "東大垣",
+              "time": "6:25"
+            },
+            {
+              "station": "横屋",
+              "time": "6:29"
+            },
+            {
+              "station": "十九条",
+              "time": "6:31"
+            },
+            {
+              "station": "美江寺",
+              "time": "6:34"
+            },
+            {
+              "station": "北方真桑",
+              "time": "6:39"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "6:42"
+            },
+            {
+              "station": "糸貫",
+              "time": "6:44"
+            },
+            {
+              "station": "本巣",
+              "arrival": "6:48",
+              "time": "6:48"
+            }
+          ]
+        },
+        {
+          "no": "5",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "7:06"
+            },
+            {
+              "station": "東大垣",
+              "time": "7:13"
+            },
+            {
+              "station": "横屋",
+              "time": "7:16"
+            },
+            {
+              "station": "十九条",
+              "time": "7:18"
+            },
+            {
+              "station": "美江寺",
+              "time": "7:21"
+            },
+            {
+              "station": "北方真桑",
+              "time": "7:26"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "7:29"
+            },
+            {
+              "station": "糸貫",
+              "time": "7:31"
+            },
+            {
+              "station": "本巣",
+              "arrival": "7:35",
+              "departure": "7:45",
+              "time": "7:45"
+            },
+            {
+              "station": "織部",
+              "time": "7:47"
+            },
+            {
+              "station": "木知原",
+              "time": "7:52"
+            },
+            {
+              "station": "谷汲口",
+              "time": "7:55"
+            },
+            {
+              "station": "神海",
+              "time": "7:59"
+            },
+            {
+              "station": "高科",
+              "time": "8:02"
+            },
+            {
+              "station": "鍋原",
+              "time": "8:04"
+            },
+            {
+              "station": "日当",
+              "time": "8:08"
+            },
+            {
+              "station": "高尾",
+              "time": "8:11"
+            },
+            {
+              "station": "水鳥",
+              "time": "8:14"
+            },
+            {
+              "station": "樽見",
+              "time": "8:19"
+            }
+          ]
+        },
+        {
+          "no": "7",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "7:32"
+            },
+            {
+              "station": "東大垣",
+              "time": "7:39"
+            },
+            {
+              "station": "横屋",
+              "time": "7:43"
+            },
+            {
+              "station": "十九条",
+              "time": "7:45"
+            },
+            {
+              "station": "美江寺",
+              "time": "7:48"
+            },
+            {
+              "station": "北方真桑",
+              "time": "7:55"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "7:58"
+            },
+            {
+              "station": "糸貫",
+              "time": "8:00"
+            },
+            {
+              "station": "本巣",
+              "arrival": "8:04",
+              "time": "8:04"
+            }
+          ]
+        },
+        {
+          "no": "9",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "7:58"
+            },
+            {
+              "station": "東大垣",
+              "time": "8:05"
+            },
+            {
+              "station": "横屋",
+              "time": "8:09"
+            },
+            {
+              "station": "十九条",
+              "time": "8:11"
+            },
+            {
+              "station": "美江寺",
+              "time": "8:14"
+            },
+            {
+              "station": "北方真桑",
+              "time": "8:19"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "8:22"
+            },
+            {
+              "station": "糸貫",
+              "time": "8:24"
+            },
+            {
+              "station": "本巣",
+              "arrival": "8:28",
+              "time": "8:28"
+            }
+          ]
+        },
+        {
+          "no": "11",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "8:22"
+            },
+            {
+              "station": "東大垣",
+              "time": "8:26"
+            },
+            {
+              "station": "横屋",
+              "time": "8:30"
+            },
+            {
+              "station": "十九条",
+              "time": "8:32"
+            },
+            {
+              "station": "美江寺",
+              "time": "8:35"
+            },
+            {
+              "station": "北方真桑",
+              "time": "8:44"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "8:47"
+            },
+            {
+              "station": "糸貫",
+              "time": "8:49"
+            },
+            {
+              "station": "本巣",
+              "arrival": "8:53",
+              "time": "8:53"
+            }
+          ]
+        },
+        {
+          "no": "13",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "9:11"
+            },
+            {
+              "station": "東大垣",
+              "time": "9:15"
+            },
+            {
+              "station": "横屋",
+              "time": "9:18"
+            },
+            {
+              "station": "十九条",
+              "time": "9:20"
+            },
+            {
+              "station": "美江寺",
+              "time": "9:23"
+            },
+            {
+              "station": "北方真桑",
+              "time": "9:29"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "9:32"
+            },
+            {
+              "station": "糸貫",
+              "time": "9:34"
+            },
+            {
+              "station": "本巣",
+              "arrival": "9:37",
+              "departure": "9:40",
+              "time": "9:40"
+            },
+            {
+              "station": "織部",
+              "time": "9:43"
+            },
+            {
+              "station": "木知原",
+              "time": "9:48"
+            },
+            {
+              "station": "谷汲口",
+              "time": "9:50"
+            },
+            {
+              "station": "神海",
+              "time": "9:55"
+            },
+            {
+              "station": "高科",
+              "time": "9:57"
+            },
+            {
+              "station": "鍋原",
+              "time": "10:00"
+            },
+            {
+              "station": "日当",
+              "time": "10:03"
+            },
+            {
+              "station": "高尾",
+              "time": "10:07"
+            },
+            {
+              "station": "水鳥",
+              "time": "10:10"
+            },
+            {
+              "station": "樽見",
+              "time": "10:14"
+            }
+          ]
+        },
+        {
+          "no": "15",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "10:08"
+            },
+            {
+              "station": "東大垣",
+              "time": "10:12"
+            },
+            {
+              "station": "横屋",
+              "time": "10:15"
+            },
+            {
+              "station": "十九条",
+              "time": "10:17"
+            },
+            {
+              "station": "美江寺",
+              "time": "10:20"
+            },
+            {
+              "station": "北方真桑",
+              "time": "10:26"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "10:29"
+            },
+            {
+              "station": "糸貫",
+              "time": "10:31"
+            },
+            {
+              "station": "本巣",
+              "arrival": "10:35",
+              "time": "10:35"
+            }
+          ]
+        },
+        {
+          "no": "17",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "10:41"
+            },
+            {
+              "station": "東大垣",
+              "time": "10:45"
+            },
+            {
+              "station": "横屋",
+              "time": "10:48"
+            },
+            {
+              "station": "十九条",
+              "time": "10:50"
+            },
+            {
+              "station": "美江寺",
+              "time": "10:53"
+            },
+            {
+              "station": "北方真桑",
+              "time": "10:59"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "11:02"
+            },
+            {
+              "station": "糸貫",
+              "time": "11:04"
+            },
+            {
+              "station": "本巣",
+              "arrival": "11:07",
+              "departure": "11:16",
+              "time": "11:16"
+            },
+            {
+              "station": "織部",
+              "time": "11:18"
+            },
+            {
+              "station": "木知原",
+              "time": "11:23"
+            },
+            {
+              "station": "谷汲口",
+              "time": "11:26"
+            },
+            {
+              "station": "神海",
+              "time": "11:30"
+            },
+            {
+              "station": "高科",
+              "time": "11:33"
+            },
+            {
+              "station": "鍋原",
+              "time": "11:35"
+            },
+            {
+              "station": "日当",
+              "time": "11:38"
+            },
+            {
+              "station": "高尾",
+              "time": "11:42"
+            },
+            {
+              "station": "水鳥",
+              "time": "11:45"
+            },
+            {
+              "station": "樽見",
+              "time": "11:49"
+            }
+          ]
+        },
+        {
+          "no": "19",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "12:11"
+            },
+            {
+              "station": "東大垣",
+              "time": "12:15"
+            },
+            {
+              "station": "横屋",
+              "time": "12:18"
+            },
+            {
+              "station": "十九条",
+              "time": "12:20"
+            },
+            {
+              "station": "美江寺",
+              "time": "12:23"
+            },
+            {
+              "station": "北方真桑",
+              "time": "12:29"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "12:32"
+            },
+            {
+              "station": "糸貫",
+              "time": "12:34"
+            },
+            {
+              "station": "本巣",
+              "arrival": "12:37",
+              "departure": "12:46",
+              "time": "12:46"
+            },
+            {
+              "station": "織部",
+              "time": "12:49"
+            },
+            {
+              "station": "木知原",
+              "time": "12:54"
+            },
+            {
+              "station": "谷汲口",
+              "time": "12:56"
+            },
+            {
+              "station": "神海",
+              "time": "13:01"
+            },
+            {
+              "station": "高科",
+              "time": "13:03"
+            },
+            {
+              "station": "鍋原",
+              "time": "13:06"
+            },
+            {
+              "station": "日当",
+              "time": "13:09"
+            },
+            {
+              "station": "高尾",
+              "time": "13:13"
+            },
+            {
+              "station": "水鳥",
+              "time": "13:16"
+            },
+            {
+              "station": "樽見",
+              "time": "13:20"
+            }
+          ]
+        },
+        {
+          "no": "21",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "13:41"
+            },
+            {
+              "station": "東大垣",
+              "time": "13:45"
+            },
+            {
+              "station": "横屋",
+              "time": "13:48"
+            },
+            {
+              "station": "十九条",
+              "time": "13:50"
+            },
+            {
+              "station": "美江寺",
+              "time": "13:53"
+            },
+            {
+              "station": "北方真桑",
+              "time": "13:59"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "14:02"
+            },
+            {
+              "station": "糸貫",
+              "time": "14:04"
+            },
+            {
+              "station": "本巣",
+              "arrival": "14:07",
+              "departure": "14:20",
+              "time": "14:20"
+            },
+            {
+              "station": "織部",
+              "time": "14:22"
+            },
+            {
+              "station": "木知原",
+              "time": "14:27"
+            },
+            {
+              "station": "谷汲口",
+              "time": "14:30"
+            },
+            {
+              "station": "神海",
+              "time": "14:34"
+            },
+            {
+              "station": "高科",
+              "time": "14:37"
+            },
+            {
+              "station": "鍋原",
+              "time": "14:39"
+            },
+            {
+              "station": "日当",
+              "time": "14:43"
+            },
+            {
+              "station": "高尾",
+              "time": "14:46"
+            },
+            {
+              "station": "水鳥",
+              "time": "14:49"
+            },
+            {
+              "station": "樽見",
+              "time": "14:54"
+            }
+          ]
+        },
+        {
+          "no": "23",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "15:11"
+            },
+            {
+              "station": "東大垣",
+              "time": "15:15"
+            },
+            {
+              "station": "横屋",
+              "time": "15:18"
+            },
+            {
+              "station": "十九条",
+              "time": "15:20"
+            },
+            {
+              "station": "美江寺",
+              "time": "15:23"
+            },
+            {
+              "station": "北方真桑",
+              "time": "15:29"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "15:32"
+            },
+            {
+              "station": "糸貫",
+              "time": "15:34"
+            },
+            {
+              "station": "本巣",
+              "arrival": "15:37",
+              "departure": "15:43",
+              "time": "15:43"
+            },
+            {
+              "station": "織部",
+              "time": "15:45"
+            },
+            {
+              "station": "木知原",
+              "time": "15:50"
+            },
+            {
+              "station": "谷汲口",
+              "time": "15:53"
+            },
+            {
+              "station": "神海",
+              "time": "15:57"
+            },
+            {
+              "station": "高科",
+              "time": "16:00"
+            },
+            {
+              "station": "鍋原",
+              "time": "16:02"
+            },
+            {
+              "station": "日当",
+              "time": "16:05"
+            },
+            {
+              "station": "高尾",
+              "time": "16:09"
+            },
+            {
+              "station": "水鳥",
+              "time": "16:12"
+            },
+            {
+              "station": "樽見",
+              "time": "16:16"
+            }
+          ]
+        },
+        {
+          "no": "25",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "16:38"
+            },
+            {
+              "station": "東大垣",
+              "time": "16:42"
+            },
+            {
+              "station": "横屋",
+              "time": "16:45"
+            },
+            {
+              "station": "十九条",
+              "time": "16:47"
+            },
+            {
+              "station": "美江寺",
+              "time": "16:50"
+            },
+            {
+              "station": "北方真桑",
+              "time": "16:56"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "16:59"
+            },
+            {
+              "station": "糸貫",
+              "time": "17:01"
+            },
+            {
+              "station": "本巣",
+              "arrival": "17:04",
+              "departure": "17:08",
+              "time": "17:08"
+            },
+            {
+              "station": "織部",
+              "time": "17:10"
+            },
+            {
+              "station": "木知原",
+              "time": "17:15"
+            },
+            {
+              "station": "谷汲口",
+              "time": "17:18"
+            },
+            {
+              "station": "神海",
+              "time": "17:22"
+            },
+            {
+              "station": "高科",
+              "time": "17:25"
+            },
+            {
+              "station": "鍋原",
+              "time": "17:27"
+            },
+            {
+              "station": "日当",
+              "time": "17:31"
+            },
+            {
+              "station": "高尾",
+              "time": "17:34"
+            },
+            {
+              "station": "水鳥",
+              "time": "17:37"
+            },
+            {
+              "station": "樽見",
+              "time": "17:42"
+            }
+          ]
+        },
+        {
+          "no": "27",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "17:21"
+            },
+            {
+              "station": "東大垣",
+              "time": "17:28"
+            },
+            {
+              "station": "横屋",
+              "time": "17:31"
+            },
+            {
+              "station": "十九条",
+              "time": "17:33"
+            },
+            {
+              "station": "美江寺",
+              "time": "17:36"
+            },
+            {
+              "station": "北方真桑",
+              "time": "17:41"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "17:44"
+            },
+            {
+              "station": "糸貫",
+              "time": "17:46"
+            },
+            {
+              "station": "本巣",
+              "arrival": "17:51",
+              "time": "17:51"
+            }
+          ]
+        },
+        {
+          "no": "29",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "17:48"
+            },
+            {
+              "station": "東大垣",
+              "time": "17:53"
+            },
+            {
+              "station": "横屋",
+              "time": "17:56"
+            },
+            {
+              "station": "十九条",
+              "time": "17:58"
+            },
+            {
+              "station": "美江寺",
+              "time": "18:01"
+            },
+            {
+              "station": "北方真桑",
+              "time": "18:08"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "18:11"
+            },
+            {
+              "station": "糸貫",
+              "time": "18:13"
+            },
+            {
+              "station": "本巣",
+              "arrival": "18:17",
+              "departure": "18:27",
+              "time": "18:27"
+            },
+            {
+              "station": "織部",
+              "time": "18:29"
+            },
+            {
+              "station": "木知原",
+              "time": "18:34"
+            },
+            {
+              "station": "谷汲口",
+              "time": "18:37"
+            },
+            {
+              "station": "神海",
+              "time": "18:41"
+            },
+            {
+              "station": "高科",
+              "time": "18:44"
+            },
+            {
+              "station": "鍋原",
+              "time": "18:46"
+            },
+            {
+              "station": "日当",
+              "time": "18:50"
+            },
+            {
+              "station": "高尾",
+              "time": "18:53"
+            },
+            {
+              "station": "水鳥",
+              "time": "18:56"
+            },
+            {
+              "station": "樽見",
+              "time": "19:01"
+            }
+          ]
+        },
+        {
+          "no": "31",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "18:49"
+            },
+            {
+              "station": "東大垣",
+              "time": "18:56"
+            },
+            {
+              "station": "横屋",
+              "time": "18:59"
+            },
+            {
+              "station": "十九条",
+              "time": "19:01"
+            },
+            {
+              "station": "美江寺",
+              "time": "19:04"
+            },
+            {
+              "station": "北方真桑",
+              "time": "19:09"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "19:12"
+            },
+            {
+              "station": "糸貫",
+              "time": "19:14"
+            },
+            {
+              "station": "本巣",
+              "arrival": "19:19",
+              "time": "19:19"
+            }
+          ]
+        },
+        {
+          "no": "33",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "19:17"
+            },
+            {
+              "station": "東大垣",
+              "time": "19:22"
+            },
+            {
+              "station": "横屋",
+              "time": "19:25"
+            },
+            {
+              "station": "十九条",
+              "time": "19:27"
+            },
+            {
+              "station": "美江寺",
+              "time": "19:30"
+            },
+            {
+              "station": "北方真桑",
+              "time": "19:37"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "19:40"
+            },
+            {
+              "station": "糸貫",
+              "time": "19:42"
+            },
+            {
+              "station": "本巣",
+              "arrival": "19:46",
+              "departure": "19:49",
+              "time": "19:49"
+            },
+            {
+              "station": "織部",
+              "time": "19:51"
+            },
+            {
+              "station": "木知原",
+              "time": "19:56"
+            },
+            {
+              "station": "谷汲口",
+              "time": "19:59"
+            },
+            {
+              "station": "神海",
+              "time": "20:03"
+            },
+            {
+              "station": "高科",
+              "time": "20:06"
+            },
+            {
+              "station": "鍋原",
+              "time": "20:08"
+            },
+            {
+              "station": "日当",
+              "time": "20:12"
+            },
+            {
+              "station": "高尾",
+              "time": "20:15"
+            },
+            {
+              "station": "水鳥",
+              "time": "20:18"
+            },
+            {
+              "station": "樽見",
+              "time": "20:23"
+            }
+          ]
+        },
+        {
+          "no": "35",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "20:14"
+            },
+            {
+              "station": "東大垣",
+              "time": "20:19"
+            },
+            {
+              "station": "横屋",
+              "time": "20:22"
+            },
+            {
+              "station": "十九条",
+              "time": "20:24"
+            },
+            {
+              "station": "美江寺",
+              "time": "20:27"
+            },
+            {
+              "station": "北方真桑",
+              "time": "20:32"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "20:35"
+            },
+            {
+              "station": "糸貫",
+              "time": "20:37"
+            },
+            {
+              "station": "本巣",
+              "arrival": "20:41",
+              "departure": "20:53",
+              "time": "20:53"
+            },
+            {
+              "station": "織部",
+              "time": "20:55"
+            },
+            {
+              "station": "木知原",
+              "time": "21:00"
+            },
+            {
+              "station": "谷汲口",
+              "time": "21:03"
+            },
+            {
+              "station": "神海",
+              "time": "21:07"
+            },
+            {
+              "station": "高科",
+              "time": "21:10"
+            },
+            {
+              "station": "鍋原",
+              "time": "21:12"
+            },
+            {
+              "station": "日当",
+              "time": "21:15"
+            },
+            {
+              "station": "高尾",
+              "time": "21:19"
+            },
+            {
+              "station": "水鳥",
+              "time": "21:22"
+            },
+            {
+              "station": "樽見",
+              "time": "21:26"
+            }
+          ]
+        },
+        {
+          "no": "37",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "21:01"
+            },
+            {
+              "station": "東大垣",
+              "time": "21:06"
+            },
+            {
+              "station": "横屋",
+              "time": "21:09"
+            },
+            {
+              "station": "十九条",
+              "time": "21:11"
+            },
+            {
+              "station": "美江寺",
+              "time": "21:14"
+            },
+            {
+              "station": "北方真桑",
+              "time": "21:19"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "21:22"
+            },
+            {
+              "station": "糸貫",
+              "time": "21:24"
+            },
+            {
+              "station": "本巣",
+              "arrival": "21:29",
+              "time": "21:29"
+            }
+          ]
+        },
+        {
+          "no": "39",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "22:19"
+            },
+            {
+              "station": "東大垣",
+              "time": "22:23"
+            },
+            {
+              "station": "横屋",
+              "time": "22:26"
+            },
+            {
+              "station": "十九条",
+              "time": "22:28"
+            },
+            {
+              "station": "美江寺",
+              "time": "22:31"
+            },
+            {
+              "station": "北方真桑",
+              "time": "22:37"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "22:40"
+            },
+            {
+              "station": "糸貫",
+              "time": "22:42"
+            },
+            {
+              "station": "本巣",
+              "arrival": "22:46",
+              "time": "22:46"
+            }
+          ]
+        },
+        {
+          "no": "41",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "23:01"
+            },
+            {
+              "station": "東大垣",
+              "time": "23:06"
+            },
+            {
+              "station": "横屋",
+              "time": "23:09"
+            },
+            {
+              "station": "十九条",
+              "time": "23:11"
+            },
+            {
+              "station": "美江寺",
+              "time": "23:14"
+            },
+            {
+              "station": "北方真桑",
+              "time": "23:19"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "23:22"
+            },
+            {
+              "station": "糸貫",
+              "time": "23:24"
+            },
+            {
+              "station": "本巣",
+              "arrival": "23:29",
+              "time": "23:29"
+            }
+          ]
+        }
+      ],
+      "上り": [
+        {
+          "no": "2",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "5:37",
+              "time": "5:37"
+            },
+            {
+              "station": "糸貫",
+              "time": "5:41"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "5:43"
+            },
+            {
+              "station": "北方真桑",
+              "time": "5:46"
+            },
+            {
+              "station": "美江寺",
+              "time": "5:51"
+            },
+            {
+              "station": "十九条",
+              "time": "5:54"
+            },
+            {
+              "station": "横屋",
+              "time": "5:56"
+            },
+            {
+              "station": "東大垣",
+              "time": "6:00"
+            },
+            {
+              "station": "大垣",
+              "time": "6:05"
+            }
+          ]
+        },
+        {
+          "no": "4",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "5:55"
+            },
+            {
+              "station": "水鳥",
+              "time": "5:58"
+            },
+            {
+              "station": "高尾",
+              "time": "6:01"
+            },
+            {
+              "station": "日当",
+              "time": "6:05"
+            },
+            {
+              "station": "鍋原",
+              "time": "6:08"
+            },
+            {
+              "station": "高科",
+              "time": "6:10"
+            },
+            {
+              "station": "神海",
+              "time": "6:13"
+            },
+            {
+              "station": "谷汲口",
+              "time": "6:17"
+            },
+            {
+              "station": "木知原",
+              "time": "6:19"
+            },
+            {
+              "station": "織部",
+              "time": "6:24"
+            },
+            {
+              "station": "本巣",
+              "arrival": "6:26",
+              "departure": "6:27",
+              "time": "6:27"
+            },
+            {
+              "station": "糸貫",
+              "time": "6:31"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "6:33"
+            },
+            {
+              "station": "北方真桑",
+              "time": "6:38"
+            },
+            {
+              "station": "美江寺",
+              "time": "6:43"
+            },
+            {
+              "station": "十九条",
+              "time": "6:46"
+            },
+            {
+              "station": "横屋",
+              "time": "6:48"
+            },
+            {
+              "station": "東大垣",
+              "time": "6:52"
+            },
+            {
+              "station": "大垣",
+              "time": "6:57"
+            }
+          ]
+        },
+        {
+          "no": "6",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "6:49",
+              "time": "6:49"
+            },
+            {
+              "station": "糸貫",
+              "time": "6:53"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "6:55"
+            },
+            {
+              "station": "北方真桑",
+              "time": "6:59"
+            },
+            {
+              "station": "美江寺",
+              "time": "7:04"
+            },
+            {
+              "station": "十九条",
+              "time": "7:07"
+            },
+            {
+              "station": "横屋",
+              "time": "7:09"
+            },
+            {
+              "station": "東大垣",
+              "time": "7:13"
+            },
+            {
+              "station": "大垣",
+              "time": "7:18"
+            }
+          ]
+        },
+        {
+          "no": "8",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "7:14",
+              "time": "7:14"
+            },
+            {
+              "station": "糸貫",
+              "time": "7:18"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "7:20"
+            },
+            {
+              "station": "北方真桑",
+              "time": "7:26"
+            },
+            {
+              "station": "美江寺",
+              "time": "7:30"
+            },
+            {
+              "station": "十九条",
+              "time": "7:34"
+            },
+            {
+              "station": "横屋",
+              "time": "7:36"
+            },
+            {
+              "station": "東大垣",
+              "time": "7:40"
+            },
+            {
+              "station": "大垣",
+              "time": "7:45"
+            }
+          ]
+        },
+        {
+          "no": "10",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "7:09"
+            },
+            {
+              "station": "水鳥",
+              "time": "7:12"
+            },
+            {
+              "station": "高尾",
+              "time": "7:15"
+            },
+            {
+              "station": "日当",
+              "time": "7:19"
+            },
+            {
+              "station": "鍋原",
+              "time": "7:22"
+            },
+            {
+              "station": "高科",
+              "time": "7:24"
+            },
+            {
+              "station": "神海",
+              "time": "7:27"
+            },
+            {
+              "station": "谷汲口",
+              "time": "7:31"
+            },
+            {
+              "station": "木知原",
+              "time": "7:33"
+            },
+            {
+              "station": "織部",
+              "time": "7:38"
+            },
+            {
+              "station": "本巣",
+              "arrival": "7:40",
+              "departure": "7:41",
+              "time": "7:41"
+            },
+            {
+              "station": "糸貫",
+              "time": "7:45"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "7:47"
+            },
+            {
+              "station": "北方真桑",
+              "time": "7:52"
+            },
+            {
+              "station": "美江寺",
+              "time": "7:57"
+            },
+            {
+              "station": "十九条",
+              "time": "8:00"
+            },
+            {
+              "station": "横屋",
+              "time": "8:02"
+            },
+            {
+              "station": "東大垣",
+              "time": "8:06"
+            },
+            {
+              "station": "大垣",
+              "time": "8:11"
+            }
+          ]
+        },
+        {
+          "no": "12",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "8:33",
+              "time": "8:33"
+            },
+            {
+              "station": "糸貫",
+              "time": "8:37"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "8:39"
+            },
+            {
+              "station": "北方真桑",
+              "time": "8:42"
+            },
+            {
+              "station": "美江寺",
+              "time": "8:47"
+            },
+            {
+              "station": "十九条",
+              "time": "8:50"
+            },
+            {
+              "station": "横屋",
+              "time": "8:52"
+            },
+            {
+              "station": "東大垣",
+              "time": "8:56"
+            },
+            {
+              "station": "大垣",
+              "time": "9:01"
+            }
+          ]
+        },
+        {
+          "no": "14",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "8:43"
+            },
+            {
+              "station": "水鳥",
+              "time": "8:47"
+            },
+            {
+              "station": "高尾",
+              "time": "8:50"
+            },
+            {
+              "station": "日当",
+              "time": "8:53"
+            },
+            {
+              "station": "鍋原",
+              "time": "8:56"
+            },
+            {
+              "station": "高科",
+              "time": "8:59"
+            },
+            {
+              "station": "神海",
+              "time": "9:02"
+            },
+            {
+              "station": "谷汲口",
+              "time": "9:05"
+            },
+            {
+              "station": "木知原",
+              "time": "9:08"
+            },
+            {
+              "station": "織部",
+              "time": "9:13"
+            },
+            {
+              "station": "本巣",
+              "arrival": "9:15",
+              "departure": "9:17",
+              "time": "9:17"
+            },
+            {
+              "station": "糸貫",
+              "time": "9:21"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "9:22"
+            },
+            {
+              "station": "北方真桑",
+              "time": "9:28"
+            },
+            {
+              "station": "美江寺",
+              "time": "9:33"
+            },
+            {
+              "station": "十九条",
+              "time": "9:36"
+            },
+            {
+              "station": "横屋",
+              "time": "9:38"
+            },
+            {
+              "station": "東大垣",
+              "time": "9:41"
+            },
+            {
+              "station": "大垣",
+              "time": "9:47"
+            }
+          ]
+        },
+        {
+          "no": "16",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "9:47",
+              "time": "9:47"
+            },
+            {
+              "station": "糸貫",
+              "time": "9:51"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "9:53"
+            },
+            {
+              "station": "北方真桑",
+              "time": "9:57"
+            },
+            {
+              "station": "美江寺",
+              "time": "10:01"
+            },
+            {
+              "station": "十九条",
+              "time": "10:04"
+            },
+            {
+              "station": "横屋",
+              "time": "10:06"
+            },
+            {
+              "station": "東大垣",
+              "time": "10:12"
+            },
+            {
+              "station": "大垣",
+              "time": "10:18"
+            }
+          ]
+        },
+        {
+          "no": "18",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "10:33"
+            },
+            {
+              "station": "水鳥",
+              "time": "10:36"
+            },
+            {
+              "station": "高尾",
+              "time": "10:39"
+            },
+            {
+              "station": "日当",
+              "time": "10:43"
+            },
+            {
+              "station": "鍋原",
+              "time": "10:46"
+            },
+            {
+              "station": "高科",
+              "time": "10:48"
+            },
+            {
+              "station": "神海",
+              "time": "10:51"
+            },
+            {
+              "station": "谷汲口",
+              "time": "10:55"
+            },
+            {
+              "station": "木知原",
+              "time": "10:57"
+            },
+            {
+              "station": "織部",
+              "time": "11:02"
+            },
+            {
+              "station": "本巣",
+              "arrival": "11:04",
+              "departure": "11:08",
+              "time": "11:08"
+            },
+            {
+              "station": "糸貫",
+              "time": "11:12"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "11:14"
+            },
+            {
+              "station": "北方真桑",
+              "time": "11:18"
+            },
+            {
+              "station": "美江寺",
+              "time": "11:22"
+            },
+            {
+              "station": "十九条",
+              "time": "11:25"
+            },
+            {
+              "station": "横屋",
+              "time": "11:27"
+            },
+            {
+              "station": "東大垣",
+              "time": "11:31"
+            },
+            {
+              "station": "大垣",
+              "time": "11:36"
+            }
+          ]
+        },
+        {
+          "no": "20",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "12:03"
+            },
+            {
+              "station": "水鳥",
+              "time": "12:07"
+            },
+            {
+              "station": "高尾",
+              "time": "12:10"
+            },
+            {
+              "station": "日当",
+              "time": "12:13"
+            },
+            {
+              "station": "鍋原",
+              "time": "12:16"
+            },
+            {
+              "station": "高科",
+              "time": "12:19"
+            },
+            {
+              "station": "神海",
+              "time": "12:22"
+            },
+            {
+              "station": "谷汲口",
+              "time": "12:25"
+            },
+            {
+              "station": "木知原",
+              "time": "12:28"
+            },
+            {
+              "station": "織部",
+              "time": "12:33"
+            },
+            {
+              "station": "本巣",
+              "arrival": "12:35",
+              "departure": "12:38",
+              "time": "12:38"
+            },
+            {
+              "station": "糸貫",
+              "time": "12:42"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "12:44"
+            },
+            {
+              "station": "北方真桑",
+              "time": "12:48"
+            },
+            {
+              "station": "美江寺",
+              "time": "12:52"
+            },
+            {
+              "station": "十九条",
+              "time": "12:55"
+            },
+            {
+              "station": "横屋",
+              "time": "12:57"
+            },
+            {
+              "station": "東大垣",
+              "time": "13:01"
+            },
+            {
+              "station": "大垣",
+              "time": "13:06"
+            }
+          ]
+        },
+        {
+          "no": "22",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "13:32"
+            },
+            {
+              "station": "水鳥",
+              "time": "13:36"
+            },
+            {
+              "station": "高尾",
+              "time": "13:39"
+            },
+            {
+              "station": "日当",
+              "time": "13:42"
+            },
+            {
+              "station": "鍋原",
+              "time": "13:45"
+            },
+            {
+              "station": "高科",
+              "time": "13:48"
+            },
+            {
+              "station": "神海",
+              "time": "13:51"
+            },
+            {
+              "station": "谷汲口",
+              "time": "13:54"
+            },
+            {
+              "station": "木知原",
+              "time": "13:57"
+            },
+            {
+              "station": "織部",
+              "time": "14:02"
+            },
+            {
+              "station": "本巣",
+              "arrival": "14:04",
+              "departure": "14:08",
+              "time": "14:08"
+            },
+            {
+              "station": "糸貫",
+              "time": "14:12"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "14:14"
+            },
+            {
+              "station": "北方真桑",
+              "time": "14:18"
+            },
+            {
+              "station": "美江寺",
+              "time": "14:22"
+            },
+            {
+              "station": "十九条",
+              "time": "14:25"
+            },
+            {
+              "station": "横屋",
+              "time": "14:27"
+            },
+            {
+              "station": "東大垣",
+              "time": "14:31"
+            },
+            {
+              "station": "大垣",
+              "time": "14:36"
+            }
+          ]
+        },
+        {
+          "no": "24",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "15:03"
+            },
+            {
+              "station": "水鳥",
+              "time": "15:07"
+            },
+            {
+              "station": "高尾",
+              "time": "15:10"
+            },
+            {
+              "station": "日当",
+              "time": "15:13"
+            },
+            {
+              "station": "鍋原",
+              "time": "15:16"
+            },
+            {
+              "station": "高科",
+              "time": "15:19"
+            },
+            {
+              "station": "神海",
+              "time": "15:22"
+            },
+            {
+              "station": "谷汲口",
+              "time": "15:25"
+            },
+            {
+              "station": "木知原",
+              "time": "15:28"
+            },
+            {
+              "station": "織部",
+              "time": "15:33"
+            },
+            {
+              "station": "本巣",
+              "arrival": "15:35",
+              "departure": "15:38",
+              "time": "15:38"
+            },
+            {
+              "station": "糸貫",
+              "time": "15:42"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "15:44"
+            },
+            {
+              "station": "北方真桑",
+              "time": "15:48"
+            },
+            {
+              "station": "美江寺",
+              "time": "15:52"
+            },
+            {
+              "station": "十九条",
+              "time": "15:55"
+            },
+            {
+              "station": "横屋",
+              "time": "15:57"
+            },
+            {
+              "station": "東大垣",
+              "time": "16:01"
+            },
+            {
+              "station": "大垣",
+              "time": "16:06"
+            }
+          ]
+        },
+        {
+          "no": "26",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "16:44",
+              "time": "16:44"
+            },
+            {
+              "station": "糸貫",
+              "time": "16:48"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "16:49"
+            },
+            {
+              "station": "北方真桑",
+              "time": "16:55"
+            },
+            {
+              "station": "美江寺",
+              "time": "17:00"
+            },
+            {
+              "station": "十九条",
+              "time": "17:03"
+            },
+            {
+              "station": "横屋",
+              "time": "17:05"
+            },
+            {
+              "station": "東大垣",
+              "time": "17:08"
+            },
+            {
+              "station": "大垣",
+              "time": "17:14"
+            }
+          ]
+        },
+        {
+          "no": "28",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "16:28"
+            },
+            {
+              "station": "水鳥",
+              "time": "16:32"
+            },
+            {
+              "station": "高尾",
+              "time": "16:35"
+            },
+            {
+              "station": "日当",
+              "time": "16:38"
+            },
+            {
+              "station": "鍋原",
+              "time": "16:41"
+            },
+            {
+              "station": "高科",
+              "time": "16:44"
+            },
+            {
+              "station": "神海",
+              "time": "16:47"
+            },
+            {
+              "station": "谷汲口",
+              "time": "16:50"
+            },
+            {
+              "station": "木知原",
+              "time": "16:53"
+            },
+            {
+              "station": "織部",
+              "time": "16:58"
+            },
+            {
+              "station": "本巣",
+              "arrival": "17:00",
+              "departure": "17:05",
+              "time": "17:05"
+            },
+            {
+              "station": "糸貫",
+              "time": "17:09"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "17:11"
+            },
+            {
+              "station": "北方真桑",
+              "time": "17:15"
+            },
+            {
+              "station": "美江寺",
+              "time": "17:19"
+            },
+            {
+              "station": "十九条",
+              "time": "17:22"
+            },
+            {
+              "station": "横屋",
+              "time": "17:24"
+            },
+            {
+              "station": "東大垣",
+              "time": "17:28"
+            },
+            {
+              "station": "大垣",
+              "time": "17:33"
+            }
+          ]
+        },
+        {
+          "no": "30",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "17:59",
+              "time": "17:59"
+            },
+            {
+              "station": "糸貫",
+              "time": "18:03"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "18:05"
+            },
+            {
+              "station": "北方真桑",
+              "time": "18:09"
+            },
+            {
+              "station": "美江寺",
+              "time": "18:13"
+            },
+            {
+              "station": "十九条",
+              "time": "18:16"
+            },
+            {
+              "station": "横屋",
+              "time": "18:18"
+            },
+            {
+              "station": "東大垣",
+              "time": "18:22"
+            },
+            {
+              "station": "大垣",
+              "time": "18:27"
+            }
+          ]
+        },
+        {
+          "no": "32",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "17:53"
+            },
+            {
+              "station": "水鳥",
+              "time": "17:56"
+            },
+            {
+              "station": "高尾",
+              "time": "17:59"
+            },
+            {
+              "station": "日当",
+              "time": "18:03"
+            },
+            {
+              "station": "鍋原",
+              "time": "18:06"
+            },
+            {
+              "station": "高科",
+              "time": "18:08"
+            },
+            {
+              "station": "神海",
+              "time": "18:12"
+            },
+            {
+              "station": "谷汲口",
+              "time": "18:15"
+            },
+            {
+              "station": "木知原",
+              "time": "18:17"
+            },
+            {
+              "station": "織部",
+              "time": "18:22"
+            },
+            {
+              "station": "本巣",
+              "arrival": "18:24",
+              "departure": "18:33",
+              "time": "18:33"
+            },
+            {
+              "station": "糸貫",
+              "time": "18:37"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "18:39"
+            },
+            {
+              "station": "北方真桑",
+              "time": "18:43"
+            },
+            {
+              "station": "美江寺",
+              "time": "18:47"
+            },
+            {
+              "station": "十九条",
+              "time": "18:50"
+            },
+            {
+              "station": "横屋",
+              "time": "18:52"
+            },
+            {
+              "station": "東大垣",
+              "time": "18:56"
+            },
+            {
+              "station": "大垣",
+              "time": "19:01"
+            }
+          ]
+        },
+        {
+          "no": "34",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "19:28",
+              "time": "19:28"
+            },
+            {
+              "station": "糸貫",
+              "time": "19:32"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "19:34"
+            },
+            {
+              "station": "北方真桑",
+              "time": "19:38"
+            },
+            {
+              "station": "美江寺",
+              "time": "19:42"
+            },
+            {
+              "station": "十九条",
+              "time": "19:45"
+            },
+            {
+              "station": "横屋",
+              "time": "19:47"
+            },
+            {
+              "station": "東大垣",
+              "time": "19:51"
+            },
+            {
+              "station": "大垣",
+              "time": "19:56"
+            }
+          ]
+        },
+        {
+          "no": "36",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "20:21",
+              "time": "20:21"
+            },
+            {
+              "station": "糸貫",
+              "time": "20:24"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "20:26"
+            },
+            {
+              "station": "北方真桑",
+              "time": "20:32"
+            },
+            {
+              "station": "美江寺",
+              "time": "20:36"
+            },
+            {
+              "station": "十九条",
+              "time": "20:39"
+            },
+            {
+              "station": "横屋",
+              "time": "20:41"
+            },
+            {
+              "station": "東大垣",
+              "time": "20:45"
+            },
+            {
+              "station": "大垣",
+              "time": "20:51"
+            }
+          ]
+        },
+        {
+          "no": "40",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "21:44",
+              "time": "21:44"
+            },
+            {
+              "station": "糸貫",
+              "time": "21:48"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "21:50"
+            },
+            {
+              "station": "北方真桑",
+              "time": "21:53"
+            },
+            {
+              "station": "美江寺",
+              "time": "21:58"
+            },
+            {
+              "station": "十九条",
+              "time": "22:01"
+            },
+            {
+              "station": "横屋",
+              "time": "22:03"
+            },
+            {
+              "station": "東大垣",
+              "time": "22:07"
+            },
+            {
+              "station": "大垣",
+              "time": "22:12"
+            }
+          ]
+        },
+        {
+          "no": "42",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "21:47"
+            },
+            {
+              "station": "水鳥",
+              "time": "21:50"
+            },
+            {
+              "station": "高尾",
+              "time": "21:53"
+            },
+            {
+              "station": "日当",
+              "time": "21:57"
+            },
+            {
+              "station": "鍋原",
+              "time": "22:00"
+            },
+            {
+              "station": "高科",
+              "time": "22:02"
+            },
+            {
+              "station": "神海",
+              "time": "22:05"
+            },
+            {
+              "station": "谷汲口",
+              "time": "22:09"
+            },
+            {
+              "station": "木知原",
+              "time": "22:11"
+            },
+            {
+              "station": "織部",
+              "time": "22:16"
+            },
+            {
+              "station": "本巣",
+              "arrival": "22:18",
+              "departure": "22:24",
+              "time": "22:24"
+            },
+            {
+              "station": "糸貫",
+              "time": "22:28"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "22:30"
+            },
+            {
+              "station": "北方真桑",
+              "time": "22:36"
+            },
+            {
+              "station": "美江寺",
+              "time": "22:41"
+            },
+            {
+              "station": "十九条",
+              "time": "22:44"
+            },
+            {
+              "station": "横屋",
+              "time": "22:46"
+            },
+            {
+              "station": "東大垣",
+              "time": "22:49"
+            },
+            {
+              "station": "大垣",
+              "time": "22:55"
+            }
+          ]
+        }
+      ]
+    },
+    "休日": {
+      "下り": [
+        {
+          "no": "1",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "6:30",
+              "time": "6:30"
+            },
+            {
+              "station": "織部",
+              "time": "6:32"
+            },
+            {
+              "station": "木知原",
+              "time": "6:37"
+            },
+            {
+              "station": "谷汲口",
+              "time": "6:40"
+            },
+            {
+              "station": "神海",
+              "time": "6:44"
+            },
+            {
+              "station": "高科",
+              "time": "6:47"
+            },
+            {
+              "station": "鍋原",
+              "time": "6:49"
+            },
+            {
+              "station": "日当",
+              "time": "6:52"
+            },
+            {
+              "station": "高尾",
+              "time": "6:56"
+            },
+            {
+              "station": "水鳥",
+              "time": "6:59"
+            },
+            {
+              "station": "樽見",
+              "time": "7:03"
+            }
+          ]
+        },
+        {
+          "no": "3",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "6:21"
+            },
+            {
+              "station": "東大垣",
+              "time": "6:25"
+            },
+            {
+              "station": "横屋",
+              "time": "6:29"
+            },
+            {
+              "station": "十九条",
+              "time": "6:31"
+            },
+            {
+              "station": "美江寺",
+              "time": "6:34"
+            },
+            {
+              "station": "北方真桑",
+              "time": "6:39"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "6:42"
+            },
+            {
+              "station": "糸貫",
+              "time": "6:44"
+            },
+            {
+              "station": "本巣",
+              "arrival": "6:48",
+              "time": "6:48"
+            }
+          ]
+        },
+        {
+          "no": "5",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "7:06"
+            },
+            {
+              "station": "東大垣",
+              "time": "7:13"
+            },
+            {
+              "station": "横屋",
+              "time": "7:16"
+            },
+            {
+              "station": "十九条",
+              "time": "7:18"
+            },
+            {
+              "station": "美江寺",
+              "time": "7:21"
+            },
+            {
+              "station": "北方真桑",
+              "time": "7:26"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "7:29"
+            },
+            {
+              "station": "糸貫",
+              "time": "7:31"
+            },
+            {
+              "station": "本巣",
+              "arrival": "7:35",
+              "departure": "7:45",
+              "time": "7:45"
+            },
+            {
+              "station": "織部",
+              "time": "7:47"
+            },
+            {
+              "station": "木知原",
+              "time": "7:52"
+            },
+            {
+              "station": "谷汲口",
+              "time": "7:55"
+            },
+            {
+              "station": "神海",
+              "time": "7:59"
+            },
+            {
+              "station": "高科",
+              "time": "8:02"
+            },
+            {
+              "station": "鍋原",
+              "time": "8:04"
+            },
+            {
+              "station": "日当",
+              "time": "8:08"
+            },
+            {
+              "station": "高尾",
+              "time": "8:11"
+            },
+            {
+              "station": "水鳥",
+              "time": "8:14"
+            },
+            {
+              "station": "樽見",
+              "time": "8:19"
+            }
+          ]
+        },
+        {
+          "no": "7",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "7:32"
+            },
+            {
+              "station": "東大垣",
+              "time": "7:39"
+            },
+            {
+              "station": "横屋",
+              "time": "7:43"
+            },
+            {
+              "station": "十九条",
+              "time": "7:45"
+            },
+            {
+              "station": "美江寺",
+              "time": "7:48"
+            },
+            {
+              "station": "北方真桑",
+              "time": "7:55"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "7:58"
+            },
+            {
+              "station": "糸貫",
+              "time": "8:00"
+            },
+            {
+              "station": "本巣",
+              "arrival": "8:04",
+              "time": "8:04"
+            }
+          ]
+        },
+        {
+          "no": "9",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "7:58"
+            },
+            {
+              "station": "東大垣",
+              "time": "8:05"
+            },
+            {
+              "station": "横屋",
+              "time": "8:09"
+            },
+            {
+              "station": "十九条",
+              "time": "8:11"
+            },
+            {
+              "station": "美江寺",
+              "time": "8:14"
+            },
+            {
+              "station": "北方真桑",
+              "time": "8:19"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "8:22"
+            },
+            {
+              "station": "糸貫",
+              "time": "8:24"
+            },
+            {
+              "station": "本巣",
+              "arrival": "8:28",
+              "time": "8:28"
+            }
+          ]
+        },
+        {
+          "no": "11",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "8:22"
+            },
+            {
+              "station": "東大垣",
+              "time": "8:26"
+            },
+            {
+              "station": "横屋",
+              "time": "8:30"
+            },
+            {
+              "station": "十九条",
+              "time": "8:32"
+            },
+            {
+              "station": "美江寺",
+              "time": "8:35"
+            },
+            {
+              "station": "北方真桑",
+              "time": "8:44"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "8:47"
+            },
+            {
+              "station": "糸貫",
+              "time": "8:49"
+            },
+            {
+              "station": "本巣",
+              "arrival": "8:53",
+              "time": "8:53"
+            }
+          ]
+        },
+        {
+          "no": "13",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "9:11"
+            },
+            {
+              "station": "東大垣",
+              "time": "9:15"
+            },
+            {
+              "station": "横屋",
+              "time": "9:18"
+            },
+            {
+              "station": "十九条",
+              "time": "9:20"
+            },
+            {
+              "station": "美江寺",
+              "time": "9:23"
+            },
+            {
+              "station": "北方真桑",
+              "time": "9:29"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "9:32"
+            },
+            {
+              "station": "糸貫",
+              "time": "9:34"
+            },
+            {
+              "station": "本巣",
+              "arrival": "9:37",
+              "departure": "9:40",
+              "time": "9:40"
+            },
+            {
+              "station": "織部",
+              "time": "9:43"
+            },
+            {
+              "station": "木知原",
+              "time": "9:48"
+            },
+            {
+              "station": "谷汲口",
+              "time": "9:50"
+            },
+            {
+              "station": "神海",
+              "time": "9:55"
+            },
+            {
+              "station": "高科",
+              "time": "9:57"
+            },
+            {
+              "station": "鍋原",
+              "time": "10:00"
+            },
+            {
+              "station": "日当",
+              "time": "10:03"
+            },
+            {
+              "station": "高尾",
+              "time": "10:07"
+            },
+            {
+              "station": "水鳥",
+              "time": "10:10"
+            },
+            {
+              "station": "樽見",
+              "time": "10:14"
+            }
+          ]
+        },
+        {
+          "no": "15",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "10:08"
+            },
+            {
+              "station": "東大垣",
+              "time": "10:12"
+            },
+            {
+              "station": "横屋",
+              "time": "10:15"
+            },
+            {
+              "station": "十九条",
+              "time": "10:17"
+            },
+            {
+              "station": "美江寺",
+              "time": "10:20"
+            },
+            {
+              "station": "北方真桑",
+              "time": "10:26"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "10:29"
+            },
+            {
+              "station": "糸貫",
+              "time": "10:31"
+            },
+            {
+              "station": "本巣",
+              "arrival": "10:35",
+              "time": "10:35"
+            }
+          ]
+        },
+        {
+          "no": "17",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "10:41"
+            },
+            {
+              "station": "東大垣",
+              "time": "10:45"
+            },
+            {
+              "station": "横屋",
+              "time": "10:48"
+            },
+            {
+              "station": "十九条",
+              "time": "10:50"
+            },
+            {
+              "station": "美江寺",
+              "time": "10:53"
+            },
+            {
+              "station": "北方真桑",
+              "time": "10:59"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "11:02"
+            },
+            {
+              "station": "糸貫",
+              "time": "11:04"
+            },
+            {
+              "station": "本巣",
+              "arrival": "11:07",
+              "departure": "11:16",
+              "time": "11:16"
+            },
+            {
+              "station": "織部",
+              "time": "11:18"
+            },
+            {
+              "station": "木知原",
+              "time": "11:23"
+            },
+            {
+              "station": "谷汲口",
+              "time": "11:26"
+            },
+            {
+              "station": "神海",
+              "time": "11:30"
+            },
+            {
+              "station": "高科",
+              "time": "11:33"
+            },
+            {
+              "station": "鍋原",
+              "time": "11:35"
+            },
+            {
+              "station": "日当",
+              "time": "11:38"
+            },
+            {
+              "station": "高尾",
+              "time": "11:42"
+            },
+            {
+              "station": "水鳥",
+              "time": "11:45"
+            },
+            {
+              "station": "樽見",
+              "time": "11:49"
+            }
+          ]
+        },
+        {
+          "no": "1001",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "11:24"
+            },
+            {
+              "station": "東大垣",
+              "time": "11:31"
+            },
+            {
+              "station": "横屋",
+              "time": "11:34"
+            },
+            {
+              "station": "十九条",
+              "time": "11:36"
+            },
+            {
+              "station": "美江寺",
+              "time": "11:39"
+            },
+            {
+              "station": "北方真桑",
+              "time": "11:44"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "11:47"
+            },
+            {
+              "station": "糸貫",
+              "time": "11:49"
+            },
+            {
+              "station": "本巣",
+              "arrival": "11:54",
+              "time": "11:54"
+            }
+          ]
+        },
+        {
+          "no": "19",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "12:11"
+            },
+            {
+              "station": "東大垣",
+              "time": "12:15"
+            },
+            {
+              "station": "横屋",
+              "time": "12:18"
+            },
+            {
+              "station": "十九条",
+              "time": "12:20"
+            },
+            {
+              "station": "美江寺",
+              "time": "12:23"
+            },
+            {
+              "station": "北方真桑",
+              "time": "12:29"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "12:32"
+            },
+            {
+              "station": "糸貫",
+              "time": "12:34"
+            },
+            {
+              "station": "本巣",
+              "arrival": "12:37",
+              "departure": "12:46",
+              "time": "12:46"
+            },
+            {
+              "station": "織部",
+              "time": "12:49"
+            },
+            {
+              "station": "木知原",
+              "time": "12:54"
+            },
+            {
+              "station": "谷汲口",
+              "time": "12:56"
+            },
+            {
+              "station": "神海",
+              "time": "13:01"
+            },
+            {
+              "station": "高科",
+              "time": "13:03"
+            },
+            {
+              "station": "鍋原",
+              "time": "13:06"
+            },
+            {
+              "station": "日当",
+              "time": "13:09"
+            },
+            {
+              "station": "高尾",
+              "time": "13:13"
+            },
+            {
+              "station": "水鳥",
+              "time": "13:16"
+            },
+            {
+              "station": "樽見",
+              "time": "13:20"
+            }
+          ]
+        },
+        {
+          "no": "21",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "13:41"
+            },
+            {
+              "station": "東大垣",
+              "time": "13:45"
+            },
+            {
+              "station": "横屋",
+              "time": "13:48"
+            },
+            {
+              "station": "十九条",
+              "time": "13:50"
+            },
+            {
+              "station": "美江寺",
+              "time": "13:53"
+            },
+            {
+              "station": "北方真桑",
+              "time": "13:59"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "14:02"
+            },
+            {
+              "station": "糸貫",
+              "time": "14:04"
+            },
+            {
+              "station": "本巣",
+              "arrival": "14:07",
+              "departure": "14:20",
+              "time": "14:20"
+            },
+            {
+              "station": "織部",
+              "time": "14:22"
+            },
+            {
+              "station": "木知原",
+              "time": "14:27"
+            },
+            {
+              "station": "谷汲口",
+              "time": "14:30"
+            },
+            {
+              "station": "神海",
+              "time": "14:34"
+            },
+            {
+              "station": "高科",
+              "time": "14:37"
+            },
+            {
+              "station": "鍋原",
+              "time": "14:39"
+            },
+            {
+              "station": "日当",
+              "time": "14:43"
+            },
+            {
+              "station": "高尾",
+              "time": "14:46"
+            },
+            {
+              "station": "水鳥",
+              "time": "14:49"
+            },
+            {
+              "station": "樽見",
+              "time": "14:54"
+            }
+          ]
+        },
+        {
+          "no": "23",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "15:11"
+            },
+            {
+              "station": "東大垣",
+              "time": "15:15"
+            },
+            {
+              "station": "横屋",
+              "time": "15:18"
+            },
+            {
+              "station": "十九条",
+              "time": "15:20"
+            },
+            {
+              "station": "美江寺",
+              "time": "15:23"
+            },
+            {
+              "station": "北方真桑",
+              "time": "15:29"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "15:32"
+            },
+            {
+              "station": "糸貫",
+              "time": "15:34"
+            },
+            {
+              "station": "本巣",
+              "arrival": "15:37",
+              "departure": "15:43",
+              "time": "15:43"
+            },
+            {
+              "station": "織部",
+              "time": "15:45"
+            },
+            {
+              "station": "木知原",
+              "time": "15:50"
+            },
+            {
+              "station": "谷汲口",
+              "time": "15:53"
+            },
+            {
+              "station": "神海",
+              "time": "15:57"
+            },
+            {
+              "station": "高科",
+              "time": "16:00"
+            },
+            {
+              "station": "鍋原",
+              "time": "16:02"
+            },
+            {
+              "station": "日当",
+              "time": "16:05"
+            },
+            {
+              "station": "高尾",
+              "time": "16:09"
+            },
+            {
+              "station": "水鳥",
+              "time": "16:12"
+            },
+            {
+              "station": "樽見",
+              "time": "16:16"
+            }
+          ]
+        },
+        {
+          "no": "25",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "16:38"
+            },
+            {
+              "station": "東大垣",
+              "time": "16:42"
+            },
+            {
+              "station": "横屋",
+              "time": "16:45"
+            },
+            {
+              "station": "十九条",
+              "time": "16:47"
+            },
+            {
+              "station": "美江寺",
+              "time": "16:50"
+            },
+            {
+              "station": "北方真桑",
+              "time": "16:56"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "16:59"
+            },
+            {
+              "station": "糸貫",
+              "time": "17:01"
+            },
+            {
+              "station": "本巣",
+              "arrival": "17:04",
+              "departure": "17:08",
+              "time": "17:08"
+            },
+            {
+              "station": "織部",
+              "time": "17:10"
+            },
+            {
+              "station": "木知原",
+              "time": "17:15"
+            },
+            {
+              "station": "谷汲口",
+              "time": "17:18"
+            },
+            {
+              "station": "神海",
+              "time": "17:22"
+            },
+            {
+              "station": "高科",
+              "time": "17:25"
+            },
+            {
+              "station": "鍋原",
+              "time": "17:27"
+            },
+            {
+              "station": "日当",
+              "time": "17:31"
+            },
+            {
+              "station": "高尾",
+              "time": "17:34"
+            },
+            {
+              "station": "水鳥",
+              "time": "17:37"
+            },
+            {
+              "station": "樽見",
+              "time": "17:42"
+            }
+          ]
+        },
+        {
+          "no": "27",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "17:21"
+            },
+            {
+              "station": "東大垣",
+              "time": "17:28"
+            },
+            {
+              "station": "横屋",
+              "time": "17:31"
+            },
+            {
+              "station": "十九条",
+              "time": "17:33"
+            },
+            {
+              "station": "美江寺",
+              "time": "17:36"
+            },
+            {
+              "station": "北方真桑",
+              "time": "17:41"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "17:44"
+            },
+            {
+              "station": "糸貫",
+              "time": "17:46"
+            },
+            {
+              "station": "本巣",
+              "arrival": "17:51",
+              "time": "17:51"
+            }
+          ]
+        },
+        {
+          "no": "29",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "17:48"
+            },
+            {
+              "station": "東大垣",
+              "time": "17:53"
+            },
+            {
+              "station": "横屋",
+              "time": "17:56"
+            },
+            {
+              "station": "十九条",
+              "time": "17:58"
+            },
+            {
+              "station": "美江寺",
+              "time": "18:01"
+            },
+            {
+              "station": "北方真桑",
+              "time": "18:08"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "18:11"
+            },
+            {
+              "station": "糸貫",
+              "time": "18:13"
+            },
+            {
+              "station": "本巣",
+              "arrival": "18:17",
+              "departure": "18:27",
+              "time": "18:27"
+            },
+            {
+              "station": "織部",
+              "time": "18:29"
+            },
+            {
+              "station": "木知原",
+              "time": "18:34"
+            },
+            {
+              "station": "谷汲口",
+              "time": "18:37"
+            },
+            {
+              "station": "神海",
+              "time": "18:41"
+            },
+            {
+              "station": "高科",
+              "time": "18:44"
+            },
+            {
+              "station": "鍋原",
+              "time": "18:46"
+            },
+            {
+              "station": "日当",
+              "time": "18:50"
+            },
+            {
+              "station": "高尾",
+              "time": "18:53"
+            },
+            {
+              "station": "水鳥",
+              "time": "18:56"
+            },
+            {
+              "station": "樽見",
+              "time": "19:01"
+            }
+          ]
+        },
+        {
+          "no": "31",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "18:49"
+            },
+            {
+              "station": "東大垣",
+              "time": "18:56"
+            },
+            {
+              "station": "横屋",
+              "time": "18:59"
+            },
+            {
+              "station": "十九条",
+              "time": "19:01"
+            },
+            {
+              "station": "美江寺",
+              "time": "19:04"
+            },
+            {
+              "station": "北方真桑",
+              "time": "19:09"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "19:12"
+            },
+            {
+              "station": "糸貫",
+              "time": "19:14"
+            },
+            {
+              "station": "本巣",
+              "arrival": "19:19",
+              "time": "19:19"
+            }
+          ]
+        },
+        {
+          "no": "33",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "19:17"
+            },
+            {
+              "station": "東大垣",
+              "time": "19:22"
+            },
+            {
+              "station": "横屋",
+              "time": "19:25"
+            },
+            {
+              "station": "十九条",
+              "time": "19:27"
+            },
+            {
+              "station": "美江寺",
+              "time": "19:30"
+            },
+            {
+              "station": "北方真桑",
+              "time": "19:37"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "19:40"
+            },
+            {
+              "station": "糸貫",
+              "time": "19:42"
+            },
+            {
+              "station": "本巣",
+              "arrival": "19:46",
+              "departure": "19:49",
+              "time": "19:49"
+            },
+            {
+              "station": "織部",
+              "time": "19:51"
+            },
+            {
+              "station": "木知原",
+              "time": "19:56"
+            },
+            {
+              "station": "谷汲口",
+              "time": "19:59"
+            },
+            {
+              "station": "神海",
+              "time": "20:03"
+            },
+            {
+              "station": "高科",
+              "time": "20:06"
+            },
+            {
+              "station": "鍋原",
+              "time": "20:08"
+            },
+            {
+              "station": "日当",
+              "time": "20:12"
+            },
+            {
+              "station": "高尾",
+              "time": "20:15"
+            },
+            {
+              "station": "水鳥",
+              "time": "20:18"
+            },
+            {
+              "station": "樽見",
+              "time": "20:23"
+            }
+          ]
+        },
+        {
+          "no": "35",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "20:14"
+            },
+            {
+              "station": "東大垣",
+              "time": "20:19"
+            },
+            {
+              "station": "横屋",
+              "time": "20:22"
+            },
+            {
+              "station": "十九条",
+              "time": "20:24"
+            },
+            {
+              "station": "美江寺",
+              "time": "20:27"
+            },
+            {
+              "station": "北方真桑",
+              "time": "20:32"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "20:35"
+            },
+            {
+              "station": "糸貫",
+              "time": "20:37"
+            },
+            {
+              "station": "本巣",
+              "arrival": "20:41",
+              "departure": "20:53",
+              "time": "20:53"
+            },
+            {
+              "station": "織部",
+              "time": "20:55"
+            },
+            {
+              "station": "木知原",
+              "time": "21:00"
+            },
+            {
+              "station": "谷汲口",
+              "time": "21:03"
+            },
+            {
+              "station": "神海",
+              "time": "21:07"
+            },
+            {
+              "station": "高科",
+              "time": "21:10"
+            },
+            {
+              "station": "鍋原",
+              "time": "21:12"
+            },
+            {
+              "station": "日当",
+              "time": "21:15"
+            },
+            {
+              "station": "高尾",
+              "time": "21:19"
+            },
+            {
+              "station": "水鳥",
+              "time": "21:22"
+            },
+            {
+              "station": "樽見",
+              "time": "21:26"
+            }
+          ]
+        },
+        {
+          "no": "37",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "21:01"
+            },
+            {
+              "station": "東大垣",
+              "time": "21:06"
+            },
+            {
+              "station": "横屋",
+              "time": "21:09"
+            },
+            {
+              "station": "十九条",
+              "time": "21:11"
+            },
+            {
+              "station": "美江寺",
+              "time": "21:14"
+            },
+            {
+              "station": "北方真桑",
+              "time": "21:19"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "21:22"
+            },
+            {
+              "station": "糸貫",
+              "time": "21:24"
+            },
+            {
+              "station": "本巣",
+              "arrival": "21:29",
+              "time": "21:29"
+            }
+          ]
+        },
+        {
+          "no": "39",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "22:19"
+            },
+            {
+              "station": "東大垣",
+              "time": "22:23"
+            },
+            {
+              "station": "横屋",
+              "time": "22:26"
+            },
+            {
+              "station": "十九条",
+              "time": "22:28"
+            },
+            {
+              "station": "美江寺",
+              "time": "22:31"
+            },
+            {
+              "station": "北方真桑",
+              "time": "22:37"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "22:40"
+            },
+            {
+              "station": "糸貫",
+              "time": "22:42"
+            },
+            {
+              "station": "本巣",
+              "arrival": "22:46",
+              "time": "22:46"
+            }
+          ]
+        },
+        {
+          "no": "41",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "大垣",
+              "time": "23:01"
+            },
+            {
+              "station": "東大垣",
+              "time": "23:06"
+            },
+            {
+              "station": "横屋",
+              "time": "23:09"
+            },
+            {
+              "station": "十九条",
+              "time": "23:11"
+            },
+            {
+              "station": "美江寺",
+              "time": "23:14"
+            },
+            {
+              "station": "北方真桑",
+              "time": "23:19"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "23:22"
+            },
+            {
+              "station": "糸貫",
+              "time": "23:24"
+            },
+            {
+              "station": "本巣",
+              "arrival": "23:29",
+              "time": "23:29"
+            }
+          ]
+        }
+      ],
+      "上り": [
+        {
+          "no": "2",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "5:37",
+              "time": "5:37"
+            },
+            {
+              "station": "糸貫",
+              "time": "5:41"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "5:43"
+            },
+            {
+              "station": "北方真桑",
+              "time": "5:46"
+            },
+            {
+              "station": "美江寺",
+              "time": "5:51"
+            },
+            {
+              "station": "十九条",
+              "time": "5:54"
+            },
+            {
+              "station": "横屋",
+              "time": "5:56"
+            },
+            {
+              "station": "東大垣",
+              "time": "6:00"
+            },
+            {
+              "station": "大垣",
+              "time": "6:05"
+            }
+          ]
+        },
+        {
+          "no": "4",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "5:55"
+            },
+            {
+              "station": "水鳥",
+              "time": "5:58"
+            },
+            {
+              "station": "高尾",
+              "time": "6:01"
+            },
+            {
+              "station": "日当",
+              "time": "6:05"
+            },
+            {
+              "station": "鍋原",
+              "time": "6:08"
+            },
+            {
+              "station": "高科",
+              "time": "6:10"
+            },
+            {
+              "station": "神海",
+              "time": "6:13"
+            },
+            {
+              "station": "谷汲口",
+              "time": "6:17"
+            },
+            {
+              "station": "木知原",
+              "time": "6:19"
+            },
+            {
+              "station": "織部",
+              "time": "6:24"
+            },
+            {
+              "station": "本巣",
+              "arrival": "6:26",
+              "departure": "6:27",
+              "time": "6:27"
+            },
+            {
+              "station": "糸貫",
+              "time": "6:31"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "6:33"
+            },
+            {
+              "station": "北方真桑",
+              "time": "6:38"
+            },
+            {
+              "station": "美江寺",
+              "time": "6:43"
+            },
+            {
+              "station": "十九条",
+              "time": "6:46"
+            },
+            {
+              "station": "横屋",
+              "time": "6:48"
+            },
+            {
+              "station": "東大垣",
+              "time": "6:52"
+            },
+            {
+              "station": "大垣",
+              "time": "6:57"
+            }
+          ]
+        },
+        {
+          "no": "6",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "6:49",
+              "time": "6:49"
+            },
+            {
+              "station": "糸貫",
+              "time": "6:53"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "6:55"
+            },
+            {
+              "station": "北方真桑",
+              "time": "6:59"
+            },
+            {
+              "station": "美江寺",
+              "time": "7:04"
+            },
+            {
+              "station": "十九条",
+              "time": "7:07"
+            },
+            {
+              "station": "横屋",
+              "time": "7:09"
+            },
+            {
+              "station": "東大垣",
+              "time": "7:13"
+            },
+            {
+              "station": "大垣",
+              "time": "7:18"
+            }
+          ]
+        },
+        {
+          "no": "8",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "7:14",
+              "time": "7:14"
+            },
+            {
+              "station": "糸貫",
+              "time": "7:18"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "7:20"
+            },
+            {
+              "station": "北方真桑",
+              "time": "7:26"
+            },
+            {
+              "station": "美江寺",
+              "time": "7:30"
+            },
+            {
+              "station": "十九条",
+              "time": "7:34"
+            },
+            {
+              "station": "横屋",
+              "time": "7:36"
+            },
+            {
+              "station": "東大垣",
+              "time": "7:40"
+            },
+            {
+              "station": "大垣",
+              "time": "7:45"
+            }
+          ]
+        },
+        {
+          "no": "10",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "7:09"
+            },
+            {
+              "station": "水鳥",
+              "time": "7:12"
+            },
+            {
+              "station": "高尾",
+              "time": "7:15"
+            },
+            {
+              "station": "日当",
+              "time": "7:19"
+            },
+            {
+              "station": "鍋原",
+              "time": "7:22"
+            },
+            {
+              "station": "高科",
+              "time": "7:24"
+            },
+            {
+              "station": "神海",
+              "time": "7:27"
+            },
+            {
+              "station": "谷汲口",
+              "time": "7:31"
+            },
+            {
+              "station": "木知原",
+              "time": "7:33"
+            },
+            {
+              "station": "織部",
+              "time": "7:38"
+            },
+            {
+              "station": "本巣",
+              "arrival": "7:40",
+              "departure": "7:41",
+              "time": "7:41"
+            },
+            {
+              "station": "糸貫",
+              "time": "7:45"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "7:47"
+            },
+            {
+              "station": "北方真桑",
+              "time": "7:52"
+            },
+            {
+              "station": "美江寺",
+              "time": "7:57"
+            },
+            {
+              "station": "十九条",
+              "time": "8:00"
+            },
+            {
+              "station": "横屋",
+              "time": "8:02"
+            },
+            {
+              "station": "東大垣",
+              "time": "8:06"
+            },
+            {
+              "station": "大垣",
+              "time": "8:11"
+            }
+          ]
+        },
+        {
+          "no": "12",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "8:33",
+              "time": "8:33"
+            },
+            {
+              "station": "糸貫",
+              "time": "8:37"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "8:39"
+            },
+            {
+              "station": "北方真桑",
+              "time": "8:42"
+            },
+            {
+              "station": "美江寺",
+              "time": "8:47"
+            },
+            {
+              "station": "十九条",
+              "time": "8:50"
+            },
+            {
+              "station": "横屋",
+              "time": "8:52"
+            },
+            {
+              "station": "東大垣",
+              "time": "8:56"
+            },
+            {
+              "station": "大垣",
+              "time": "9:01"
+            }
+          ]
+        },
+        {
+          "no": "14",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "8:43"
+            },
+            {
+              "station": "水鳥",
+              "time": "8:47"
+            },
+            {
+              "station": "高尾",
+              "time": "8:50"
+            },
+            {
+              "station": "日当",
+              "time": "8:53"
+            },
+            {
+              "station": "鍋原",
+              "time": "8:56"
+            },
+            {
+              "station": "高科",
+              "time": "8:59"
+            },
+            {
+              "station": "神海",
+              "time": "9:02"
+            },
+            {
+              "station": "谷汲口",
+              "time": "9:05"
+            },
+            {
+              "station": "木知原",
+              "time": "9:08"
+            },
+            {
+              "station": "織部",
+              "time": "9:13"
+            },
+            {
+              "station": "本巣",
+              "arrival": "9:15",
+              "departure": "9:17",
+              "time": "9:17"
+            },
+            {
+              "station": "糸貫",
+              "time": "9:21"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "9:22"
+            },
+            {
+              "station": "北方真桑",
+              "time": "9:28"
+            },
+            {
+              "station": "美江寺",
+              "time": "9:33"
+            },
+            {
+              "station": "十九条",
+              "time": "9:36"
+            },
+            {
+              "station": "横屋",
+              "time": "9:38"
+            },
+            {
+              "station": "東大垣",
+              "time": "9:41"
+            },
+            {
+              "station": "大垣",
+              "time": "9:47"
+            }
+          ]
+        },
+        {
+          "no": "16",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "9:47",
+              "time": "9:47"
+            },
+            {
+              "station": "糸貫",
+              "time": "9:51"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "9:53"
+            },
+            {
+              "station": "北方真桑",
+              "time": "9:57"
+            },
+            {
+              "station": "美江寺",
+              "time": "10:01"
+            },
+            {
+              "station": "十九条",
+              "time": "10:04"
+            },
+            {
+              "station": "横屋",
+              "time": "10:06"
+            },
+            {
+              "station": "東大垣",
+              "time": "10:12"
+            },
+            {
+              "station": "大垣",
+              "time": "10:18"
+            }
+          ]
+        },
+        {
+          "no": "1002",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "10:47",
+              "time": "10:47"
+            },
+            {
+              "station": "糸貫",
+              "time": "10:51"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "10:52"
+            },
+            {
+              "station": "北方真桑",
+              "time": "10:58"
+            },
+            {
+              "station": "美江寺",
+              "time": "11:03"
+            },
+            {
+              "station": "十九条",
+              "time": "11:06"
+            },
+            {
+              "station": "横屋",
+              "time": "11:08"
+            },
+            {
+              "station": "東大垣",
+              "time": "11:11"
+            },
+            {
+              "station": "大垣",
+              "time": "11:17"
+            }
+          ]
+        },
+        {
+          "no": "18",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "10:33"
+            },
+            {
+              "station": "水鳥",
+              "time": "10:36"
+            },
+            {
+              "station": "高尾",
+              "time": "10:39"
+            },
+            {
+              "station": "日当",
+              "time": "10:43"
+            },
+            {
+              "station": "鍋原",
+              "time": "10:46"
+            },
+            {
+              "station": "高科",
+              "time": "10:48"
+            },
+            {
+              "station": "神海",
+              "time": "10:51"
+            },
+            {
+              "station": "谷汲口",
+              "time": "10:55"
+            },
+            {
+              "station": "木知原",
+              "time": "10:57"
+            },
+            {
+              "station": "織部",
+              "time": "11:02"
+            },
+            {
+              "station": "本巣",
+              "arrival": "11:04",
+              "departure": "11:08",
+              "time": "11:08"
+            },
+            {
+              "station": "糸貫",
+              "time": "11:12"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "11:14"
+            },
+            {
+              "station": "北方真桑",
+              "time": "11:18"
+            },
+            {
+              "station": "美江寺",
+              "time": "11:22"
+            },
+            {
+              "station": "十九条",
+              "time": "11:25"
+            },
+            {
+              "station": "横屋",
+              "time": "11:27"
+            },
+            {
+              "station": "東大垣",
+              "time": "11:31"
+            },
+            {
+              "station": "大垣",
+              "time": "11:36"
+            }
+          ]
+        },
+        {
+          "no": "20",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "12:03"
+            },
+            {
+              "station": "水鳥",
+              "time": "12:07"
+            },
+            {
+              "station": "高尾",
+              "time": "12:10"
+            },
+            {
+              "station": "日当",
+              "time": "12:13"
+            },
+            {
+              "station": "鍋原",
+              "time": "12:16"
+            },
+            {
+              "station": "高科",
+              "time": "12:19"
+            },
+            {
+              "station": "神海",
+              "time": "12:22"
+            },
+            {
+              "station": "谷汲口",
+              "time": "12:25"
+            },
+            {
+              "station": "木知原",
+              "time": "12:28"
+            },
+            {
+              "station": "織部",
+              "time": "12:33"
+            },
+            {
+              "station": "本巣",
+              "arrival": "12:35",
+              "departure": "12:38",
+              "time": "12:38"
+            },
+            {
+              "station": "糸貫",
+              "time": "12:42"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "12:44"
+            },
+            {
+              "station": "北方真桑",
+              "time": "12:48"
+            },
+            {
+              "station": "美江寺",
+              "time": "12:52"
+            },
+            {
+              "station": "十九条",
+              "time": "12:55"
+            },
+            {
+              "station": "横屋",
+              "time": "12:57"
+            },
+            {
+              "station": "東大垣",
+              "time": "13:01"
+            },
+            {
+              "station": "大垣",
+              "time": "13:06"
+            }
+          ]
+        },
+        {
+          "no": "22",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "13:32"
+            },
+            {
+              "station": "水鳥",
+              "time": "13:36"
+            },
+            {
+              "station": "高尾",
+              "time": "13:39"
+            },
+            {
+              "station": "日当",
+              "time": "13:42"
+            },
+            {
+              "station": "鍋原",
+              "time": "13:45"
+            },
+            {
+              "station": "高科",
+              "time": "13:48"
+            },
+            {
+              "station": "神海",
+              "time": "13:51"
+            },
+            {
+              "station": "谷汲口",
+              "time": "13:54"
+            },
+            {
+              "station": "木知原",
+              "time": "13:57"
+            },
+            {
+              "station": "織部",
+              "time": "14:02"
+            },
+            {
+              "station": "本巣",
+              "arrival": "14:04",
+              "departure": "14:08",
+              "time": "14:08"
+            },
+            {
+              "station": "糸貫",
+              "time": "14:12"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "14:14"
+            },
+            {
+              "station": "北方真桑",
+              "time": "14:18"
+            },
+            {
+              "station": "美江寺",
+              "time": "14:22"
+            },
+            {
+              "station": "十九条",
+              "time": "14:25"
+            },
+            {
+              "station": "横屋",
+              "time": "14:27"
+            },
+            {
+              "station": "東大垣",
+              "time": "14:31"
+            },
+            {
+              "station": "大垣",
+              "time": "14:36"
+            }
+          ]
+        },
+        {
+          "no": "24",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "15:03"
+            },
+            {
+              "station": "水鳥",
+              "time": "15:07"
+            },
+            {
+              "station": "高尾",
+              "time": "15:10"
+            },
+            {
+              "station": "日当",
+              "time": "15:13"
+            },
+            {
+              "station": "鍋原",
+              "time": "15:16"
+            },
+            {
+              "station": "高科",
+              "time": "15:19"
+            },
+            {
+              "station": "神海",
+              "time": "15:22"
+            },
+            {
+              "station": "谷汲口",
+              "time": "15:25"
+            },
+            {
+              "station": "木知原",
+              "time": "15:28"
+            },
+            {
+              "station": "織部",
+              "time": "15:33"
+            },
+            {
+              "station": "本巣",
+              "arrival": "15:35",
+              "departure": "15:38",
+              "time": "15:38"
+            },
+            {
+              "station": "糸貫",
+              "time": "15:42"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "15:44"
+            },
+            {
+              "station": "北方真桑",
+              "time": "15:48"
+            },
+            {
+              "station": "美江寺",
+              "time": "15:52"
+            },
+            {
+              "station": "十九条",
+              "time": "15:55"
+            },
+            {
+              "station": "横屋",
+              "time": "15:57"
+            },
+            {
+              "station": "東大垣",
+              "time": "16:01"
+            },
+            {
+              "station": "大垣",
+              "time": "16:06"
+            }
+          ]
+        },
+        {
+          "no": "26",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "16:44",
+              "time": "16:44"
+            },
+            {
+              "station": "糸貫",
+              "time": "16:48"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "16:49"
+            },
+            {
+              "station": "北方真桑",
+              "time": "16:55"
+            },
+            {
+              "station": "美江寺",
+              "time": "17:00"
+            },
+            {
+              "station": "十九条",
+              "time": "17:03"
+            },
+            {
+              "station": "横屋",
+              "time": "17:05"
+            },
+            {
+              "station": "東大垣",
+              "time": "17:08"
+            },
+            {
+              "station": "大垣",
+              "time": "17:14"
+            }
+          ]
+        },
+        {
+          "no": "28",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "16:28"
+            },
+            {
+              "station": "水鳥",
+              "time": "16:32"
+            },
+            {
+              "station": "高尾",
+              "time": "16:35"
+            },
+            {
+              "station": "日当",
+              "time": "16:38"
+            },
+            {
+              "station": "鍋原",
+              "time": "16:41"
+            },
+            {
+              "station": "高科",
+              "time": "16:44"
+            },
+            {
+              "station": "神海",
+              "time": "16:47"
+            },
+            {
+              "station": "谷汲口",
+              "time": "16:50"
+            },
+            {
+              "station": "木知原",
+              "time": "16:53"
+            },
+            {
+              "station": "織部",
+              "time": "16:58"
+            },
+            {
+              "station": "本巣",
+              "arrival": "17:00",
+              "departure": "17:05",
+              "time": "17:05"
+            },
+            {
+              "station": "糸貫",
+              "time": "17:09"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "17:11"
+            },
+            {
+              "station": "北方真桑",
+              "time": "17:15"
+            },
+            {
+              "station": "美江寺",
+              "time": "17:19"
+            },
+            {
+              "station": "十九条",
+              "time": "17:22"
+            },
+            {
+              "station": "横屋",
+              "time": "17:24"
+            },
+            {
+              "station": "東大垣",
+              "time": "17:28"
+            },
+            {
+              "station": "大垣",
+              "time": "17:33"
+            }
+          ]
+        },
+        {
+          "no": "30",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "17:59",
+              "time": "17:59"
+            },
+            {
+              "station": "糸貫",
+              "time": "18:03"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "18:05"
+            },
+            {
+              "station": "北方真桑",
+              "time": "18:09"
+            },
+            {
+              "station": "美江寺",
+              "time": "18:13"
+            },
+            {
+              "station": "十九条",
+              "time": "18:16"
+            },
+            {
+              "station": "横屋",
+              "time": "18:18"
+            },
+            {
+              "station": "東大垣",
+              "time": "18:22"
+            },
+            {
+              "station": "大垣",
+              "time": "18:27"
+            }
+          ]
+        },
+        {
+          "no": "32",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "17:53"
+            },
+            {
+              "station": "水鳥",
+              "time": "17:56"
+            },
+            {
+              "station": "高尾",
+              "time": "17:59"
+            },
+            {
+              "station": "日当",
+              "time": "18:03"
+            },
+            {
+              "station": "鍋原",
+              "time": "18:06"
+            },
+            {
+              "station": "高科",
+              "time": "18:08"
+            },
+            {
+              "station": "神海",
+              "time": "18:12"
+            },
+            {
+              "station": "谷汲口",
+              "time": "18:15"
+            },
+            {
+              "station": "木知原",
+              "time": "18:17"
+            },
+            {
+              "station": "織部",
+              "time": "18:22"
+            },
+            {
+              "station": "本巣",
+              "arrival": "18:24",
+              "departure": "18:33",
+              "time": "18:33"
+            },
+            {
+              "station": "糸貫",
+              "time": "18:37"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "18:39"
+            },
+            {
+              "station": "北方真桑",
+              "time": "18:43"
+            },
+            {
+              "station": "美江寺",
+              "time": "18:47"
+            },
+            {
+              "station": "十九条",
+              "time": "18:50"
+            },
+            {
+              "station": "横屋",
+              "time": "18:52"
+            },
+            {
+              "station": "東大垣",
+              "time": "18:56"
+            },
+            {
+              "station": "大垣",
+              "time": "19:01"
+            }
+          ]
+        },
+        {
+          "no": "34",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "19:28",
+              "time": "19:28"
+            },
+            {
+              "station": "糸貫",
+              "time": "19:32"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "19:34"
+            },
+            {
+              "station": "北方真桑",
+              "time": "19:38"
+            },
+            {
+              "station": "美江寺",
+              "time": "19:42"
+            },
+            {
+              "station": "十九条",
+              "time": "19:45"
+            },
+            {
+              "station": "横屋",
+              "time": "19:47"
+            },
+            {
+              "station": "東大垣",
+              "time": "19:51"
+            },
+            {
+              "station": "大垣",
+              "time": "19:56"
+            }
+          ]
+        },
+        {
+          "no": "1036",
+          "type": "普通",
+          "trainNumbers": {
+            "樽見鉄道樽見線": [
+              "1036",
+              "36"
+            ]
+          },
+          "numberChanges": [
+            {
+              "line": "樽見鉄道樽見線",
+              "station": "本巣",
+              "afterIndex": 1
+            }
+          ],
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "19:12"
+            },
+            {
+              "station": "水鳥",
+              "time": "19:15"
+            },
+            {
+              "station": "高尾",
+              "time": "19:18"
+            },
+            {
+              "station": "日当",
+              "time": "19:22"
+            },
+            {
+              "station": "鍋原",
+              "time": "19:25"
+            },
+            {
+              "station": "高科",
+              "time": "19:27"
+            },
+            {
+              "station": "神海",
+              "time": "19:31"
+            },
+            {
+              "station": "谷汲口",
+              "time": "19:34"
+            },
+            {
+              "station": "木知原",
+              "time": "19:36"
+            },
+            {
+              "station": "織部",
+              "time": "19:41"
+            },
+            {
+              "station": "本巣",
+              "arrival": "19:44",
+              "time": "20:21",
+              "departure": "20:21"
+            },
+            {
+              "station": "糸貫",
+              "time": "20:24"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "20:26"
+            },
+            {
+              "station": "北方真桑",
+              "time": "20:32"
+            },
+            {
+              "station": "美江寺",
+              "time": "20:36"
+            },
+            {
+              "station": "十九条",
+              "time": "20:39"
+            },
+            {
+              "station": "横屋",
+              "time": "20:41"
+            },
+            {
+              "station": "東大垣",
+              "time": "20:45"
+            },
+            {
+              "station": "大垣",
+              "time": "20:51"
+            }
+          ]
+        },
+        {
+          "no": "40",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "本巣",
+              "departure": "21:44",
+              "time": "21:44"
+            },
+            {
+              "station": "糸貫",
+              "time": "21:48"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "21:50"
+            },
+            {
+              "station": "北方真桑",
+              "time": "21:53"
+            },
+            {
+              "station": "美江寺",
+              "time": "21:58"
+            },
+            {
+              "station": "十九条",
+              "time": "22:01"
+            },
+            {
+              "station": "横屋",
+              "time": "22:03"
+            },
+            {
+              "station": "東大垣",
+              "time": "22:07"
+            },
+            {
+              "station": "大垣",
+              "time": "22:12"
+            }
+          ]
+        },
+        {
+          "no": "42",
+          "type": "普通",
+          "stops": [
+            {
+              "station": "樽見",
+              "time": "21:47"
+            },
+            {
+              "station": "水鳥",
+              "time": "21:50"
+            },
+            {
+              "station": "高尾",
+              "time": "21:53"
+            },
+            {
+              "station": "日当",
+              "time": "21:57"
+            },
+            {
+              "station": "鍋原",
+              "time": "22:00"
+            },
+            {
+              "station": "高科",
+              "time": "22:02"
+            },
+            {
+              "station": "神海",
+              "time": "22:05"
+            },
+            {
+              "station": "谷汲口",
+              "time": "22:09"
+            },
+            {
+              "station": "木知原",
+              "time": "22:11"
+            },
+            {
+              "station": "織部",
+              "time": "22:16"
+            },
+            {
+              "station": "本巣",
+              "arrival": "22:18",
+              "departure": "22:24",
+              "time": "22:24"
+            },
+            {
+              "station": "糸貫",
+              "time": "22:28"
+            },
+            {
+              "station": "モレラ岐阜",
+              "time": "22:30"
+            },
+            {
+              "station": "北方真桑",
+              "time": "22:36"
+            },
+            {
+              "station": "美江寺",
+              "time": "22:41"
+            },
+            {
+              "station": "十九条",
+              "time": "22:44"
+            },
+            {
+              "station": "横屋",
+              "time": "22:46"
+            },
+            {
+              "station": "東大垣",
+              "time": "22:49"
+            },
+            {
+              "station": "大垣",
+              "time": "22:55"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
