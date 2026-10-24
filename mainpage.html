@@ -1007,7 +1007,7 @@ body{padding-bottom:42px !important;}
       <div class="operation-info-grid">
         <div class="operation-info-field full"><label>状態</label><div class="operation-info-status" id="operationInfoStatus"><label><input type="radio" name="operationStatus" value="delay" checked><span>遅延</span></label><label><input type="radio" name="operationStatus" value="suspend"><span>運転見合わせ</span></label></div></div>
         <div class="operation-info-field full"><label>区間</label><div class="operation-info-range"><select id="operationInfoStart" aria-label="区間始点"></select><div class="operation-info-range-arrow">→</div><select id="operationInfoEnd" aria-label="区間終点"></select></div></div>
-        <div class="operation-info-field"><label for="operationInfoDelay">遅延時間</label><select id="operationInfoDelay"><option value="unknown">遅延時間不明</option><option value="5">5分</option><option value="10">10分</option><option value="15">15分</option><option value="20">20分</option><option value="25">25分</option><option value="30">30分</option><option value="35">35分</option><option value="40">40分</option><option value="45">45分</option><option value="50">50分</option><option value="55">55分</option><option value="60">60分</option><option value="65">65分</option><option value="70">70分</option><option value="75">75分</option><option value="80">80分</option><option value="85">85分</option><option value="90">90分</option><option value="95">95分</option><option value="100">100分</option><option value="105">105分</option><option value="110">110分</option><option value="115">115分</option><option value="120">120分</option></select></div>
+        <div class="operation-info-field"><label for="operationInfoDelay">遅延時間</label><select id="operationInfoDelay"><option value="unknown">不明</option><option value="5">5分</option><option value="10">10分</option><option value="15">15分</option><option value="20">20分</option><option value="25">25分</option><option value="30">30分</option><option value="35">35分</option><option value="40">40分</option><option value="45">45分</option><option value="50">50分</option><option value="55">55分</option><option value="60">60分</option><option value="65">65分</option><option value="70">70分</option><option value="75">75分</option><option value="80">80分</option><option value="85">85分</option><option value="90">90分</option><option value="95">95分</option><option value="100">100分</option><option value="105">105分</option><option value="110">110分</option><option value="115">115分</option><option value="120">120分</option></select></div>
         <div class="operation-info-field"><label for="operationInfoReason">理由</label><select id="operationInfoReason"></select></div>
         <div class="operation-info-field full"><label for="operationInfoNote">備考</label><textarea id="operationInfoNote" rows="3" maxlength="500" placeholder="補足情報（任意）"></textarea></div>
       </div>
@@ -5056,7 +5056,7 @@ window.addEventListener('load',async ()=>{
 
 /* 運行情報 */
 const OPERATION_INFO_STORAGE_KEY='routeOperationInfo_v2';
-const OPERATION_INFO_REASONS=['人身事故','車両故障・点検','信号・電気設備トラブル','線路内立入り・支障物','踏切・安全確認','天候（大雨・強風・雷・雪）','地震・災害','急病人救護','混雑・その他'];
+const OPERATION_INFO_REASONS=['人身事故','車両故障','踏切安全確認','線路点検','信号・設備故障','他路線の影響','天候不良','急病人対応','乗客トラブル','混雑','その他'];
 let OPERATION_INFO_STATIONS=STATIONS.map(s=>s.nameJa);
 let operationInfoEntries=[];
 let operationInfoFirebaseListenerRef=null;
