@@ -1886,6 +1886,9 @@ function buildFormationsForJson(json){
           family:groupFamily,
           routeNames:groupRouteNames,
           selectableType:rawGroup?.selectableType!==false,
+          // showTypeOption=false のグループはカテゴリ見出しを選択肢に表示せず、
+          // その配下の個別編成だけを選択肢として並べる。
+          showTypeOption:rawGroup?.showTypeOption!==false,
           variants,
           items:directItems
         });
@@ -3352,6 +3355,7 @@ function formationDisplayGroups(groups){
         typeImg:g?.typeImg||fallbackTrainImageUrl(),
         family:g?.family||activeRouteMeta?.formationFamily||'',
         selectableType:g?.selectableType!==false,
+        showTypeOption:g?.showTypeOption!==false,
         selectableId:baseType,
         routeNames:[],
         variants:[],
@@ -3364,6 +3368,8 @@ function formationDisplayGroups(groups){
       ...(group.routeNames||[]),
       ...formationRouteNamesFromConfig(g)
     ])];
+    // 同じ形式へ統合されるグループのどれかが非表示指定なら、見出しは表示しない。
+    group.showTypeOption=group.showTypeOption && g?.showTypeOption!==false;
 
     if(m){
       const variantName=m[2].trim();
@@ -3415,7 +3421,7 @@ function formationDropdownHTML(train){
   return groups.map(group=>{
     const groupType=String(group?.type||'');
     const id=String(group?.selectableId||groupType);
-    const category=`<div class="option-header option-category-header option-selectable-category" onclick="selectFormation('${escapeJs(id)}')"><img src="${esc(group?.typeImg||fallbackTrainImageUrl())}" class="option-img"><span>${esc(id)}</span></div>`;
+    const category=group?.showTypeOption===false ? '' : `<div class="option-header option-category-header option-selectable-category" onclick="selectFormation('${escapeJs(id)}')"><img src="${esc(group?.typeImg||fallbackTrainImageUrl())}" class="option-img"><span>${esc(id)}</span></div>`;
     const variants=(group?.variants||[]).map(variant=>{
       const disabled=!!variant?.disabled;
       return `<div class="option-header option-subheader option-selectable-category ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':`onclick="selectFormation('${escapeJs(variant.id)}')"`}><img src="${esc(variant?.img||fallbackTrainImageUrl())}" class="option-img"><span>${esc(variant?.name||variant?.id)}</span></div>`;
@@ -7577,9 +7583,11 @@ initRegionNavigation();
       const isGenericDeclared=!!declaredType && groupType===declaredType;
       const selectableCategory=!!group.selectableType || isGenericDeclared;
       const genericId=selectableCategory ? String(group.selectableId||declaredType||groupType) : '';
-      chunks.push(selectableCategory
-        ? `<div class="option-header option-category-header option-selectable-category" role="button" tabindex="0" onclick="selectFormationAtSlot(${slot},'${escapeJs(genericId)}')"><img src="${esc(group.typeImg||fallbackTrainImageUrl())}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${esc(genericId)}</span></div>`
-        : `<div class="option-header option-category-header"><img src="${esc(group.typeImg||fallbackTrainImageUrl())}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${esc(groupType)}</span></div>`);
+      if(group.showTypeOption!==false){
+        chunks.push(selectableCategory
+          ? `<div class="option-header option-category-header option-selectable-category" role="button" tabindex="0" onclick="selectFormationAtSlot(${slot},'${escapeJs(genericId)}')"><img src="${esc(group.typeImg||fallbackTrainImageUrl())}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${esc(genericId)}</span></div>`
+          : `<div class="option-header option-category-header"><img src="${esc(group.typeImg||fallbackTrainImageUrl())}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${esc(groupType)}</span></div>`);
+      }
 
       // 個体差をすべて先に並べ、その後に形式全体の個別編成をまとめて表示。
       for(const variant of (group.variants||[])){
