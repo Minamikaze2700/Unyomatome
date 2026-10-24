@@ -1306,6 +1306,24 @@ const ROUTE_REGISTRY={
     access:{public:true,routeAdmins:['fulnishi39']},
     formationInputExample:'3000系 / 3000A系 / 01'
   },
+  'ふくちか2系統':{
+    id:'fukuchika-2',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/FukuokaCity_KukoHakozaki_2026.json',
+    jsonLines:['空港線','箱崎線'],
+    range:'福岡空港～姪浜・貝塚',
+    area:'福岡市地下鉄',
+    storageRoot:'ふくちか2系統',
+    storageArea:null,
+    company:'福岡市地下鉄',
+    formationFamily:'fukuoka-kuko-hakozaki',
+    typeColors:{'普通':'#9fa0a0'},
+    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
+    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
+    noImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
+    prescribedFormationRule:'common',
+    access:{public:false,routeAdmins:['fulnishi39']},
+    formationInputExample:'04 / K01 / W01'
+  },
   '東武野田線':{
     id:'tobu-noda',
     json:'https://minamikaze2700.github.io/Unyomatome/data/TobuNoda_2024.json',
@@ -1382,6 +1400,24 @@ const ROUTE_REGISTRY={
     access:{public:false,routeAdmins:['2909D_Railways']},
     formationInputExample:'C101 / C126'
   },
+  '樽見鉄道樽見線':{
+    id:'tarumi-line',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/Tarumi_2024.json',
+    jsonLines:['樽見鉄道樽見線'],
+    range:'大垣～樽見',
+    area:'樽見鉄道',
+    storageRoot:'樽見鉄道樽見線',
+    storageArea:null,
+    company:'樽見鉄道',
+    formationFamily:'tarumi',
+    typeColors:{'普通':'#666666'},
+    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Tarumi_noimage.png',
+    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Tarumi_noimage.png',
+    noImage:'https://minamikaze2700.github.io/Unyomatome/images/Tarumi_noimage.png',
+    prescribedFormationRule:'common',
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'315 / 516 / 617 / 701 / 702 / 703'
+  },
 };
 
 /* 時刻表ファイルは改正年で管理し、選択日付に有効なファイルを読み込む。 */
@@ -1428,6 +1464,9 @@ const ROUTE_SCHEDULE_CONFIG={
   '福岡市地下鉄 七隈線':[
     {from:'2026-04-01',to:'2027-03-13',file:'FukuokaCity_Nanakuma_2026.json'}
   ],
+  'ふくちか2系統':[
+    {from:'2026-03-14',to:'2027-03-13',file:'FukuokaCity_KukoHakozaki_2026.json'}
+  ],
   '東武野田線':[
     {from:'2024-03-16',to:'2026-11-20',file:'TobuNoda_2024.json'},
     {from:'2026-11-21',to:'2027-03-13',file:'TobuNoda_2026.json'}
@@ -1440,6 +1479,9 @@ const ROUTE_SCHEDULE_CONFIG={
   ],
   '関西本線（名古屋～亀山）':[
     {from:'2026-03-14',to:'2027-03-13',file:'JR_Tokai_KansaiMain_2026.json'}
+  ],
+  '樽見鉄道樽見線':[
+    {from:'2024-04-08',to:'2027-03-13',file:'Tarumi_2024.json'}
   ]
 };
 const ROUTE_DATA_BASE_URL='https://minamikaze2700.github.io/Unyomatome/data/';
@@ -1612,7 +1654,7 @@ const VEHICLE_TO_FORMATION={};
 let TYPE_SELECTIONS=[];
 function formationFamilyFromType(){return 'keihin';}
 function isFukuokaCompositeRoute(meta=activeRouteMeta){
-  return String(meta?.id||'')==='fukuoka-kuko-hakozaki';
+  return ['fukuoka-kuko-hakozaki','fukuchika-2'].includes(String(meta?.id||''));
 }
 function fukuokaDiagramConfig(json=activeJson,meta=activeRouteMeta){
   if(!isFukuokaCompositeRoute(meta)) return null;
@@ -5545,6 +5587,11 @@ const REGION_DEFINITIONS={
     routes:[
       {name:'関西本線（名古屋～亀山）',id:'jr-tokai-kansai'}
     ]
+  },{
+    company:'樽見鉄道',
+    routes:[
+      {name:'樽見鉄道樽見線',id:'tarumi-line'}
+    ]
   }],
   '近畿':[{
     company:'JR西日本',
@@ -5577,6 +5624,7 @@ const REGION_DEFINITIONS={
     company:'福岡市地下鉄',
     routes:[
       {name:'福岡市地下鉄 空港線・箱崎線',id:'fukuoka-kuko-hakozaki'},
+      {name:'ふくちか2系統',id:'fukuchika-2'},
       {name:'福岡市地下鉄 七隈線',id:'fukuoka-nanakuma'}
     ]
   }],
@@ -8210,7 +8258,7 @@ initRegionNavigation();
       if(String(region)==='利用規約') return originalOpenRegionSheet(region);
       const defs=REGION_DEFINITIONS[String(region)]||[];
       const saved=defs.slice();
-      defs.splice(0,defs.length,...saved.map(c=>({...c,routes:(c.routes||[]).filter(r=>canViewRoute(r.name))})).filter(c=>c.routes.length));
+      defs.splice(0,defs.length,...saved.map(c=>({...c,routes:(c.routes||[]).filter(r=>canViewRoute(r.id||r.name))})).filter(c=>c.routes.length));
       try{ return originalOpenRegionSheet(region); }
       finally{ defs.splice(0,defs.length,...saved); }
     };
