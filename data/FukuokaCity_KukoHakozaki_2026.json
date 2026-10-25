@@ -252,7 +252,7 @@
     },
     {
       "type": "4000系",
-      "typeImg": "Fukuchika_25",
+      "typeImg": "Fukuchika_4000",
       "family": "fukuoka-kuko-hakozaki",
       "routeNames": [
         "福岡市地下鉄 空港線・箱崎線",
@@ -485,8 +485,8 @@
       "items": [
         {
           "formation": "W1F",
-          "name": "W1",
-          "img": "305_W1",
+          "name": "W01",
+          "img": "305_W01",
           "cars": 6,
           "carNames": [
             "クハ305-1",
@@ -499,8 +499,8 @@
         },
         {
           "formation": "W2F",
-          "name": "W2",
-          "img": "305_W2",
+          "name": "W02",
+          "img": "305_W02",
           "cars": 6,
           "carNames": [
             "クハ305-2",
@@ -513,8 +513,8 @@
         },
         {
           "formation": "W3F",
-          "name": "W3",
-          "img": "305_W3",
+          "name": "W03",
+          "img": "305_W03",
           "cars": 6,
           "carNames": [
             "クハ305-3",
@@ -527,8 +527,8 @@
         },
         {
           "formation": "W4F",
-          "name": "W4",
-          "img": "305_W4",
+          "name": "W04",
+          "img": "305_W04",
           "cars": 6,
           "carNames": [
             "クハ305-4",
@@ -541,8 +541,8 @@
         },
         {
           "formation": "W5F",
-          "name": "W5",
-          "img": "305_W5",
+          "name": "W05",
+          "img": "305_W05",
           "cars": 6,
           "carNames": [
             "クハ305-5",
@@ -555,8 +555,8 @@
         },
         {
           "formation": "W6F",
-          "name": "W6",
-          "img": "305_W6",
+          "name": "W06",
+          "img": "305_W06",
           "cars": 6,
           "carNames": [
             "クハ305-6",
@@ -82336,7 +82336,8 @@
     "福岡空港": "空港",
     "筑前前原": "前原",
     "筑前深江": "深江",
-    "西唐津": "西唐"
+    "西唐津": "西唐",
+    "中洲川端": "中洲"
   },
   "operationChains": {
     "平日": [
@@ -82358,30 +82359,5 @@
       ]
     ]
   },
-  "operationChains": {
-    "土休": [
-      [
-        "H219",
-        "H236",
-        "H254"
-      ],
-      [
-        "H224",
-        "H239"
-      ],
-      [
-        "H242",
-        "H260"
-      ],
-      [
-        "H212",
-        "H227",
-        "H243"
-      ],
-      [
-        "H240",
-        "H256"
-      ]
-    ]
-  }
+  "noTrainNumbers": true
 }
