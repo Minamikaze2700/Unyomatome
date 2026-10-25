@@ -8471,6 +8471,14 @@ initRegionNavigation();
 <script id="circular-route-script">
 (function(){
   const CIRCULAR_LAYOUT_CACHE=new Map();
+  // ダイヤ上の駅名（例:「大阪駅」「大阪」）の表記揺れを吸収し、
+  // 環状線の左右列・橋区間のマッチングが表記の違いで失敗しないようにする。
+  function circularStationKey(value){
+    return String(value??'').normalize('NFKC').replace(/[\s\u3000]+/g,'').replace(/駅$/,'').trim();
+  }
+  function circularPairKey(a,b){
+    return [circularStationKey(a),circularStationKey(b)].sort().join('\u0000');
+  }
   function circularLayout(){
     const raw=activeJson?.circularLayout;
     if(!raw||!Array.isArray(raw.left)||!Array.isArray(raw.right)) return null;
@@ -8483,13 +8491,13 @@ initRegionNavigation();
     function addEdges(side,arr){
       for(let i=0;i<arr.length-1;i++){
         const a=arr[i],b=arr[i+1];
-        info.edges.set(operationInfoUndirectedKey(a,b),{side,indexA:i,indexB:i+1,a,b,bridge:false});
+        info.edges.set(circularPairKey(a,b),{side,indexA:i,indexB:i+1,a,b,bridge:false});
       }
     }
     addEdges('left',left); addEdges('right',right);
     // 上端：大阪⇄天満、下端：新今宮⇄天王寺を横線で接続。
-    info.edges.set(operationInfoUndirectedKey(left[0],right[0]),{bridge:true,sideA:'left',sideB:'right',indexA:0,indexB:0,a:left[0],b:right[0]});
-    info.edges.set(operationInfoUndirectedKey(left[left.length-1],right[right.length-1]),{bridge:true,sideA:'left',sideB:'right',indexA:left.length-1,indexB:right.length-1,a:left[left.length-1],b:right[right.length-1]});
+    info.edges.set(circularPairKey(left[0],right[0]),{bridge:true,sideA:'left',sideB:'right',indexA:0,indexB:0,a:left[0],b:right[0]});
+    info.edges.set(circularPairKey(left[left.length-1],right[right.length-1]),{bridge:true,sideA:'left',sideB:'right',indexA:left.length-1,indexB:right.length-1,a:left[left.length-1],b:right[right.length-1]});
     CIRCULAR_LAYOUT_CACHE.set(key,info);
     return info;
   }
@@ -8610,19 +8618,22 @@ initRegionNavigation();
   }
   function circularEdgeForPair(a,b){
     const layout=circularLayout(); if(!layout) return null;
-    return layout.edges.get(operationInfoUndirectedKey(String(a||''),String(b||'')))||null;
+    return layout.edges.get(circularPairKey(a,b))||null;
+  }
+  function circularIndexOfStation(arr,station){
+    const key=circularStationKey(station);
+    return (arr||[]).findIndex(name=>circularStationKey(name)===key);
   }
   function circularSideAtStation(station,preferredSide){
     const layout=circularLayout(); if(!layout) return preferredSide||'left';
-    if(preferredSide && layout[preferredSide]?.includes(station)) return preferredSide;
-    if(layout.left.includes(station)) return 'left';
-    if(layout.right.includes(station)) return 'right';
+    if(preferredSide && circularIndexOfStation(layout[preferredSide],station)>=0) return preferredSide;
+    if(circularIndexOfStation(layout.left,station)>=0) return 'left';
+    if(circularIndexOfStation(layout.right,station)>=0) return 'right';
     return preferredSide||'left';
   }
   function isSpecialCircularBridgePair(a,b){
-    // 配列sort()のUnicode順では「新今宮|天王寺」が逆順になるため、駅名を両方向で直接判定する。
-    const from=String(a||'').trim().replace(/駅$/,'');
-    const to=String(b||'').trim().replace(/駅$/,'');
+    const from=circularStationKey(a);
+    const to=circularStationKey(b);
     return (from==='大阪'&&to==='天満') || (from==='天満'&&to==='大阪')
       || (from==='新今宮'&&to==='天王寺') || (from==='天王寺'&&to==='新今宮');
   }
@@ -8664,6 +8675,26 @@ initRegionNavigation();
     const last=segments[segments.length-1],len=last.len||1;
     return {x:last.b.x,y:last.b.y,tangentX:last.dx/len,tangentY:last.dy/len};
   }
+  function circularBridgeSample(points,progress){
+    // 時間を単純な全経路距離比で割ると、短時間の駅間では横線まで到達しないまま
+    // 次駅扱いになる場合がある。縦→横→縦の3区間へ 18:64:18 で走行時間を割り当て、
+    // 中間の大部分を横方向の走行に使う。各区間内は線形補間する。
+    if(!Array.isArray(points)||points.length<4) return circularPolylineSample(points,progress);
+    const p=Math.max(0,Math.min(1,Number(progress)||0));
+    const weights=[0.18,0.64,0.18];
+    let start=0;
+    for(let i=0;i<3;i++){
+      const end=start+weights[i];
+      if(p<=end || i===2){
+        const local=weights[i]>0?Math.max(0,Math.min(1,(p-start)/weights[i])):0;
+        const a=points[i],b=points[i+1];
+        const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1;
+        return {x:a.x+dx*local,y:a.y+dy*local,tangentX:dx/len,tangentY:dy/len};
+      }
+      start=end;
+    }
+    return circularPolylineSample(points,p);
+  }
   function circularBridgePathPoints(fromX,fromY,toX,toY,bridgeY){
     // 指定図の青紫線どおり、縦→横→縦の直角経路で移動させる。
     // 経路線自体は描画せず、列車アイコンの座標計算だけに使う。
@@ -8688,13 +8719,13 @@ initRegionNavigation();
       const prevEdge=index>0 ? circularEdgeForPair(stops[index-1].station,name) : null;
       const nextEdge=index<stops.length-1 ? circularEdgeForPair(name,stops[index+1].station) : null;
       if(nextEdge?.bridge){
-        return name===String(nextEdge.a||'') ? nextEdge.sideA : nextEdge.sideB;
+        return circularStationKey(name)===circularStationKey(nextEdge.a) ? nextEdge.sideA : nextEdge.sideB;
       }
       if(prevEdge?.bridge){
-        return name===String(prevEdge.a||'') ? prevEdge.sideA : prevEdge.sideB;
+        return circularStationKey(name)===circularStationKey(prevEdge.a) ? prevEdge.sideA : prevEdge.sideB;
       }
-      if(layout.left?.includes(name)) return 'left';
-      if(layout.right?.includes(name)) return 'right';
+      if(circularIndexOfStation(layout.left,name)>=0) return 'left';
+      if(circularIndexOfStation(layout.right,name)>=0) return 'right';
       return t.direction==='down'?'right':'left';
     }
 
@@ -8716,8 +8747,8 @@ initRegionNavigation();
       const toSide=bridgeStationSide(to,i+1);
       const fromList=layout[fromSide]||[];
       const toList=layout[toSide]||[];
-      const fromIndex=fromList.indexOf(from);
-      const toIndex=toList.indexOf(to);
+      const fromIndex=circularIndexOfStation(fromList,from);
+      const toIndex=circularIndexOfStation(toList,to);
       if(fromIndex<0||toIndex<0) continue;
       const fromY=circularCenterY(fromSide,fromIndex,metrics);
       const toY=circularCenterY(toSide,toIndex,metrics);
@@ -8747,7 +8778,7 @@ initRegionNavigation();
         const toX=circularTrainCenterX(toSide,t.direction,metrics);
         const points=circularBridgePathPoints(fromX,fromY,toX,toY,bridgeY);
         const progress=(minutes-departure)/(arrivalNext-departure);
-        const point=circularPolylineSample(points,progress);
+        const point=circularBridgeSample(points,progress);
         if(!point) continue;
         // normal=(-tangentY,tangentX)。符号を始発側の既存レーン位置に合わせ、
         // 列車がカーブ／横線へ進んでも追加レーンの間隔が経路の法線方向に保たれるようにする。
@@ -8780,7 +8811,7 @@ initRegionNavigation();
       const sideNext=nextEdge?.side||null;
       const side=sidePrev||sideNext||circularSideAtStation(name,t.direction==='down'?'right':'left');
       const arr=(layout[side]||[]);
-      const idx=arr.indexOf(name);
+      const idx=circularIndexOfStation(arr,name);
       if(idx<0) continue;
       const stationY=circularCenterY(side,idx,metrics);
 
