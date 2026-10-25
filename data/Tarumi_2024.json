@@ -5437,112 +5437,13 @@
   "lineKey": "tarumi",
   "label": "樽見鉄道樽見線",
   "rules": {
-    "operationConnection": "終点到着後、同じ駅を次に出発する列車へ折り返し接続",
-    "terminalTurnback": "各列車の終着駅到着→同駅から次に発車する列車へ接続",
-    "motosuDepot": "本巣駅に車庫があるため、本巣終着列車は次の本巣発列車へ自動接続せず、入庫・出庫を許容する",
-    "operationLinkTimeLimit": "なし（本巣を除き、同駅到着後の最初の出発へ接続）"
+    "operationConnection": "大垣・樽見は終点到着後、同じ駅から次に出発する列車へ必ず折り返し接続。本巣は車庫駅のため接続しない",
+    "terminalTurnback": "大垣・樽見の到着列車を、同駅から次に発車する未接続の列車へ一対一で接続",
+    "motosuDepot": "本巣行きの列車は本巣到着で運用を終了し、本巣発の列車は本巣から運用を開始する。本巣をまたぐ接続は作らない",
+    "operationLinkTimeLimit": "大垣・樽見は到着後の次の未接続出発へ折り返し。時間差の上限なし。本巣での接続なし"
   },
   "operationEdgesByDay": {
     "平日": [
-      {
-        "from": "平日:下り:1",
-        "to": "平日:上り:10",
-        "kind": "terminalTurnback",
-        "station": "樽見",
-        "fromDirection": "下り",
-        "toDirection": "上り",
-        "gapMinutes": 6
-      },
-      {
-        "from": "平日:下り:5",
-        "to": "平日:上り:14",
-        "kind": "terminalTurnback",
-        "station": "樽見",
-        "fromDirection": "下り",
-        "toDirection": "上り",
-        "gapMinutes": 24
-      },
-      {
-        "from": "平日:下り:13",
-        "to": "平日:上り:18",
-        "kind": "terminalTurnback",
-        "station": "樽見",
-        "fromDirection": "下り",
-        "toDirection": "上り",
-        "gapMinutes": 19
-      },
-      {
-        "from": "平日:下り:17",
-        "to": "平日:上り:20",
-        "kind": "terminalTurnback",
-        "station": "樽見",
-        "fromDirection": "下り",
-        "toDirection": "上り",
-        "gapMinutes": 14
-      },
-      {
-        "from": "平日:下り:19",
-        "to": "平日:上り:22",
-        "kind": "terminalTurnback",
-        "station": "樽見",
-        "fromDirection": "下り",
-        "toDirection": "上り",
-        "gapMinutes": 12
-      },
-      {
-        "from": "平日:下り:21",
-        "to": "平日:上り:24",
-        "kind": "terminalTurnback",
-        "station": "樽見",
-        "fromDirection": "下り",
-        "toDirection": "上り",
-        "gapMinutes": 9
-      },
-      {
-        "from": "平日:下り:23",
-        "to": "平日:上り:28",
-        "kind": "terminalTurnback",
-        "station": "樽見",
-        "fromDirection": "下り",
-        "toDirection": "上り",
-        "gapMinutes": 12
-      },
-      {
-        "from": "平日:下り:25",
-        "to": "平日:上り:32",
-        "kind": "terminalTurnback",
-        "station": "樽見",
-        "fromDirection": "下り",
-        "toDirection": "上り",
-        "gapMinutes": 11
-      },
-      {
-        "from": "平日:下り:29",
-        "to": "平日:上り:42",
-        "kind": "terminalTurnback",
-        "station": "樽見",
-        "fromDirection": "下り",
-        "toDirection": "上り",
-        "gapMinutes": 166
-      },
-      {
-        "from": "平日:下り:33",
-        "to": "平日:上り:42",
-        "kind": "terminalTurnback",
-        "station": "樽見",
-        "fromDirection": "下り",
-        "toDirection": "上り",
-        "gapMinutes": 84
-      },
-      {
-        "from": "平日:下り:35",
-        "to": "平日:上り:42",
-        "kind": "terminalTurnback",
-        "station": "樽見",
-        "fromDirection": "下り",
-        "toDirection": "上り",
-        "gapMinutes": 21
-      },
       {
         "from": "平日:上り:2",
         "to": "平日:下り:3",
@@ -5722,12 +5623,10 @@
         "fromDirection": "上り",
         "toDirection": "下り",
         "gapMinutes": 6
-      }
-    ],
-    "休日": [
+      },
       {
-        "from": "休日:下り:1",
-        "to": "休日:上り:10",
+        "from": "平日:下り:1",
+        "to": "平日:上り:10",
         "kind": "terminalTurnback",
         "station": "樽見",
         "fromDirection": "下り",
@@ -5735,8 +5634,8 @@
         "gapMinutes": 6
       },
       {
-        "from": "休日:下り:5",
-        "to": "休日:上り:14",
+        "from": "平日:下り:5",
+        "to": "平日:上り:14",
         "kind": "terminalTurnback",
         "station": "樽見",
         "fromDirection": "下り",
@@ -5744,8 +5643,8 @@
         "gapMinutes": 24
       },
       {
-        "from": "休日:下り:13",
-        "to": "休日:上り:18",
+        "from": "平日:下り:13",
+        "to": "平日:上り:18",
         "kind": "terminalTurnback",
         "station": "樽見",
         "fromDirection": "下り",
@@ -5753,8 +5652,8 @@
         "gapMinutes": 19
       },
       {
-        "from": "休日:下り:17",
-        "to": "休日:上り:20",
+        "from": "平日:下り:17",
+        "to": "平日:上り:20",
         "kind": "terminalTurnback",
         "station": "樽見",
         "fromDirection": "下り",
@@ -5762,8 +5661,8 @@
         "gapMinutes": 14
       },
       {
-        "from": "休日:下り:19",
-        "to": "休日:上り:22",
+        "from": "平日:下り:19",
+        "to": "平日:上り:22",
         "kind": "terminalTurnback",
         "station": "樽見",
         "fromDirection": "下り",
@@ -5771,8 +5670,8 @@
         "gapMinutes": 12
       },
       {
-        "from": "休日:下り:21",
-        "to": "休日:上り:24",
+        "from": "平日:下り:21",
+        "to": "平日:上り:24",
         "kind": "terminalTurnback",
         "station": "樽見",
         "fromDirection": "下り",
@@ -5780,8 +5679,8 @@
         "gapMinutes": 9
       },
       {
-        "from": "休日:下り:23",
-        "to": "休日:上り:28",
+        "from": "平日:下り:23",
+        "to": "平日:上り:28",
         "kind": "terminalTurnback",
         "station": "樽見",
         "fromDirection": "下り",
@@ -5789,8 +5688,8 @@
         "gapMinutes": 12
       },
       {
-        "from": "休日:下り:25",
-        "to": "休日:上り:32",
+        "from": "平日:下り:25",
+        "to": "平日:上り:32",
         "kind": "terminalTurnback",
         "station": "樽見",
         "fromDirection": "下り",
@@ -5798,32 +5697,16 @@
         "gapMinutes": 11
       },
       {
-        "from": "休日:下り:29",
-        "to": "休日:上り:1036",
+        "from": "平日:下り:29",
+        "to": "平日:上り:42",
         "kind": "terminalTurnback",
         "station": "樽見",
         "fromDirection": "下り",
         "toDirection": "上り",
-        "gapMinutes": 11
-      },
-      {
-        "from": "休日:下り:33",
-        "to": "休日:上り:42",
-        "kind": "terminalTurnback",
-        "station": "樽見",
-        "fromDirection": "下り",
-        "toDirection": "上り",
-        "gapMinutes": 84
-      },
-      {
-        "from": "休日:下り:35",
-        "to": "休日:上り:42",
-        "kind": "terminalTurnback",
-        "station": "樽見",
-        "fromDirection": "下り",
-        "toDirection": "上り",
-        "gapMinutes": 21
-      },
+        "gapMinutes": 166
+      }
+    ],
+    "休日": [
       {
         "from": "休日:上り:2",
         "to": "休日:下り:3",
@@ -6012,6 +5895,96 @@
         "fromDirection": "上り",
         "toDirection": "下り",
         "gapMinutes": 6
+      },
+      {
+        "from": "休日:下り:1",
+        "to": "休日:上り:10",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 6
+      },
+      {
+        "from": "休日:下り:5",
+        "to": "休日:上り:14",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 24
+      },
+      {
+        "from": "休日:下り:13",
+        "to": "休日:上り:18",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 19
+      },
+      {
+        "from": "休日:下り:17",
+        "to": "休日:上り:20",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 14
+      },
+      {
+        "from": "休日:下り:19",
+        "to": "休日:上り:22",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 12
+      },
+      {
+        "from": "休日:下り:21",
+        "to": "休日:上り:24",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 9
+      },
+      {
+        "from": "休日:下り:23",
+        "to": "休日:上り:28",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 12
+      },
+      {
+        "from": "休日:下り:25",
+        "to": "休日:上り:32",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 11
+      },
+      {
+        "from": "休日:下り:29",
+        "to": "休日:上り:1036",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 11
+      },
+      {
+        "from": "休日:下り:33",
+        "to": "休日:上り:42",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 84
       }
     ]
   },
