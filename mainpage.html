@@ -8399,8 +8399,8 @@ initRegionNavigation();
 /* ===== 大阪環状線：環状線専用レイアウト ===== */
 .circular-stage{
   --circular-end-padding:220px;
-  --circular-top-center:220px;
-  --circular-bottom-center:calc(100% - 220px);
+  --circular-top-center:310px;
+  --circular-bottom-center:calc(100% - 310px);
   --circular-bridge-y:130px;
   position:relative;
   width:100vw;
@@ -8433,7 +8433,7 @@ initRegionNavigation();
   left:calc(25% - 6px);right:calc(25% - 6px);width:auto;
   z-index:1;pointer-events:none;
 }
-/* 横線位置を130pxにして上下に走行経路を確保。端駅ラベル中心との間は90pxで角を接続。 */
+/* 横線位置は130px。隠れた上下の走行経路から端駅ラベルまで、アイコン1つ分以上の縦余白を確保。 */
 .circular-bridge-top{
   top:var(--circular-bridge-y);
   height:calc(var(--circular-top-center) - var(--circular-bridge-y));
@@ -8495,13 +8495,13 @@ initRegionNavigation();
   }
   function circularStageMetrics(){
     const stage=document.getElementById('circularStage');
-    if(!stage) return {stage:null,width:1920,height:3140,leftStep:302,rightStep:302,endPadding:220,topCenter:220,bottomCenter:2920};
+    if(!stage) return {stage:null,width:1920,height:3320,leftStep:302,rightStep:302,endPadding:310,topCenter:310,bottomCenter:3010};
     const width=Number(stage.offsetWidth)||1920;
     const height=Number(stage.offsetHeight)||3140;
     const layout=circularLayout();
     const leftCount=Math.max(1,layout?.left?.length||11);
     const rightCount=Math.max(1,layout?.right?.length||10);
-    const endPadding=220;
+    const endPadding=310;
     const topCenter=endPadding;
     const bottomCenter=Math.max(topCenter,height-endPadding);
     const span=Math.max(0,bottomCenter-topCenter);
@@ -8567,7 +8567,7 @@ initRegionNavigation();
     const layout=circularLayout();
     if(!layout) return;
     const leftCount=Math.max(1,layout.left.length), rightCount=Math.max(1,layout.right.length);
-    const endPadding=220;
+    const endPadding=310;
     const stageHeight=270*Math.max(leftCount,rightCount)+endPadding*2;
     container.innerHTML=`<div class="operation-info-layer" id="operationInfoLayer"></div><div class="circular-stage" id="circularStage"><div class="circular-column left" id="circularLeft"></div><div class="circular-column right" id="circularRight"></div><div class="circular-bridge circular-bridge-top"></div><div class="circular-bridge circular-bridge-bottom"></div><div class="rail-line" id="railLine"></div></div><div class="moving-train-layer" id="movingTrainLayer"></div><div class="operation-info-label-layer" id="operationInfoLabelLayer"></div>`;
     const stage=document.getElementById('circularStage');
