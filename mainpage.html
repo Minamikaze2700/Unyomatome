@@ -8662,26 +8662,14 @@ initRegionNavigation();
     return {x:last.b.x,y:last.b.y,tangentX:last.dx/len,tangentY:last.dy/len};
   }
   function circularBridgePathPoints(fromX,fromY,toX,toY,bridgeY){
-    // 駅位置から横線へ出入りする角を丸め、アイコンが急角度で折れ曲がらない経路にする。
-    const dx=toX-fromX,dy1=bridgeY-fromY,dy2=toY-bridgeY;
-    const sx=Math.sign(dx)||1,sy1=Math.sign(dy1)||1,sy2=Math.sign(dy2)||1;
-    const radius=Math.max(0,Math.min(45,Math.abs(dy1)/2,Math.abs(dy2)/2,Math.abs(dx)/4));
-    if(radius<1) return [{x:fromX,y:fromY},{x:fromX,y:bridgeY},{x:toX,y:bridgeY},{x:toX,y:toY}];
-    const points=[{x:fromX,y:fromY}];
-    const q=(a,c,b,t)=>{
-      const u=1-t;
-      return {x:u*u*a.x+2*u*t*c.x+t*t*b.x,y:u*u*a.y+2*u*t*c.y+t*t*b.y};
-    };
-    const beforeTop={x:fromX,y:bridgeY-sy1*radius};
-    points.push(beforeTop);
-    const afterTop={x:fromX+sx*radius,y:bridgeY};
-    for(let i=1;i<=12;i++) points.push(q(beforeTop,{x:fromX,y:bridgeY},afterTop,i/12));
-    const beforeBottom={x:toX-sx*radius,y:bridgeY};
-    if(Math.hypot(beforeBottom.x-afterTop.x,beforeBottom.y-afterTop.y)>0.01) points.push(beforeBottom);
-    const afterBottom={x:toX,y:bridgeY+sy2*radius};
-    for(let i=1;i<=12;i++) points.push(q(beforeBottom,{x:toX,y:bridgeY},afterBottom,i/12));
-    points.push({x:toX,y:toY});
-    return points;
+    // 指定図の青紫線どおり、縦→横→縦の直角経路で移動させる。
+    // 経路線自体は描画せず、列車アイコンの座標計算だけに使う。
+    return [
+      {x:fromX,y:fromY},
+      {x:fromX,y:bridgeY},
+      {x:toX,y:bridgeY},
+      {x:toX,y:toY}
+    ];
   }
   function circularTrainPosition(t,minutes){
     const layout=circularLayout(); if(!layout||!t) return null;
@@ -8733,7 +8721,15 @@ initRegionNavigation();
       }
       if(minutes>=departure+1 && minutes<arrivalNext && arrivalNext>departure+1){
         const isTop=Number(edge.indexA)===0&&Number(edge.indexB)===0;
-        const bridgeY=isTop?80:Math.max(80,metrics.height-80);
+        const baseBridgeY=isTop?80:Math.max(80,metrics.height-80);
+        // 上側は外回り(down)をさらに上、内回り(up)を内側へ、下側はその逆へ振り分ける。
+        // 各方向の走行中心線を基準線から110px離し、列車アイコン1つ分以上の間隔を確保する。
+        const bridgeLaneOffset=110;
+        const isOuterTrack=String(t.direction||'')!=='up';
+        const bridgeOffsetSign=isTop
+          ? (isOuterTrack?-1:1)
+          : (isOuterTrack?1:-1);
+        const bridgeY=baseBridgeY+bridgeOffsetSign*bridgeLaneOffset;
         const fromX=circularTrainCenterX(fromSide,t.direction,metrics);
         const toX=circularTrainCenterX(toSide,t.direction,metrics);
         const points=circularBridgePathPoints(fromX,fromY,toX,toY,bridgeY);
