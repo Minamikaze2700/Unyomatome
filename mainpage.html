@@ -8765,10 +8765,11 @@ initRegionNavigation();
         const stage=document.getElementById('circularStage');
         const bridgeInset=Number.parseFloat(getComputedStyle(stage).getPropertyValue('--circular-bridge-y'))||130;
         const baseBridgeY=isTop?bridgeInset:Math.max(bridgeInset,metrics.height-bridgeInset);
-        // 見える横線の中心から上下に100px離れた見えない走行線を使う。
-        // 2本の走行中心線は200px離れ、列車アイコン1編成分以上の余白を確保する。
+        // 横線から上下に120px離れた平行な走行経路を使う。
+        // 上下2本の中心線は240px離れ、列車番号・画像・種別ラベルを含めても
+        // パーツ同士や線路と重なりにくい間隔を確保する。
         // 上端：外回りは線の上側、内回りは下側。下端はその反対。
-        const bridgeLaneOffset=100;
+        const bridgeLaneOffset=120;
         const isOuterTrack=String(t.direction||'')!=='up';
         const bridgeOffsetSign=isTop
           ? (isOuterTrack?-1:1)
@@ -8777,8 +8778,10 @@ initRegionNavigation();
         const fromX=circularTrainCenterX(fromSide,t.direction,metrics);
         const toX=circularTrainCenterX(toSide,t.direction,metrics);
         const points=circularBridgePathPoints(fromX,fromY,toX,toY,bridgeY);
+        // 左右の通常駅間と同様、駅間の経過時間を経路上の進み具合に対応させる。
+        // 直角の各区間も経路長に比例して進むため、横方向を不自然に早送りしない。
         const progress=(minutes-departure)/(arrivalNext-departure);
-        const point=circularBridgeSample(points,progress);
+        const point=circularPolylineSample(points,progress);
         if(!point) continue;
         // normal=(-tangentY,tangentX)。符号を始発側の既存レーン位置に合わせ、
         // 列車がカーブ／横線へ進んでも追加レーンの間隔が経路の法線方向に保たれるようにする。
@@ -9016,7 +9019,11 @@ initRegionNavigation();
           const imgHeight=(imgRect.height/z)||actualImageWidth*((img.naturalHeight||30)/(img.naturalWidth||60));
           const noHeight=(noRect?.height/z)||12*uiScale*1.05;
           const formationHeight=(formationRect?.height/z)||0;
-          const finalTop=y-(noHeight+imgHeight+formationHeight)/2;
+          // 座標 y は列車番号＋車両画像だけでなく、編成表記と種別ラベルまでを
+          // 含む表示ブロック全体の中心とする。種別ラベルだけが線に寄るズレを防ぐ。
+          const fullBlockHeight=(el.getBoundingClientRect().height/z)||
+            (noHeight+imgHeight+formationHeight+(trainLabelEl?.getBoundingClientRect().height/z||0));
+          const finalTop=y-fullBlockHeight/2;
           el.style.left=`${trainLeft}px`;
           el.style.right='auto';
           el.style.top=`${finalTop}px`;
