@@ -8401,7 +8401,7 @@ initRegionNavigation();
   --circular-end-padding:220px;
   --circular-top-center:220px;
   --circular-bottom-center:calc(100% - 220px);
-  --circular-bridge-y:80px;
+  --circular-bridge-y:130px;
   position:relative;
   width:100vw;
   min-width:100vw;
@@ -8433,7 +8433,7 @@ initRegionNavigation();
   left:calc(25% - 6px);right:calc(25% - 6px);width:auto;
   z-index:1;pointer-events:none;
 }
-/* 横線はページ上端・下端から80px離し、縦線は端駅ラベル中心まで接続。 */
+/* 横線位置を130pxにして上下に走行経路を確保。端駅ラベル中心との間は90pxで角を接続。 */
 .circular-bridge-top{
   top:var(--circular-bridge-y);
   height:calc(var(--circular-top-center) - var(--circular-bridge-y));
@@ -8621,7 +8621,8 @@ initRegionNavigation();
   }
   function isSpecialCircularBridgePair(a,b){
     // 配列sort()のUnicode順では「新今宮|天王寺」が逆順になるため、駅名を両方向で直接判定する。
-    const from=String(a||''),to=String(b||'');
+    const from=String(a||'').trim().replace(/駅$/,'');
+    const to=String(b||'').trim().replace(/駅$/,'');
     return (from==='大阪'&&to==='天満') || (from==='天満'&&to==='大阪')
       || (from==='新今宮'&&to==='天王寺') || (from==='天王寺'&&to==='新今宮');
   }
@@ -8701,7 +8702,11 @@ initRegionNavigation();
       const from=String(stops[i]?.station||'');
       const to=String(stops[i+1]?.station||'');
       if(!isSpecialCircularBridgePair(from,to)) continue;
-      const edge=circularEdgeForPair(from,to);
+      const upperBridge=(from.replace(/駅$/,'')==='大阪'&&to.replace(/駅$/,'')==='天満')
+        || (from.replace(/駅$/,'')==='天満'&&to.replace(/駅$/,'')==='大阪');
+      const lowerBridge=(from.replace(/駅$/,'')==='新今宮'&&to.replace(/駅$/,'')==='天王寺')
+        || (from.replace(/駅$/,'')==='天王寺'&&to.replace(/駅$/,'')==='新今宮');
+      const edge=circularEdgeForPair(from,to) || ((upperBridge||lowerBridge)?{bridge:true}:null);
       if(!edge?.bridge) continue;
       const departure=Number(stops[i]._departure);
       const arrivalNext=Number(stops[i+1]._arrival);
@@ -8725,12 +8730,14 @@ initRegionNavigation();
         return {side:fromSide,pos:fromIndex,y:fromY,visualTrain:t,mode:'special-bridge-start-dwell',baseTrain:t};
       }
       if(minutes>=departure && minutes<arrivalNext && arrivalNext>departure){
-        const isTop=Number(edge.indexA)===0&&Number(edge.indexB)===0;
-        const baseBridgeY=isTop?80:Math.max(80,metrics.height-80);
-        // 見える線の中心から上下に80pxずつ離れた見えない走行線を使う。
-        // 2本の走行中心線は160px離れ、列車アイコン1個分より十分な間隔を取る。
-        // 上端：外回りは線の外側、内回りは内側。下端はその反対。
-        const bridgeLaneOffset=80;
+        const isTop=upperBridge;
+        const stage=document.getElementById('circularStage');
+        const bridgeInset=Number.parseFloat(getComputedStyle(stage).getPropertyValue('--circular-bridge-y'))||130;
+        const baseBridgeY=isTop?bridgeInset:Math.max(bridgeInset,metrics.height-bridgeInset);
+        // 見える横線の中心から上下に100px離れた見えない走行線を使う。
+        // 2本の走行中心線は200px離れ、列車アイコン1編成分以上の余白を確保する。
+        // 上端：外回りは線の上側、内回りは下側。下端はその反対。
+        const bridgeLaneOffset=100;
         const isOuterTrack=String(t.direction||'')!=='up';
         const bridgeOffsetSign=isTop
           ? (isOuterTrack?-1:1)
@@ -8924,6 +8931,10 @@ initRegionNavigation();
           entry.contentKey=contentKey;entry.layoutHeight=0;entry.ready=false;
         }
         const color=typeColorForTrain(t,item.pos);el.style.setProperty('--train-type-color',color);
+        // 横方向の橋区間では1秒ごとの時刻更新間を補間し、停止→到着の一括移動に見えないようにする。
+        el.style.transition=item.info?.mode==='special-bridge-run'
+          ? 'left .95s linear, top .95s linear, transform .15s'
+          : 'transform .15s';
         const trainLabelEl=el.querySelector('.train-label');
         if(trainLabelEl) applyTypeBadgeAppearance(trainLabelEl,t,item.pos);
         const stageWidth=metrics.width;
