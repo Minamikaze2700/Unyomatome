@@ -8623,6 +8623,66 @@ initRegionNavigation();
     const pair=[String(a||''),String(b||'')].sort().join('|');
     return pair==='大阪|天満' || pair==='新今宮|天王寺';
   }
+  function circularLaneSign(side,direction){
+    const isInner=String(direction||'')==='up';
+    return side==='left' ? (isInner?1:-1) : (isInner?-1:1);
+  }
+  function circularTrainCenterX(side,direction,metrics){
+    const stageWidth=Number(metrics?.width)||1920;
+    const columnCenter=side==='left'?stageWidth*0.25:stageWidth*0.75;
+    // 駅名標と重ならない現行の左右間隔を維持する。
+    const centerOffset=340-(66/2);
+    return columnCenter+circularLaneSign(side,direction)*centerOffset;
+  }
+  function circularPolylineSample(points,progress){
+    if(!Array.isArray(points)||points.length<2) return null;
+    const segments=[]; let totalLength=0;
+    for(let i=0;i<points.length-1;i++){
+      const a=points[i],b=points[i+1];
+      const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy);
+      segments.push({a,b,dx,dy,len}); totalLength+=len;
+    }
+    if(totalLength<=0) return {...points[0],tangentX:0,tangentY:1};
+    let distance=Math.max(0,Math.min(1,Number(progress)||0))*totalLength;
+    for(let i=0;i<segments.length;i++){
+      const seg=segments[i];
+      if(distance<=seg.len || i===segments.length-1){
+        const f=seg.len>0?Math.max(0,Math.min(1,distance/seg.len)):0;
+        const len=seg.len||1;
+        return {
+          x:seg.a.x+seg.dx*f,
+          y:seg.a.y+seg.dy*f,
+          tangentX:seg.dx/len,
+          tangentY:seg.dy/len
+        };
+      }
+      distance-=seg.len;
+    }
+    const last=segments[segments.length-1],len=last.len||1;
+    return {x:last.b.x,y:last.b.y,tangentX:last.dx/len,tangentY:last.dy/len};
+  }
+  function circularBridgePathPoints(fromX,fromY,toX,toY,bridgeY){
+    // 駅位置から横線へ出入りする角を丸め、アイコンが急角度で折れ曲がらない経路にする。
+    const dx=toX-fromX,dy1=bridgeY-fromY,dy2=toY-bridgeY;
+    const sx=Math.sign(dx)||1,sy1=Math.sign(dy1)||1,sy2=Math.sign(dy2)||1;
+    const radius=Math.max(0,Math.min(45,Math.abs(dy1)/2,Math.abs(dy2)/2,Math.abs(dx)/4));
+    if(radius<1) return [{x:fromX,y:fromY},{x:fromX,y:bridgeY},{x:toX,y:bridgeY},{x:toX,y:toY}];
+    const points=[{x:fromX,y:fromY}];
+    const q=(a,c,b,t)=>{
+      const u=1-t;
+      return {x:u*u*a.x+2*u*t*c.x+t*t*b.x,y:u*u*a.y+2*u*t*c.y+t*t*b.y};
+    };
+    const beforeTop={x:fromX,y:bridgeY-sy1*radius};
+    points.push(beforeTop);
+    const afterTop={x:fromX+sx*radius,y:bridgeY};
+    for(let i=1;i<=12;i++) points.push(q(beforeTop,{x:fromX,y:bridgeY},afterTop,i/12));
+    const beforeBottom={x:toX-sx*radius,y:bridgeY};
+    if(Math.hypot(beforeBottom.x-afterTop.x,beforeBottom.y-afterTop.y)>0.01) points.push(beforeBottom);
+    const afterBottom={x:toX,y:bridgeY+sy2*radius};
+    for(let i=1;i<=12;i++) points.push(q(beforeBottom,{x:toX,y:bridgeY},afterBottom,i/12));
+    points.push({x:toX,y:toY});
+    return points;
+  }
   function circularTrainPosition(t,minutes){
     const layout=circularLayout(); if(!layout||!t) return null;
     const metrics=circularStageMetrics();
@@ -8630,11 +8690,9 @@ initRegionNavigation();
     const stops=normalizeLineStopTimes(t.stops||[]); if(!stops.length) return null;
     const circularOnly=!!isCircularTrain(t);
 
-    // 大阪⇄天満／新今宮⇄天王寺の2区間だけ、物理的な橋区間として特別扱いする。
-    // 列車種別や「環状運転」フラグには依存しない。
-    // 始点：発車時刻から1分間だけ始点駅に固定表示。
-    // その後：次駅の到着時刻まで完全非表示。
-    // 終点：次駅の到着時刻ちょうどに終点駅へ再表示。
+    // 大阪⇄天満／新今宮⇄天王寺は、見えない走行経路に沿って移動させる。
+    // 駅中心から経路の端まで縦方向に進み、橋の部分を横方向に走り、到着駅へ進む。
+    // 表示アイコンは従来どおり駅名標の外側に置き、横方向区間では線の向きに応じて重なり回避を行う。
     function bridgeStationSide(name,index){
       const prevEdge=index>0 ? circularEdgeForPair(stops[index-1].station,name) : null;
       const nextEdge=index<stops.length-1 ? circularEdgeForPair(name,stops[index+1].station) : null;
@@ -8649,58 +8707,60 @@ initRegionNavigation();
       return t.direction==='down'?'right':'left';
     }
 
-    // まず2つの特別橋区間だけを時刻ベースで判定する。
-    // これを通常の駅間走行処理より先に置くことで、橋の上をアイコンが移動することを完全に防ぐ。
     for(let i=0;i<stops.length-1;i++){
       const from=String(stops[i]?.station||'');
       const to=String(stops[i+1]?.station||'');
       if(!isSpecialCircularBridgePair(from,to)) continue;
+      const edge=circularEdgeForPair(from,to);
+      if(!edge?.bridge) continue;
       const departure=Number(stops[i]._departure);
       const arrivalNext=Number(stops[i+1]._arrival);
       if(!Number.isFinite(departure)||!Number.isFinite(arrivalNext)) continue;
 
       const fromSide=bridgeStationSide(from,i);
+      const toSide=bridgeStationSide(to,i+1);
       const fromList=layout[fromSide]||[];
+      const toList=layout[toSide]||[];
       const fromIndex=fromList.indexOf(from);
-      const fromY=fromIndex>=0?circularCenterY(fromSide,fromIndex,metrics):null;
+      const toIndex=toList.indexOf(to);
+      if(fromIndex<0||toIndex<0) continue;
+      const fromY=circularCenterY(fromSide,fromIndex,metrics);
+      const toY=circularCenterY(toSide,toIndex,metrics);
 
-      // 発車時刻から1分後になるまでは始点駅に固定。
-      if(minutes>=departure && minutes<departure+1 && fromIndex>=0){
+      // 発車後1分までは始発駅に固定表示し、そこから到着まで経路上を移動する。
+      if(minutes>=departure && minutes<departure+1){
+        return {side:fromSide,pos:fromIndex,y:fromY,visualTrain:t,mode:'special-bridge-start',baseTrain:t};
+      }
+      if(minutes>=departure+1 && minutes<arrivalNext && arrivalNext>departure+1){
+        const isTop=Number(edge.indexA)===0&&Number(edge.indexB)===0;
+        const bridgeY=isTop?80:Math.max(80,metrics.height-80);
+        const fromX=circularTrainCenterX(fromSide,t.direction,metrics);
+        const toX=circularTrainCenterX(toSide,t.direction,metrics);
+        const points=circularBridgePathPoints(fromX,fromY,toX,toY,bridgeY);
+        const progress=(minutes-(departure+1))/(arrivalNext-(departure+1));
+        const point=circularPolylineSample(points,progress);
+        if(!point) continue;
+        // normal=(-tangentY,tangentX)。符号を始発側の既存レーン位置に合わせ、
+        // 列車がカーブ／横線へ進んでも追加レーンの間隔が経路の法線方向に保たれるようにする。
+        const firstDy=bridgeY-fromY;
+        const laneNormalSign=circularLaneSign(fromSide,t.direction)*(firstDy===0?1:Math.sign(-firstDy));
         return {
           side:fromSide,
-          pos:fromIndex,
-          y:fromY,
+          pos:fromIndex+(toIndex-fromIndex)*Math.max(0,Math.min(1,progress)),
+          collisionPos:(isTop?0:2)+(fromSide==='left'?progress:1-progress),
+          trackX:point.x,
+          y:point.y,
+          tangentX:point.tangentX,
+          tangentY:point.tangentY,
+          laneNormalSign,
           visualTrain:t,
-          mode:'special-bridge-start',
+          mode:'special-bridge-run',
           baseTrain:t
         };
       }
-
-      // 発車1分後～次駅到着時刻の直前は完全に消す。
-      if(minutes>=departure+1 && minutes<arrivalNext){
-        return null;
-      }
-
-      // 次駅の到着時刻ちょうどから終点駅に再表示。
-      if(minutes>=arrivalNext){
-        const toSide=bridgeStationSide(to,i+1);
-        const toList=layout[toSide]||[];
-        const toIndex=toList.indexOf(to);
-        if(toIndex>=0){
-          // 橋区間の終点駅では「到着時刻から1分間だけ」表示する。
-          // 発車時刻まで表示し続けず、到着+1分で必ず消す。
-          const showUntil=arrivalNext+1;
-          if(minutes<showUntil){
-            return {
-              side:toSide,
-              pos:toIndex,
-              y:circularCenterY(toSide,toIndex,metrics),
-              visualTrain:t,
-              mode:'special-bridge-arrival',
-              baseTrain:t
-            };
-          }
-        }
+      // 到着時刻ちょうどから1分間は到着駅に固定表示する。
+      if(minutes>=arrivalNext && minutes<arrivalNext+1){
+        return {side:toSide,pos:toIndex,y:toY,visualTrain:t,mode:'special-bridge-arrival',baseTrain:t};
       }
     }
 
@@ -8827,7 +8887,7 @@ initRegionNavigation();
       const displayTrain=p.visualTrain||entry.train;
       const signature=`${String(entry.train.no||'')}|${String(entry.train.direction||'')}`;
       visible.push({baseTrain:entry.train,visualTrain:displayTrain,info:p,signature}); keep.add(signature);
-      occupied[p.side].push({t:displayTrain,pos:p.pos,baseTrain:entry.train,mode:p.mode,signature});
+      occupied[p.side].push({t:displayTrain,pos:p.pos,collisionPos:Number.isFinite(Number(p.collisionPos))?Number(p.collisionPos):p.pos,baseTrain:entry.train,mode:p.mode,signature});
     }
     for(const [signature,entry] of TRAIN_ICON_CACHE){
       if(!keep.has(signature)){entry.el.remove();TRAIN_ICON_CACHE.delete(signature);}
@@ -8836,15 +8896,15 @@ initRegionNavigation();
     const mobileZoom=window.innerWidth<960?window.innerWidth/960:1;
     const viewportTop=0,viewportBottom=window.innerHeight||document.documentElement.clientHeight||0;
     ['left','right'].forEach(side=>{
-      occupied[side].sort((a,b)=>a.pos-b.pos||String(a.t.no).localeCompare(String(b.t.no),undefined,{numeric:true}));
+      occupied[side].sort((a,b)=>a.collisionPos-b.collisionPos||String(a.t.no).localeCompare(String(b.t.no),undefined,{numeric:true}));
       const used=[];
       occupied[side].forEach(item=>{
         // 内回り・外回りは別の線路位置なので、お互いを「横並び」と判定しない。
-        // 同方向・同一箇所で重なる場合だけ2列目以降へ退避する。
+        // 同方向・同一箇所で重なる場合だけ2列目以降へ退避する。橋区間は走行経路上の位置で比較する。
         const laneGroup=String(item.t?.direction||'')==='up'?'up':'down';
         let lane=0;
-        while(used.some(u=>u.group===laneGroup&&Math.abs(u.pos-item.pos)<0.24&&u.lane===lane)) lane++;
-        used.push({pos:item.pos,lane,group:laneGroup});
+        while(used.some(u=>u.group===laneGroup&&Math.abs(u.pos-item.collisionPos)<0.24&&u.lane===lane)) lane++;
+        used.push({pos:item.collisionPos,lane,group:laneGroup});
         const t=item.t; let entry=TRAIN_ICON_CACHE.get(item.signature); let el=entry?.el;
         if(entry) entry.currentTrain=t;
         const cls=trainVisualKind(t); const registeredFormation=registeredFormationForTrain(t);
@@ -8882,10 +8942,25 @@ initRegionNavigation();
           ? (isInner?1:-1)
           : (isInner?-1:1);
         const laneOffset=lateralSign*(originalCenterOffset + lane*(trainWidth+originalLaneGap));
-        const trainLeft=Number.isFinite(Number(item.info?.xPercent))
-          ? stageWidth*(Number(item.info.xPercent)/100)-(trainWidth/2)
-          : colCenter-(trainWidth/2)+laneOffset;
-        const y=Number.isFinite(Number(item.info?.y))?Number(item.info.y):circularCenterY(side,item.pos,metrics);
+        const hasTrackPoint=Number.isFinite(Number(item.info?.trackX));
+        let trainLeft;
+        let y;
+        if(hasTrackPoint){
+          const tangentX=Number(item.info?.tangentX)||0;
+          const tangentY=Number(item.info?.tangentY)||0;
+          const tangentLength=Math.hypot(tangentX,tangentY)||1;
+          const normalX=-tangentY/tangentLength;
+          const normalY=tangentX/tangentLength;
+          const laneNormalSign=Number(item.info?.laneNormalSign)||1;
+          const parallelLaneOffset=lane*(trainWidth+originalLaneGap)*laneNormalSign;
+          trainLeft=Number(item.info.trackX)+normalX*parallelLaneOffset-(trainWidth/2);
+          y=Number(item.info.y)+normalY*parallelLaneOffset;
+        }else{
+          trainLeft=Number.isFinite(Number(item.info?.xPercent))
+            ? stageWidth*(Number(item.info.xPercent)/100)-(trainWidth/2)
+            : colCenter-(trainWidth/2)+laneOffset;
+          y=Number.isFinite(Number(item.info?.y))?Number(item.info.y):circularCenterY(side,item.pos,metrics);
+        }
         const applyFinalCircularPosition=()=>{
           const img=el.querySelector('img');
           const noEl=el.querySelector('.train-no');
