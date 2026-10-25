@@ -9593,7 +9593,6 @@ initRegionNavigation();
     if(lineAbbr) return lineAbbr;
 
     const rules=[
-      ...(Array.isArray(registryMeta?.stationShortRules)?registryMeta.stationShortRules:[]),
       ...(Array.isArray(activeRouteMeta?.stationShortRules)?activeRouteMeta.stationShortRules:[]),
       ...(Array.isArray(activeJson?.stationShortRules)?activeJson.stationShortRules:[])
     ];
