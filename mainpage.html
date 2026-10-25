@@ -1280,6 +1280,7 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'福岡市地下鉄',
     formationFamily:'fukuoka-kuko-hakozaki',
+    noTrainNumbers:true,
     typeColors:{'普通':'#9fa0a0'},
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
@@ -1298,6 +1299,7 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'福岡市地下鉄',
     formationFamily:'fukuoka-nanakuma',
+    noTrainNumbers:true,
     defaultFormationName:'4両',
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/FukuchikaNanakuma_noimage.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/FukuchikaNanakuma_noimage.png',
@@ -1316,6 +1318,7 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'福岡市地下鉄',
     formationFamily:'fukuoka-kuko-hakozaki',
+    noTrainNumbers:true,
     typeColors:{'普通':'#9fa0a0'},
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
@@ -1410,7 +1413,7 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'樽見鉄道',
     formationFamily:'tarumi',
-    typeColors:{'普通':'#666666'},
+    noTrainTypes:true,
     trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Tarumi_noimage.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Tarumi_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Tarumi_noimage.png',
@@ -1742,6 +1745,47 @@ function fukuokaBranchToggleLabel(){
   // ボタンの開閉状態は active クラスで示す。
   return '▼ 箱崎線';
 }
+function fukuokaStationOverviewNeighbors(stationName,json=activeJson,meta=activeRouteMeta){
+  if(!isFukuokaCompositeRoute(meta)) return null;
+  const name=String(stationName||'').trim();
+  if(!name) return null;
+  const diagram=fukuokaDiagramConfig(json,meta);
+  const main=fukuokaMainStationNames(json,meta);
+  const branch=fukuokaBranchStationNames(json,meta); // 路線図上の順：貝塚→…→呉服町
+  const junction=String(diagram?.junctionStation||'中洲川端').trim()||'中洲川端';
+  let prev=null,next=null;
+
+  if(fukuokaHakozakiBranchOpen && name===junction){
+    // 分岐駅では、路線図上の直前は呉服町、直後は空港線側の天神。
+    prev=branch[branch.length-1]||null;
+    const i=main.indexOf(junction);
+    next=i>=0&&i<main.length-1?main[i+1]:null;
+  }else if(fukuokaHakozakiBranchOpen && branch.includes(name)){
+    const sequence=[...branch,junction];
+    const i=sequence.indexOf(name);
+    prev=i>0?sequence[i-1]:null;
+    next=i>=0&&i<sequence.length-1?sequence[i+1]:null;
+  }else{
+    // 空港線の駅は、箱崎線を図に差し込んでも空港線本来の前後駅を使う。
+    const i=main.indexOf(name);
+    if(i<0) return null;
+    prev=i>0?main[i-1]:null;
+    next=i>=0&&i<main.length-1?main[i+1]:null;
+  }
+
+  const colorFor=(a,b)=>a&&b
+    ? (activeSegmentColors(a,b)[0]||activeRouteColors()[0]||'#666')
+    : null;
+  const prevColor=colorFor(prev,name);
+  const nextColor=colorFor(name,next);
+  const fallback=activeRouteColors()[0]||'#666';
+  return {
+    prev,next,
+    prevColor:prevColor||nextColor||fallback,
+    nextColor:nextColor||prevColor||fallback
+  };
+}
+
 function fukuokaTrainUsesHakozaki(train){
   const hako=new Set(fukuokaBranchStationNames(activeJson,activeRouteMeta));
   return (Array.isArray(train?.stops)?train.stops:[]).some(stop=>hako.has(String(stop?.station||'')));
@@ -2085,14 +2129,17 @@ function normalizeExternalTrain(raw,day,direction,meta){
   const internalNo=hasTrainNumber
     ? (allNumbers[0]||rawNo)
     : String(raw?.id||raw?.uid||`${day}-${direction}-${String(firstTimed.station||'')}-${String(firstTimed.time||'')}`);
-  const jsonType=String(raw?.type||'').trim();
+  // noTrainTypes=true の路線は、JSON内にtype値が残っていても種別として扱わない。
+  // 神戸市営地下鉄と樽見鉄道のような種別表示なしの路線に対応する。
+  const suppressTrainTypes=meta?.noTrainTypes===true || activeJson?.noTrainTypes===true;
+  const jsonType=suppressTrainTypes?'':String(raw?.type||'').trim();
   const formationFamily=String(meta?.formationFamily||formationStorageContext(meta?.id||activeRouteName).family||'').trim();
   const parsedDefaultCars=Number(raw?.cars);
   const fallbackCars=Number(String(raw?.defaultCars||'').match(/\d+/)?.[0]||0);
   return [{
     no:internalNo,
     hasTrainNumber,
-    hideTrainNumber:!hasTrainNumber,
+    hideTrainNumber:!hasTrainNumber || meta?.noTrainNumbers===true || activeJson?.noTrainNumbers===true,
     noSequence:allNumbers,
     numbersByLine,
     numberSegments,
@@ -4466,12 +4513,17 @@ function updateStationSheetContent(){
   if(!station || !content) return;
 
   const circularContext=circularStationContext(station.nameJa);
+  const fukuokaNeighbors=fukuokaStationOverviewNeighbors(station.nameJa);
   const prevStation=circularContext
     ? (STATIONS.find(st=>st.nameJa===circularContext.prev)||null)
-    : (stationIndexValue>0 ? STATIONS[stationIndexValue-1] : null);
+    : (fukuokaNeighbors
+        ? (fukuokaNeighbors.prev ? (STATIONS.find(st=>st.nameJa===fukuokaNeighbors.prev)||null) : null)
+        : (stationIndexValue>0 ? STATIONS[stationIndexValue-1] : null));
   const nextStation=circularContext
     ? (STATIONS.find(st=>st.nameJa===circularContext.next)||null)
-    : (stationIndexValue<STATIONS.length-1 ? STATIONS[stationIndexValue+1] : null);
+    : (fukuokaNeighbors
+        ? (fukuokaNeighbors.next ? (STATIONS.find(st=>st.nameJa===fukuokaNeighbors.next)||null) : null)
+        : (stationIndexValue<STATIONS.length-1 ? STATIONS[stationIndexValue+1] : null));
   const barClasses=[
     !prevStation?'no-prev':'',
     !nextStation?'no-next':''
@@ -4484,7 +4536,9 @@ function updateStationSheetContent(){
   const directionLabels=getStationDirectionLabels(station.nameJa);
   const neighborColors=circularContext
     ? {prevColor:circularContext.prevColor,nextColor:circularContext.nextColor}
-    : stationNeighborRouteColors(stationIndexValue);
+    : (fukuokaNeighbors
+        ? {prevColor:fukuokaNeighbors.prevColor,nextColor:fukuokaNeighbors.nextColor}
+        : stationNeighborRouteColors(stationIndexValue));
   const stationInfoColor=circularContext ? circularContext.prevColor : (neighborColors.prevColor||activeRouteColors()[0]||'#666');
   // 「上り」「下り」の方面タブは、路線ではなく駅ラベルそのものの色に合わせる。
   // 駅ラベルの色判定をそのまま共有することで、路線切替や色境界でも一致させる。
@@ -5630,7 +5684,6 @@ const REGION_DEFINITIONS={
     company:'福岡市地下鉄',
     routes:[
       {name:'福岡市地下鉄 空港線・箱崎線',id:'fukuoka-kuko-hakozaki'},
-      {name:'ふくちか2系統',id:'fukuchika-2'},
       {name:'福岡市地下鉄 七隈線',id:'fukuoka-nanakuma'}
     ]
   }],
@@ -5991,6 +6044,8 @@ function stationDirectionRouteColor(index,direction){
   const dir=String(direction||'').toLowerCase()==='up'?'up':'down';
   const circular=circularStationContext(STATIONS[i]?.nameJa);
   if(circular) return dir==='up' ? circular.prevColor : circular.nextColor;
+  const fukuokaNeighbors=fukuokaStationOverviewNeighbors(STATIONS[i]?.nameJa);
+  if(fukuokaNeighbors) return dir==='up' ? fukuokaNeighbors.prevColor : fukuokaNeighbors.nextColor;
   const prev=i>0 ? STATIONS[i-1]?.nameJa : null;
   const cur=STATIONS[i]?.nameJa;
   const next=i<STATIONS.length-1 ? STATIONS[i+1]?.nameJa : null;
@@ -6031,6 +6086,8 @@ function stationNeighborRouteColors(index){
   const cur=STATIONS[i]?.nameJa;
   const circular=circularStationContext(cur);
   if(circular) return {prevColor:circular.prevColor,nextColor:circular.nextColor};
+  const fukuokaNeighbors=fukuokaStationOverviewNeighbors(cur);
+  if(fukuokaNeighbors) return {prevColor:fukuokaNeighbors.prevColor,nextColor:fukuokaNeighbors.nextColor};
   const prev= i>0 ? STATIONS[i-1]?.nameJa : null;
   const next= i<STATIONS.length-1 ? STATIONS[i+1]?.nameJa : null;
   let prevColor=prev&&cur ? trainServiceColorBetweenStations(prev,cur,{servedLineNames:getActiveRouteLineNames()}) : null;
