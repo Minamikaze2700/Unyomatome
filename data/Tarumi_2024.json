@@ -111,7 +111,10 @@
             "ハイモ295-315"
           ],
           "type": "ハイモ295-315",
-          "family": "tarumi"
+          "family": "tarumi",
+          "manufacturer": "富士重工業",
+          "completionDate": "1999年",
+          "comment": ""
         },
         {
           "id": "516",
@@ -122,7 +125,10 @@
             "ハイモ295-516"
           ],
           "type": "ハイモ295-516",
-          "family": "tarumi"
+          "family": "tarumi",
+          "manufacturer": "新潟トランシス",
+          "completionDate": "2005年",
+          "comment": "本巣市制施行20周年記念「モトスミライ号」ラッピング"
         },
         {
           "id": "617",
@@ -133,7 +139,10 @@
             "ハイモ295-617"
           ],
           "type": "ハイモ295-617",
-          "family": "tarumi"
+          "family": "tarumi",
+          "manufacturer": "富士重工業",
+          "completionDate": "2002年",
+          "comment": "CCNet広告ラッピング"
         },
         {
           "id": "701",
@@ -144,7 +153,10 @@
             "ハイモ330-701"
           ],
           "type": "ハイモ330-701",
-          "family": "tarumi"
+          "family": "tarumi",
+          "manufacturer": "新潟トランシス",
+          "completionDate": "2010年",
+          "comment": ""
         },
         {
           "id": "702",
@@ -155,7 +167,10 @@
             "ハイモ330-702"
           ],
           "type": "ハイモ330-702",
-          "family": "tarumi"
+          "family": "tarumi",
+          "manufacturer": "新潟トランシス",
+          "completionDate": "2015年",
+          "comment": "モレラ岐阜「モレラ号」ラッピング"
         },
         {
           "id": "703",
@@ -166,7 +181,10 @@
             "ハイモ330-703"
           ],
           "type": "ハイモ330-703",
-          "family": "tarumi"
+          "family": "tarumi",
+          "manufacturer": "新潟トランシス",
+          "completionDate": "2018年",
+          "comment": ""
         }
       ],
       "showTypeOption": false
@@ -5432,5 +5450,8 @@
       ]
     }
   },
-  "noTrainTypes": true
+  "noTrainTypes": true,
+  "version": 1,
+  "lineKey": "tarumi",
+  "label": "樽見鉄道樽見線"
 }
