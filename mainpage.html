@@ -8620,8 +8620,10 @@ initRegionNavigation();
     return preferredSide||'left';
   }
   function isSpecialCircularBridgePair(a,b){
-    const pair=[String(a||''),String(b||'')].sort().join('|');
-    return pair==='大阪|天満' || pair==='新今宮|天王寺';
+    // 配列sort()のUnicode順では「新今宮|天王寺」が逆順になるため、駅名を両方向で直接判定する。
+    const from=String(a||''),to=String(b||'');
+    return (from==='大阪'&&to==='天満') || (from==='天満'&&to==='大阪')
+      || (from==='新今宮'&&to==='天王寺') || (from==='天王寺'&&to==='新今宮');
   }
   function circularLaneSign(side,direction){
     const isInner=String(direction||'')==='up';
@@ -8715,16 +8717,20 @@ initRegionNavigation();
       const fromY=circularCenterY(fromSide,fromIndex,metrics);
       const toY=circularCenterY(toSide,toIndex,metrics);
 
-      // 発車後1分までは始発駅に固定表示し、そこから到着まで経路上を移動する。
-      if(minutes>=departure && minutes<departure+1){
-        return {side:fromSide,pos:fromIndex,y:fromY,visualTrain:t,mode:'special-bridge-start',baseTrain:t};
+      // 発車前は駅に停車し、発車時刻から次駅の到着時刻まで経路上を移動する。
+      // 発車後1分待つ方式だと、所要時間1分の区間で横方向へ走る時間がなくなるため、
+      // 出発時刻そのものを移動開始として扱う。
+      const sourceArrival=Number(stops[i]._arrival);
+      if(Number.isFinite(sourceArrival) && minutes>=sourceArrival+0.25 && minutes<departure){
+        return {side:fromSide,pos:fromIndex,y:fromY,visualTrain:t,mode:'special-bridge-start-dwell',baseTrain:t};
       }
-      if(minutes>=departure+1 && minutes<arrivalNext && arrivalNext>departure+1){
+      if(minutes>=departure && minutes<arrivalNext && arrivalNext>departure){
         const isTop=Number(edge.indexA)===0&&Number(edge.indexB)===0;
         const baseBridgeY=isTop?80:Math.max(80,metrics.height-80);
-        // 上側は外回り(down)をさらに上、内回り(up)を内側へ、下側はその逆へ振り分ける。
-        // 各方向の走行中心線を基準線から110px離し、列車アイコン1つ分以上の間隔を確保する。
-        const bridgeLaneOffset=110;
+        // 見える線の中心から上下に80pxずつ離れた見えない走行線を使う。
+        // 2本の走行中心線は160px離れ、列車アイコン1個分より十分な間隔を取る。
+        // 上端：外回りは線の外側、内回りは内側。下端はその反対。
+        const bridgeLaneOffset=80;
         const isOuterTrack=String(t.direction||'')!=='up';
         const bridgeOffsetSign=isTop
           ? (isOuterTrack?-1:1)
@@ -8733,7 +8739,7 @@ initRegionNavigation();
         const fromX=circularTrainCenterX(fromSide,t.direction,metrics);
         const toX=circularTrainCenterX(toSide,t.direction,metrics);
         const points=circularBridgePathPoints(fromX,fromY,toX,toY,bridgeY);
-        const progress=(minutes-(departure+1))/(arrivalNext-(departure+1));
+        const progress=(minutes-departure)/(arrivalNext-departure);
         const point=circularPolylineSample(points,progress);
         if(!point) continue;
         // normal=(-tangentY,tangentX)。符号を始発側の既存レーン位置に合わせ、
@@ -8754,10 +8760,8 @@ initRegionNavigation();
           baseTrain:t
         };
       }
-      // 到着時刻ちょうどから1分間は到着駅に固定表示する。
-      if(minutes>=arrivalNext && minutes<arrivalNext+1){
-        return {side:toSide,pos:toIndex,y:toY,visualTrain:t,mode:'special-bridge-arrival',baseTrain:t};
-      }
+      // 到着後の停車表示は下の通常の駅停車処理へ渡す。
+      // ここで到着後1分を強制固定すると、続く区間への発車が遅れて見えるため。
     }
 
     // 特別橋区間以外は従来どおりの駅間・駅停車処理。
