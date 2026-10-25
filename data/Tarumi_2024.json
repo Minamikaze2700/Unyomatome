@@ -5432,5 +5432,725 @@
       ]
     }
   },
-  "noTrainTypes": true
+  "noTrainTypes": true,
+  "version": 1,
+  "lineKey": "tarumi",
+  "label": "樽見鉄道樽見線",
+  "rules": {
+    "operationConnection": "終点到着後、同じ駅を次に出発する列車へ折り返し接続",
+    "terminalTurnback": "各列車の終着駅到着→同駅から次に発車する列車へ接続",
+    "motosuDepot": "本巣駅に車庫があるため、本巣終着列車は次の本巣発列車へ自動接続せず、入庫・出庫を許容する",
+    "operationLinkTimeLimit": "なし（本巣を除き、同駅到着後の最初の出発へ接続）"
+  },
+  "operationEdgesByDay": {
+    "平日": [
+      {
+        "from": "平日:下り:1",
+        "to": "平日:上り:10",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 6
+      },
+      {
+        "from": "平日:下り:5",
+        "to": "平日:上り:14",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 24
+      },
+      {
+        "from": "平日:下り:13",
+        "to": "平日:上り:18",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 19
+      },
+      {
+        "from": "平日:下り:17",
+        "to": "平日:上り:20",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 14
+      },
+      {
+        "from": "平日:下り:19",
+        "to": "平日:上り:22",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 12
+      },
+      {
+        "from": "平日:下り:21",
+        "to": "平日:上り:24",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 9
+      },
+      {
+        "from": "平日:下り:23",
+        "to": "平日:上り:28",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 12
+      },
+      {
+        "from": "平日:下り:25",
+        "to": "平日:上り:32",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 11
+      },
+      {
+        "from": "平日:下り:29",
+        "to": "平日:上り:42",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 166
+      },
+      {
+        "from": "平日:下り:33",
+        "to": "平日:上り:42",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 84
+      },
+      {
+        "from": "平日:下り:35",
+        "to": "平日:上り:42",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 21
+      },
+      {
+        "from": "平日:上り:2",
+        "to": "平日:下り:3",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 16
+      },
+      {
+        "from": "平日:上り:4",
+        "to": "平日:下り:5",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 9
+      },
+      {
+        "from": "平日:上り:6",
+        "to": "平日:下り:7",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 14
+      },
+      {
+        "from": "平日:上り:8",
+        "to": "平日:下り:9",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 13
+      },
+      {
+        "from": "平日:上り:10",
+        "to": "平日:下り:11",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 11
+      },
+      {
+        "from": "平日:上り:12",
+        "to": "平日:下り:13",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 10
+      },
+      {
+        "from": "平日:上り:14",
+        "to": "平日:下り:15",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 21
+      },
+      {
+        "from": "平日:上り:16",
+        "to": "平日:下り:17",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 23
+      },
+      {
+        "from": "平日:上り:18",
+        "to": "平日:下り:19",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 35
+      },
+      {
+        "from": "平日:上り:20",
+        "to": "平日:下り:21",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 35
+      },
+      {
+        "from": "平日:上り:22",
+        "to": "平日:下り:23",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 35
+      },
+      {
+        "from": "平日:上り:24",
+        "to": "平日:下り:25",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 32
+      },
+      {
+        "from": "平日:上り:26",
+        "to": "平日:下り:27",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 7
+      },
+      {
+        "from": "平日:上り:28",
+        "to": "平日:下り:29",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 15
+      },
+      {
+        "from": "平日:上り:30",
+        "to": "平日:下り:31",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 22
+      },
+      {
+        "from": "平日:上り:32",
+        "to": "平日:下り:33",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 16
+      },
+      {
+        "from": "平日:上り:34",
+        "to": "平日:下り:35",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 18
+      },
+      {
+        "from": "平日:上り:36",
+        "to": "平日:下り:37",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 10
+      },
+      {
+        "from": "平日:上り:40",
+        "to": "平日:下り:39",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 7
+      },
+      {
+        "from": "平日:上り:42",
+        "to": "平日:下り:41",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 6
+      }
+    ],
+    "休日": [
+      {
+        "from": "休日:下り:1",
+        "to": "休日:上り:10",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 6
+      },
+      {
+        "from": "休日:下り:5",
+        "to": "休日:上り:14",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 24
+      },
+      {
+        "from": "休日:下り:13",
+        "to": "休日:上り:18",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 19
+      },
+      {
+        "from": "休日:下り:17",
+        "to": "休日:上り:20",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 14
+      },
+      {
+        "from": "休日:下り:19",
+        "to": "休日:上り:22",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 12
+      },
+      {
+        "from": "休日:下り:21",
+        "to": "休日:上り:24",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 9
+      },
+      {
+        "from": "休日:下り:23",
+        "to": "休日:上り:28",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 12
+      },
+      {
+        "from": "休日:下り:25",
+        "to": "休日:上り:32",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 11
+      },
+      {
+        "from": "休日:下り:29",
+        "to": "休日:上り:1036",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 11
+      },
+      {
+        "from": "休日:下り:33",
+        "to": "休日:上り:42",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 84
+      },
+      {
+        "from": "休日:下り:35",
+        "to": "休日:上り:42",
+        "kind": "terminalTurnback",
+        "station": "樽見",
+        "fromDirection": "下り",
+        "toDirection": "上り",
+        "gapMinutes": 21
+      },
+      {
+        "from": "休日:上り:2",
+        "to": "休日:下り:3",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 16
+      },
+      {
+        "from": "休日:上り:4",
+        "to": "休日:下り:5",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 9
+      },
+      {
+        "from": "休日:上り:6",
+        "to": "休日:下り:7",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 14
+      },
+      {
+        "from": "休日:上り:8",
+        "to": "休日:下り:9",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 13
+      },
+      {
+        "from": "休日:上り:10",
+        "to": "休日:下り:11",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 11
+      },
+      {
+        "from": "休日:上り:12",
+        "to": "休日:下り:13",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 10
+      },
+      {
+        "from": "休日:上り:14",
+        "to": "休日:下り:15",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 21
+      },
+      {
+        "from": "休日:上り:16",
+        "to": "休日:下り:17",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 23
+      },
+      {
+        "from": "休日:上り:1002",
+        "to": "休日:下り:1001",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 7
+      },
+      {
+        "from": "休日:上り:18",
+        "to": "休日:下り:19",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 35
+      },
+      {
+        "from": "休日:上り:20",
+        "to": "休日:下り:21",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 35
+      },
+      {
+        "from": "休日:上り:22",
+        "to": "休日:下り:23",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 35
+      },
+      {
+        "from": "休日:上り:24",
+        "to": "休日:下り:25",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 32
+      },
+      {
+        "from": "休日:上り:26",
+        "to": "休日:下り:27",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 7
+      },
+      {
+        "from": "休日:上り:28",
+        "to": "休日:下り:29",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 15
+      },
+      {
+        "from": "休日:上り:30",
+        "to": "休日:下り:31",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 22
+      },
+      {
+        "from": "休日:上り:32",
+        "to": "休日:下り:33",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 16
+      },
+      {
+        "from": "休日:上り:34",
+        "to": "休日:下り:35",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 18
+      },
+      {
+        "from": "休日:上り:1036",
+        "to": "休日:下り:37",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 10
+      },
+      {
+        "from": "休日:上り:40",
+        "to": "休日:下り:39",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 7
+      },
+      {
+        "from": "休日:上り:42",
+        "to": "休日:下り:41",
+        "kind": "terminalTurnback",
+        "station": "大垣",
+        "fromDirection": "上り",
+        "toDirection": "下り",
+        "gapMinutes": 6
+      }
+    ]
+  },
+  "operationChainsByDay": {
+    "平日": [
+      [
+        "平日:下り:1",
+        "平日:上り:10",
+        "平日:下り:11"
+      ],
+      [
+        "平日:上り:2",
+        "平日:下り:3"
+      ],
+      [
+        "平日:上り:4",
+        "平日:下り:5",
+        "平日:上り:14",
+        "平日:下り:15"
+      ],
+      [
+        "平日:上り:6",
+        "平日:下り:7"
+      ],
+      [
+        "平日:上り:8",
+        "平日:下り:9"
+      ],
+      [
+        "平日:上り:12",
+        "平日:下り:13",
+        "平日:上り:18",
+        "平日:下り:19",
+        "平日:上り:22",
+        "平日:下り:23",
+        "平日:上り:28",
+        "平日:下り:29",
+        "平日:上り:42",
+        "平日:下り:41"
+      ],
+      [
+        "平日:上り:16",
+        "平日:下り:17",
+        "平日:上り:20",
+        "平日:下り:21",
+        "平日:上り:24",
+        "平日:下り:25",
+        "平日:上り:32",
+        "平日:下り:33"
+      ],
+      [
+        "平日:上り:26",
+        "平日:下り:27"
+      ],
+      [
+        "平日:上り:30",
+        "平日:下り:31"
+      ],
+      [
+        "平日:上り:34",
+        "平日:下り:35"
+      ],
+      [
+        "平日:上り:36",
+        "平日:下り:37"
+      ],
+      [
+        "平日:上り:40",
+        "平日:下り:39"
+      ]
+    ],
+    "休日": [
+      [
+        "休日:下り:1",
+        "休日:上り:10",
+        "休日:下り:11"
+      ],
+      [
+        "休日:上り:2",
+        "休日:下り:3"
+      ],
+      [
+        "休日:上り:4",
+        "休日:下り:5",
+        "休日:上り:14",
+        "休日:下り:15"
+      ],
+      [
+        "休日:上り:6",
+        "休日:下り:7"
+      ],
+      [
+        "休日:上り:8",
+        "休日:下り:9"
+      ],
+      [
+        "休日:上り:12",
+        "休日:下り:13",
+        "休日:上り:18",
+        "休日:下り:19",
+        "休日:上り:22",
+        "休日:下り:23",
+        "休日:上り:28",
+        "休日:下り:29",
+        "休日:上り:1036",
+        "休日:下り:37"
+      ],
+      [
+        "休日:上り:16",
+        "休日:下り:17",
+        "休日:上り:20",
+        "休日:下り:21",
+        "休日:上り:24",
+        "休日:下り:25",
+        "休日:上り:32",
+        "休日:下り:33",
+        "休日:上り:42",
+        "休日:下り:41"
+      ],
+      [
+        "休日:上り:1002",
+        "休日:下り:1001"
+      ],
+      [
+        "休日:上り:26",
+        "休日:下り:27"
+      ],
+      [
+        "休日:上り:30",
+        "休日:下り:31"
+      ],
+      [
+        "休日:上り:34",
+        "休日:下り:35"
+      ],
+      [
+        "休日:上り:40",
+        "休日:下り:39"
+      ]
+    ]
+  }
 }
