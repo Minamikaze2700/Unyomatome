@@ -1141,7 +1141,6 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'神戸市営地下鉄',
     formationFamily:'kobe',
-    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png',
     formationType:'6000形',
     formationTypeImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobecity6000.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png',
@@ -1162,9 +1161,7 @@ const ROUTE_REGISTRY={
     formationFamily:'keihin',
     typeShortMap:{'普通':'各停','各駅停車':'各停','区間急行':'区急'},
     typeDetailMap:{'普通':'各駅停車','各停':'各駅停車'},
-    destinationAliases:{'南浦和':'南浦','東十条':'東十','東神奈川':'東神','桜木町':'桜木','八王子':'八王'},
     typeClassMap:{'快速':'keihin-express','普通':'keihin-local','各停':'keihin-local'},
-    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Keihin-Tohoku_noimage.png',
     access:{public:true,routeAdmins:[]},
     formationInputExample:'E233系1000番台 / 101 / 101F',
     prescribedFormationRule:'jre'
@@ -1183,7 +1180,7 @@ const ROUTE_REGISTRY={
     typeShortMap:{'普通':'各停','各駅停車':'各停','区間急行':'区急'},
     typeDetailMap:{'普通':'各駅停車','各停':'各駅停車'},
     typeClassMap:{'快速':'yokohama-express','普通':'yokohama-local','各停':'yokohama-local'},
-    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Yokohama_noimage.png',
+    // 京浜東北・根岸線との共有区間を表示する際も、同路線の行先略称を適用する。
     access:{public:true,routeAdmins:[]},
     formationInputExample:'E233系6000番台 / H001 / H001F',
     prescribedFormationRule:'jre'
@@ -1198,8 +1195,6 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'JR東日本',
     formationFamily:'nambu',
-    destinationAliases:{'稲城長沼':'稲城','武蔵中原':'中原','武蔵溝ノ口':'溝口'},
-    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Nambu_noimage.png',
     access:{public:true,routeAdmins:['syakutaba6174']},
     formationInputExample:'E233系8000番台 / N1',
     prescribedFormationRule:'common'
@@ -1228,7 +1223,6 @@ const ROUTE_REGISTRY={
     company:'JR西日本',
     formationFamily:'osaka-loop',
     defaultFormationName:'323系',
-    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
     formationTypeImage:'https://minamikaze2700.github.io/Unyomatome/images/323.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
@@ -1247,7 +1241,6 @@ const ROUTE_REGISTRY={
     company:'JR西日本',
     formationFamily:'osaka-loop',
     defaultFormationName:'323系',
-    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
     formationTypeImage:'https://minamikaze2700.github.io/Unyomatome/images/323.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
@@ -1265,7 +1258,6 @@ const ROUTE_REGISTRY={
     storageArea:'__ROOT__',
     company:'東京メトロ',
     formationFamily:'hibiya',
-    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Hibiya_noimage.png',
     access:{public:false,routeAdmins:[]},
     formationInputExample:'TRTA13000 / TRTA13101 / TB70000 / TB71701 / TB70090 / TB71791',
     prescribedFormationRule:'common'
@@ -1282,7 +1274,6 @@ const ROUTE_REGISTRY={
     formationFamily:'fukuoka-kuko-hakozaki',
     noTrainNumbers:true,
     typeColors:{'普通':'#9fa0a0'},
-    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     access:{public:false,routeAdmins:['fulnishi39']},
@@ -1301,31 +1292,11 @@ const ROUTE_REGISTRY={
     formationFamily:'fukuoka-nanakuma',
     noTrainNumbers:true,
     defaultFormationName:'4両',
-    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/FukuchikaNanakuma_noimage.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/FukuchikaNanakuma_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/FukuchikaNanakuma_noimage.png',
     prescribedFormationRule:'common',
     access:{public:true,routeAdmins:['fulnishi39']},
     formationInputExample:'3000系 / 3000A系 / 01'
-  },
-  'ふくちか2系統':{
-    id:'fukuchika-2',
-    json:'https://minamikaze2700.github.io/Unyomatome/data/FukuokaCity_KukoHakozaki_2026.json',
-    jsonLines:['空港線','箱崎線'],
-    range:'福岡空港～姪浜・貝塚',
-    area:'福岡市地下鉄',
-    storageRoot:'ふくちか2系統',
-    storageArea:null,
-    company:'福岡市地下鉄',
-    formationFamily:'fukuoka-kuko-hakozaki',
-    noTrainNumbers:true,
-    typeColors:{'普通':'#9fa0a0'},
-    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
-    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
-    noImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
-    prescribedFormationRule:'common',
-    access:{public:false,routeAdmins:['fulnishi39']},
-    formationInputExample:'04 / K01 / W01'
   },
   '東武野田線':{
     id:'tobu-noda',
@@ -1337,10 +1308,7 @@ const ROUTE_REGISTRY={
     storageArea:'__ROOT__',
     company:'東武鉄道',
     formationFamily:'noda',
-    destinationAliases:{'春日部':'春日','七光台':'七光','清水公園':'清水','野田市':'野田'},
-    stationShortMap:{'春日部':'春日','七光台':'七光','清水公園':'清水','野田市':'野田'},
     typeColors:{'普通':'#666'},
-    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/TD_noimage.png',
     access:{public:true,routeAdmins:[]},
     formationInputExample:'81501 / 81501F / 80000系',
     prescribedFormationRule:'common'
@@ -1355,7 +1323,6 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'水島臨海鉄道',
     formationFamily:'mizushima',
-    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Mizushima_noimage.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Mizushima_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Mizushima_noimage.png',
     prescribedFormationRule:'mizushima',
@@ -1372,7 +1339,6 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'長野電鉄',
     formationFamily:'nagano',
-    destinationAliases:{'信州中野':'中野','湯田中':'湯田','長野':'長野','須坂':'須坂'},
     typeShortRules:[
       {containsAll:['ゆけむり','のんびり'],result:'ゆの'},
       {contains:'特急',trainNoSuffix:'A',result:'A特'},
@@ -1380,7 +1346,6 @@ const ROUTE_REGISTRY={
       {containsAll:['特急','ゆけむり'],result:'A特'},
       {containsAll:['特急','スノーモンキー'],result:'B特'}
     ],
-    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Nagano_noimage.png',
     access:{public:true,routeAdmins:[]},
     formationInputExample:'8500系 / T1',
     prescribedFormationRule:'nagano'
@@ -1396,7 +1361,6 @@ const ROUTE_REGISTRY={
     company:'JR東海',
     formationFamily:'jr-tokai-315',
     typeColors:{'普通':'#666666','区間快速':'#9acd32','快速':'#0072bc'},
-    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/315_noimage.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/315_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/315_noimage.png',
     prescribedFormationRule:'common',
@@ -1414,7 +1378,6 @@ const ROUTE_REGISTRY={
     company:'樽見鉄道',
     formationFamily:'tarumi',
     noTrainTypes:true,
-    trainImage:'https://minamikaze2700.github.io/Unyomatome/images/Tarumi_noimage.png',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Tarumi_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Tarumi_noimage.png',
     prescribedFormationRule:'common',
@@ -1588,7 +1551,7 @@ function jsonNoImageUrl(json=activeJson){
   const raw=jsonImageValue(json,activeRouteMeta,'noImage')
     ||jsonImageValue(json,activeRouteMeta,'formationDefaultImage')
     ||String(json?.commonFormationIcon||'').trim()
-    ||(isFukuoka ? String(activeRouteMeta?.noImage||activeRouteMeta?.formationDefaultImage||activeRouteMeta?.trainImage||'Fukuchika_noimage').trim() : '');
+    ||(isFukuoka ? String(activeRouteMeta?.noImage||activeRouteMeta?.formationDefaultImage||'Fukuchika_noimage').trim() : '');
   if(!raw) return isFukuoka ? 'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png' : LINE_TRAIN_IMG;
   if(/^https?:\/\//i.test(raw)) return raw;
   return `https://minamikaze2700.github.io/Unyomatome/images/${raw.replace(/\.png$/i,'')}.png`;
@@ -1807,11 +1770,36 @@ function buildStationsForRoute(json,meta){
   const fukuokaStations=buildFukuokaStationsForRoute(json,meta);
   if(fukuokaStations?.length) return fukuokaStations;
   const seen=new Set(),list=[];
-  for(const lineName of meta.jsonLines){
-    const line=(json.lines||[]).find(x=>String(x?.name||'')===lineName);
-    if(!line) continue;
-    for(const st of (line.stations||[])){
-      const name=String(st?.name||'');
+
+  // 横浜線は東神奈川～大船が京浜東北・根岸線との共用区間。
+  // Yokohama_2026.json 側の駅定義が東神奈川で途切れている場合でも、
+  // 共有JSONとして読み込んだ京浜東北・根岸線の東神奈川～大船を継ぎ足す。
+  // 横浜線側に既に大船まで登録されている場合も、共用区間を組み直すことで
+  // 駅の重複や並び順の乱れを防ぐ。
+  let stationSources=[];
+  if(String(meta?.id||'')==='yokohama'){
+    const yokohamaLine=(json?.lines||[]).find(x=>String(x?.name||'')==='横浜線');
+    const keihinLine=(json?.lines||[]).find(x=>String(x?.name||'')==='京浜東北・根岸線');
+    const yokohamaStations=Array.isArray(yokohamaLine?.stations)?yokohamaLine.stations:[];
+    const keihinStations=Array.isArray(keihinLine?.stations)?keihinLine.stations:[];
+    const yokohamaJunction=yokohamaStations.findIndex(st=>String(st?.name||'').trim()==='東神奈川');
+    const keihinJunction=keihinStations.findIndex(st=>String(st?.name||'').trim()==='東神奈川');
+    if(yokohamaJunction>=0 && keihinJunction>=0){
+      stationSources=[[
+        ...yokohamaStations.slice(0,yokohamaJunction+1),
+        ...keihinStations.slice(keihinJunction+1)
+      ]];
+    }
+  }
+  if(!stationSources.length){
+    stationSources=meta.jsonLines.map(lineName=>{
+      const line=(json.lines||[]).find(x=>String(x?.name||'')===lineName);
+      return Array.isArray(line?.stations)?line.stations:[];
+    });
+  }
+  for(const stations of stationSources){
+    for(const st of stations){
+      const name=String(st?.name||'').trim();
       if(!name||seen.has(name)) continue;
       seen.add(name); list.push({id:`st${list.length+1}`,nameJa:name,nameEn:String(st?.nameEn||'')});
     }
@@ -2314,6 +2302,17 @@ async function loadExternalRouteJsons(routeMeta){
   // 両方のJSONを列車データと線区定義だけ統合する。編成・種別色・運用連結は
   // 現在選択中の路線（primary）をそのまま使用する。
   const merged={...primary,lines:[],trains:{},stationDirections:{},operationChains:primary?.operationChains||{}};
+  // 行先略称はHTMLの路線設定に直書きせず各JSONで管理する。
+  // 横浜線ページでは共有区間の京浜東北・根岸線JSONも読み込むため、
+  // primary（現在路線）の指定を優先しつつ、関連JSONの略称も統合する。
+  merged.destinationAliases={...(primary?.destinationAliases&&typeof primary.destinationAliases==='object'&&!Array.isArray(primary.destinationAliases)?primary.destinationAliases:{})};
+  for(const {json:aliasJson} of payloads.slice(1)){
+    const aliases=aliasJson?.destinationAliases;
+    if(!aliases||typeof aliases!=='object'||Array.isArray(aliases)) continue;
+    for(const [destination,shortName] of Object.entries(aliases)){
+      if(!Object.prototype.hasOwnProperty.call(merged.destinationAliases,destination)) merged.destinationAliases[destination]=shortName;
+    }
+  }
   const seenLines=new Set();
   for(const {json} of payloads){
     for(const line of (Array.isArray(json?.lines)?json.lines:[])){
@@ -3062,13 +3061,10 @@ function getDetailType(type){
 function displayTrainNo(train){ return (train && !train.hideTrainNumber) ? normalizeTrainNo(train.no) : ''; }
 function getShortDest(dest){
   const value=String(dest||'').trim();
+  // 略称の正本はJSONの destinationAliases に統一する。
   const aliasMaps=[
-    activeRouteMeta?.destinationAliases,
-    activeRouteMeta?.stationAliases,
-    activeRouteMeta?.stationShortMap,
     activeJson?.destinationAliases,
     activeJson?.stationAliases,
-    activeJson?.stationShortMap,
     activeJson?.stationAbbreviations
   ];
   for(const aliases of aliasMaps){
@@ -9561,19 +9557,11 @@ initRegionNavigation();
     const value=String(name||'').trim();
     if(!value) return '';
 
-    const registryMeta=(typeof ROUTE_REGISTRY==='object' && ROUTE_REGISTRY && activeRouteName && ROUTE_REGISTRY[activeRouteName]) ? ROUTE_REGISTRY[activeRouteName] : null;
+    // 駅名略称はJSONに集約。destinationAliasesを標準キーとして使う。
     const maps=[
-      registryMeta?.stationShortMap,
-      registryMeta?.stationAbbreviations,
-      registryMeta?.destinationAliases,
-      activeRouteMeta?.stationShortMap,
-      activeRouteMeta?.stationAbbreviations,
-      activeRouteMeta?.stationAliases,
-      activeRouteMeta?.destinationAliases,
-      activeJson?.stationShortMap,
-      activeJson?.stationAbbreviations,
+      activeJson?.destinationAliases,
       activeJson?.stationAliases,
-      activeJson?.destinationAliases
+      activeJson?.stationAbbreviations
     ];
     for(const map of maps){
       if(map && typeof map==='object' && !Array.isArray(map) && Object.prototype.hasOwnProperty.call(map,value)){
