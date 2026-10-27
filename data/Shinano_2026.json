@@ -6,8 +6,8 @@
   "noImage": "Shinano_noimage",
   "formationDefaultImage": "Shinano_noimage",
   "typeColors": {
-    "普通": "#666666",
-    "快速": "#0072bc"
+    "普通": "#9bdcf5",
+    "快速": "#f3a2c8"
   },
   "lines": [
     {
@@ -100,7 +100,7 @@
     {
       "name": "北しなの線",
       "nameEn": "Kita-Shinano Line",
-      "color": "#1769aa",
+      "color": "#d71920",
       "directions": {
         "up": "豊野方面",
         "down": "妙高高原方面"
@@ -125,6 +125,56 @@
         {
           "name": "妙高高原",
           "nameEn": "Myoko-Kogen"
+        }
+      ]
+    },
+    {
+      "name": "篠ノ井線",
+      "nameEn": "Shinonoi Line",
+      "color": "#db600e",
+      "stations": [
+        {
+          "name": "長野",
+          "nameEn": "Nagano"
+        },
+        {
+          "name": "安茂里",
+          "nameEn": "Amori"
+        },
+        {
+          "name": "川中島",
+          "nameEn": "Kawanakajima"
+        },
+        {
+          "name": "今井",
+          "nameEn": "Imai"
+        },
+        {
+          "name": "篠ノ井",
+          "nameEn": "Shinonoi"
+        }
+      ]
+    },
+    {
+      "name": "飯山線",
+      "nameEn": "Iiyama Line",
+      "color": "#7bbe35",
+      "stations": [
+        {
+          "name": "長野",
+          "nameEn": "Nagano"
+        },
+        {
+          "name": "北長野",
+          "nameEn": "Kitanagano"
+        },
+        {
+          "name": "三才",
+          "nameEn": "Sansai"
+        },
+        {
+          "name": "豊野",
+          "nameEn": "Toyono"
         }
       ]
     }
@@ -429,16 +479,28 @@
             },
             {
               "station": "三才",
-              "time": "05:40"
+              "time": "05:40",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "05:44"
+              "time": "05:44",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "05:49",
-              "time": "05:49"
+              "time": "05:49",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -626,16 +688,28 @@
             },
             {
               "station": "三才",
-              "time": "06:41"
+              "time": "06:41",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "06:45"
+              "time": "06:45",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "06:50",
-              "time": "06:50"
+              "time": "06:50",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -858,16 +932,28 @@
             },
             {
               "station": "三才",
-              "time": "07:27"
+              "time": "07:27",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "07:32"
+              "time": "07:32",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "07:37",
-              "time": "07:37"
+              "time": "07:37",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "serviceNotes": [
@@ -1129,16 +1215,28 @@
             },
             {
               "station": "三才",
-              "time": "07:42"
+              "time": "07:42",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "07:46"
+              "time": "07:46",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "07:51",
-              "time": "07:51"
+              "time": "07:51",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -1221,16 +1319,28 @@
             },
             {
               "station": "三才",
-              "time": "08:24"
+              "time": "08:24",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "08:28"
+              "time": "08:28",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "08:34",
-              "time": "08:34"
+              "time": "08:34",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -1708,16 +1818,28 @@
             },
             {
               "station": "三才",
-              "time": "09:05"
+              "time": "09:05",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "09:09"
+              "time": "09:09",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "09:14",
-              "time": "09:14"
+              "time": "09:14",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -1868,16 +1990,28 @@
             },
             {
               "station": "三才",
-              "time": "09:42"
+              "time": "09:42",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "09:46"
+              "time": "09:46",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "09:52",
-              "time": "09:52"
+              "time": "09:52",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -2097,16 +2231,28 @@
             },
             {
               "station": "三才",
-              "time": "11:31"
+              "time": "11:31",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "11:35"
+              "time": "11:35",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "11:40",
-              "time": "11:40"
+              "time": "11:40",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -2370,16 +2516,28 @@
             },
             {
               "station": "三才",
-              "time": "12:21"
+              "time": "12:21",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "12:25"
+              "time": "12:25",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "12:30",
-              "time": "12:30"
+              "time": "12:30",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "serviceNotes": [
@@ -2471,16 +2629,28 @@
             },
             {
               "station": "三才",
-              "time": "13:40"
+              "time": "13:40",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "13:44"
+              "time": "13:44",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "13:49",
-              "time": "13:49"
+              "time": "13:49",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -2799,16 +2969,28 @@
             },
             {
               "station": "三才",
-              "time": "15:13"
+              "time": "15:13",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "15:17"
+              "time": "15:17",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "15:22",
-              "time": "15:22"
+              "time": "15:22",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -3090,16 +3272,28 @@
             },
             {
               "station": "三才",
-              "time": "16:28"
+              "time": "16:28",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "16:33"
+              "time": "16:33",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "16:38",
-              "time": "16:38"
+              "time": "16:38",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -3119,16 +3313,28 @@
             },
             {
               "station": "三才",
-              "time": "16:09"
+              "time": "16:09",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "16:13"
+              "time": "16:13",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "16:18",
-              "time": "16:18"
+              "time": "16:18",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -3316,16 +3522,28 @@
             },
             {
               "station": "三才",
-              "time": "17:16"
+              "time": "17:16",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "17:20"
+              "time": "17:20",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "17:25",
-              "time": "17:25"
+              "time": "17:25",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -3567,16 +3785,28 @@
             },
             {
               "station": "三才",
-              "time": "18:12"
+              "time": "18:12",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "18:16"
+              "time": "18:16",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "18:22",
-              "time": "18:22"
+              "time": "18:22",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -3596,16 +3826,28 @@
             },
             {
               "station": "三才",
-              "time": "17:46"
+              "time": "17:46",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "17:50"
+              "time": "17:50",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "17:55",
-              "time": "17:55"
+              "time": "17:55",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -3825,17 +4067,29 @@
             },
             {
               "station": "三才",
-              "time": "18:47"
+              "time": "18:47",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "18:51"
+              "time": "18:51",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "18:57",
               "departure": "19:00",
-              "time": "19:00"
+              "time": "19:00",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "安茂里",
@@ -3931,7 +4185,11 @@
             {
               "station": "上田",
               "arrival": "18:54",
-              "time": "18:54"
+              "time": "18:54",
+              "segmentColors": [
+                "#db600e",
+                "#d71920"
+              ]
             }
           ],
           "serviceNotes": [
@@ -3942,7 +4200,8 @@
             "しなの鉄道線": [
               "1606M"
             ]
-          }
+          },
+          "serviceName": "しなのサンセット2号"
         },
         {
           "no": "672M",
@@ -4101,16 +4360,28 @@
             },
             {
               "station": "三才",
-              "time": "19:48"
+              "time": "19:48",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "19:52"
+              "time": "19:52",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "19:57",
-              "time": "19:57"
+              "time": "19:57",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -4259,7 +4530,11 @@
             {
               "station": "上田",
               "arrival": "20:17",
-              "time": "20:17"
+              "time": "20:17",
+              "segmentColors": [
+                "#db600e",
+                "#d71920"
+              ]
             }
           ],
           "serviceNotes": [
@@ -4270,7 +4545,8 @@
             "しなの鉄道線": [
               "1608M"
             ]
-          }
+          },
+          "serviceName": "しなのサンセット4号"
         },
         {
           "no": "348M",
@@ -4301,17 +4577,29 @@
             },
             {
               "station": "三才",
-              "time": "20:27"
+              "time": "20:27",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "20:31"
+              "time": "20:31",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "20:36",
               "departure": "20:38",
-              "time": "20:38"
+              "time": "20:38",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "安茂里",
@@ -4633,16 +4921,28 @@
             },
             {
               "station": "三才",
-              "time": "21:28"
+              "time": "21:28",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "21:32"
+              "time": "21:32",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "21:37",
-              "time": "21:37"
+              "time": "21:37",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -4862,16 +5162,28 @@
             },
             {
               "station": "三才",
-              "time": "22:42"
+              "time": "22:42",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "22:46"
+              "time": "22:46",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "22:51",
-              "time": "22:51"
+              "time": "22:51",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -5173,17 +5485,29 @@
             },
             {
               "station": "北長野",
-              "time": "06:05"
+              "time": "06:05",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "06:09"
+              "time": "06:09",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "06:13",
               "departure": "06:14",
-              "time": "06:14"
+              "time": "06:14",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -5409,16 +5733,28 @@
             },
             {
               "station": "北長野",
-              "time": "08:03"
+              "time": "08:03",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "08:08"
+              "time": "08:08",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "08:12",
-              "time": "08:12"
+              "time": "08:12",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -5460,17 +5796,29 @@
             },
             {
               "station": "北長野",
-              "time": "06:28"
+              "time": "06:28",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "06:32"
+              "time": "06:32",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "06:36",
               "departure": "06:37",
-              "time": "06:37"
+              "time": "06:37",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -5687,7 +6035,11 @@
             {
               "station": "長野",
               "arrival": "07:59",
-              "time": "07:59"
+              "time": "07:59",
+              "segmentColors": [
+                "#d71920",
+                "#db600e"
+              ]
             }
           ],
           "serviceNotes": [
@@ -5698,7 +6050,8 @@
             "しなの鉄道線": [
               "601M"
             ]
-          }
+          },
+          "serviceName": "しなのサンライズ号"
         },
         {
           "no": "1315M",
@@ -5711,16 +6064,28 @@
             },
             {
               "station": "北長野",
-              "time": "07:23"
+              "time": "07:23",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "07:27"
+              "time": "07:27",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "07:32",
-              "time": "07:32"
+              "time": "07:32",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -5937,17 +6302,29 @@
             },
             {
               "station": "北長野",
-              "time": "07:51"
+              "time": "07:51",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "07:56"
+              "time": "07:56",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "08:00",
               "departure": "08:00",
-              "time": "08:00"
+              "time": "08:00",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -6154,17 +6531,29 @@
             },
             {
               "station": "北長野",
-              "time": "09:29"
+              "time": "09:29",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "09:33"
+              "time": "09:33",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "09:37",
               "departure": "09:38",
-              "time": "09:38"
+              "time": "09:38",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -6223,16 +6612,28 @@
             },
             {
               "station": "北長野",
-              "time": "08:19"
+              "time": "08:19",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "08:23"
+              "time": "08:23",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "08:28",
-              "time": "08:28"
+              "time": "08:28",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "serviceNotes": [
@@ -6550,17 +6951,29 @@
             },
             {
               "station": "北長野",
-              "time": "10:54"
+              "time": "10:54",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "10:58"
+              "time": "10:58",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "11:03",
               "departure": "11:03",
-              "time": "11:03"
+              "time": "11:03",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -6939,17 +7352,29 @@
             },
             {
               "station": "北長野",
-              "time": "12:16"
+              "time": "12:16",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "12:20"
+              "time": "12:20",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "12:25",
               "departure": "12:28",
-              "time": "12:28"
+              "time": "12:28",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -7099,17 +7524,29 @@
             },
             {
               "station": "北長野",
-              "time": "13:21"
+              "time": "13:21",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "13:25"
+              "time": "13:25",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "13:30",
               "departure": "13:35",
-              "time": "13:35"
+              "time": "13:35",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -7259,17 +7696,29 @@
             },
             {
               "station": "北長野",
-              "time": "14:16"
+              "time": "14:16",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "14:20"
+              "time": "14:20",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "14:24",
               "departure": "14:25",
-              "time": "14:25"
+              "time": "14:25",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -7525,17 +7974,29 @@
             },
             {
               "station": "北長野",
-              "time": "15:33"
+              "time": "15:33",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "15:37"
+              "time": "15:37",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "15:41",
               "departure": "15:41",
-              "time": "15:41"
+              "time": "15:41",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -7572,16 +8033,28 @@
             },
             {
               "station": "北長野",
-              "time": "15:49"
+              "time": "15:49",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "15:53"
+              "time": "15:53",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "15:58",
-              "time": "15:58"
+              "time": "15:58",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -7729,17 +8202,29 @@
             },
             {
               "station": "北長野",
-              "time": "16:14"
+              "time": "16:14",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "16:18"
+              "time": "16:18",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "16:22",
               "departure": "16:23",
-              "time": "16:23"
+              "time": "16:23",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -8201,17 +8686,29 @@
             },
             {
               "station": "北長野",
-              "time": "18:52"
+              "time": "18:52",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "18:57"
+              "time": "18:57",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "19:01",
               "departure": "19:01",
-              "time": "19:01"
+              "time": "19:01",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -8270,17 +8767,29 @@
             },
             {
               "station": "北長野",
-              "time": "17:12"
+              "time": "17:12",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "17:16"
+              "time": "17:16",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "17:20",
               "departure": "17:22",
-              "time": "17:22"
+              "time": "17:22",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -8317,16 +8826,28 @@
             },
             {
               "station": "北長野",
-              "time": "17:25"
+              "time": "17:25",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "17:29"
+              "time": "17:29",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "17:34",
-              "time": "17:34"
+              "time": "17:34",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -8565,17 +9086,29 @@
             },
             {
               "station": "北長野",
-              "time": "18:16"
+              "time": "18:16",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "18:20"
+              "time": "18:20",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "18:24",
               "departure": "18:25",
-              "time": "18:25"
+              "time": "18:25",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -8810,7 +9343,11 @@
             {
               "station": "長野",
               "arrival": "19:35",
-              "time": "19:35"
+              "time": "19:35",
+              "segmentColors": [
+                "#d71920",
+                "#db600e"
+              ]
             }
           ],
           "serviceNotes": [
@@ -8821,7 +9358,8 @@
             "しなの鉄道線": [
               "1607M"
             ]
-          }
+          },
+          "serviceName": "しなのサンセット1号"
         },
         {
           "no": "677M",
@@ -8962,17 +9500,29 @@
             },
             {
               "station": "北長野",
-              "time": "19:55"
+              "time": "19:55",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "20:00"
+              "time": "20:00",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "20:04",
               "departure": "20:04",
-              "time": "20:04"
+              "time": "20:04",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -9341,17 +9891,29 @@
             },
             {
               "station": "北長野",
-              "time": "21:23"
+              "time": "21:23",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "21:28"
+              "time": "21:28",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "21:32",
               "departure": "21:32",
-              "time": "21:32"
+              "time": "21:32",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -9501,17 +10063,29 @@
             },
             {
               "station": "北長野",
-              "time": "22:10"
+              "time": "22:10",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "22:14"
+              "time": "22:14",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "22:19",
               "departure": "22:19",
-              "time": "22:19"
+              "time": "22:19",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -9698,16 +10272,28 @@
             },
             {
               "station": "北長野",
-              "time": "23:24"
+              "time": "23:24",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "23:28"
+              "time": "23:28",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "23:32",
-              "time": "23:32"
+              "time": "23:32",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -9844,16 +10430,28 @@
             },
             {
               "station": "三才",
-              "time": "05:40"
+              "time": "05:40",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "05:44"
+              "time": "05:44",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "05:49",
-              "time": "05:49"
+              "time": "05:49",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -10041,16 +10639,28 @@
             },
             {
               "station": "三才",
-              "time": "06:41"
+              "time": "06:41",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "06:45"
+              "time": "06:45",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "06:50",
-              "time": "06:50"
+              "time": "06:50",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -10400,16 +11010,28 @@
             },
             {
               "station": "三才",
-              "time": "07:42"
+              "time": "07:42",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "07:46"
+              "time": "07:46",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "07:51",
-              "time": "07:51"
+              "time": "07:51",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -10492,16 +11114,28 @@
             },
             {
               "station": "三才",
-              "time": "08:24"
+              "time": "08:24",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "08:28"
+              "time": "08:28",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "08:34",
-              "time": "08:34"
+              "time": "08:34",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -10817,16 +11451,28 @@
             },
             {
               "station": "三才",
-              "time": "09:05"
+              "time": "09:05",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "09:09"
+              "time": "09:09",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "09:14",
-              "time": "09:14"
+              "time": "09:14",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -10977,16 +11623,28 @@
             },
             {
               "station": "三才",
-              "time": "09:42"
+              "time": "09:42",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "09:46"
+              "time": "09:46",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "09:52",
-              "time": "09:52"
+              "time": "09:52",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -11206,16 +11864,28 @@
             },
             {
               "station": "三才",
-              "time": "11:31"
+              "time": "11:31",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "11:35"
+              "time": "11:35",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "11:40",
-              "time": "11:40"
+              "time": "11:40",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -11477,13 +12147,21 @@
               "station": "長野",
               "arrival": "12:40",
               "departure": "12:43",
-              "time": "12:43"
+              "time": "12:43",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "戸倉",
               "arrival": "13:00",
               "departure": "13:01",
-              "time": "13:01"
+              "time": "13:01",
+              "segmentColors": [
+                "#db600e",
+                "#d71920"
+              ]
             },
             {
               "station": "上田",
@@ -11527,7 +12205,8 @@
           "throughLines": [
             "北しなの線",
             "しなの鉄道線"
-          ]
+          ],
+          "serviceName": "軽井沢リゾート2号"
         },
         {
           "no": "2644M",
@@ -11725,16 +12404,28 @@
             },
             {
               "station": "三才",
-              "time": "13:40"
+              "time": "13:40",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "13:44"
+              "time": "13:44",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "13:49",
-              "time": "13:49"
+              "time": "13:49",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -12053,16 +12744,28 @@
             },
             {
               "station": "三才",
-              "time": "15:13"
+              "time": "15:13",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "15:17"
+              "time": "15:17",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "15:22",
-              "time": "15:22"
+              "time": "15:22",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -12322,16 +13025,28 @@
             },
             {
               "station": "三才",
-              "time": "16:28"
+              "time": "16:28",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "16:33"
+              "time": "16:33",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "16:38",
-              "time": "16:38"
+              "time": "16:38",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -12351,16 +13066,28 @@
             },
             {
               "station": "三才",
-              "time": "16:09"
+              "time": "16:09",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "16:13"
+              "time": "16:13",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "16:18",
-              "time": "16:18"
+              "time": "16:18",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -12548,16 +13275,28 @@
             },
             {
               "station": "三才",
-              "time": "17:16"
+              "time": "17:16",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "17:20"
+              "time": "17:20",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "17:25",
-              "time": "17:25"
+              "time": "17:25",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -12799,16 +13538,28 @@
             },
             {
               "station": "三才",
-              "time": "18:12"
+              "time": "18:12",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "18:16"
+              "time": "18:16",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "18:22",
-              "time": "18:22"
+              "time": "18:22",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -12828,16 +13579,28 @@
             },
             {
               "station": "三才",
-              "time": "17:46"
+              "time": "17:46",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "17:50"
+              "time": "17:50",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "17:55",
-              "time": "17:55"
+              "time": "17:55",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -13057,17 +13820,29 @@
             },
             {
               "station": "三才",
-              "time": "18:47"
+              "time": "18:47",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "18:51"
+              "time": "18:51",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "18:57",
               "departure": "19:00",
-              "time": "19:00"
+              "time": "19:00",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "安茂里",
@@ -13308,16 +14083,28 @@
             },
             {
               "station": "三才",
-              "time": "19:48"
+              "time": "19:48",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "19:52"
+              "time": "19:52",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "19:57",
-              "time": "19:57"
+              "time": "19:57",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -13483,17 +14270,29 @@
             },
             {
               "station": "三才",
-              "time": "20:27"
+              "time": "20:27",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "20:31"
+              "time": "20:31",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "20:36",
               "departure": "20:38",
-              "time": "20:38"
+              "time": "20:38",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "安茂里",
@@ -13815,16 +14614,28 @@
             },
             {
               "station": "三才",
-              "time": "21:28"
+              "time": "21:28",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "21:32"
+              "time": "21:32",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "21:37",
-              "time": "21:37"
+              "time": "21:37",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -14044,16 +14855,28 @@
             },
             {
               "station": "三才",
-              "time": "22:42"
+              "time": "22:42",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "北長野",
-              "time": "22:46"
+              "time": "22:46",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "長野",
               "arrival": "22:51",
-              "time": "22:51"
+              "time": "22:51",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -14355,17 +15178,29 @@
             },
             {
               "station": "北長野",
-              "time": "06:05"
+              "time": "06:05",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "06:09"
+              "time": "06:09",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "06:13",
               "departure": "06:14",
-              "time": "06:14"
+              "time": "06:14",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -14591,16 +15426,28 @@
             },
             {
               "station": "北長野",
-              "time": "08:03"
+              "time": "08:03",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "08:08"
+              "time": "08:08",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "08:12",
-              "time": "08:12"
+              "time": "08:12",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -14642,17 +15489,29 @@
             },
             {
               "station": "北長野",
-              "time": "06:28"
+              "time": "06:28",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "06:32"
+              "time": "06:32",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "06:36",
               "departure": "06:37",
-              "time": "06:37"
+              "time": "06:37",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -14846,16 +15705,28 @@
             },
             {
               "station": "北長野",
-              "time": "07:23"
+              "time": "07:23",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "07:27"
+              "time": "07:27",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "07:32",
-              "time": "07:32"
+              "time": "07:32",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -15239,17 +16110,29 @@
             },
             {
               "station": "北長野",
-              "time": "09:29"
+              "time": "09:29",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "09:33"
+              "time": "09:33",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "09:37",
               "departure": "09:38",
-              "time": "09:38"
+              "time": "09:38",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -15579,7 +16462,11 @@
               "station": "豊野",
               "arrival": "11:03",
               "departure": "11:03",
-              "time": "11:03"
+              "time": "11:03",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -15625,7 +16512,8 @@
           "throughLines": [
             "しなの鉄道線",
             "北しなの線"
-          ]
+          ],
+          "serviceName": "軽井沢リゾート1号"
         },
         {
           "no": "2635M",
@@ -16159,17 +17047,29 @@
             },
             {
               "station": "北長野",
-              "time": "12:16"
+              "time": "12:16",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "12:20"
+              "time": "12:20",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "12:25",
               "departure": "12:28",
-              "time": "12:28"
+              "time": "12:28",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -16319,17 +17219,29 @@
             },
             {
               "station": "北長野",
-              "time": "13:21"
+              "time": "13:21",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "13:25"
+              "time": "13:25",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "13:30",
               "departure": "13:35",
-              "time": "13:35"
+              "time": "13:35",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -16479,17 +17391,29 @@
             },
             {
               "station": "北長野",
-              "time": "14:16"
+              "time": "14:16",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "14:20"
+              "time": "14:20",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "14:24",
               "departure": "14:25",
-              "time": "14:25"
+              "time": "14:25",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -16745,17 +17669,29 @@
             },
             {
               "station": "北長野",
-              "time": "15:33"
+              "time": "15:33",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "15:37"
+              "time": "15:37",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "15:41",
               "departure": "15:41",
-              "time": "15:41"
+              "time": "15:41",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -16792,16 +17728,28 @@
             },
             {
               "station": "北長野",
-              "time": "15:49"
+              "time": "15:49",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "15:53"
+              "time": "15:53",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "15:58",
-              "time": "15:58"
+              "time": "15:58",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -16949,17 +17897,29 @@
             },
             {
               "station": "北長野",
-              "time": "16:14"
+              "time": "16:14",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "16:18"
+              "time": "16:18",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "16:22",
               "departure": "16:23",
-              "time": "16:23"
+              "time": "16:23",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -17305,17 +18265,29 @@
             },
             {
               "station": "北長野",
-              "time": "18:52"
+              "time": "18:52",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "18:57"
+              "time": "18:57",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "19:01",
               "departure": "19:01",
-              "time": "19:01"
+              "time": "19:01",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -17374,17 +18346,29 @@
             },
             {
               "station": "北長野",
-              "time": "17:12"
+              "time": "17:12",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "17:16"
+              "time": "17:16",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "17:20",
               "departure": "17:22",
-              "time": "17:22"
+              "time": "17:22",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -17421,16 +18405,28 @@
             },
             {
               "station": "北長野",
-              "time": "17:25"
+              "time": "17:25",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "17:29"
+              "time": "17:29",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "17:34",
-              "time": "17:34"
+              "time": "17:34",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -17629,17 +18625,29 @@
             },
             {
               "station": "北長野",
-              "time": "18:16"
+              "time": "18:16",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "18:20"
+              "time": "18:20",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "18:24",
               "departure": "18:25",
-              "time": "18:25"
+              "time": "18:25",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -18001,17 +19009,29 @@
             },
             {
               "station": "北長野",
-              "time": "19:55"
+              "time": "19:55",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "20:00"
+              "time": "20:00",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "20:04",
               "departure": "20:04",
-              "time": "20:04"
+              "time": "20:04",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -18380,17 +19400,29 @@
             },
             {
               "station": "北長野",
-              "time": "21:23"
+              "time": "21:23",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "21:28"
+              "time": "21:28",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "21:32",
               "departure": "21:32",
-              "time": "21:32"
+              "time": "21:32",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -18540,17 +19572,29 @@
             },
             {
               "station": "北長野",
-              "time": "22:10"
+              "time": "22:10",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "22:14"
+              "time": "22:14",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "22:19",
               "departure": "22:19",
-              "time": "22:19"
+              "time": "22:19",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "牟礼",
@@ -18737,16 +19781,28 @@
             },
             {
               "station": "北長野",
-              "time": "23:24"
+              "time": "23:24",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "三才",
-              "time": "23:28"
+              "time": "23:28",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             },
             {
               "station": "豊野",
               "arrival": "23:32",
-              "time": "23:32"
+              "time": "23:32",
+              "segmentColors": [
+                "#d71920",
+                "#7bbe35"
+              ]
             }
           ],
           "trainNumbers": {
@@ -18765,5 +19821,14 @@
   "noTrainTypes": false,
   "version": 1,
   "lineKey": "shinano",
-  "label": "しなの鉄道"
+  "label": "しなの鉄道",
+  "destinationAliases": {
+    "軽井沢": "軽井",
+    "妙高高原": "妙高高",
+    "長野": "長野",
+    "小諸": "小諸",
+    "上田": "上田",
+    "戸倉": "戸倉",
+    "豊野": "豊野"
+  }
 }
