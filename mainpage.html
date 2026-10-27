@@ -2,19 +2,23 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta property="og:title" content="運用まとめ">
-<meta property="og:description" content="日本各地の鉄道路線の運用を記録・確認できる運用まとめ">
-
+<meta charset="UTF-8">
+<meta name="description" content="日本各地の鉄道路線の列車運用・列車番号・車両編成・停車駅・時刻表を確認できる運用まとめです。">
+<meta name="robots" content="index,follow" id="seoRobots">
+<link rel="canonical" href="https://minamikaze2700.github.io/Unyomatome/mainpage.html" id="seoCanonical">
+<meta property="og:title" content="運用まとめ - メインページ">
+<meta property="og:description" content="日本各地の鉄道路線の列車運用・列車番号・車両編成・停車駅・時刻表を確認できる運用まとめです。">
 <meta property="og:url" content="https://minamikaze2700.github.io/Unyomatome/mainpage.html">
 <meta property="og:type" content="website">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta charset="UTF-8">
+<meta name="twitter:title" content="運用まとめ - メインページ">
+<meta name="twitter:description" content="日本各地の鉄道路線の列車運用・列車番号・車両編成・停車駅・時刻表を確認できる運用まとめです。">
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>運用まとめ</title>
+<title>運用まとめ - メインページ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -1084,7 +1088,7 @@ const RESET_DWELL_MIN=2;
 const TURNBACK_SWITCH_MIN=1;
 const TRAIN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/HiroshimaArea_2026.json';
 const KOBE_KAIGAN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/KobeCity_2026.json';
-const DEFAULT_ROUTE_TITLE='運用まとめ';
+const DEFAULT_ROUTE_TITLE='運用まとめ - メインページ';
 const LAST_ROUTE_STORAGE_KEY='routeLastRoute_v1';
 const ROUTE_REGISTRY={
   '山陽本線（糸崎～岩国）':{
@@ -1545,6 +1549,56 @@ function routeNameFromId(value){
 }
 function routeIdFromName(routeName){
   return String(ROUTE_REGISTRY[String(routeName||'')]?.id||'').trim();
+}
+
+// 検索エンジン・SNS向けのページ名とメタ情報を、?route= の値から設定する。
+// URLに路線指定がないメインページは、localStorageの選択路線に左右されない。
+function seoFullRouteName(routeName){
+  const route=String(routeName||'').trim();
+  if(!route) return 'メインページ';
+  const company=String(ROUTE_REGISTRY[route]?.company||'').trim();
+  if(!company) return route;
+  if(route.startsWith(company)) return route===company ? `${company}線` : route;
+  return `${company}${route}`;
+}
+function updateSeoMetadataFromUrl(){
+  const baseUrl='https://minamikaze2700.github.io/Unyomatome/mainpage.html';
+  let routeName='';
+  try{ routeName=routeNameFromId(new URLSearchParams(window.location.search||'').get('route')||''); }catch(e){}
+  const routeMeta=routeName ? ROUTE_REGISTRY[routeName] : null;
+  const fullRouteName=routeName ? seoFullRouteName(routeName) : '';
+  const title=routeName ? `運用まとめ - ${fullRouteName}` : DEFAULT_ROUTE_TITLE;
+  const description=routeName
+    ? `${fullRouteName}の列車運用、列車番号、車両編成、停車駅や時刻表を確認できる運用まとめです。`
+    : '日本各地の鉄道路線の列車運用・列車番号・車両編成・停車駅・時刻表を確認できる運用まとめです。';
+  let canonical=baseUrl;
+  if(routeName){
+    const url=new URL(baseUrl);
+    url.searchParams.set('route',routeIdFromName(routeName)||routeName);
+    canonical=url.toString();
+  }
+  const indexable=!routeName || routeMeta?.access?.public===true;
+  document.title=title;
+  const setMeta=(selector,attribute,value)=>{
+    let node=document.querySelector(selector);
+    if(!node){
+      node=document.createElement('meta');
+      const m=selector.match(/meta\[(name|property)="([^"]+)"\]/);
+      if(m) node.setAttribute(m[1],m[2]);
+      document.head.appendChild(node);
+    }
+    node.setAttribute(attribute,value);
+  };
+  setMeta('meta[name="description"]','content',description);
+  setMeta('meta[name="robots"]','content',indexable?'index,follow':'noindex,nofollow');
+  setMeta('meta[property="og:title"]','content',title);
+  setMeta('meta[property="og:description"]','content',description);
+  setMeta('meta[property="og:url"]','content',canonical);
+  setMeta('meta[name="twitter:title"]','content',title);
+  setMeta('meta[name="twitter:description"]','content',description);
+  let canonicalNode=document.querySelector('link[rel="canonical"]');
+  if(!canonicalNode){ canonicalNode=document.createElement('link'); canonicalNode.rel='canonical'; document.head.appendChild(canonicalNode); }
+  canonicalNode.href=canonical;
 }
 
 
@@ -5184,6 +5238,7 @@ async function selectFormation(formId){
   }
 }
 window.addEventListener('load',async ()=>{
+  updateSeoMetadataFromUrl();
   // URLの ?route=路線ID を最優先し、なければ前回の路線を復元する。
   let restoredRoute='';
   try{
@@ -6817,13 +6872,7 @@ function updateRouteVisuals(){
   root.style.setProperty('--control-border-color',makeLightBorder(titleColor));
   const titleText=document.getElementById('titleText');
   if(titleText) titleText.textContent=activeRouteName||DEFAULT_ROUTE_TITLE;
-  document.title=activeRouteName ? `運用まとめ - ${activeRouteName}` : DEFAULT_ROUTE_TITLE;
-  const ogTitle=document.querySelector('meta[property="og:title"]');
-  if(ogTitle) ogTitle.setAttribute('content',activeRouteName ? `運用まとめ - ${activeRouteName}` : DEFAULT_ROUTE_TITLE);
-  try{
-    const ogUrl=document.querySelector('meta[property="og:url"]');
-    if(ogUrl) ogUrl.setAttribute('content',window.location.href);
-  }catch(e){}
+  updateSeoMetadataFromUrl();
   const title=document.getElementById('title');
   if(title){ title.style.background=h1Color; title.style.borderBottomColor=makeLightBorder(h1Color); }
   // コントロールバーの色はh1の色に統一。
