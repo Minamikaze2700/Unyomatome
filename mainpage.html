@@ -1381,8 +1381,40 @@ const ROUTE_REGISTRY={
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Tarumi_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Tarumi_noimage.png',
     prescribedFormationRule:'common',
-    access:{public:true,routeAdmins:[]},
+    access:{public:false,routeAdmins:[]},
     formationInputExample:'315 / 516 / 617 / 701 / 702 / 703'
+  },
+  'しなの鉄道線（篠ノ井～軽井沢）':{
+    id:'shinano-main',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/Shinano_2026.json',
+    jsonLines:['しなの鉄道線'],
+    range:'篠ノ井～軽井沢',
+    area:'しなの鉄道',
+    storageRoot:'しなの鉄道',
+    storageArea:null,
+    company:'しなの鉄道',
+    formationFamily:'shinano',
+    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Shinano_noimage.png',
+    noImage:'https://minamikaze2700.github.io/Unyomatome/images/Shinano_noimage.png',
+    prescribedFormationRule:'common',
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'S101 / S11 / SR1'
+  },
+  '北しなの線（豊野～妙高高原）':{
+    id:'shinano-kita',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/Shinano_2026.json',
+    jsonLines:['北しなの線'],
+    range:'豊野～妙高高原',
+    area:'しなの鉄道',
+    storageRoot:'しなの鉄道',
+    storageArea:null,
+    company:'しなの鉄道',
+    formationFamily:'shinano',
+    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Shinano_noimage.png',
+    noImage:'https://minamikaze2700.github.io/Unyomatome/images/Shinano_noimage.png',
+    prescribedFormationRule:'common',
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'S101 / S11 / SR1'
   },
 };
 
@@ -1448,6 +1480,12 @@ const ROUTE_SCHEDULE_CONFIG={
   ],
   '樽見鉄道樽見線':[
     {from:'2024-04-08',to:'2027-03-13',file:'Tarumi_2024.json'}
+  ],
+  'しなの鉄道線（篠ノ井～軽井沢）':[
+    {from:'2026-03-14',to:'2027-03-13',file:'Shinano_2026.json'}
+  ],
+  '北しなの線（豊野～妙高高原）':[
+    {from:'2026-03-14',to:'2027-03-13',file:'Shinano_2026.json'}
   ]
 };
 const ROUTE_DATA_BASE_URL='https://minamikaze2700.github.io/Unyomatome/data/';
@@ -5637,6 +5675,12 @@ const REGION_DEFINITIONS={
     routes:[
       {name:'長野電鉄長野線',id:'nagano-line'}
     ]
+  },{
+    company:'しなの鉄道',
+    routes:[
+      {name:'しなの鉄道線（篠ノ井～軽井沢）',id:'shinano-main'},
+      {name:'北しなの線（豊野～妙高高原）',id:'shinano-kita'}
+    ]
   }],
   '東海':[{
     company:'JR東海',
@@ -8695,9 +8739,25 @@ initRegionNavigation();
     }
     return circularPolylineSample(points,p);
   }
+  function circularLoopTrackGeometry(direction,metrics){
+    // 内回り・外回りそれぞれを、左右の縦辺と上下の横辺からなる
+    // 完全に閉じた長方形として定義する。駅間ごとの独立した曲線ではない。
+    // up=内回りは内側の小さい長方形、down=外回りは外側の大きい長方形。
+    const stage=document.getElementById('circularStage');
+    const topRailY=Number.parseFloat(getComputedStyle(stage||document.documentElement).getPropertyValue('--circular-bridge-y'))||130;
+    const gapFromVisibleTrack=80;
+    const isOuter=String(direction||'')!=='up';
+    const leftX=circularTrainCenterX('left',direction,metrics);
+    const rightX=circularTrainCenterX('right',direction,metrics);
+    const topY=topRailY+(isOuter?-gapFromVisibleTrack:gapFromVisibleTrack);
+    const bottomRailY=Number(metrics?.height||0)-topRailY;
+    const bottomY=bottomRailY+(isOuter?gapFromVisibleTrack:-gapFromVisibleTrack);
+    return {leftX,rightX,topY,bottomY,isOuter,gapFromVisibleTrack};
+  }
   function circularBridgePathPoints(fromX,fromY,toX,toY,bridgeY){
-    // 指定図の青紫線どおり、縦→横→縦の直角経路で移動させる。
-    // 経路線自体は描画せず、列車アイコンの座標計算だけに使う。
+    // 閉じた長方形の上辺／下辺へ、縦→横→縦の順で接続する。
+    // 縦辺のX座標は通常の左右駅間と共有し、横辺のY座標は
+    // circularLoopTrackGeometry() から得るため、4辺が途切れず同じ長方形になる。
     return [
       {x:fromX,y:fromY},
       {x:fromX,y:bridgeY},
@@ -8762,24 +8822,15 @@ initRegionNavigation();
       }
       if(minutes>=departure && minutes<arrivalNext && arrivalNext>departure){
         const isTop=upperBridge;
-        const stage=document.getElementById('circularStage');
-        const bridgeInset=Number.parseFloat(getComputedStyle(stage).getPropertyValue('--circular-bridge-y'))||130;
-        const baseBridgeY=isTop?bridgeInset:Math.max(bridgeInset,metrics.height-bridgeInset);
-        // 横線から上下に120px離れた平行な走行経路を使う。
-        // 上下2本の中心線は240px離れ、列車番号・画像・種別ラベルを含めても
-        // パーツ同士や線路と重なりにくい間隔を確保する。
-        // 上端：外回りは線の上側、内回りは下側。下端はその反対。
-        const bridgeLaneOffset=120;
-        const isOuterTrack=String(t.direction||'')!=='up';
-        const bridgeOffsetSign=isTop
-          ? (isOuterTrack?-1:1)
-          : (isOuterTrack?1:-1);
-        const bridgeY=baseBridgeY+bridgeOffsetSign*bridgeLaneOffset;
-        const fromX=circularTrainCenterX(fromSide,t.direction,metrics);
-        const toX=circularTrainCenterX(toSide,t.direction,metrics);
+        const loop=circularLoopTrackGeometry(t.direction,metrics);
+        // それぞれの方向で上辺・下辺の高さを固定し、上端も下端も
+        // 左右の縦辺と接続した閉じた長方形の一部として移動させる。
+        // 可視線から上下80px、内外回りの経路間は160px離す。
+        const bridgeY=isTop?loop.topY:loop.bottomY;
+        const fromX=fromSide==='left'?loop.leftX:loop.rightX;
+        const toX=toSide==='left'?loop.leftX:loop.rightX;
         const points=circularBridgePathPoints(fromX,fromY,toX,toY,bridgeY);
-        // 左右の通常駅間と同様、駅間の経過時間を経路上の進み具合に対応させる。
-        // 直角の各区間も経路長に比例して進むため、横方向を不自然に早送りしない。
+        // 駅間時間を折れ線の実距離に比例させ、直角の角で速度が変わらないようにする。
         const progress=(minutes-departure)/(arrivalNext-departure);
         const point=circularPolylineSample(points,progress);
         if(!point) continue;
