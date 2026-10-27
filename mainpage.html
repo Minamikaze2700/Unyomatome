@@ -1349,7 +1349,7 @@ const ROUTE_REGISTRY={
     company:'長野電鉄',
     formationFamily:'nagano',
     typeShortRules:[
-      {containsAll:['ゆけむり','のんびり'],result:'ゆの'},
+      {containsAll:['ゆけむり','のんびり'],result:'A特'},
       {contains:'特急',trainNoSuffix:'A',result:'A特'},
       {contains:'特急',trainNoSuffix:'B',result:'B特'},
       {containsAll:['特急','ゆけむり'],result:'A特'},
@@ -2180,6 +2180,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
     numberSegments,
     segmentLineNames,
     type:jsonType,
+    expressCategory:String(raw?.expressCategory||'').trim(),
     serviceName:String(raw?.serviceName||raw?.trainName||'').trim(),
     serviceNotes:Array.isArray(raw?.serviceNotes)?raw.serviceNotes.map(note=>String(note||'').trim()).filter(Boolean):[],
     lineKind:String(raw?.lineKind||meta?.lineKind||formationFamily),
@@ -3106,6 +3107,25 @@ function getDetailType(type){
   if(mapped!==undefined) return String(mapped);
   if(value==='各停') return '各駅停車';
   return value;
+}
+function naganoExpressCategoryFor(train,typeOverride='',trainNoOverride=''){
+  const raw=train?.rawTrain||train||{};
+  const type=String(typeOverride||train?.type||raw?.type||'').trim();
+  if(!type.includes('特急')) return '';
+  const isNagano=(activeRouteName==='長野電鉄長野線') || String(train?.lineKind||raw?.lineKind||'')==='nagano';
+  if(!isNagano) return '';
+  const saved=String(train?.expressCategory||raw?.expressCategory||'').trim();
+  if(saved==='A特急'||saved==='B特急') return saved;
+  const no=String(trainNoOverride||train?.no||raw?.no||'').trim().toUpperCase();
+  if(no.endsWith('A')) return 'A特急';
+  if(no.endsWith('B')) return 'B特急';
+  if(type.includes('ゆけむりのんびり')) return 'A特急';
+  return '';
+}
+function getOperationalTypeLabel(type,trainNo='',train=null){
+  const value=String(type||'').trim();
+  const category=naganoExpressCategoryFor(train||{type:value,no:String(trainNo||''),lineKind:activeRouteName==='長野電鉄長野線'?'nagano':''},value,trainNo);
+  return category||getDetailType(value);
 }
 function displayTrainNo(train){ return (train && !train.hideTrainNumber) ? normalizeTrainNo(train.no) : ''; }
 function getShortDest(dest){
@@ -4773,7 +4793,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
           <img class="station-timetable-train-img" src="${escapeAttr(imgSrc)}" alt="${escapeAttr(trainDisplayNoAtStation(train,stationName))}">
           ${stationTimetableFormationHTML(train)}
           <span class="station-timetable-time">${escapeAttr(item.time)}</span>
-          ${String(train.type||'').trim()?`<span class="station-timetable-type ${escapeAttr(getExpressClass(train))}" style="${typeBadgeInlineStyle(train,null,stationDirectionRouteColor(STATIONS.findIndex(st=>String(st?.nameJa||'')===stationName),key),stationName)}">${escapeAttr(getDetailType(train.type))}</span>`:''}
+          ${String(train.type||'').trim()?`<span class="station-timetable-type ${escapeAttr(getExpressClass(train))}" style="${typeBadgeInlineStyle(train,null,stationDirectionRouteColor(STATIONS.findIndex(st=>String(st?.nameJa||'')===stationName),key),stationName)}">${escapeAttr(getOperationalTypeLabel(train.type,train.no,train))}</span>`:''}
           <span class="station-timetable-destination${String(train.serviceName||'').trim()?' has-service-name':''}">
             <span class="station-timetable-destination-main"><span class="station-timetable-destination-station">${escapeAttr(getDisplayDestinationForTrain(train))}</span>${destinationGoSuffix(train)?'<span class="station-timetable-destination-go">行</span>':''}</span>
             ${String(train.serviceName||'').trim()?`<span class="station-timetable-service-name">${escapeAttr(train.serviceName)}</span>`:''}
@@ -6380,7 +6400,8 @@ function displayedRouteColorForTrainPosition(train,position=null){
 function typeColorConfigForTrain(train,type){
   const sourceColors=(train?.sourceTypeColors&&typeof train.sourceTypeColors==='object')?train.sourceTypeColors:{};
   const configured={...sourceColors,...(activeJson?.typeColors||{}),...(activeRouteMeta?.typeColors||{})};
-  return configured[String(type||'').trim()];
+  const category=naganoExpressCategoryFor(train,String(type||''));
+  return configured[category||String(type||'').trim()];
 }
 function routeNameForTrainStation(train,stationName){
   const station=String(stationName||'').trim();
@@ -6503,6 +6524,12 @@ function typeColorForTrain(train,position=null,stationName='',stationDirectionCo
   // JSONの通常の文字列色と、広島地区の typeColors.<種別>.byRoute の両方に対応する。
   const sourceColors=(train?.sourceTypeColors&&typeof train.sourceTypeColors==='object')?train.sourceTypeColors:{};
   const colors={...sourceColors,...(activeJson?.typeColors||{}),...(activeRouteMeta?.typeColors||{})};
+  const expressCategory=naganoExpressCategoryFor(train,type);
+  if(expressCategory){
+    const expressColor=colors[expressCategory];
+    if(typeof expressColor==='string'&&expressColor.trim()) return expressColor.trim();
+    return expressCategory==='A特急'?'#e91419':'#2e7d32';
+  }
   const configured=colors[type];
   if(configured && typeof configured==='object' && configured.byRoute && typeof configured.byRoute==='object'){
     // 「普通／各駅停車」は独自に追加されたtypeColors.byRouteではなく、
@@ -9853,7 +9880,7 @@ initRegionNavigation();
     ].filter(Boolean).join(' ');
     return `<button type="button" class="${rowClass}" data-operation-start="${escapeAttr(startTime)}" data-operation-end="${escapeAttr(endTime)}" ${clickAttr}>
       <span class="train-operation-number">${escapeAttr(no)}</span>
-      <span class="station-timetable-type train-operation-type${rawType?'':' empty-operation-field'}"${rawType?` style="${typeBadgeStyle}"`:''}><span class="operation-full">${escapeAttr(rawType)}</span><span class="operation-short">${escapeAttr(type)}</span></span>
+      <span class="station-timetable-type train-operation-type${rawType?'':' empty-operation-field'}"${rawType?` style="${typeBadgeStyle}"`:''}><span class="operation-full">${escapeAttr(getOperationalTypeLabel(rawType,no,sourceTrain))}</span><span class="operation-short">${escapeAttr(type)}</span></span>
       <span class="train-operation-time start-time">${escapeAttr(formatRailwayDisplayTime(startTime))}</span>
       <span class="train-operation-station start-station" title="${escapeAttr(start)}"><span class="operation-full">${escapeAttr(start)}</span><span class="operation-short">${escapeAttr(shortStart)}</span></span>
       <span class="train-operation-arrow" aria-hidden="true">→</span>
@@ -10272,7 +10299,7 @@ initRegionNavigation();
       }
       const displayNo=isDisplayableOperationTrainNumber(entryNo,sourceTrain)?entryNo:'';
       const rawType=String(entry?.type||sourceTrain?.type||'').trim();
-      const typeLabel=rawType?getDetailType(rawType):'';
+      const typeLabel=rawType?getOperationalTypeLabel(rawType,entryNo||registerNo,sourceTrain):'';
       const start=String(entry?.start||sourceTrain?.start||sourceTrain?.stops?.[0]?.station||'').trim();
       const badgeStyle=rawType?typeBadgeInlineStyle(sourceTrain||{type:rawType},null,null,start):'';
       const dest=String(entry?.dest||sourceTrain?.dest||sourceTrain?.stops?.[sourceTrain?.stops?.length-1]?.station||'').trim();
