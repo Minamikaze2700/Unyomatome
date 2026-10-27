@@ -20,61 +20,80 @@
       },
       "stations": [
         {
-          "name": "篠ノ井"
+          "name": "篠ノ井",
+          "nameEn": "Shinonoi"
         },
         {
-          "name": "屋代高校前"
+          "name": "屋代高校前",
+          "nameEn": "Yashiro-koko-mae"
         },
         {
-          "name": "屋代"
+          "name": "屋代",
+          "nameEn": "Yashiro"
         },
         {
-          "name": "千曲"
+          "name": "千曲",
+          "nameEn": "Chikuma"
         },
         {
-          "name": "戸倉"
+          "name": "戸倉",
+          "nameEn": "Togura"
         },
         {
-          "name": "坂城"
+          "name": "坂城",
+          "nameEn": "Sakaki"
         },
         {
-          "name": "テクノさかき"
+          "name": "テクノさかき",
+          "nameEn": "Tekuno-Sakaki"
         },
         {
-          "name": "西上田"
+          "name": "西上田",
+          "nameEn": "Nishi-Ueda"
         },
         {
-          "name": "上田"
+          "name": "上田",
+          "nameEn": "Ueda"
         },
         {
-          "name": "信濃国分寺"
+          "name": "信濃国分寺",
+          "nameEn": "Shinano-Kokubunji"
         },
         {
-          "name": "大屋"
+          "name": "大屋",
+          "nameEn": "Oya"
         },
         {
-          "name": "田中"
+          "name": "田中",
+          "nameEn": "Tanaka"
         },
         {
-          "name": "滋野"
+          "name": "滋野",
+          "nameEn": "Shigeno"
         },
         {
-          "name": "小諸"
+          "name": "小諸",
+          "nameEn": "Komoro"
         },
         {
-          "name": "平原"
+          "name": "平原",
+          "nameEn": "Hirahara"
         },
         {
-          "name": "御代田"
+          "name": "御代田",
+          "nameEn": "Miyota"
         },
         {
-          "name": "信濃追分"
+          "name": "信濃追分",
+          "nameEn": "Shinano-Oiwake"
         },
         {
-          "name": "中軽井沢"
+          "name": "中軽井沢",
+          "nameEn": "Naka-Karuizawa"
         },
         {
-          "name": "軽井沢"
+          "name": "軽井沢",
+          "nameEn": "Karuizawa"
         }
       ]
     },
@@ -88,19 +107,24 @@
       },
       "stations": [
         {
-          "name": "豊野"
+          "name": "豊野",
+          "nameEn": "Toyono"
         },
         {
-          "name": "牟礼"
+          "name": "牟礼",
+          "nameEn": "Mure"
         },
         {
-          "name": "古間"
+          "name": "古間",
+          "nameEn": "Furuma"
         },
         {
-          "name": "黒姫"
+          "name": "黒姫",
+          "nameEn": "Kurohime"
         },
         {
-          "name": "妙高高原"
+          "name": "妙高高原",
+          "nameEn": "Myoko-Kogen"
         }
       ]
     }
@@ -264,13 +288,6 @@
           "id": "S7",
           "name": "S7",
           "img": "Shinano_S7",
-          "cars": 3,
-          "family": "shinano"
-        },
-        {
-          "id": "S8",
-          "name": "S8",
-          "img": "Shinano_S8",
           "cars": 3,
           "family": "shinano"
         },
