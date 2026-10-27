@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -662,6 +663,10 @@ button,input,select,textarea{font-family:inherit}
 #operationInfoBtn{position:fixed;right:80px;left:auto;top:10px;appearance:none;border:0;border-radius:999px;background:#fff;color:var(--control-accent,#808080);padding:8px 17px;font:700 16px/1 inherit;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.18);white-space:nowrap;z-index:1001}#operationInfoBtn:disabled{cursor:default;opacity:1;box-shadow:0 2px 6px rgba(0,0,0,.18)}
 #siteMenuBtn{position:fixed;right:2px;top:0;width:88px;height:58px;appearance:none;border:0;border-radius:0;background:transparent;color:#fff;padding:0;font:900 30px/.72 Arial,sans-serif;cursor:pointer;z-index:1001;display:inline-flex;align-items:center;justify-content:center;line-height:.62;text-shadow:0 1px 3px rgba(0,0,0,.25);transform:scale(1.0);transform-origin:center}
 #siteMenuBtn:hover{filter:brightness(.9)}
+/* 未ログイン時のログイン案内：右上メニュー直下に吹き出しを表示 */
+#siteLoginHint{position:absolute;top:62px;right:14px;display:block;z-index:1002;max-width:calc(100vw - 28px);box-sizing:border-box;padding:9px 13px;border-radius:10px;background:#fff;color:#333;box-shadow:0 3px 12px rgba(0,0,0,.22);font-weight:700;font-size:13px;line-height:1.35;font-family:inherit;white-space:nowrap;pointer-events:none;}
+#siteLoginHint::before{content:"";position:absolute;top:-7px;right:18px;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:7px solid #fff;}
+#siteLoginHint[hidden]{display:none!important}
 .site-menu-backdrop,.auth-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.32);z-index:1600;display:none}
 .site-menu-backdrop.active,.auth-backdrop.active{display:block}
 .site-menu-panel{position:fixed;right:14px;top:66px;width:min(320px,calc(100vw - 28px));background:#fff;border-radius:14px;box-shadow:0 10px 32px rgba(0,0,0,.28);z-index:1601;display:none;overflow:hidden}
@@ -978,7 +983,7 @@ body{padding-bottom:42px !important;}
 </head>
 <body>
 
-<h1 id="title"><span id="titleText">運用まとめ</span><button id="operationInfoBtn" type="button" onclick="openOperationInfo()" aria-label="運行情報：平常運転" aria-disabled="false" title="運行情報を表示"><span class="operation-info-prefix">運行情報：</span><span id="operationInfoStatusText" class="operation-info-status-text">平常運転</span></button><button id="siteMenuBtn" type="button" onclick="toggleSiteMenu(event)" aria-label="メニュー" aria-expanded="false">☰</button></h1>
+<h1 id="title"><span id="titleText">運用まとめ</span><button id="operationInfoBtn" type="button" onclick="openOperationInfo()" aria-label="運行情報：平常運転" aria-disabled="false" title="運行情報を表示"><span class="operation-info-prefix">運行情報：</span><span id="operationInfoStatusText" class="operation-info-status-text">平常運転</span></button><button id="siteMenuBtn" type="button" onclick="toggleSiteMenu(event)" aria-label="メニュー" aria-expanded="false">☰</button><span id="siteLoginHint" class="site-login-hint" hidden>ここからログインしてください</span></h1>
 <div class="control-bar">
   <div class="day-filter">
     <input id="dateInput" class="date-input" type="date">
@@ -8098,11 +8103,13 @@ initRegionNavigation();
     if(!panel||!back)return;
     panel.classList.add('active'); back.classList.add('active'); if(btn) btn.setAttribute('aria-expanded','true');
     updateSiteAccountButton();
+    updateSiteLoginHint();
   }
   function closeSiteMenu(){
     document.getElementById('siteMenuPanel')?.classList.remove('active');
     document.getElementById('siteMenuBackdrop')?.classList.remove('active');
     document.getElementById('siteMenuBtn')?.setAttribute('aria-expanded','false');
+    updateSiteLoginHint();
   }
   function toggleSiteMenu(event){
     event?.stopPropagation();
@@ -8110,11 +8117,20 @@ initRegionNavigation();
     if(panel?.classList.contains('active')) closeSiteMenu(); else openSiteMenu();
   }
   function updateSiteAccountButton(){
-    const btn=document.getElementById('siteAccountBtn'); if(!btn)return;
-    if(currentAuthUser){
-      const name=String(currentUserProfile?.name||currentAuthUser.displayName||'ユーザー').trim();
-      btn.textContent=`ユーザー情報（${name}）`;
-    }else btn.textContent='ログイン';
+    const btn=document.getElementById('siteAccountBtn');
+    if(btn){
+      if(currentAuthUser){
+        const name=String(currentUserProfile?.name||currentAuthUser.displayName||'ユーザー').trim();
+        btn.textContent=`ユーザー情報（${name}）`;
+      }else btn.textContent='ログイン';
+    }
+    updateSiteLoginHint();
+  }
+  function updateSiteLoginHint(){
+    const hint=document.getElementById('siteLoginHint');
+    if(!hint)return;
+    const menuOpen=!!document.getElementById('siteMenuPanel')?.classList.contains('active');
+    hint.hidden=!(authStateReady && !currentAuthUser && !menuOpen);
   }
   function openAccountFromMenu(){
     closeSiteMenu();
@@ -8302,6 +8318,7 @@ initRegionNavigation();
       firebaseAuth.onAuthStateChanged(async user=>{
         currentAuthUser=user||null;
         authStateReady=true;
+        updateSiteLoginHint();
         if(user){
           currentUserProfile=await ensureUserProfile(user);
         }else{
