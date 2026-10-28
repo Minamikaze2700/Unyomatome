@@ -9614,10 +9614,10 @@ initRegionNavigation();
     const posts=includeAllDates?allPosts:allPosts.filter(post=>String(post?._historyDate||'')===displayDate);
     const firebaseCurrent=(includeAllDates||displayDate===String(context?.date||''))?formationInputHistoryLatestFirebaseRecord(context,includeAllDates?allPosts:posts):null;
     const displayPosts=firebaseCurrent?[firebaseCurrent,...posts]:posts;
-    const displayGroups=groupFormationInputHistoryPosts(displayPosts);
-    // 入力履歴では登録された編成の組み合わせ（A+B+C）を1件のまま表示する。
-    // 編成ごとの運用履歴は renderFormationOperationHistory 側で編成ごとに検索・表示する。
-    const rows=displayGroups.map(group=>{
+    // 入力履歴は登録イベントごとに1件ずつ追加表示する。
+    // 同じ組み合わせ（A+B+C）をもう一度登録しても、過去の記録とまとめない。
+    const displayEntries=displayPosts.map(post=>({post,posts:[post]}));
+    const rows=displayEntries.map(group=>{
       const post=group.post;
       const isUnselected=!!post.unselected||!!window.isUnselectedFormationId?.(post.f||post.formation||'');
       const ids=isUnselected?[]:String(post.f||post.formation||'').split('+').map(v=>v.trim()).filter(Boolean);
@@ -9630,8 +9630,11 @@ initRegionNavigation();
       const image=String(first.img||first.image||jsonNoImageUrl()||'');
       const author=String(post.author||post.userName||post.userId||'登録者不明');
       const datetime=formatFormationInputHistoryDateTime(post,post?._historyDate||context?.date);
+      // Firebaseの現在状態を補完表示した行には削除対象の投稿キーがないため、
+      // 実際に保存された入力履歴の行だけ削除ボタンを表示する。
+      // 権限判定は削除処理側でも必ず再確認する。
       const deletableKeys=[...new Set(group.posts
-        .filter(item=>!item.isFirebaseCurrentSnapshot && typeof window.canDeleteFormationInputHistoryRecord==='function' && window.canDeleteFormationInputHistoryRecord(item))
+        .filter(item=>!item.isFirebaseCurrentSnapshot)
         .map(item=>String(item._recordId||'').trim()).filter(Boolean))];
       const deleteButton=deletableKeys.length
         ? `<button type="button" class="formation-input-history-delete" aria-label="この編成入力履歴を削除" onclick="window.deleteFormationInputHistoryRecord('${escapeJs(deletableKeys.join('|'))}')">削除</button>`
@@ -9655,7 +9658,10 @@ initRegionNavigation();
     const context=formationInputHistoryContext;
     if(!requestedTokens.length||!targetPosts.length||!context?.ref||typeof window.canDeleteFormationInputHistoryRecord!=='function') return false;
     const deletable=targetPosts.filter(post=>!post.isFirebaseCurrentSnapshot&&window.canDeleteFormationInputHistoryRecord(post));
-    if(!deletable.length) return false;
+    if(!deletable.length){
+      if(typeof syncStatus==='function') syncStatus('この編成入力履歴を削除する権限がありません');
+      return false;
+    }
     const unique=new Map();
     for(const post of deletable) unique.set(String(post._recordId||''),post);
     const groups=new Map();
@@ -10387,27 +10393,21 @@ initRegionNavigation();
   }
 
   function renderFormationOperationHistory(train, visibility={}){
-    // 編成ごとの履歴は、現在の列車に割り当てられた編成だけでなく、
-    // この路線ファミリーに属する全個別編成を1編成1項目で縦に並べる。
-    const groups=typeof formationsForTrain==='function' ? formationsForTrain(train) : (Array.isArray(FORMATIONS)?FORMATIONS:[]);
-    const candidates=[];
-    for(const group of groups){
-      for(const variant of (Array.isArray(group?.variants)?group.variants:[])){
-        for(const item of (Array.isArray(variant?.items)?variant.items:[])) candidates.push(item);
-      }
-      for(const item of (Array.isArray(group?.items)?group.items:[])) candidates.push(item);
-    }
-    const seen=new Set();
-    const entries=candidates.map(item=>{
-      const id=String(item?.id||item?.name||'').trim().replace(/F$/i,'');
-      if(!id||seen.has(id)) return null;
+    // 現在表示中の列番時点で登録されている編成だけを、登録された順序のまま表示する。
+    // A+B+Cで登録されていれば、A・B・Cそれぞれの見出しと運用履歴を縦に並べる。
+    // 路線内の未登録編成を一覧に混ぜない。
+    const assignedValue=String(registeredFormationForTrain(train)||train?.formation||'').trim();
+    const ids=assignedValue.split('+')
+      .map(value=>String(value||'').trim().replace(/F$/i,''))
+      .filter((id,index,all)=>id && all.indexOf(id)===index && id!==INITIAL_FORMATION_SELECTION.id && !window.isUnselectedFormationId?.(id));
+    const entries=[];
+    for(const id of ids){
       const obj=typeof formationById==='function'?formationById(id):null;
-      if(!obj || obj.kind==='type' || obj.kind==='variant' || obj.generic===true || obj.selectableType===true) return null;
-      seen.add(id);
-      return {id,name:String(obj.name||item.name||id),img:String(obj.img||item.img||fallbackTrainImageUrl())};
-    }).filter(Boolean).sort((a,b)=>a.name.localeCompare(b.name,'ja',{numeric:true}));
+      if(!obj || obj.kind==='type' || obj.kind==='variant' || obj.generic===true || obj.selectableType===true) continue;
+      entries.push({id,name:String(obj.name||id),img:String(obj.img||obj.image||fallbackTrainImageUrl())});
+    }
     if(!entries.length){
-      return '<div class="train-info-empty">この路線の編成データがありません。</div>';
+      return '<div class="train-info-empty">現在表示中の列番に登録されている編成がありません。</div>';
     }
     const items=entries.map(entry=>{
       const historyHtml=renderSingleFormationOperationHistory(train,visibility,entry.id);
