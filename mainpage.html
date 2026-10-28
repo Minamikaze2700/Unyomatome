@@ -4212,7 +4212,7 @@ function positionForTrain(t,minutes){
       const nextNo=trainEntryNo(next);
       const nextDirection=(next&&next.start&&next.dest)?(stationIndex(next.start)>stationIndex(next.dest)?'up':'down'):null;
       const nextTrain=liveTrain(nextNo,nextDirection)||baseTrainForDay(nextNo,nextDirection,currentDay)||(currentDay==='休日'?HOLIDAY_TRAIN_INDEX[nextNo]:TRAIN_INDEX[nextNo])||null;
-      const nextSide=trainSideForDirection(nextTrain?.direction, inferDirectionFromStations(next.start,next.dest));
+      const nextSide=trainSideForDirection(nextTrain?.direction, inferDirectionFromStations(next.start,next.dest), nextTrain||next);
       return {pos:lastIndex,side:nextSide,visualTrain:nextTrain||t,mode:'turn-wait'};
     }
   }
@@ -4293,16 +4293,22 @@ let TRAIN_LAYOUT_CACHE={container:null,rowCenters:null,rowCount:0};
 function trainRuntimeKey(t){
   return `${currentDay}|${String(t?.no||'')}|${String(t?.direction||'')}`;
 }
-function isShinanoRouteForTrainSide(){
-  const routeName=String(activeRouteName||'');
-  const family=String(activeRouteMeta?.formationFamily||ROUTE_REGISTRY?.[routeName]?.formationFamily||'');
-  return family==='shinano' || /しなの鉄道|北しなの線/.test(routeName);
-}
-function trainSideForDirection(direction, fallbackDirection=null){
+// 列車の左右位置はJSON側で設定する。
+// directionSides が路線共通の既定値、lineDirectionSideOverrides が
+// trainNumbers に含まれる路線名ごとの上書き設定。
+function trainSideForDirection(direction, fallbackDirection=null, train=null){
   const dir=String(direction||fallbackDirection||'').toLowerCase();
-  let side=dir==='up'?'left':dir==='down'?'right':(String(fallbackDirection||'').toLowerCase()==='up'?'left':'right');
-  if(isShinanoRouteForTrainSide()) side=side==='left'?'right':'left';
-  return side;
+  const json=activeJson||{};
+  const defaults=json.directionSides||{up:'left',down:'right'};
+  let side=String(defaults[dir]|| (dir==='up'?'left':'right'));
+  const lineOverrides=json.lineDirectionSideOverrides||{};
+  const raw=train?.rawTrain||train||{};
+  const lineMap=raw.trainNumbers&&typeof raw.trainNumbers==='object'?raw.trainNumbers:{};
+  for(const lineName of Object.keys(lineMap)){
+    const override=lineOverrides[lineName];
+    if(override&&override[dir]){side=String(override[dir]);break;}
+  }
+  return side==='right'?'right':'left';
 }
 function getTrainRuntimeMeta(t){
   const key=trainRuntimeKey(t);
@@ -4314,7 +4320,7 @@ function getTrainRuntimeMeta(t){
   const firstIndex=stationIndex(first.station);
   const lastIndex=stationIndex(last.station);
   const rawDirection=String(t?.direction||'').toLowerCase();
-  const side=trainSideForDirection(rawDirection, firstIndex>lastIndex?'up':'down');
+  const side=trainSideForDirection(rawDirection, firstIndex>lastIndex?'up':'down', t);
   const meta={stops,first,last,firstIndex,lastIndex,side,firstDep:Number(first._departure),lastArr:Number(last._arrival)};
   TRAIN_RUNTIME_CACHE.set(key,meta);
   return meta;
