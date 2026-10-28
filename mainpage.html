@@ -3897,10 +3897,11 @@ function shinanoServiceTypeLabel(train){
   const suffix=number ? (/号$/.test(number)?number:`${number}号`) : '号';
   return `快速${name}${suffix}`;
 }
-function getTrainTypeDisplayLabel(train){
+function getTrainTypeDisplayLabel(train, includeShinanoServiceDetails=false){
   const type=String(train?.type||'').trim();
   if(isShinanoMainRoute()){
-    if(type==='快速' && shinanoTrainName(train)) return shinanoServiceTypeLabel(train);
+    // 列車名・号数の合成表示は train-card のみに限定する。
+    if(includeShinanoServiceDetails && type==='快速' && shinanoTrainName(train)) return shinanoServiceTypeLabel(train);
     if(type==='快速') return '快速';
     if(type==='普通') return '普通';
   }
@@ -4197,6 +4198,7 @@ function positionForTrain(t,minutes){
   const meta=getTrainRuntimeMeta(t);
   if(!meta) return null;
   const {stops,first,last,firstIndex,lastIndex,side,firstDep,lastArr}=meta;
+  const rawDirection=String(t?.direction||'').toLowerCase();
   if(!Number.isFinite(firstDep)||!Number.isFinite(lastArr)) return null;
 
   const chainInfo=findChain(currentDay,t.no);
@@ -5145,7 +5147,7 @@ function updateSheetContent(){
         <img src="${imgSrc}" class="train-card-img">
         <div class="train-info-main">
           <div>
-            ${String(train.type||'').trim()?`<span class="type-badge ${getTrainTypeDisplayClass(train)}" style="${typeBadgeInlineStyle(train)}">${getTrainTypeDisplayLabel(train)}</span>`:''}
+            ${String(train.type||'').trim()?`<span class="type-badge ${getTrainTypeDisplayClass(train)}" style="${typeBadgeInlineStyle(train)}">${getTrainTypeDisplayLabel(train, true)}</span>`:''}
             <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>
             ${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}
           </div>
@@ -5167,7 +5169,7 @@ function updateSheetContent(){
         <img src="${(train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id)?selectedForm.img:defaultTrainImage(train)}" class="train-card-img">
         <div class="train-info-main">
           <div>
-            ${String(train.type||'').trim()?`<span class="type-badge ${getTrainTypeDisplayClass(train)}" style="${typeBadgeInlineStyle(train)}">${getTrainTypeDisplayLabel(train)}</span>`:''}
+            ${String(train.type||'').trim()?`<span class="type-badge ${getTrainTypeDisplayClass(train)}" style="${typeBadgeInlineStyle(train)}">${getTrainTypeDisplayLabel(train, true)}</span>`:''}
             <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>
             ${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}
           </div>
@@ -10653,7 +10655,7 @@ initRegionNavigation();
         <div class="train-card">
           <img src="${(train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id)?originalSelected.img:defaultTrainImage(train)}" class="train-card-img">
           <div class="train-info-main">
-            <div>${String(train.type||'').trim()?`<span class="type-badge ${getTrainTypeDisplayClass(train)}" style="${typeBadgeInlineStyle(train)}">${getTrainTypeDisplayLabel(train)}</span>`:''}<span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>
+            <div>${String(train.type||'').trim()?`<span class="type-badge ${getTrainTypeDisplayClass(train)}" style="${typeBadgeInlineStyle(train)}">${getTrainTypeDisplayLabel(train, true)}</span>`:''}<span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>
               <div class="input-trigger-btn">編成を入力中</div>
             ${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}
           </div>
@@ -10674,7 +10676,7 @@ initRegionNavigation();
     content.innerHTML=`
       <div class="train-card${cardClass}" ${cardClick}>
         <img src="${imgSrc}" class="train-card-img">
-        <div class="train-info-main"><div>${String(train.type||'').trim()?`<span class="type-badge ${getTrainTypeDisplayClass(train)}" style="${typeBadgeInlineStyle(train)}">${getTrainTypeDisplayLabel(train)}</span>`:''}<span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id?`<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`:`<div class="input-trigger-btn">${noFormationText}</div>`}${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id&&formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
+        <div class="train-info-main"><div>${String(train.type||'').trim()?`<span class="type-badge ${getTrainTypeDisplayClass(train)}" style="${typeBadgeInlineStyle(train)}">${getTrainTypeDisplayLabel(train, true)}</span>`:''}<span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id?`<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`:`<div class="input-trigger-btn">${noFormationText}</div>`}${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id&&formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
       </div>
 
       <div class="train-info-tabs" style="--train-info-color:${tabColor}">
