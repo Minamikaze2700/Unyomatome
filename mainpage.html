@@ -2874,7 +2874,7 @@ function refreshCurrentTrainSnapshotFromCache(){
   if(!currentTrainNo || !currentTrainSnapshot || isEditMode) return false;
   const source=liveTrain(currentTrainNo,currentTrainSnapshot?.direction||null)||currentTrainSnapshot;
   const formation=registeredFormationForTrain(source);
-  currentTrainSnapshot={...currentTrainSnapshot,formation:formation||null};
+  currentTrainSnapshot={...currentTrainSnapshot,formation:source.__formationExplicitlyUnselected?'':(formation||null),__formationExplicitlyUnselected:!!source.__formationExplicitlyUnselected};
   return true;
 }
 function refreshVisibleUI(){
@@ -4917,7 +4917,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
   const escapeJs=value=>String(value).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
 
   const stationTimetableFormationParts=(train)=>{
-    const formationId=registeredFormationForTrain(train)||train?.formation||'';
+    const formationId=effectiveFormationIdForTrain(train);
     const obj=selectionDisplayObjectForTrain(train,formationId);
     if(!obj || obj.id===INITIAL_FORMATION_SELECTION.id) return ['—'];
     const type=String(obj.type||'').trim();
@@ -4962,7 +4962,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
 
     const rows=data.entries.map((item,index)=>{
       const train=item.train;
-      const effectiveFormationId=registeredFormationForTrain(train)||train.formation||'';
+      const effectiveFormationId=effectiveFormationIdForTrain(train);
       const selectedForm=selectionDisplayObjectForTrain(train,effectiveFormationId);
       const imgSrc=imageForTrain(train);
       const destination=`${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}`;
@@ -5135,12 +5135,18 @@ function sheetBack(){
   }
   closeSheet();
 }
+function effectiveFormationIdForTrain(train){
+  if(!train) return '';
+  const registered=registeredFormationForTrain(train);
+  if(train.__formationExplicitlyUnselected) return '';
+  return String(registered||train.formation||'').trim();
+}
 function updateSheetContent(){
   closeFormationDropdown();
   if(currentStationId){ updateStationSheetContent(); return; }
   const train=currentTrainSnapshot || trainForCurrentDay(currentTrainNo);
   if(!train) return;
-  const effectiveFormationId=registeredFormationForTrain(train)||train.formation||'';
+  const effectiveFormationId=effectiveFormationIdForTrain(train);
   const formObj=formationById(effectiveFormationId);
   const selectedForm=selectionDisplayObjectForTrain(train,effectiveFormationId);
   const content=document.getElementById('sheetContent');
@@ -5164,22 +5170,22 @@ function updateSheetContent(){
             <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>
             ${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}
           </div>
-          ${train.formation && train.formation!==INITIAL_FORMATION_SELECTION.id
+          ${effectiveFormationId && effectiveFormationId!==INITIAL_FORMATION_SELECTION.id
             ? `<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`
             : `<div class="input-trigger-btn">${noFormationText}</div>`}
           ${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}
         </div>
-        ${train.formation && train.formation!==INITIAL_FORMATION_SELECTION.id && formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
+        ${effectiveFormationId && effectiveFormationId!==INITIAL_FORMATION_SELECTION.id && formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
       </div>
       <div class="timetable-list">
         ${timetableHTMLForCurrentDay(train)}
       </div>
     `;
   }else{
-    const selectedForm=selectionDisplayObjectForTrain(train,train.formation);
+    const selectedForm=selectionDisplayObjectForTrain(train,effectiveFormationIdForTrain(train));
     content.innerHTML=`
       <div class="train-card">
-        <img src="${(train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id)?selectedForm.img:defaultTrainImage(train)}" class="train-card-img">
+        <img src="${(effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id)?selectedForm.img:defaultTrainImage(train)}" class="train-card-img">
         <div class="train-info-main">
           <div>
             ${String(train.type||'').trim()?`<span class="type-badge ${getTrainTypeDisplayClass(train)}" style="${typeBadgeInlineStyle(train)}">${getTrainTypeDisplayLabel(train, true)}</span>`:''}
@@ -7427,6 +7433,9 @@ initRegionNavigation();
 
   registeredFormationForTrain=function(train){
     if(!train) return null;
+    // 古いtrain.formationへのフォールバックで「編成未選択」が取り消されないよう、
+    // 履歴の解決結果が明示的な未選択だったかを列車オブジェクトにも記録する。
+    try{ train.__formationExplicitlyUnselected=false; }catch(e){}
     const family=formationFamilyForTrain(train);
     const date=formationDateKey();
     const area=storageAreaForFamily(family);
@@ -7491,12 +7500,18 @@ initRegionNavigation();
     // これにより A→B→C で A・B に登録があり、Cを選択した場合はBの編成になる。
     for(let i=targetIndex;i>=0;i--){
       const result=resolveForNo(chainNos[i]);
-      if(result.found) return result.value||null;
+      if(result.found){
+        try{ train.__formationExplicitlyUnselected=!String(result.value||'').trim(); }catch(e){}
+        return result.value||null;
+      }
     }
     // 選択位置までに登録がなければ、接続運用内で最後に登録された列車を使う。
     for(let i=chainNos.length-1;i>targetIndex;i--){
       const result=resolveForNo(chainNos[i]);
-      if(result.found) return result.value||null;
+      if(result.found){
+        try{ train.__formationExplicitlyUnselected=!String(result.value||'').trim(); }catch(e){}
+        return result.value||null;
+      }
     }
     return null;
   };
@@ -7742,7 +7757,17 @@ initRegionNavigation();
     const family=formationFamilyForTrain(train);
     const date=formationDateKey();
     const area=storageAreaForFamily(family);
-    formationRemoteByFamily[family].areaStateByDate[date]??={};
+    // ローカルで未選択にした直後、Firebase再読込が終わる前に過去の入力履歴が
+    // フォールバックされないよう、履歴解決キャッシュにも直ちに最新イベントを反映する。
+    // 実際の入力履歴一覧はFirebaseの投稿を参照するため、この暫定項目は一覧には表示しない。
+    formationInputHistoryLatestByFamily[family]??={};
+    formationInputHistoryLatestByFamily[family][date]??={};
+    formationInputHistoryLatestByFamily[family][date][selectedNo]=value
+      ? {f:value,unselected:false,at:Date.now(),key:'__local_pending_selection__'}
+      : {f:'',unselected:true,at:Date.now(),key:'__local_pending_unselected__'};
+    try{ train.__formationExplicitlyUnselected=!value; }catch(e){}
+    const areaStateRoot=formationRemoteByFamily[family].areaStateByDate;
+    areaStateRoot[date]??={};
     formationRemoteByFamily[family].areaStateByDate[date][area]??={};
     const areaState=formationRemoteByFamily[family].areaStateByDate[date][area];
 
@@ -7880,7 +7905,7 @@ initRegionNavigation();
   };
 
   function selectedIdsForTrain(train){
-    const raw=registeredFormationForTrain(train)||train?.formation||'';
+    const raw=effectiveFormationIdForTrain(train);
     const current=formationIds(raw).filter(id=>!window.isUnselectedFormationId?.(id));
     const out=[];
     for(let i=0;i<MAX_FORMATION_SLOTS;i++) out.push(current[i]||'');
@@ -8059,7 +8084,7 @@ initRegionNavigation();
     const count=formationCountForTrain(currentTrainSnapshot);
     if(count>1){
       const input=document.getElementById('formationManualInput');
-      if(input){ input.placeholder=formationInputPlaceholderForTrain(currentTrainSnapshot); input.value=formationIds(registeredFormationForTrain(currentTrainSnapshot)||currentTrainSnapshot.formation||'').map(id=>selectionDisplayObject(id)?.name||id).join('+'); }
+      if(input){ input.placeholder=formationInputPlaceholderForTrain(currentTrainSnapshot); input.value=formationIds(effectiveFormationIdForTrain(currentTrainSnapshot)).map(id=>selectionDisplayObject(id)?.name||id).join('+'); }
     }
     return true;
   }
@@ -8072,10 +8097,10 @@ initRegionNavigation();
     // 駅時刻表から開いた列車詳細でも、複数編成セレクターを必ず更新する。
     const train=currentTrainSnapshot || trainForCurrentDay(currentTrainNo);
     if(!train) return;
-    const ids=formationIds(registeredFormationForTrain(train)||train.formation||'');
+    const ids=formationIds(effectiveFormationIdForTrain(train));
     const display=document.querySelector('#sheetContent .formation-id');
     if(display){
-      const parts=formationDisplayParts(registeredFormationForTrain(train)||train.formation||'');
+      const parts=formationDisplayParts(effectiveFormationIdForTrain(train));
       display.innerHTML=parts.map(x=>`<span class="hiro-formation-display-line">${esc(x)}</span>`).join(' ＋ ');
       display.style.whiteSpace='normal';
     }
@@ -8128,7 +8153,21 @@ initRegionNavigation();
     const count=formationCountForTrain(train);
     if(slot<0||slot>=count)return;
     const ids=selectedIdsForTrain(train);
-    const normalized=(id===INITIAL_FORMATION_SELECTION.id)?'':String(normalizeStoredFormationId(id)||'');
+    const normalized=(id===INITIAL_FORMATION_SELECTION.id || window.isUnselectedFormationId?.(id))?'':String(normalizeStoredFormationId(id)||'');
+    if(!normalized){
+      // 「編成未選択」は特定スロットだけを空欄にするのではなく、列番全体の編成を解除する。
+      // skipInputHistoryを付けず未選択イベントも記録し、古いA+B+C履歴が復活するのを防ぐ。
+      try{ train.__formationExplicitlyUnselected=true; }catch(e){}
+      currentTrainSnapshot={...currentTrainSnapshot,formation:null,__formationExplicitlyUnselected:true};
+      train.formation=null;
+      await recordSelection(train,null);
+      restoreHiroDropdown();
+      isEditMode=false;
+      document.getElementById('bottomSheet')?.classList.remove('editing');
+      updateSheetContent();
+      renderTrainPositions();
+      return;
+    }
     if(normalized && UNAVAILABLE_FORMATIONS.has(normalized)){
       const err=document.getElementById('formationInputError'); if(err)err.textContent='この編成は入力できません。';
       return;
@@ -8460,7 +8499,7 @@ initRegionNavigation();
 
   /* 駅時刻表の編成欄も + 順をそのまま前寄り→後寄りで表示。 */
   stationTimetableFormationHTML=function(train){
-    const ids=formationIds(registeredFormationForTrain(train)||train?.formation||'');
+    const ids=formationIds(effectiveFormationIdForTrain(train));
     if(!ids.length) return '<span class="station-timetable-formation">—</span>';
     const lines=ids.flatMap(id=>{
       const name=String(selectionDisplayObject(id)?.name||id).trim();
@@ -10396,7 +10435,7 @@ initRegionNavigation();
     // 現在表示中の列番時点で登録されている編成だけを、登録された順序のまま表示する。
     // A+B+Cで登録されていれば、A・B・Cそれぞれの見出しと運用履歴を縦に並べる。
     // 路線内の未登録編成を一覧に混ぜない。
-    const assignedValue=String(registeredFormationForTrain(train)||train?.formation||'').trim();
+    const assignedValue=String(effectiveFormationIdForTrain(train)||'').trim();
     const ids=assignedValue.split('+')
       .map(value=>String(value||'').trim().replace(/F$/i,''))
       .filter((id,index,all)=>id && all.indexOf(id)===index && id!==INITIAL_FORMATION_SELECTION.id && !window.isUnselectedFormationId?.(id));
@@ -10607,7 +10646,7 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
   }
 
   function renderFormationInfo(train){
-    const formationValue=String(registeredFormationForTrain(train)||train?.formation||'').trim();
+    const formationValue=String(effectiveFormationIdForTrain(train)||'').trim();
     const ids=formationValue.split('+').map(x=>x.trim()).filter(Boolean);
     const color=primaryTrainInfoColor();
     if(!ids.length){
@@ -10674,7 +10713,7 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
     closeFormationDropdown();
     const content=document.getElementById('sheetContent');
     if(!content) return;
-    const effectiveFormationId=registeredFormationForTrain(train)||train.formation||'';
+    const effectiveFormationId=effectiveFormationIdForTrain(train);
     const selectedForm=selectionDisplayObjectForTrain(train,effectiveFormationId);
     const imgSrc=imageForTrain(train);
     const readonly=!formationInputAllowed();
@@ -10688,7 +10727,8 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
     const historyCurrentDate=String(operationDateKey(new Date())||operationDateKey()).trim();
     const visibleHistoryTrainNumber=String(trainDisplayNoAtTime(train,currentMinutes())||'').trim();
     const historyTrainLabel=visibleHistoryTrainNumber||'列車番号';
-    const historyFormationValue=String(latestRegisteredFormationForHistory(train,historyCurrentDate)||registeredFormationForTrain(train)||train.formation||'').trim();
+    const latestHistoricalFormation=String(latestRegisteredFormationForHistory(train,historyCurrentDate)||'').trim();
+    const historyFormationValue=String(train.__formationExplicitlyUnselected?'':(latestHistoricalFormation||effectiveFormationIdForTrain(train))).trim();
     const historyFormationIds=historyFormationValue.split('+').map(value=>value.trim()).filter(value=>value&&!window.isUnselectedFormationId?.(value)&&value!==INITIAL_FORMATION_SELECTION.id);
     const historyFormationLabel='編成ごとの履歴';
     const operationWrapClasses=[
