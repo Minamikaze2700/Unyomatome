@@ -148,6 +148,13 @@ button,input,select,textarea{font-family:inherit}
 }
 .train-label.normal{background:#f2c400;color:#111}
 .train-label-service-name{display:block;font-size:9.5px;font-weight:900;line-height:1.05;margin-bottom:2px;white-space:normal;overflow-wrap:anywhere;}
+/* PCでは行先・種別を正式名称で表示し、スマートフォンでは従来の略称を使う。 */
+.train-label-full{display:block;}
+.train-label-short{display:none;}
+@media(max-width:959.98px){
+  .train-label-full{display:none;}
+  .train-label-short{display:block;}
+}
 .train-label.b-express{background:#ffb6c1}
 .train-label.a-express{background:#e83e8c}
 .train-label.deadhead{background:#fff;color:#111;border:1px solid #bbb;}
@@ -495,9 +502,6 @@ button,input,select,textarea{font-family:inherit}
 
 .train-card-img{width:75px;height:auto;object-fit:contain}
 .train-info-main{flex:1;min-width:0}
-.train-service-info{margin-top:4px;line-height:1.25;overflow-wrap:anywhere}
-.train-service-name{font-size:.9rem;font-weight:900;color:#b51f68;line-height:1.2}
-.train-service-note{font-size:.72rem;color:#666;line-height:1.25;margin-top:2px}
 .type-badge{background:#f2c400;color:#111;padding:3px 8px;border-radius:4px;font-size:.78rem;display:inline-block}
 .type-badge.a-express{background:#f39800}
 .type-badge.b-express{background:#f39800}
@@ -663,10 +667,6 @@ button,input,select,textarea{font-family:inherit}
 #operationInfoBtn{position:fixed;right:80px;left:auto;top:10px;appearance:none;border:0;border-radius:999px;background:#fff;color:var(--control-accent,#808080);padding:8px 17px;font:700 16px/1 inherit;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.18);white-space:nowrap;z-index:1001}#operationInfoBtn:disabled{cursor:default;opacity:1;box-shadow:0 2px 6px rgba(0,0,0,.18)}
 #siteMenuBtn{position:fixed;right:2px;top:0;width:88px;height:58px;appearance:none;border:0;border-radius:0;background:transparent;color:#fff;padding:0;font:900 30px/.72 Arial,sans-serif;cursor:pointer;z-index:1001;display:inline-flex;align-items:center;justify-content:center;line-height:.62;text-shadow:0 1px 3px rgba(0,0,0,.25);transform:scale(1.0);transform-origin:center}
 #siteMenuBtn:hover{filter:brightness(.9)}
-/* 未ログイン時のログイン案内：右上メニュー直下に吹き出しを表示 */
-#siteLoginHint{position:absolute;top:62px;right:14px;display:block;z-index:1002;max-width:calc(100vw - 28px);box-sizing:border-box;padding:9px 13px;border-radius:10px;background:#fff;color:#333;box-shadow:0 3px 12px rgba(0,0,0,.22);font-weight:700;font-size:13px;line-height:1.35;font-family:inherit;white-space:nowrap;pointer-events:none;}
-#siteLoginHint::before{content:"";position:absolute;top:-7px;right:18px;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:7px solid #fff;}
-#siteLoginHint[hidden]{display:none!important}
 .site-menu-backdrop,.auth-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.32);z-index:1600;display:none}
 .site-menu-backdrop.active,.auth-backdrop.active{display:block}
 .site-menu-panel{position:fixed;right:14px;top:66px;width:min(320px,calc(100vw - 28px));background:#fff;border-radius:14px;box-shadow:0 10px 32px rgba(0,0,0,.28);z-index:1601;display:none;overflow:hidden}
@@ -983,7 +983,7 @@ body{padding-bottom:42px !important;}
 </head>
 <body>
 
-<h1 id="title"><span id="titleText">運用まとめ</span><button id="operationInfoBtn" type="button" onclick="openOperationInfo()" aria-label="運行情報：平常運転" aria-disabled="false" title="運行情報を表示"><span class="operation-info-prefix">運行情報：</span><span id="operationInfoStatusText" class="operation-info-status-text">平常運転</span></button><button id="siteMenuBtn" type="button" onclick="toggleSiteMenu(event)" aria-label="メニュー" aria-expanded="false">☰</button><span id="siteLoginHint" class="site-login-hint" hidden>ここからログインしてください</span></h1>
+<h1 id="title"><span id="titleText">運用まとめ</span><button id="operationInfoBtn" type="button" onclick="openOperationInfo()" aria-label="運行情報：平常運転" aria-disabled="false" title="運行情報を表示"><span class="operation-info-prefix">運行情報：</span><span id="operationInfoStatusText" class="operation-info-status-text">平常運転</span></button><button id="siteMenuBtn" type="button" onclick="toggleSiteMenu(event)" aria-label="メニュー" aria-expanded="false">☰</button></h1>
 <div class="control-bar">
   <div class="day-filter">
     <input id="dateInput" class="date-input" type="date">
@@ -4212,7 +4212,7 @@ function positionForTrain(t,minutes){
       const nextNo=trainEntryNo(next);
       const nextDirection=(next&&next.start&&next.dest)?(stationIndex(next.start)>stationIndex(next.dest)?'up':'down'):null;
       const nextTrain=liveTrain(nextNo,nextDirection)||baseTrainForDay(nextNo,nextDirection,currentDay)||(currentDay==='休日'?HOLIDAY_TRAIN_INDEX[nextNo]:TRAIN_INDEX[nextNo])||null;
-      const nextSide=nextTrain?(nextTrain.direction==='down'?'right':'left'):(inferDirectionFromStations(next.start,next.dest)==='down'?'right':'left');
+      const nextSide=trainSideForDirection(nextTrain?.direction, inferDirectionFromStations(next.start,next.dest));
       return {pos:lastIndex,side:nextSide,visualTrain:nextTrain||t,mode:'turn-wait'};
     }
   }
@@ -4227,24 +4227,18 @@ function positionForTrain(t,minutes){
 function trainLabelText(t){
   const type=String(t?.type||'').trim();
   const isCircular=isCircularTrain(t);
-  const dest=isCircular ? '環状' : getShortDest(t?.dest);
+  const shortDest=isCircular ? '環状' : getShortDest(t?.dest);
+  const fullDest=isCircular ? '環状運転' : getDetailDest(t?.dest);
   const serviceName=String(t?.serviceName||t?.rawTrain?.serviceName||'').trim();
-  const mainLabel=type?`${getShortType(type,t?.no)} ${dest}`:dest;
-  return `${serviceName?`<span class="train-label-service-name">${escapeAttr(serviceName)}</span>`:''}<span>${escapeAttr(mainLabel)}</span>`;
+  const shortLabel=type?`${getShortType(type,t?.no)} ${shortDest}`:shortDest;
+  const fullLabel=type?`${getOperationalTypeLabel(type,t?.no,t)} ${fullDest}`:fullDest;
+  return `${serviceName?`<span class="train-label-service-name">${escapeAttr(serviceName)}</span>`:''}<span class="train-label-full">${escapeAttr(fullLabel)}</span><span class="train-label-short">${escapeAttr(shortLabel)}</span>`;
 }
 function isCircularTrain(t){
   return activeRouteName==='大阪環状線' && activeJson?.circular===true && (t?.circular===true || t?.rawTrain?.circular===true);
 }
 function getDisplayDestinationForTrain(t){
   return isCircularTrain(t) ? '環状運転' : getDetailDest(t?.dest);
-}
-function trainServiceInfoHTML(train){
-  const raw=train?.rawTrain||{};
-  const name=String(train?.serviceName||raw?.serviceName||raw?.trainName||'').trim();
-  const notes=Array.isArray(train?.serviceNotes)?train.serviceNotes:(Array.isArray(raw?.serviceNotes)?raw.serviceNotes:[]);
-  const noteHtml=notes.map(note=>String(note||'').trim()).filter(Boolean).map(note=>`<div class="train-service-note">${escapeAttr(note)}</div>`).join('');
-  if(!name&&!noteHtml) return '';
-  return `<div class="train-service-info">${name?`<div class="train-service-name">${escapeAttr(name)}</div>`:''}${noteHtml}</div>`;
 }
 function destinationGoSuffix(t){
   return isCircularTrain(t) ? '' : ' 行';
@@ -4299,6 +4293,17 @@ let TRAIN_LAYOUT_CACHE={container:null,rowCenters:null,rowCount:0};
 function trainRuntimeKey(t){
   return `${currentDay}|${String(t?.no||'')}|${String(t?.direction||'')}`;
 }
+function isShinanoRouteForTrainSide(){
+  const routeName=String(activeRouteName||'');
+  const family=String(activeRouteMeta?.formationFamily||ROUTE_REGISTRY?.[routeName]?.formationFamily||'');
+  return family==='shinano' || /しなの鉄道|北しなの線/.test(routeName);
+}
+function trainSideForDirection(direction, fallbackDirection=null){
+  const dir=String(direction||fallbackDirection||'').toLowerCase();
+  let side=dir==='up'?'left':dir==='down'?'right':(String(fallbackDirection||'').toLowerCase()==='up'?'left':'right');
+  if(isShinanoRouteForTrainSide()) side=side==='left'?'right':'left';
+  return side;
+}
 function getTrainRuntimeMeta(t){
   const key=trainRuntimeKey(t);
   const cached=TRAIN_RUNTIME_CACHE.get(key);
@@ -4309,7 +4314,7 @@ function getTrainRuntimeMeta(t){
   const firstIndex=stationIndex(first.station);
   const lastIndex=stationIndex(last.station);
   const rawDirection=String(t?.direction||'').toLowerCase();
-  const side=rawDirection==='up'?'left':rawDirection==='down'?'right':(firstIndex>lastIndex?'left':'right');
+  const side=trainSideForDirection(rawDirection, firstIndex>lastIndex?'up':'down');
   const meta={stops,first,last,firstIndex,lastIndex,side,firstDep:Number(first._departure),lastArr:Number(last._arrival)};
   TRAIN_RUNTIME_CACHE.set(key,meta);
   return meta;
@@ -5067,7 +5072,6 @@ function updateSheetContent(){
             <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>
             ${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}
           </div>
-          ${trainServiceInfoHTML(train)}
           ${train.formation && train.formation!==INITIAL_FORMATION_SELECTION.id
             ? `<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`
             : `<div class="input-trigger-btn">${noFormationText}</div>`}
@@ -5090,7 +5094,6 @@ function updateSheetContent(){
             <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>
             ${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}
           </div>
-          ${trainServiceInfoHTML(train)}
           <div class="input-trigger-btn">編成を入力中</div>
           ${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}
         </div>
@@ -8103,13 +8106,11 @@ initRegionNavigation();
     if(!panel||!back)return;
     panel.classList.add('active'); back.classList.add('active'); if(btn) btn.setAttribute('aria-expanded','true');
     updateSiteAccountButton();
-    updateSiteLoginHint();
   }
   function closeSiteMenu(){
     document.getElementById('siteMenuPanel')?.classList.remove('active');
     document.getElementById('siteMenuBackdrop')?.classList.remove('active');
     document.getElementById('siteMenuBtn')?.setAttribute('aria-expanded','false');
-    updateSiteLoginHint();
   }
   function toggleSiteMenu(event){
     event?.stopPropagation();
@@ -8117,20 +8118,11 @@ initRegionNavigation();
     if(panel?.classList.contains('active')) closeSiteMenu(); else openSiteMenu();
   }
   function updateSiteAccountButton(){
-    const btn=document.getElementById('siteAccountBtn');
-    if(btn){
-      if(currentAuthUser){
-        const name=String(currentUserProfile?.name||currentAuthUser.displayName||'ユーザー').trim();
-        btn.textContent=`ユーザー情報（${name}）`;
-      }else btn.textContent='ログイン';
-    }
-    updateSiteLoginHint();
-  }
-  function updateSiteLoginHint(){
-    const hint=document.getElementById('siteLoginHint');
-    if(!hint)return;
-    const menuOpen=!!document.getElementById('siteMenuPanel')?.classList.contains('active');
-    hint.hidden=!(authStateReady && !currentAuthUser && !menuOpen);
+    const btn=document.getElementById('siteAccountBtn'); if(!btn)return;
+    if(currentAuthUser){
+      const name=String(currentUserProfile?.name||currentAuthUser.displayName||'ユーザー').trim();
+      btn.textContent=`ユーザー情報（${name}）`;
+    }else btn.textContent='ログイン';
   }
   function openAccountFromMenu(){
     closeSiteMenu();
@@ -8318,7 +8310,6 @@ initRegionNavigation();
       firebaseAuth.onAuthStateChanged(async user=>{
         currentAuthUser=user||null;
         authStateReady=true;
-        updateSiteLoginHint();
         if(user){
           currentUserProfile=await ensureUserProfile(user);
         }else{
@@ -9885,7 +9876,7 @@ initRegionNavigation();
     return expanded.length ? expanded : [{no:'',type:String(train?.type||''),start:String(train?.start||''),dest:String(train?.dest||''),startTime:String(train?.startTime||''),endTime:String(train?.endTime||''),_sourceTrain:train}];
   }
 
-  /* 「今日の運用」と編成の運用履歴で使用する駅名略称。停車駅案内・駅時刻表などには適用しない。
+  /* 今日の運用だけで使用する駅名略称。停車駅案内・駅時刻表などには適用しない。
      JSON/路線設定に存在する代表的なキーを順に参照し、指定がなければ正式駅名をそのまま表示する。 */
   function operationStationLabel(name){
     const value=String(name||'').trim();
@@ -10075,50 +10066,18 @@ initRegionNavigation();
     const assignments=formationRemoteByFamily?.[family]?.areaStateByDate?.[date]?.[area]||{};
     const chainInfo=typeof findChain==='function'?findChain(day,no):null;
     const chain=chainInfo?(OPERATION_CHAINS?.[day]?.[chainInfo.chainIndex]||[]):[];
-
-    // 接続運用は始発側から順に列番を並べ、表示中の列番位置を求める。
-    // 編成をチェーン全体から集約すると、1編成目が優先されたり、全編成分の履歴が
-    // 同時に表示されたりするため、表示中の列番に適用される編成だけを返す。
-    const chainNos=[];
-    for(const entry of chain){
-      const linkedNo=String(entry?.no||entry||'').trim();
-      if(linkedNo&&!chainNos.some(existing=>normalizeTrainNo(existing)===normalizeTrainNo(linkedNo))) chainNos.push(linkedNo);
-    }
-    const normalizedNo=normalizeTrainNo(no);
-    const canonicalNo=value=>normalizeTrainNo(value).replace(/A$/i,'');
-    let targetIndex=chainNos.findIndex(linkedNo=>normalizeTrainNo(linkedNo)===normalizedNo);
-    if(targetIndex<0){
-      targetIndex=chainNos.findIndex(linkedNo=>canonicalNo(linkedNo)===canonicalNo(normalizedNo));
-    }
-    if(targetIndex<0){
-      chainNos.push(no);
-      targetIndex=chainNos.length-1;
-    }else if(normalizeTrainNo(chainNos[targetIndex])!==normalizedNo){
-      chainNos.splice(targetIndex,0,no);
-    }
-
+    const chainNos=[no];
+    for(const entry of chain){const linkedNo=String(entry?.no||entry||'').trim();if(linkedNo&&!chainNos.includes(linkedNo))chainNos.push(linkedNo);}
     const getSavedValue=trainNo=>{
       const key=String(trainNo||'').trim();
       const direct=String(assignments?.[key]?.f||'').trim();
       if(direct) return direct;
       const normalized=normalizeTrainNo(key);
-      if(!normalized) return '';
-      for(const [savedNo,entry] of Object.entries(assignments)){
-        if(normalizeTrainNo(savedNo)===normalized&&String(entry?.f||'').trim()) return String(entry.f).trim();
-      }
+      for(const [savedNo,entry] of Object.entries(assignments)) if(normalizeTrainNo(savedNo)===normalized&&String(entry?.f||'').trim()) return String(entry.f).trim();
       return '';
     };
-
-    // 表示中の列番自身、直前の列番へと遡り、最も近い編成登録を採用する。
-    // これにより「2編成目の登録列番より前は1編成目、3編成目より前は2編成目」になる。
-    for(let i=targetIndex;i>=0;i--){
-      const value=getSavedValue(chainNos[i]);
-      if(value) return value;
-    }
-    // 表示中の列番より前に登録がない場合は、最初に現れる後続の登録を適用する。
-    // 最後の登録を選んでしまうと、先頭側の列番まで最終編成扱いになるため前から探す。
-    for(let i=targetIndex+1;i<chainNos.length;i++){
-      const value=getSavedValue(chainNos[i]);
+    for(const candidateNo of chainNos){
+      const value=getSavedValue(candidateNo);
       if(value) return value;
     }
     return '';
@@ -10201,44 +10160,20 @@ initRegionNavigation();
       const postValue=formationValueOf(post);
       return postValue&&formationIdentity(postValue)===formationIdentity(formationValueOf(stored))?post:null;
     };
-    // 日付ごとに保存済み編成の検索索引を1回だけ作る。
-    // 元処理では列番ごとに全記録を走査・配列化・ソートしており、過去日数が多いほど重くなっていた。
-    const assignmentIndexByDate=new Map();
-    const assignmentIndexForDate=function(assignments,date){
-      const dayKey=String(date||'');
-      if(assignmentIndexByDate.has(dayKey)) return assignmentIndexByDate.get(dayKey);
-      const byNormalized=new Map();
-      const byCanonical=new Map();
-      const add=(map,key,item)=>{
-        if(!key) return;
-        if(!map.has(key)) map.set(key,[]);
-        map.get(key).push(item);
-      };
-      for(const [savedNoRaw,stored] of Object.entries(assignments||{})){
-        if(!stored||typeof stored!=='object') continue;
-        const savedNo=String(savedNoRaw);
-        const normalizedNo=normalizeTrainNo(savedNo);
-        if(!normalizedNo) continue;
-        const item={savedNo,normalizedNo,stored};
-        add(byNormalized,normalizedNo,item);
-        add(byCanonical,canonicalNo(normalizedNo),item);
-      }
-      const sortSavedNo=(a,b)=>String(a.savedNo).localeCompare(String(b.savedNo),'ja',{numeric:true});
-      for(const list of byNormalized.values()) list.sort(sortSavedNo);
-      for(const list of byCanonical.values()) list.sort(sortSavedNo);
-      const index={byNormalized,byCanonical};
-      assignmentIndexByDate.set(dayKey,index);
-      return index;
-    };
     const assignmentForNumber=function(assignments,number,date){
       const normalized=normalizeTrainNo(number);
       if(!normalized) return null;
-      const index=assignmentIndexForDate(assignments,date);
-      // 完全一致を優先し、なければA付き／Aなしの表記差だけを許容する。
-      // 明示的な未選択が完全一致している場合は別番号へフォールバックしない。
-      let matches=index.byNormalized.get(normalized);
-      if(!matches||!matches.length) matches=index.byCanonical.get(canonicalNo(normalized));
-      if(!matches||!matches.length) return null;
+      const entries=Object.entries(assignments||{}).filter(([savedNo,stored])=>normalizeTrainNo(savedNo)&&stored&&typeof stored==='object')
+        .map(([savedNo,stored])=>({savedNo:String(savedNo),normalizedNo:normalizeTrainNo(savedNo),stored}));
+      // 完全一致の保存番号があればそちらを優先する。明示的な未選択も別番号へフォールバックしない。
+      let matches=entries.filter(item=>item.normalizedNo===normalized);
+      if(!matches.length) matches=entries.filter(item=>canonicalNo(item.normalizedNo)===canonicalNo(normalized));
+      if(!matches.length) return null;
+      matches.sort((a,b)=>{
+        const aExact=a.normalizedNo===normalized?1:0,bExact=b.normalizedNo===normalized?1:0;
+        if(aExact!==bExact) return bExact-aExact;
+        return String(a.savedNo).localeCompare(String(b.savedNo),'ja',{numeric:true});
+      });
       const item=matches[0];
       const rawFormation=formationValueOf(item.stored);
       if(!rawFormation||window.isUnselectedFormationId?.(rawFormation)||window.wasFirebaseFormationInputHistoryCleared?.(family,date,item.savedNo)) return null;
@@ -10271,18 +10206,11 @@ initRegionNavigation();
       .filter(date=>/^\d{4}-\d{2}-\d{2}$/.test(String(date))&&String(date)<=currentDate)
       .sort((a,b)=>String(b).localeCompare(String(a)));
 
-    const relevantChainsByScheduleDay=new Map();
     for(const date of dates){
       const dateObj=new Date(`${date}T12:00:00`);
       if(Number.isNaN(dateObj.getTime())) continue;
       const day=getScheduleDayForDate(dateObj);
-      const dayKey=String(day||'');
-      let relevantChains;
-      if(relevantChainsByScheduleDay.has(dayKey)) relevantChains=relevantChainsByScheduleDay.get(dayKey);
-      else{
-        relevantChains=historyChainsForTrainNumber(trainNo,day);
-        relevantChainsByScheduleDay.set(dayKey,relevantChains);
-      }
+      const relevantChains=historyChainsForTrainNumber(trainNo,day);
       if(!relevantChains.length) continue;
       const assignments=allDates?.[date]?.[area]||{};
 
@@ -10358,26 +10286,27 @@ initRegionNavigation();
     const hideHistoryNumber=visibility.hideNumber===true;
     const hideHistoryType=visibility.hideType===true;
     const currentDate=operationDateKey(new Date());
-    // 表示中の日付に登録されている編成だけを、履歴照合の対象にする。
-    const displayedDate=String(selectedDateKey||currentDate).trim();
-    const assignedValue=String(registeredFormationForHistoryDate(train,displayedDate)||'').trim();
+    // 表示中の日付ではなく、今日までの最新登録編成を基準に全期間の運用履歴を表示する。
+    const assignedValue=String(latestRegisteredFormationForHistory(train,currentDate)||'').trim();
     const emptyHistoryFrame='<div class="station-timetable-frame train-history-frame"><div class="train-history-wrap"></div></div>';
-    if(!assignedValue) return emptyHistoryFrame;
+    if(!assignedValue){
+      return emptyHistoryFrame;
+    }
 
-    // 運用履歴の対象は個別編成のみ。形式全体・個体差・未選択値は照合対象外。
+    // 運用履歴の対象は個別編成のみ。形式全体（○○系・○○型）、個体差（○両・更新／未更新等）、
+    // 未選択値や解決できないIDは履歴の照合対象から除外する。
     const isIndividualFormationId=(value)=>{
       const id=String(value||'').trim().replace(/F$/i,'');
       if(!id || id===INITIAL_FORMATION_SELECTION.id) return false;
       const obj=typeof formationById==='function' ? formationById(id) : null;
       return !!obj && obj.kind!=='type' && obj.kind!=='variant' && obj.generic!==true && obj.selectableType!==true;
     };
-    const formationIdentity=value=>String(value||'').trim().replace(/F$/i,'').toLowerCase();
-    const targetIdentities=new Set(assignedValue.split('+')
+    const targetIds=assignedValue.split('+')
       .map(id=>String(id||'').trim().replace(/F$/i,''))
-      .filter(isIndividualFormationId)
-      .map(formationIdentity));
-    if(!targetIdentities.size) return emptyHistoryFrame;
-
+      .filter(isIndividualFormationId);
+    if(!targetIds.length){
+      return emptyHistoryFrame;
+    }
     const family=typeof formationFamilyForTrain==='function'
       ? formationFamilyForTrain(train)
       : String(formationStorageContext(train)?.family||'').trim();
@@ -10387,136 +10316,69 @@ initRegionNavigation();
     const allDates=formationRemoteByFamily?.[family]?.areaStateByDate||{};
     const records=[];
 
-    const assignedIdsFromStored=stored=>String(stored?.f||'').split('+')
-      .map(id=>String(id||'').trim().replace(/F$/i,''))
-      .filter(isIndividualFormationId);
-    const containsTarget=ids=>ids.some(id=>targetIdentities.has(formationIdentity(id)));
-    const canonicalTrainNo=value=>normalizeTrainNo(value).replace(/A$/i,'');
-    // 同じ曜日・ダイヤ種別では接続運用データが同一なので、列番索引も再利用する。
-    const chainIndexByScheduleDay=new Map();
-
     for(const [date,areaMap] of Object.entries(allDates)){
+      // 当日分も含め、未来の日付だけを除外する。
       if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date)) || String(date)>currentDate) continue;
       const assignments=areaMap?.[area]||{};
       const dateObj=new Date(`${date}T12:00:00`);
       if(Number.isNaN(dateObj.getTime())) continue;
       const day=getScheduleDayForDate(dateObj);
-      const dayKey=String(day||'');
-      let chainIndexData=chainIndexByScheduleDay.get(dayKey);
-      if(!chainIndexData){
-        const dayChains=Array.isArray(OPERATION_CHAINS?.[day])?OPERATION_CHAINS[day]:[];
-        const exactChainsByNumber=new Map();
-        const canonicalChainsByNumber=new Map();
-        const addChainIndex=(map,key,chainIndex)=>{
-          if(!key) return;
-          let indexes=map.get(key);
-          if(!indexes){indexes=[];map.set(key,indexes);}
-          if(!indexes.includes(chainIndex)) indexes.push(chainIndex);
-        };
-        for(let chainIndex=0;chainIndex<dayChains.length;chainIndex++){
-          const chain=dayChains[chainIndex];
-          if(!Array.isArray(chain)||!chain.length) continue;
-          const aliases=new Set();
-          for(const entry of chain){
-            const entryNo=normalizeTrainNo(entry?.no||entry);
-            if(entryNo) aliases.add(entryNo);
-            const source=entryNo?findOperationTrainRecord(entryNo,day):null;
-            for(const field of ['numberSegments','numbersByLine','trainNumbers']){
-              for(const list of Object.values(source?.[field]||{})){
-                if(!Array.isArray(list)) continue;
-                for(const item of list){
-                  const value=normalizeTrainNo(item?.no??item?.number??item?.trainNo??item?.trainNumber??item);
-                  if(value) aliases.add(value);
-                }
-              }
-            }
-          }
-          for(const alias of aliases){
-            addChainIndex(exactChainsByNumber,alias,chainIndex);
-            addChainIndex(canonicalChainsByNumber,canonicalTrainNo(alias),chainIndex);
-          }
-        }
-        chainIndexData={dayChains,exactChainsByNumber,canonicalChainsByNumber};
-        chainIndexByScheduleDay.set(dayKey,chainIndexData);
-      }
-      const {dayChains,exactChainsByNumber,canonicalChainsByNumber}=chainIndexData;
+      const dayChains=Array.isArray(OPERATION_CHAINS?.[day])?OPERATION_CHAINS[day]:[];
       const matchedChains=new Map();
       const unchained=[];
 
-      // すべての編成登録を境界候補として収集する。
-      // 対象外の編成でも次の編成への切替位置になるため、対象編成に一致するか先に絞り込まない。
+      // 編成が登録されている列車を起点として、その列車が属する運用チェーン全体を収集。
       for(const [assignedNoRaw,stored] of Object.entries(assignments)){
-        const assignedIds=assignedIdsFromStored(stored);
-        if(!assignedIds.length) continue;
+        const assignedIds=String(stored?.f||'').split('+')
+          .map(id=>String(id||'').trim().replace(/F$/i,''))
+          .filter(isIndividualFormationId);
+        if(!assignedIds.length || !targetIds.some(id=>assignedIds.includes(id))) continue;
         const assignedNo=normalizeTrainNo(assignedNoRaw);
         if(!assignedNo) continue;
-        const exactChainIndexes=exactChainsByNumber.get(assignedNo)||[];
-        // 完全一致がある場合はそちらのみ。なければA付き／Aなしを含む正規化一致を使う。
-        const chainIndexes=exactChainIndexes.length
-          ? exactChainIndexes
-          : (canonicalChainsByNumber.get(canonicalTrainNo(assignedNo))||[]);
+        // 同じ列車番号が複数の運用チェーンに含まれる場合も、該当するチェーンをすべて表示する。
+        // A付き列番などが別列車として存在するときは、まず完全一致を優先する。
+        const exactChainIndexes=[];
+        const canonicalChainIndexes=[];
+        dayChains.forEach((chain,chainIndex)=>{
+          if(!Array.isArray(chain)||!chain.length) return;
+          const belongsToNumber=entry=>{
+            const entryNo=normalizeTrainNo(entry?.no||entry);
+            if(entryNo===assignedNo) return true;
+            const source=entryNo?findOperationTrainRecord(entryNo,day):null;
+            if(!source) return false;
+            const all=[];
+            for(const list of Object.values(source.numberSegments||{})) if(Array.isArray(list)) list.forEach(seg=>all.push(normalizeTrainNo(seg?.no)));
+            for(const list of Object.values(source.numbersByLine||{})) if(Array.isArray(list)) list.forEach(n=>all.push(normalizeTrainNo(n)));
+            for(const list of Object.values(source.trainNumbers||{})) if(Array.isArray(list)) list.forEach(n=>all.push(normalizeTrainNo(n)));
+            return all.includes(assignedNo);
+          };
+          const hasExact=chain.some(belongsToNumber);
+          if(hasExact) exactChainIndexes.push(chainIndex);
+          else if(chain.some(entry=>{
+            const entryNo=normalizeTrainNo(entry?.no||entry);
+            if(entryNo.replace(/A$/i,'')===assignedNo.replace(/A$/i,'')) return true;
+            const source=entryNo?findOperationTrainRecord(entryNo,day):null;
+            const values=[];
+            for(const list of Object.values(source?.numberSegments||{})) if(Array.isArray(list)) list.forEach(seg=>values.push(normalizeTrainNo(seg?.no)));
+            for(const list of Object.values(source?.numbersByLine||{})) if(Array.isArray(list)) list.forEach(n=>values.push(normalizeTrainNo(n)));
+            return values.some(n=>n.replace(/A$/i,'')===assignedNo.replace(/A$/i,''));
+          })) canonicalChainIndexes.push(chainIndex);
+        });
+        const chainIndexes=exactChainIndexes.length?exactChainIndexes:canonicalChainIndexes;
         if(chainIndexes.length){
           for(const chainIndex of chainIndexes){
-            const key=String(chainIndex);
-            if(!matchedChains.has(key)) matchedChains.set(key,{chainIndex,entries:dayChains[chainIndex],markers:[]});
-            matchedChains.get(key).markers.push({assignedNo,assignedIds,stored,rawNo:String(assignedNoRaw)});
+            const chain=dayChains[chainIndex];
+            const chainKey=String(chainIndex);
+            if(!matchedChains.has(chainKey)) matchedChains.set(chainKey,{chainIndex,entries:chain,registeredNumbers:[]});
+            matchedChains.get(chainKey).registeredNumbers.push(assignedNo);
           }
-        }else if(containsTarget(assignedIds)){
-          // 運用チェーンに見つからない列番は、対象編成に一致する場合のみ単独表示する。
+        }else{
           unchained.push({trainNo:assignedNo,assignedValue:String(stored?.f||'')});
         }
       }
 
-      const filteredChains=[];
-      for(const chainRecord of matchedChains.values()){
-        const expanded=expandHistoryEntriesByTrainNumber(chainRecord.entries,day);
-        if(!expanded.length) continue;
-        const rowNumbers=expanded.map(entry=>normalizeTrainNo(entry?.no||entry));
-        const markersAtIndex=new Map();
-
-        // 登録列番を接続順の行に対応付ける。完全一致を優先し、A付き／Aなしは必要時のみ照合。
-        for(const marker of chainRecord.markers){
-          let indexes=[];
-          rowNumbers.forEach((number,index)=>{if(number===marker.assignedNo) indexes.push(index);});
-          if(!indexes.length){
-            rowNumbers.forEach((number,index)=>{if(canonicalTrainNo(number)===canonicalTrainNo(marker.assignedNo)) indexes.push(index);});
-          }
-          if(!indexes.length) continue;
-          const index=indexes[0];
-          const previous=markersAtIndex.get(index);
-          if(!previous){
-            markersAtIndex.set(index,{...marker,index});
-          }else{
-            // 同じ接続位置に表記揺れによる登録が重なった場合は、編成集合を重複なく統合する。
-            const ids=[...previous.assignedIds];
-            const known=new Set(ids.map(formationIdentity));
-            for(const id of marker.assignedIds){
-              const identity=formationIdentity(id);
-              if(!known.has(identity)){known.add(identity);ids.push(id);}
-            }
-            previous.assignedIds=ids;
-          }
-        }
-
-        const markers=[...markersAtIndex.values()].sort((a,b)=>a.index-b.index);
-        if(!markers.length) continue;
-        const displayIndexes=new Set();
-        markers.forEach((marker,markerIndex)=>{
-          // 1編成目は運用の先頭から適用し、2編成目以降はその登録列番から切り替える。
-          // 例：2編成目の登録列番より前＝1編成目、3編成目の登録列番より前＝2編成目。
-          const segmentStart=markerIndex===0?0:marker.index;
-          const segmentEnd=markerIndex+1<markers.length?markers[markerIndex+1].index:expanded.length;
-          if(!containsTarget(marker.assignedIds)) return;
-          for(let index=segmentStart;index<segmentEnd;index++) displayIndexes.add(index);
-        });
-        if(displayIndexes.size){
-          // 展開済みの運用列車は履歴カード生成時にも使い回し、同じ接続運用を再展開しない。
-          filteredChains.push({...chainRecord,displayIndexes:[...displayIndexes].sort((a,b)=>a-b),expandedEntries:expanded});
-        }
-      }
-
-      if(filteredChains.length || unchained.length){
-        records.push({date,day,chains:filteredChains.sort((a,b)=>a.chainIndex-b.chainIndex),unchained});
+      if(matchedChains.size || unchained.length){
+        records.push({date,day,chains:[...matchedChains.values()].sort((a,b)=>a.chainIndex-b.chainIndex),unchained});
       }
     }
 
@@ -10535,12 +10397,9 @@ initRegionNavigation();
       const displayNo=isDisplayableOperationTrainNumber(entryNo,sourceTrain)?entryNo:'';
       const rawType=String(entry?.type||sourceTrain?.type||'').trim();
       const typeLabel=rawType?getOperationalTypeLabel(rawType,entryNo||registerNo,sourceTrain):'';
-      const shortType=rawType?getShortType(rawType,entryNo||registerNo):'';
       const start=String(entry?.start||sourceTrain?.start||sourceTrain?.stops?.[0]?.station||'').trim();
-      const shortStart=operationStationLabel(start);
       const badgeStyle=rawType?typeBadgeInlineStyle(sourceTrain||{type:rawType},null,null,start):'';
       const dest=String(entry?.dest||sourceTrain?.dest||sourceTrain?.stops?.[sourceTrain?.stops?.length-1]?.station||'').trim();
-      const shortDest=operationStationLabel(dest);
       const startTime=String(entry?.startTime||sourceTrain?.startTime||sourceTrain?.stops?.[0]?.departure||sourceTrain?.stops?.[0]?.time||'').trim();
       const endTime=String(entry?.endTime||sourceTrain?.endTime||sourceTrain?.stops?.[sourceTrain?.stops?.length-1]?.arrival||sourceTrain?.stops?.[sourceTrain?.stops?.length-1]?.time||'').trim();
       const historyRowClasses=[
@@ -10550,12 +10409,12 @@ initRegionNavigation();
       ].filter(Boolean).join(' ');
       return `<div class="${historyRowClasses}">
         ${hideHistoryNumber?'':`<span class="train-operation-number">${escapeAttr(displayNo)}</span>`}
-        ${hideHistoryType?'':`<span class="station-timetable-type train-operation-type${typeLabel?'':' empty-operation-field'}"${rawType?` style="${badgeStyle}"`:''}><span class="operation-full">${escapeAttr(typeLabel)}</span><span class="operation-short">${escapeAttr(shortType)}</span></span>`}
+        ${hideHistoryType?'':`<span class="station-timetable-type train-operation-type${typeLabel?'':' empty-operation-field'}"${rawType?` style="${badgeStyle}"`:''}>${escapeAttr(typeLabel)}</span>`}
         <span class="train-operation-time">${escapeAttr(formatRailwayDisplayTime(startTime))}</span>
-        <span class="train-operation-station start-station" title="${escapeAttr(start)}"><span class="operation-full">${escapeAttr(start)}</span><span class="operation-short">${escapeAttr(shortStart)}</span></span>
+        <span class="train-operation-station start-station" title="${escapeAttr(start)}">${escapeAttr(start)}</span>
         <span class="train-operation-arrow" aria-hidden="true">→</span>
         <span class="train-operation-time">${escapeAttr(formatRailwayDisplayTime(endTime))}</span>
-        <span class="train-operation-station end-station" title="${escapeAttr(dest)}"><span class="operation-full">${escapeAttr(dest)}</span><span class="operation-short">${escapeAttr(shortDest)}</span></span>
+        <span class="train-operation-station end-station" title="${escapeAttr(dest)}">${escapeAttr(dest)}</span>
       </div>`;
     };
 
@@ -10564,12 +10423,11 @@ initRegionNavigation();
       const dateLabel=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${weekdayNames[d.getDay()]}）`;
       const runs=[];
       const seenRows=new Set();
+      // 同じ運用チェーンが複数の登録列車から見つかった場合は一度だけ表示する。
       for(const chainRecord of record.chains){
-        const expandedEntries=chainRecord.expandedEntries||expandHistoryEntriesByTrainNumber(chainRecord.entries,record.day);
-        const allowedIndexes=new Set(chainRecord.displayIndexes||[]);
-        for(let entryIndex=0;entryIndex<expandedEntries.length;entryIndex++){
-          if(!allowedIndexes.has(entryIndex)) continue;
-          const entry=expandedEntries[entryIndex];
+        // 同じ運用内でも列番が変わる駅を境界にし、別の列車行として表示する。
+        const expandedEntries=expandHistoryEntriesByTrainNumber(chainRecord.entries,record.day);
+        for(const entry of expandedEntries){
           const no=normalizeTrainNo(entry?.no||entry);
           const rowKey=[no,entry?.startTime||'',entry?.endTime||'',entry?.start||'',entry?.dest||''].join('|');
           if(seenRows.has(rowKey)) continue;
@@ -10583,8 +10441,8 @@ initRegionNavigation();
           const entry={
             no:item.trainNo,type:sourceTrain.type,start:sourceTrain.start||sourceTrain.stops?.[0]?.station,
             startTime:sourceTrain.startTime||sourceTrain.stops?.[0]?.departure||sourceTrain.stops?.[0]?.time,
-            dest:sourceTrain.dest||sourceTrain?.stops?.[sourceTrain?.stops?.length-1]?.station,
-            endTime:sourceTrain.endTime||sourceTrain?.stops?.[sourceTrain?.stops?.length-1]?.arrival||sourceTrain?.stops?.[sourceTrain?.stops?.length-1]?.time
+            dest:sourceTrain.dest||sourceTrain.stops?.[sourceTrain.stops?.length-1]?.station,
+            endTime:sourceTrain.endTime||sourceTrain.stops?.[sourceTrain.stops.length-1]?.arrival||sourceTrain.stops?.[sourceTrain.stops.length-1]?.time
           };
           const expandedEntries=expandHistoryEntriesByTrainNumber([entry],record.day);
           for(const expandedEntry of expandedEntries){
@@ -10687,10 +10545,9 @@ initRegionNavigation();
     const hasOperationNumber=operation.some(entry=>String(entry?.no||'').trim()!=='');
     const hasOperationType=operation.some(entry=>String(entry?.type||'').trim()!=='');
     const historyCurrentDate=String(operationDateKey(new Date())||operationDateKey()).trim();
-    const historyDisplayDate=String(selectedDateKey||historyCurrentDate).trim();
     const visibleHistoryTrainNumber=String(trainDisplayNoAtTime(train,currentMinutes())||'').trim();
     const historyTrainLabel=visibleHistoryTrainNumber||'列車番号';
-    const historyFormationValue=String(registeredFormationForHistoryDate(train,historyDisplayDate)||'').trim();
+    const historyFormationValue=String(latestRegisteredFormationForHistory(train,historyCurrentDate)||registeredFormationForTrain(train)||train.formation||'').trim();
     const historyFormationIds=historyFormationValue.split('+').map(value=>value.trim()).filter(value=>value&&!window.isUnselectedFormationId?.(value)&&value!==INITIAL_FORMATION_SELECTION.id);
     const historyFormationLabel=historyFormationIds.length?historyFormationIds.map(id=>{
       try{return String(selectionDisplayObjectForTrain(train,id)?.name||formationById(id)?.name||id);}catch(e){return String(formationById(id)?.name||id);}
@@ -10715,8 +10572,7 @@ initRegionNavigation();
           <img src="${(train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id)?originalSelected.img:defaultTrainImage(train)}" class="train-card-img">
           <div class="train-info-main">
             <div>${String(train.type||'').trim()?`<span class="type-badge ${getExpressClass(train)}" style="${typeBadgeInlineStyle(train)}">${getDetailType(train.type)}</span>`:''}<span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>
-            ${trainServiceInfoHTML(train)}
-            <div class="input-trigger-btn">編成を入力中</div>
+              <div class="input-trigger-btn">編成を入力中</div>
             ${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}
           </div>
         </div>
@@ -10736,7 +10592,7 @@ initRegionNavigation();
     content.innerHTML=`
       <div class="train-card${cardClass}" ${cardClick}>
         <img src="${imgSrc}" class="train-card-img">
-        <div class="train-info-main"><div>${String(train.type||'').trim()?`<span class="type-badge ${getExpressClass(train)}" style="${typeBadgeInlineStyle(train)}">${getDetailType(train.type)}</span>`:''}<span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>${trainServiceInfoHTML(train)}${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id?`<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`:`<div class="input-trigger-btn">${noFormationText}</div>`}${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id&&formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
+        <div class="train-info-main"><div>${String(train.type||'').trim()?`<span class="type-badge ${getExpressClass(train)}" style="${typeBadgeInlineStyle(train)}">${getDetailType(train.type)}</span>`:''}<span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id?`<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`:`<div class="input-trigger-btn">${noFormationText}</div>`}${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id&&formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
       </div>
 
       <div class="train-info-tabs" style="--train-info-color:${tabColor}">
@@ -11197,26 +11053,6 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     }
     /* 次の運用には装飾の影を付けない。 */
     .train-operation-row.next-operation{box-shadow:none!important;}
-
-    /* PC版：変更対象は「今日の運用」と「編成の運用履歴」のみ。
-       4文字の種別が収まるよう列を少し広げ、駅名・種別は正式名称を表示する。 */
-    @media(min-width:960px){
-      #sheetContent .train-operation-wrap:not(.hide-operation-number):not(.hide-operation-type) .train-operation-row:not(.train-history-run){
-        grid-template-columns:86px 90px 78px minmax(0,1fr) 36px 78px minmax(0,1fr)!important;
-      }
-      #sheetContent .train-operation-wrap.hide-operation-number:not(.hide-operation-type) .train-operation-row:not(.train-history-run){
-        grid-template-columns:90px 78px minmax(0,1fr) 36px 78px minmax(0,1fr)!important;
-      }
-      #sheetContent .train-operation-wrap:not(.hide-operation-type) .train-operation-row:not(.train-history-run) .train-operation-type{
-        box-sizing:border-box!important;min-width:5.5em!important;width:5.5em!important;max-width:5.5em!important;padding-left:2px!important;padding-right:2px!important;
-      }
-      #sheetContent .train-history-run.train-operation-row:not(.hide-operation-number):not(.hide-operation-type){
-        grid-template-columns:72px 90px 62px minmax(0,1fr) 20px 62px minmax(0,1fr)!important;
-      }
-      #sheetContent .train-history-run.train-operation-row.hide-operation-number:not(.hide-operation-type){
-        grid-template-columns:90px 62px minmax(0,1fr) 20px 62px minmax(0,1fr)!important;
-      }
-    }
   `;
   document.head.appendChild(style);
 })();
