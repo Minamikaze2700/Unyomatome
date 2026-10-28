@@ -7650,7 +7650,7 @@ initRegionNavigation();
     }
   };
 
-  async function syncRegistrationToRemoteByFamily(changesByFamily){
+  async function syncRegistrationToRemoteByFamily(changesByFamily, options={}){
     const families=Object.keys(changesByFamily||{}).filter(f=>Object.keys(changesByFamily[f]||{}).length);
     if(!families.length) return true;
     if(!firebaseReady||!firebaseDb){syncStatus('Firebase未接続');return false;}
@@ -7676,9 +7676,9 @@ initRegionNavigation();
             // プルダウンで「編成未選択」を選んだときは、現在状態を削除する。
             await ref.remove();
           }
-          // 通常の編成登録だけでなく「編成未選択」も最新イベントとして記録する。
-          // 未選択イベントがないと、古い履歴の編成が選択状態へ復活してしまう。
-          try{
+          // 複数編成のスロット選択途中では入力履歴を作らず、全編成の登録完了時に1件だけ記録する。
+          // 完了時にも「編成未選択」は最新イベントとして記録し、古い入力履歴の復活を防ぐ。
+          if(options?.skipInputHistory!==true) try{
             let historyRef=db.ref(root).child('__formationInputHistory');
             if(area!=='__ROOT__') historyRef=historyRef.child(area);
             historyRef=historyRef.child(date).child(String(no));
@@ -7730,7 +7730,7 @@ initRegionNavigation();
     return syncRegistrationToRemoteByFamily(grouped);
   };
 
-  recordSelection=async function(train,formId){
+  recordSelection=async function(train,formId,options={}){
     if(isNonCurrentSelectedDate(selectedDateKey)||!train) return [];
     const selectedNo=String(train.no||'').trim();
     if(!selectedNo) return [];
@@ -7768,7 +7768,7 @@ initRegionNavigation();
     applyRegistrationState();
     refreshAllTrainDataCache();
     saveLocalState();
-    const ok=await syncRegistrationToRemoteByFamily({[family]:{[selectedNo]:value}});
+    const ok=await syncRegistrationToRemoteByFamily({[family]:{[selectedNo]:value}},{skipInputHistory:options?.skipInputHistory===true});
     if(ok) delete pendingFormationState[selectedNo];
 
     if(currentTrainSnapshot&&String(currentTrainSnapshot.no||'')===selectedNo){
@@ -8153,11 +8153,11 @@ initRegionNavigation();
     }
     ids[slot]=normalized;
     const saved=ids.slice(0,count).filter(Boolean).join('+');
+    const complete=ids.slice(0,count).every(Boolean);
     currentTrainSnapshot={...currentTrainSnapshot,formation:saved||null};
     train.formation=saved||null;
-    await recordSelection(train,saved||null);
+    await recordSelection(train,saved||null,{skipInputHistory:!complete});
     restoreHiroDropdown();
-    const complete=ids.slice(0,count).every(Boolean);
     if(complete){
       isEditMode=false;document.getElementById('bottomSheet')?.classList.remove('editing');
     }else{
@@ -10384,12 +10384,48 @@ initRegionNavigation();
   }
 
   function renderFormationOperationHistory(train, visibility={}){
+    // 編成ごとの履歴は、現在の列車に割り当てられた編成だけでなく、
+    // この路線ファミリーに属する全個別編成を1編成1項目で縦に並べる。
+    const groups=typeof formationsForTrain==='function' ? formationsForTrain(train) : (Array.isArray(FORMATIONS)?FORMATIONS:[]);
+    const candidates=[];
+    for(const group of groups){
+      for(const variant of (Array.isArray(group?.variants)?group.variants:[])){
+        for(const item of (Array.isArray(variant?.items)?variant.items:[])) candidates.push(item);
+      }
+      for(const item of (Array.isArray(group?.items)?group.items:[])) candidates.push(item);
+    }
+    const seen=new Set();
+    const entries=candidates.map(item=>{
+      const id=String(item?.id||item?.name||'').trim().replace(/F$/i,'');
+      if(!id||seen.has(id)) return null;
+      const obj=typeof formationById==='function'?formationById(id):null;
+      if(!obj || obj.kind==='type' || obj.kind==='variant' || obj.generic===true || obj.selectableType===true) return null;
+      seen.add(id);
+      return {id,name:String(obj.name||item.name||id),img:String(obj.img||item.img||fallbackTrainImageUrl())};
+    }).filter(Boolean).sort((a,b)=>a.name.localeCompare(b.name,'ja',{numeric:true}));
+    if(!entries.length){
+      return '<div class="train-info-empty">この路線の編成データがありません。</div>';
+    }
+    const items=entries.map(entry=>{
+      const historyHtml=renderSingleFormationOperationHistory(train,visibility,entry.id);
+      return `<details class="formation-history-single-item">
+        <summary class="formation-history-single-heading">
+          <img src="${escapeAttr(entry.img)}" alt="" onerror="this.onerror=null;this.src=jsonNoImageUrl()">
+          <strong>${escapeAttr(entry.name)}</strong><span class="formation-history-single-chevron" aria-hidden="true"></span>
+        </summary>
+        <div class="formation-history-single-content">${historyHtml}</div>
+      </details>`;
+    }).join('');
+    return `<div class="formation-history-all-items">${items}</div>`;
+  }
+
+function renderSingleFormationOperationHistory(train, visibility={}, targetFormationOverride=''){
     // 「今日の運用」で列全体が非表示になる条件をそのまま履歴にも適用する。
     const hideHistoryNumber=visibility.hideNumber===true;
     const hideHistoryType=visibility.hideType===true;
     const currentDate=operationDateKey(new Date());
     // 表示中の日付ではなく、今日までの最新登録編成を基準に全期間の運用履歴を表示する。
-    const assignedValue=String(latestRegisteredFormationForHistory(train,currentDate)||'').trim();
+    const assignedValue=String(targetFormationOverride||latestRegisteredFormationForHistory(train,currentDate)||'').trim();
     const emptyHistoryFrame='<div class="station-timetable-frame train-history-frame"><div class="train-history-wrap"></div></div>';
     if(!assignedValue){
       return emptyHistoryFrame;
@@ -10651,9 +10687,7 @@ initRegionNavigation();
     const historyTrainLabel=visibleHistoryTrainNumber||'列車番号';
     const historyFormationValue=String(latestRegisteredFormationForHistory(train,historyCurrentDate)||registeredFormationForTrain(train)||train.formation||'').trim();
     const historyFormationIds=historyFormationValue.split('+').map(value=>value.trim()).filter(value=>value&&!window.isUnselectedFormationId?.(value)&&value!==INITIAL_FORMATION_SELECTION.id);
-    const historyFormationLabel=historyFormationIds.length?historyFormationIds.map(id=>{
-      try{return String(selectionDisplayObjectForTrain(train,id)?.name||formationById(id)?.name||id);}catch(e){return String(formationById(id)?.name||id);}
-    }).join('+'):'編成番号';
+    const historyFormationLabel='編成ごとの履歴';
     const operationWrapClasses=[
       'station-timetable-wrap',
       'train-operation-wrap',
@@ -10996,6 +11030,22 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
 
     /* 運用履歴：今日の運用と同じ列構成・交互背景で、日付見出しと1列車の高さを圧縮 */
     .train-history-frame{position:relative;margin-top:0;height:53vh;background:#fff;border:3px solid #000;border-radius:11px;overflow:hidden;box-sizing:border-box;}
+    .formation-history-all-items{display:flex;flex-direction:column;gap:6px;width:100%;min-width:0;}
+    .formation-history-single-item{width:100%;min-width:0;border:1px solid #aaa;border-radius:7px;background:#fff;overflow:hidden;box-sizing:border-box;}
+    .formation-history-single-heading{display:flex;align-items:center;gap:9px;min-height:54px;padding:5px 9px;cursor:pointer;list-style:none;background:#f2f2f2;}
+    .formation-history-single-heading::-webkit-details-marker{display:none;}
+    .formation-history-single-heading::marker{content:"";}
+    .formation-history-single-heading img{display:block;flex:0 0 58px;width:58px;height:42px;object-fit:contain;}
+    .formation-history-single-heading strong{font-size:14px;font-weight:800;min-width:0;overflow-wrap:anywhere;}
+    .formation-history-single-chevron{margin-left:auto;flex:0 0 18px;text-align:center;font-size:12px;color:#555;}
+    .formation-history-single-chevron::before{content:"▼";}
+    .formation-history-single-item[open]>.formation-history-single-heading{background:#e8e8e8;border-bottom:1px solid #ccc;}
+    .formation-history-single-item[open]>.formation-history-single-heading .formation-history-single-chevron::before{content:"▲";}
+    .formation-history-single-content{padding:4px;background:#fff;}
+    .formation-history-single-content .train-history-frame{height:auto;max-height:42vh;border-width:1px;border-radius:6px;}
+    .formation-history-single-content .train-history-wrap{height:auto;max-height:42vh;overflow:auto;}
+    .formation-history-single-content>.train-history-frame .train-history-wrap{height:auto;max-height:42vh;}
+    .formation-history-single-content .train-info-empty{padding:8px 6px;font-size:12px;}
     .train-history-wrap{height:100%;overflow-y:auto;overflow-x:hidden;background:#fff;box-sizing:border-box;}
     .train-history-card{background:#fff;border-bottom:1px solid #bbb;}
     .train-history-card-header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:nowrap;padding:4px 8px;background:rgba(0,0,0,.045);border-bottom:1px solid rgba(0,0,0,.12);min-height:27px;cursor:pointer;list-style:none;user-select:none;}
@@ -11069,6 +11119,10 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
       .train-formation-detail-row{grid-template-columns:100px minmax(0,1fr);font-size:15px;gap:8px;padding:6px 9px;}
       .train-formation-card-title{font-size:20px;padding:8px 9px;}
       .train-history-frame{border-width:3px;border-radius:9px;}
+      .formation-history-single-heading{min-height:45px;padding:4px 6px;gap:6px;}
+      .formation-history-single-heading img{flex-basis:42px;width:42px;height:33px;}
+      .formation-history-single-heading strong{font-size:12px;}
+      .formation-history-single-content{padding:3px;}
       .train-history-card-header{min-height:24px;padding:3px 6px;gap:5px;}
       .train-history-date{font-size:11px;}
       .train-history-day{font-size:10px;}
