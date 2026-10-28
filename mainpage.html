@@ -1457,6 +1457,8 @@ const ROUTE_REGISTRY={
     formationFamily:'shinano',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Shinano_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Shinano_noimage.png',
+    // JSONが旧版・キャッシュ版でも行先略称が必ず効くよう路線側にも保持する。
+    destinationAliases:{'軽井沢':'軽井','妙高高原':'妙高高','長野':'長野','小諸':'小諸','上田':'上田','戸倉':'戸倉','豊野':'豊野'},
     prescribedFormationRule:'common',
     access:{public:false,routeAdmins:[]},
     formationInputExample:'S101 / S11 / SR1'
@@ -1473,6 +1475,7 @@ const ROUTE_REGISTRY={
     formationFamily:'shinano',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Shinano_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Shinano_noimage.png',
+    destinationAliases:{'軽井沢':'軽井','妙高高原':'妙高高','長野':'長野','小諸':'小諸','上田':'上田','戸倉':'戸倉','豊野':'豊野'},
     prescribedFormationRule:'common',
     access:{public:false,routeAdmins:[]},
     formationInputExample:'S101 / S11 / SR1'
@@ -3236,11 +3239,20 @@ function getOperationalTypeLabel(type,trainNo='',train=null){
 function displayTrainNo(train){ return (train && !train.hideTrainNumber) ? normalizeTrainNo(train.no) : ''; }
 function getShortDest(dest){
   const value=String(dest||'').trim();
-  // 略称の正本はJSONの destinationAliases に統一する。
+  if(!value) return '';
+  // 従来の行先略称処理に戻し、現在の路線設定と読み込み済みJSONの両方を参照する。
+  // JSON側に略称がない場合でも、路線設定の destinationAliases を適用できる。
   const aliasMaps=[
+    activeRouteMeta?.destinationAliases,
+    activeRouteMeta?.stationAliases,
+    activeRouteMeta?.stationShortMap,
+    activeRouteMeta?.stationAbbreviations,
     activeJson?.destinationAliases,
     activeJson?.stationAliases,
-    activeJson?.stationAbbreviations
+    activeJson?.stationShortMap,
+    activeJson?.stationAbbreviations,
+    activeJson?.route?.abbreviations?.destinations,
+    activeJson?.route?.abbreviations?.stations
   ];
   for(const aliases of aliasMaps){
     if(aliases && typeof aliases==='object' && !Array.isArray(aliases) && Object.prototype.hasOwnProperty.call(aliases,value)){
@@ -4280,11 +4292,12 @@ function positionForTrain(t,minutes){
 function trainLabelText(t){
   const type=String(t?.type||'').trim();
   const isCircular=isCircularTrain(t);
+  // 以前の表示仕様では、列車アイコンの行先はPC・スマホとも略称を使用していた。
+  // PC用だけ正式名称へ切り替える処理をなくし、略称設定を両方の表示に反映する。
   const shortDest=isCircular ? '環状' : getShortDest(t?.dest);
-  const fullDest=isCircular ? '環状運転' : getDetailDest(t?.dest);
   const displayType=getTrainTypeDisplayLabel(t);
-  const fullLabel=type?`${displayType} ${fullDest}`:fullDest;
   const shortType=isShinanoMainRoute()?displayType:getShortType(type,t?.no);
+  const fullLabel=type?`${displayType} ${shortDest}`:shortDest;
   const shortLabel=type?`${shortType} ${shortDest}`:shortDest;
   return `<span class="train-label-full">${escapeAttr(fullLabel)}</span><span class="train-label-short">${escapeAttr(shortLabel)}</span>`;
 }
@@ -9968,8 +9981,13 @@ initRegionNavigation();
 
     // 駅名略称はJSONに集約。destinationAliasesを標準キーとして使う。
     const maps=[
+      activeRouteMeta?.destinationAliases,
+      activeRouteMeta?.stationAliases,
+      activeRouteMeta?.stationShortMap,
+      activeRouteMeta?.stationAbbreviations,
       activeJson?.destinationAliases,
       activeJson?.stationAliases,
+      activeJson?.stationShortMap,
       activeJson?.stationAbbreviations
     ];
     for(const map of maps){
