@@ -9615,16 +9615,20 @@ initRegionNavigation();
     const firebaseCurrent=(includeAllDates||displayDate===String(context?.date||''))?formationInputHistoryLatestFirebaseRecord(context,includeAllDates?allPosts:posts):null;
     const displayPosts=firebaseCurrent?[firebaseCurrent,...posts]:posts;
     const displayGroups=groupFormationInputHistoryPosts(displayPosts);
-    const rows=displayGroups.map(group=>{
+    // 選択UI・登録処理は既存のまま使い、履歴表示だけを「実際に選ばれた編成」に限定する。
+    // 複数スロットの履歴は、完了時に保存された「A+B+…」の各要素に分けて縦に表示する。
+    // 旧仕様で残っている入力途中の履歴（必要スロット数に満たないもの）は表示しない。
+    const requiredSlots=Math.max(1,Number(window.formationCountForTrain?.(train)||1));
+    const rows=displayGroups.flatMap(group=>{
       const post=group.post;
       const isUnselected=!!post.unselected||!!window.isUnselectedFormationId?.(post.f||post.formation||'');
-      const ids=isUnselected?[]:String(post.f||'').split('+').map(v=>v.trim()).filter(Boolean);
+      const ids=isUnselected?[]:String(post.f||post.formation||'').split('+').map(v=>v.trim()).filter(Boolean);
+      if(!isUnselected && !ids.length) return [];
+      if(!isUnselected && requiredSlots>1 && ids.length<requiredSlots) return [];
       const displayObjects=ids.map(id=>{
-        try{return selectionDisplayObjectForTrain(train,id)||selectionDisplayObject(id)||formationById(id)||{};}catch(e){return selectionDisplayObject(id)||formationById(id)||{};}
+        try{return selectionDisplayObjectForTrain(train,id)||selectionDisplayObject(id)||formationById(id)||{};}
+        catch(e){return selectionDisplayObject(id)||formationById(id)||{};}
       });
-      const names=ids.length?ids.map((id,index)=>String(displayObjects[index]?.name||formationById(id)?.name||id)):['編成未選択'];
-      const first=displayObjects[0]||{};
-      const image=String(first.img||first.image||(isUnselected?jsonNoImageUrl():jsonNoImageUrl())||'');
       const author=String(post.author||post.userName||post.userId||'登録者不明');
       const datetime=formatFormationInputHistoryDateTime(post,post?._historyDate||context?.date);
       const deletableKeys=[...new Set(group.posts
@@ -9633,13 +9637,21 @@ initRegionNavigation();
       const deleteButton=deletableKeys.length
         ? `<button type="button" class="formation-input-history-delete" aria-label="この編成入力履歴を削除" onclick="window.deleteFormationInputHistoryRecord('${escapeJs(deletableKeys.join('|'))}')">削除</button>`
         : '';
-      return `<div class="formation-input-history-item" data-history-key="${escapeAttr(post._recordId||post.key)}" data-history-duplicates="${group.posts.length}">
-        <img class="formation-input-history-image" src="${escapeAttr(image)}" alt="${escapeAttr(names.join('・'))}" onerror="this.onerror=null;this.src=jsonNoImageUrl()">
-        <div class="formation-input-history-formation" title="${escapeAttr(names.join(' + '))}">${escapeAttr(names.join(' + '))}</div>
-        <div class="formation-input-history-meta"><span class="formation-input-history-datetime">${escapeAttr(datetime)}</span><span class="formation-input-history-author">${escapeAttr(author)}</span></div>
-        ${deleteButton}
-      </div>`;
-    }).join('');
+      const historyIds=isUnselected?['']:ids;
+      return historyIds.map((id,index)=>{
+        const obj=displayObjects[index]||{};
+        const name=isUnselected?'編成未選択':String(obj.name||formationById(id)?.name||id);
+        const image=String(obj.img||obj.image||jsonNoImageUrl()||'');
+        // 1つの複数編成登録につき削除操作は1箇所だけ表示する。
+        const itemDelete=index===0?deleteButton:'';
+        return `<div class="formation-input-history-item" data-history-key="${escapeAttr(post._recordId||post.key)}" data-history-formation="${escapeAttr(id)}" data-history-duplicates="${group.posts.length}" title="登録内容：${escapeAttr(isUnselected?'編成未選択':ids.join(' + '))}">
+          <img class="formation-input-history-image" src="${escapeAttr(image)}" alt="${escapeAttr(name)}" onerror="this.onerror=null;this.src=jsonNoImageUrl()">
+          <div class="formation-input-history-formation" title="${escapeAttr(name)}">${escapeAttr(name)}</div>
+          <div class="formation-input-history-meta"><span class="formation-input-history-datetime">${escapeAttr(datetime)}</span><span class="formation-input-history-author">${escapeAttr(author)}</span></div>
+          ${itemDelete}
+        </div>`;
+      });
+    }).flat().join('');
     return `<section class="formation-input-history-section">
       <div class="formation-input-history-heading">${escapeAttr(heading)}</div>
       <div class="formation-input-history-list">${rows||'<div class="formation-input-history-empty">該当する編成入力履歴はありません。</div>'}</div>
