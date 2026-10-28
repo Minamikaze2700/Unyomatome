@@ -7345,7 +7345,9 @@ initRegionNavigation();
     if(!historyAt) return true;
     const storedMinute=Math.floor(storedAt/60000);
     const historyMinute=Math.floor(historyAt/60000);
-    if(historyEntry?.unselected) return storedMinute>historyMinute;
+    // 未選択で状態ノードを削除した後に再登録された編成は、時刻が同じ分でも現在状態を優先する。
+    // 分単位の保存時刻だけで厳密な「>」比較をすると、同じ分に再登録した編成が未選択履歴に負ける。
+    if(historyEntry?.unselected) return storedMinute>=historyMinute;
     return storedMinute>=historyMinute;
   }
   window.storedFormationIsNewerThanHistory=storedFormationIsNewerThanHistory;
@@ -7793,11 +7795,23 @@ initRegionNavigation();
     applyRegistrationState();
     refreshAllTrainDataCache();
     saveLocalState();
-    const ok=await syncRegistrationToRemoteByFamily({[family]:{[selectedNo]:value}},{skipInputHistory:options?.skipInputHistory===true});
+    const skipInputHistory=options?.skipInputHistory===true;
+    const ok=await syncRegistrationToRemoteByFamily({[family]:{[selectedNo]:value}},{skipInputHistory});
     if(ok) delete pendingFormationState[selectedNo];
 
+    // 複数編成の選択途中では入力履歴の投稿を追加しないが、現在状態の解決用キャッシュは
+    // 選択した途中値へ更新しておく。Firebase再読込が直前の「編成未選択」履歴で上書きしても、
+    // 次のスロットを選ぶ際に古い未選択状態へ戻って入力が止まらないようにする。
+    if(skipInputHistory && value){
+      formationInputHistoryLatestByFamily[family]??={};
+      formationInputHistoryLatestByFamily[family][date]??={};
+      formationInputHistoryLatestByFamily[family][date][selectedNo]={
+        f:value,unselected:false,at:Date.now(),key:'__local_pending_selection__'
+      };
+    }
+    try{ train.__formationExplicitlyUnselected=!value; }catch(e){}
     if(currentTrainSnapshot&&String(currentTrainSnapshot.no||'')===selectedNo){
-      currentTrainSnapshot={...currentTrainSnapshot,formation:value};
+      currentTrainSnapshot={...currentTrainSnapshot,formation:value,__formationExplicitlyUnselected:!value};
     }
     return [selectedNo];
   };
@@ -8138,8 +8152,9 @@ initRegionNavigation();
       input?.focus();
       return;
     }
-    currentTrainSnapshot={...currentTrainSnapshot,formation:ids.join('+')};
+    currentTrainSnapshot={...currentTrainSnapshot,formation:ids.join('+'),__formationExplicitlyUnselected:false};
     train.formation=ids.join('+');
+    train.__formationExplicitlyUnselected=false;
     await recordSelection(train,ids.join('+'));
     isEditMode=false;document.getElementById('bottomSheet')?.classList.remove('editing');
     closeFormationDropdown();
@@ -8193,8 +8208,9 @@ initRegionNavigation();
     ids[slot]=normalized;
     const saved=ids.slice(0,count).filter(Boolean).join('+');
     const complete=ids.slice(0,count).every(Boolean);
-    currentTrainSnapshot={...currentTrainSnapshot,formation:saved||null};
+    currentTrainSnapshot={...currentTrainSnapshot,formation:saved||null,__formationExplicitlyUnselected:false};
     train.formation=saved||null;
+    train.__formationExplicitlyUnselected=false;
     await recordSelection(train,saved||null,{skipInputHistory:!complete});
     restoreHiroDropdown();
     if(complete){
