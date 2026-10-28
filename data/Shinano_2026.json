@@ -1,4 +1,3 @@
-
 {
   "routeName": "しなの鉄道（しなの鉄道線・北しなの線）",
   "formationFamily": "shinano",
@@ -7,11 +6,8 @@
   "noImage": "Shinano_noimage",
   "formationDefaultImage": "Shinano_noimage",
   "typeColors": {
-    "普通": "#0072bc",
-    "快速": "#f39800",
-    "しなのサンセット": "#d71920",
-    "しなのサンライズ": "#d71920",
-    "軽井沢リゾート": "#d71920"
+    "普通": "#1677d2",
+    "快速": "#f39800"
   },
   "lines": [
     {
@@ -4175,7 +4171,7 @@
         },
         {
           "no": "1606M",
-          "type": "しなのサンセット",
+          "type": "快速",
           "stops": [
             {
               "station": "長野",
@@ -4198,7 +4194,8 @@
             ]
           },
           "prescribedFormation": "SR1",
-          "serviceNumber": 2
+          "serviceNumber": 2,
+          "trainName": "しなのサンセット"
         },
         {
           "no": "672M",
@@ -4520,7 +4517,7 @@
         },
         {
           "no": "1608M",
-          "type": "しなのサンセット",
+          "type": "快速",
           "stops": [
             {
               "station": "長野",
@@ -4543,7 +4540,8 @@
             ]
           },
           "prescribedFormation": "SR1",
-          "serviceNumber": 4
+          "serviceNumber": 4,
+          "trainName": "しなのサンセット"
         },
         {
           "no": "348M",
@@ -6003,7 +6001,7 @@
         },
         {
           "no": "601M",
-          "type": "しなのサンライズ",
+          "type": "快速",
           "stops": [
             {
               "station": "小諸",
@@ -6048,7 +6046,8 @@
             ]
           },
           "prescribedFormation": "SR1",
-          "serviceNumber": ""
+          "serviceNumber": "",
+          "trainName": "しなのサンライズ"
         },
         {
           "no": "1315M",
@@ -9313,7 +9312,7 @@
         },
         {
           "no": "1607M",
-          "type": "しなのサンセット",
+          "type": "快速",
           "stops": [
             {
               "station": "上田",
@@ -9336,7 +9335,8 @@
             ]
           },
           "prescribedFormation": "SR1",
-          "serviceNumber": 1
+          "serviceNumber": 1,
+          "trainName": "しなのサンセット"
         },
         {
           "no": "677M",
@@ -12109,7 +12109,7 @@
         },
         {
           "no": "6302M",
-          "type": "軽井沢リゾート",
+          "type": "快速",
           "stops": [
             {
               "station": "妙高高原",
@@ -12189,7 +12189,8 @@
             "しなの鉄道線"
           ],
           "prescribedFormation": "SR1",
-          "serviceNumber": 2
+          "serviceNumber": 2,
+          "trainName": "軽井沢リゾート"
         },
         {
           "no": "2644M",
@@ -16398,7 +16399,7 @@
         },
         {
           "no": "6601M",
-          "type": "軽井沢リゾート",
+          "type": "快速",
           "stops": [
             {
               "station": "軽井沢",
@@ -16496,7 +16497,8 @@
             "北しなの線"
           ],
           "prescribedFormation": "SR1",
-          "serviceNumber": 1
+          "serviceNumber": 1,
+          "trainName": "軽井沢リゾート"
         },
         {
           "no": "2635M",
