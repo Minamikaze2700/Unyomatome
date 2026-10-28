@@ -4348,8 +4348,9 @@ function trainRuntimeKey(t){
   return `${currentDay}|${String(t?.no||'')}|${String(t?.direction||'')}`;
 }
 function isShinanoMainLineForTrainSide(){
-  // しなの鉄道線のみ反転。北しなの線は通常ルール。
-  return String(activeRouteName||'')==='しなの鉄道線（篠ノ井～軽井沢）';
+  // 駅の画面上の上下位置をそのまま左右位置に反映する。
+  // しなの鉄道線も「次駅が上なら左、下なら右」を適用する。
+  return false;
 }
 function stationVisualYForTrainSide(stationName){
   const target=String(stationName||'').replace(/駅$/,'');
@@ -4368,7 +4369,6 @@ function trainSideForStationPair(fromStation,toStation,fallbackDirection=null){
   let side=Number.isFinite(yFrom)&&Number.isFinite(yTo)&&Math.abs(yTo-yFrom)>0.5
     ? (yTo<yFrom?'left':'right')
     : (String(fallbackDirection||'').toLowerCase()==='up'?'left':'right');
-  if(isShinanoMainLineForTrainSide()) side=side==='left'?'right':'left';
   return side;
 }
 function trainSideForDirection(direction, fallbackDirection=null){
