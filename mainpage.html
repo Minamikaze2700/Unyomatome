@@ -366,8 +366,6 @@ button,input,select,textarea{font-family:inherit}
   height:1em;
 }
 .station-timetable-destination-main{display:flex;align-items:flex-end;justify-content:flex-start;gap:.18em;white-space:nowrap;}
-.station-timetable-destination.has-service-name{height:auto;min-width:0;flex-direction:column;align-items:flex-start;align-self:center;gap:2px;line-height:1.05;white-space:normal;}
-.station-timetable-service-name{display:block;font-size:.42em;font-weight:900;line-height:1.15;color:#b51f68;white-space:nowrap;}
 .station-timetable-destination-station{font-size:1em;line-height:1;}
 .station-timetable-destination-go{font-size:.8em;line-height:1;}
 /* 530px未満のみ、530pxを100%とした比率で全パーツを縮小 */
@@ -413,8 +411,6 @@ button,input,select,textarea{font-family:inherit}
   .station-timetable-destination{
     font-size:6.0377358cqw;
   }
-  .station-timetable-destination.has-service-name{height:auto;align-self:center;}
-  .station-timetable-service-name{font-size:2.65cqw;line-height:1.15;}
   .station-timetable-type{
     min-width:14.717cqw;height:6.415cqw;padding:0 .7547cqw;
     border-radius:1.321cqw;font-size:3.0189cqw;
@@ -734,6 +730,11 @@ button,input,select,textarea{font-family:inherit}
 .terms-end{margin:16px 2px 4px;text-align:right;color:#555;font-weight:600;}
 .terms-date{margin:0 2px;color:#777;font-size:.84rem;text-align:right;}
 @media (max-width:520px){.terms-content{font-size:.93rem;line-height:1.8;}.terms-section{padding:12px 12px 11px;margin-bottom:12px;}.terms-lead{padding:12px 13px;}.terms-content h2{font-size:.98rem;}}
+
+/* しなの鉄道線の種別色：普通=青、快速=オレンジ、列車名・号数あり快速=赤 */
+.type-badge.shinano-local,.train-label.shinano-local,.station-timetable-type.shinano-local{background:#1677d2!important;color:#fff!important;}
+.type-badge.shinano-rapid,.train-label.shinano-rapid,.station-timetable-type.shinano-rapid{background:#f39800!important;color:#fff!important;}
+.type-badge.shinano-named-service,.train-label.shinano-named-service,.station-timetable-type.shinano-named-service{background:#df1722!important;color:#fff!important;}
 </style>
 <style id="today-operation-type-width-fix">
 /* 今日の運用：種別は2文字までなので、背景・列幅とも2文字相当に縮小 */
@@ -2267,8 +2268,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
     segmentLineNames,
     type:jsonType,
     expressCategory:String(raw?.expressCategory||'').trim(),
-    serviceName:String(raw?.serviceName||raw?.trainName||'').trim(),
-    serviceNotes:Array.isArray(raw?.serviceNotes)?raw.serviceNotes.map(note=>String(note||'').trim()).filter(Boolean):[],
+    serviceNumber:raw?.serviceNumber===undefined||raw?.serviceNumber===null?'':String(raw.serviceNumber).trim(),
     lineKind:String(raw?.lineKind||meta?.lineKind||formationFamily),
     lineName:activeRouteName,
     formationFamily,
@@ -3210,6 +3210,7 @@ function naganoExpressCategoryFor(train,typeOverride='',trainNoOverride=''){
 }
 function getOperationalTypeLabel(type,trainNo='',train=null){
   const value=String(type||'').trim();
+  if(isShinanoNamedServiceType(value)) return shinanoServiceTypeLabel(value,train?.serviceNumber??train?.rawTrain?.serviceNumber??'');
   const category=naganoExpressCategoryFor(train||{type:value,no:String(trainNo||''),lineKind:activeRouteName==='長野電鉄長野線'?'nagano':''},value,trainNo);
   return category||getDetailType(value);
 }
@@ -3865,7 +3866,38 @@ function initTimeControl(){
 function displayType(type){ return String(type||'普通'); }
 function getDetailDest(dest){ return String(dest||''); }
 function getMainLabelClass(type){ return String(type||'')==='回送' ? 'deadhead' : ''; }
+function isShinanoMainRoute(){ return String(activeRouteName||'')==='しなの鉄道線（篠ノ井～軽井沢）'; }
+function isShinanoNamedServiceType(type){
+  const value=String(type||'').trim();
+  return isShinanoMainRoute() && !!value && !['普通','快速','回送'].includes(value);
+}
+function shinanoServiceTypeLabel(type,serviceNumber=''){
+  const value=String(type||'').trim();
+  const number=String(serviceNumber??'').trim();
+  if(!isShinanoNamedServiceType(value)) return value;
+  const suffix=number ? (/号$/.test(number)?number:`${number}号`) : '号';
+  return `${value}${suffix}`;
+}
+function getTrainTypeDisplayLabel(train){
+  const type=String(train?.type||'').trim();
+  if(isShinanoMainRoute()){
+    if(isShinanoNamedServiceType(type)) return shinanoServiceTypeLabel(type,train?.serviceNumber??train?.rawTrain?.serviceNumber??'');
+    if(type==='快速') return '快速';
+    if(type==='普通') return '普通';
+  }
+  return getDetailType(type);
+}
+function getTrainTypeDisplayClass(train){
+  if(isShinanoMainRoute()){
+    const type=String(train?.type||'').trim();
+    if(isShinanoNamedServiceType(type)) return 'shinano-named-service';
+    if(type==='快速') return 'shinano-rapid';
+    if(type==='普通') return 'shinano-local';
+  }
+  return getExpressClass(train);
+}
 function trainVisualKind(t){
+  if(isShinanoMainRoute()) return getTrainTypeDisplayClass(t);
   return expressClassForTrain(t);
 }
 function expressClassForTrain(t){
@@ -4158,15 +4190,15 @@ function positionForTrain(t,minutes){
     // 連結運用の先頭列車は先頭側の始発停車、末尾列車は末尾側の終着停車を担当する。
   if(!chain){
     if(!isCircularTrain(t) && firstIndex>=0 && isStartDwellMinute(minutes,Number(first._departure))){
-      return {pos:firstIndex,side,visualTrain:t,mode:'start-dwell'};
+      return {pos:firstIndex,side:trainSideForTrainAtStation(t,0),visualTrain:t,mode:'start-dwell'};
     }
     if(!isCircularTrain(t) && lastIndex>=0 && isEndDwellMinute(minutes,Number(last._arrival))){
-      return {pos:lastIndex,side,visualTrain:t,mode:'end-dwell'};
+      return {pos:lastIndex,side:trainSideForTrainAtStation(t,stops.length-1),visualTrain:t,mode:'end-dwell'};
     }
   }
 
   if(!isCircularTrain(t) && isChainFirst && firstIndex>=0 && isStartDwellMinute(minutes,Number(first._departure))){
-    return {pos:firstIndex,side,visualTrain:t,mode:'start'};
+    return {pos:firstIndex,side:trainSideForTrainAtStation(t,0),visualTrain:t,mode:'start'};
   }
 
   // 駅停車中は到着(:15)から発車(:45)まで、その駅に固定表示。
@@ -4176,7 +4208,7 @@ function positionForTrain(t,minutes){
     const arrive=Number(st._arrival)+0.25;
     const depart=Number(st._departure)+0.75;
     if(i>0 && i<stops.length-1 && currentIndex>=0 && minutes>=arrive && minutes<depart){
-      return {pos:currentIndex,side,visualTrain:t,mode:'station-dwell'};
+      return {pos:currentIndex,side:trainSideForTrainAtStation(t,i),visualTrain:t,mode:'station-dwell'};
     }
 
     if(i<stops.length-1){
@@ -4196,7 +4228,7 @@ function positionForTrain(t,minutes){
           return null;
         }
         const ratio=b===a?0:(minutes-a)/(b-a);
-        return {pos:currentIndex+(nextIndex-currentIndex)*ratio,side,visualTrain:t,mode:'run'};
+        return {pos:currentIndex+(nextIndex-currentIndex)*ratio,side:trainSideForStationPair(st.station,next.station,rawDirection),visualTrain:t,mode:'run'};
       }
     }
   }
@@ -4207,18 +4239,18 @@ function positionForTrain(t,minutes){
     // この処理には入らず、次列車は発車2分前から通常の始発表示になる。
     if(minutes>lastArr && minutes<nextStart){
       if(minutes<=lastArr+TURNBACK_SWITCH_MIN){
-        return {pos:lastIndex,side,visualTrain:t,mode:'turn-arrival'};
+        return {pos:lastIndex,side:trainSideForTrainAtStation(t,stops.length-1),visualTrain:t,mode:'turn-arrival'};
       }
       const nextNo=trainEntryNo(next);
       const nextDirection=(next&&next.start&&next.dest)?(stationIndex(next.start)>stationIndex(next.dest)?'up':'down'):null;
       const nextTrain=liveTrain(nextNo,nextDirection)||baseTrainForDay(nextNo,nextDirection,currentDay)||(currentDay==='休日'?HOLIDAY_TRAIN_INDEX[nextNo]:TRAIN_INDEX[nextNo])||null;
-      const nextSide=trainSideForDirection(nextTrain?.direction, inferDirectionFromStations(next.start,next.dest), nextTrain||next);
+      const nextSide=trainSideForStationPair(next.start,next.dest,nextTrain?.direction||inferDirectionFromStations(next.start,next.dest));
       return {pos:lastIndex,side:nextSide,visualTrain:nextTrain||t,mode:'turn-wait'};
     }
   }
 
   if(!isCircularTrain(t) && isChainLast && isEndDwellMinute(minutes,Number(last._arrival))){
-    return {pos:lastIndex,side,visualTrain:t,mode:'end'};
+    return {pos:lastIndex,side:trainSideForTrainAtStation(t,stops.length-1),visualTrain:t,mode:'end'};
   }
 
   return null;
@@ -4229,10 +4261,11 @@ function trainLabelText(t){
   const isCircular=isCircularTrain(t);
   const shortDest=isCircular ? '環状' : getShortDest(t?.dest);
   const fullDest=isCircular ? '環状運転' : getDetailDest(t?.dest);
-  const serviceName=String(t?.serviceName||t?.rawTrain?.serviceName||'').trim();
-  const shortLabel=type?`${getShortType(type,t?.no)} ${shortDest}`:shortDest;
-  const fullLabel=type?`${getOperationalTypeLabel(type,t?.no,t)} ${fullDest}`:fullDest;
-  return `${serviceName?`<span class="train-label-service-name">${escapeAttr(serviceName)}</span>`:''}<span class="train-label-full">${escapeAttr(fullLabel)}</span><span class="train-label-short">${escapeAttr(shortLabel)}</span>`;
+  const displayType=getTrainTypeDisplayLabel(t);
+  const fullLabel=type?`${displayType} ${fullDest}`:fullDest;
+  const shortType=isShinanoMainRoute()?displayType:getShortType(type,t?.no);
+  const shortLabel=type?`${shortType} ${shortDest}`:shortDest;
+  return `<span class="train-label-full">${escapeAttr(fullLabel)}</span><span class="train-label-short">${escapeAttr(shortLabel)}</span>`;
 }
 function isCircularTrain(t){
   return activeRouteName==='大阪環状線' && activeJson?.circular===true && (t?.circular===true || t?.rawTrain?.circular===true);
@@ -4293,22 +4326,42 @@ let TRAIN_LAYOUT_CACHE={container:null,rowCenters:null,rowCount:0};
 function trainRuntimeKey(t){
   return `${currentDay}|${String(t?.no||'')}|${String(t?.direction||'')}`;
 }
-// 列車の左右位置はJSON側で設定する。
-// directionSides が路線共通の既定値、lineDirectionSideOverrides が
-// trainNumbers に含まれる路線名ごとの上書き設定。
-function trainSideForDirection(direction, fallbackDirection=null, train=null){
-  const dir=String(direction||fallbackDirection||'').toLowerCase();
-  const json=activeJson||{};
-  const defaults=json.directionSides||{up:'left',down:'right'};
-  let side=String(defaults[dir]|| (dir==='up'?'left':'right'));
-  const lineOverrides=json.lineDirectionSideOverrides||{};
-  const raw=train?.rawTrain||train||{};
-  const lineMap=raw.trainNumbers&&typeof raw.trainNumbers==='object'?raw.trainNumbers:{};
-  for(const lineName of Object.keys(lineMap)){
-    const override=lineOverrides[lineName];
-    if(override&&override[dir]){side=String(override[dir]);break;}
+function isShinanoMainLineForTrainSide(){
+  // しなの鉄道線のみ反転。北しなの線は通常ルール。
+  return String(activeRouteName||'')==='しなの鉄道線（篠ノ井～軽井沢）';
+}
+function stationVisualYForTrainSide(stationName){
+  const target=String(stationName||'').replace(/駅$/,'');
+  const rows=Array.from(document.querySelectorAll('.station-row'));
+  const row=rows.find(r=>String(r.dataset?.stationName||r.querySelector('.station-name-ja')?.textContent||'').trim().replace(/駅$/,'')===target);
+  if(row){
+    const rect=row.getBoundingClientRect();
+    if(Number.isFinite(rect.top)&&rect.height) return rect.top+rect.height/2;
   }
-  return side==='right'?'right':'left';
+  const idx=stationIndex(stationName);
+  return idx>=0?idx:NaN;
+}
+function trainSideForStationPair(fromStation,toStation,fallbackDirection=null){
+  const yFrom=stationVisualYForTrainSide(fromStation);
+  const yTo=stationVisualYForTrainSide(toStation);
+  let side=Number.isFinite(yFrom)&&Number.isFinite(yTo)&&Math.abs(yTo-yFrom)>0.5
+    ? (yTo<yFrom?'left':'right')
+    : (String(fallbackDirection||'').toLowerCase()==='up'?'left':'right');
+  if(isShinanoMainLineForTrainSide()) side=side==='left'?'right':'left';
+  return side;
+}
+function trainSideForDirection(direction, fallbackDirection=null){
+  const dir=String(direction||fallbackDirection||'').toLowerCase();
+  return dir==='up'?'left':dir==='down'?'right':(String(fallbackDirection||'').toLowerCase()==='up'?'left':'right');
+}
+function trainSideForTrainAtStation(train,stationIndexValue){
+  const stops=normalizeLineStopTimes(train?.stops||[]);
+  const i=Math.max(0,Math.min(stops.length-1,Number(stationIndexValue)||0));
+  if(stops.length>1){
+    if(i<stops.length-1) return trainSideForStationPair(stops[i].station,stops[i+1].station,train?.direction);
+    return trainSideForStationPair(stops[i-1].station,stops[i].station,train?.direction);
+  }
+  return trainSideForDirection(train?.direction,train?.direction);
 }
 function getTrainRuntimeMeta(t){
   const key=trainRuntimeKey(t);
@@ -4320,7 +4373,7 @@ function getTrainRuntimeMeta(t){
   const firstIndex=stationIndex(first.station);
   const lastIndex=stationIndex(last.station);
   const rawDirection=String(t?.direction||'').toLowerCase();
-  const side=trainSideForDirection(rawDirection, firstIndex>lastIndex?'up':'down', t);
+  const side=stops.length>1?trainSideForStationPair(stops[0].station,stops[1].station,rawDirection):trainSideForDirection(rawDirection, firstIndex>lastIndex?'up':'down');
   const meta={stops,first,last,firstIndex,lastIndex,side,firstDep:Number(first._departure),lastArr:Number(last._arrival)};
   TRAIN_RUNTIME_CACHE.set(key,meta);
   return meta;
@@ -4898,10 +4951,9 @@ function stationTimetableHTML(station, selectedDirection='up'){
             ${stationTimetableFormationHTML(train)}
           </span>
           <span class="station-timetable-time">${escapeAttr(item.time)}</span>
-          ${String(train.type||'').trim()?`<span class="station-timetable-type ${escapeAttr(getExpressClass(train))}" style="${typeBadgeInlineStyle(train,null,stationDirectionRouteColor(STATIONS.findIndex(st=>String(st?.nameJa||'')===stationName),key),stationName)}">${escapeAttr(getOperationalTypeLabel(train.type,train.no,train))}</span>`:''}
-          <span class="station-timetable-destination${String(train.serviceName||'').trim()?' has-service-name':''}">
+          ${String(train.type||'').trim()?`<span class="station-timetable-type ${escapeAttr(getTrainTypeDisplayClass(train))}" style="${typeBadgeInlineStyle(train,null,stationDirectionRouteColor(STATIONS.findIndex(st=>String(st?.nameJa||'')===stationName),key),stationName)}">${escapeAttr(getTrainTypeDisplayLabel(train))}</span>`:''}
+          <span class="station-timetable-destination">
             <span class="station-timetable-destination-main"><span class="station-timetable-destination-station">${escapeAttr(getDisplayDestinationForTrain(train))}</span>${destinationGoSuffix(train)?'<span class="station-timetable-destination-go">行</span>':''}</span>
-            ${String(train.serviceName||'').trim()?`<span class="station-timetable-service-name">${escapeAttr(train.serviceName)}</span>`:''}
           </span>
         </button>
       `;
@@ -5074,7 +5126,7 @@ function updateSheetContent(){
         <img src="${imgSrc}" class="train-card-img">
         <div class="train-info-main">
           <div>
-            ${String(train.type||'').trim()?`<span class="type-badge ${getExpressClass(train)}" style="${typeBadgeInlineStyle(train)}">${getDetailType(train.type)}</span>`:''}
+            ${String(train.type||'').trim()?`<span class="type-badge ${getTrainTypeDisplayClass(train)}" style="${typeBadgeInlineStyle(train)}">${getTrainTypeDisplayLabel(train)}</span>`:''}
             <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>
             ${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}
           </div>
@@ -5096,7 +5148,7 @@ function updateSheetContent(){
         <img src="${(train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id)?selectedForm.img:defaultTrainImage(train)}" class="train-card-img">
         <div class="train-info-main">
           <div>
-            ${String(train.type||'').trim()?`<span class="type-badge ${getExpressClass(train)}" style="${typeBadgeInlineStyle(train)}">${getDetailType(train.type)}</span>`:''}
+            ${String(train.type||'').trim()?`<span class="type-badge ${getTrainTypeDisplayClass(train)}" style="${typeBadgeInlineStyle(train)}">${getTrainTypeDisplayLabel(train)}</span>`:''}
             <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>
             ${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}
           </div>
@@ -6628,6 +6680,11 @@ function typeColorForTrain(train,position=null,stationName='',stationDirectionCo
   // JSONの通常の文字列色と、広島地区の typeColors.<種別>.byRoute の両方に対応する。
   const sourceColors=(train?.sourceTypeColors&&typeof train.sourceTypeColors==='object')?train.sourceTypeColors:{};
   const colors={...sourceColors,...(activeJson?.typeColors||{}),...(activeRouteMeta?.typeColors||{})};
+  if(isShinanoMainRoute()){
+    if(type==='普通') return '#1677d2';
+    if(type==='快速') return '#f39800';
+    if(isShinanoNamedServiceType(type)) return String(colors[type]||'#d71920');
+  }
   const expressCategory=naganoExpressCategoryFor(train,type);
   if(expressCategory){
     const expressColor=colors[expressCategory];
@@ -10577,7 +10634,7 @@ initRegionNavigation();
         <div class="train-card">
           <img src="${(train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id)?originalSelected.img:defaultTrainImage(train)}" class="train-card-img">
           <div class="train-info-main">
-            <div>${String(train.type||'').trim()?`<span class="type-badge ${getExpressClass(train)}" style="${typeBadgeInlineStyle(train)}">${getDetailType(train.type)}</span>`:''}<span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>
+            <div>${String(train.type||'').trim()?`<span class="type-badge ${getTrainTypeDisplayClass(train)}" style="${typeBadgeInlineStyle(train)}">${getTrainTypeDisplayLabel(train)}</span>`:''}<span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>
               <div class="input-trigger-btn">編成を入力中</div>
             ${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}
           </div>
@@ -10598,7 +10655,7 @@ initRegionNavigation();
     content.innerHTML=`
       <div class="train-card${cardClass}" ${cardClick}>
         <img src="${imgSrc}" class="train-card-img">
-        <div class="train-info-main"><div>${String(train.type||'').trim()?`<span class="type-badge ${getExpressClass(train)}" style="${typeBadgeInlineStyle(train)}">${getDetailType(train.type)}</span>`:''}<span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id?`<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`:`<div class="input-trigger-btn">${noFormationText}</div>`}${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id&&formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
+        <div class="train-info-main"><div>${String(train.type||'').trim()?`<span class="type-badge ${getTrainTypeDisplayClass(train)}" style="${typeBadgeInlineStyle(train)}">${getTrainTypeDisplayLabel(train)}</span>`:''}<span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id?`<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`:`<div class="input-trigger-btn">${noFormationText}</div>`}${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id&&formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
       </div>
 
       <div class="train-info-tabs" style="--train-info-color:${tabColor}">
