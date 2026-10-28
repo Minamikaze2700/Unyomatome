@@ -731,7 +731,7 @@ button,input,select,textarea{font-family:inherit}
 .terms-date{margin:0 2px;color:#777;font-size:.84rem;text-align:right;}
 @media (max-width:520px){.terms-content{font-size:.93rem;line-height:1.8;}.terms-section{padding:12px 12px 11px;margin-bottom:12px;}.terms-lead{padding:12px 13px;}.terms-content h2{font-size:.98rem;}}
 
-/* しなの鉄道線の種別色：普通=青、快速=オレンジ、列車名・号数あり快速=赤 */
+/* しなの鉄道線の種別色：普通=青、快速=オレンジ、列車名付き快速=赤 */
 .type-badge.shinano-local,.train-label.shinano-local,.station-timetable-type.shinano-local{background:#1677d2!important;color:#fff!important;}
 .type-badge.shinano-rapid,.train-label.shinano-rapid,.station-timetable-type.shinano-rapid{background:#f39800!important;color:#fff!important;}
 .type-badge.shinano-named-service,.train-label.shinano-named-service,.station-timetable-type.shinano-named-service{background:#df1722!important;color:#fff!important;}
@@ -754,6 +754,21 @@ button,input,select,textarea{font-family:inherit}
     max-width:8.3cqw !important;
     padding-left:.38cqw !important;
     padding-right:.38cqw !important;
+  }
+}
+/* しなの鉄道の列車名付き快速は「快速＋列車名＋号数」を省略せず表示する */
+.train-operation-type.shinano-named-service{
+  width:max-content !important;
+  min-width:max-content !important;
+  max-width:none !important;
+  padding-left:6px !important;
+  padding-right:6px !important;
+  white-space:nowrap !important;
+}
+@container (max-width:529px){
+  .train-operation-type.shinano-named-service{
+    width:max-content !important;min-width:max-content !important;max-width:none !important;
+    padding-left:1.1cqw !important;padding-right:1.1cqw !important;
   }
 }
 </style>
@@ -2267,6 +2282,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
     numberSegments,
     segmentLineNames,
     type:jsonType,
+    trainName:String(raw?.trainName||'').trim(),
     expressCategory:String(raw?.expressCategory||'').trim(),
     serviceNumber:raw?.serviceNumber===undefined||raw?.serviceNumber===null?'':String(raw.serviceNumber).trim(),
     lineKind:String(raw?.lineKind||meta?.lineKind||formationFamily),
@@ -3210,7 +3226,10 @@ function naganoExpressCategoryFor(train,typeOverride='',trainNoOverride=''){
 }
 function getOperationalTypeLabel(type,trainNo='',train=null){
   const value=String(type||'').trim();
-  if(isShinanoNamedServiceType(value)) return shinanoServiceTypeLabel(value,train?.serviceNumber??train?.rawTrain?.serviceNumber??'');
+  if(isShinanoMainRoute()){
+    const source=train||{type:value,no:String(trainNo||'')};
+    return getTrainTypeDisplayLabel({...source,type:value});
+  }
   const category=naganoExpressCategoryFor(train||{type:value,no:String(trainNo||''),lineKind:activeRouteName==='長野電鉄長野線'?'nagano':''},value,trainNo);
   return category||getDetailType(value);
 }
@@ -3867,21 +3886,21 @@ function displayType(type){ return String(type||'普通'); }
 function getDetailDest(dest){ return String(dest||''); }
 function getMainLabelClass(type){ return String(type||'')==='回送' ? 'deadhead' : ''; }
 function isShinanoMainRoute(){ return String(activeRouteName||'')==='しなの鉄道線（篠ノ井～軽井沢）'; }
-function isShinanoNamedServiceType(type){
-  const value=String(type||'').trim();
-  return isShinanoMainRoute() && !!value && !['普通','快速','回送'].includes(value);
+function shinanoTrainName(train){
+  const raw=train?.rawTrain||{};
+  return String(train?.trainName||raw?.trainName||'').trim();
 }
-function shinanoServiceTypeLabel(type,serviceNumber=''){
-  const value=String(type||'').trim();
-  const number=String(serviceNumber??'').trim();
-  if(!isShinanoNamedServiceType(value)) return value;
+function shinanoServiceTypeLabel(train){
+  const name=shinanoTrainName(train);
+  if(!name) return String(train?.type||'').trim();
+  const number=String(train?.serviceNumber??train?.rawTrain?.serviceNumber??'').trim();
   const suffix=number ? (/号$/.test(number)?number:`${number}号`) : '号';
-  return `${value}${suffix}`;
+  return `快速${name}${suffix}`;
 }
 function getTrainTypeDisplayLabel(train){
   const type=String(train?.type||'').trim();
   if(isShinanoMainRoute()){
-    if(isShinanoNamedServiceType(type)) return shinanoServiceTypeLabel(type,train?.serviceNumber??train?.rawTrain?.serviceNumber??'');
+    if(type==='快速' && shinanoTrainName(train)) return shinanoServiceTypeLabel(train);
     if(type==='快速') return '快速';
     if(type==='普通') return '普通';
   }
@@ -3890,7 +3909,7 @@ function getTrainTypeDisplayLabel(train){
 function getTrainTypeDisplayClass(train){
   if(isShinanoMainRoute()){
     const type=String(train?.type||'').trim();
-    if(isShinanoNamedServiceType(type)) return 'shinano-named-service';
+    if(type==='快速' && shinanoTrainName(train)) return 'shinano-named-service';
     if(type==='快速') return 'shinano-rapid';
     if(type==='普通') return 'shinano-local';
   }
@@ -6681,9 +6700,9 @@ function typeColorForTrain(train,position=null,stationName='',stationDirectionCo
   const sourceColors=(train?.sourceTypeColors&&typeof train.sourceTypeColors==='object')?train.sourceTypeColors:{};
   const colors={...sourceColors,...(activeJson?.typeColors||{}),...(activeRouteMeta?.typeColors||{})};
   if(isShinanoMainRoute()){
+    if(type==='快速' && shinanoTrainName(train)) return '#d71920';
     if(type==='普通') return '#1677d2';
     if(type==='快速') return '#f39800';
-    if(isShinanoNamedServiceType(type)) return String(colors[type]||'#d71920');
   }
   const expressCategory=naganoExpressCategoryFor(train,type);
   if(expressCategory){
@@ -10040,7 +10059,7 @@ initRegionNavigation();
     ].filter(Boolean).join(' ');
     return `<button type="button" class="${rowClass}" data-operation-start="${escapeAttr(startTime)}" data-operation-end="${escapeAttr(endTime)}" ${clickAttr}>
       <span class="train-operation-number">${escapeAttr(no)}</span>
-      <span class="station-timetable-type train-operation-type${rawType?'':' empty-operation-field'}"${rawType?` style="${typeBadgeStyle}"`:''}><span class="operation-full">${escapeAttr(getOperationalTypeLabel(rawType,no,sourceTrain))}</span><span class="operation-short">${escapeAttr(type)}</span></span>
+      <span class="station-timetable-type train-operation-type${rawType?' '+getTrainTypeDisplayClass(sourceTrain):' empty-operation-field'}"${rawType?` style="${typeBadgeStyle}"`:''}><span class="operation-full">${escapeAttr(getOperationalTypeLabel(rawType,no,sourceTrain))}</span><span class="operation-short">${escapeAttr(isShinanoMainRoute()?getOperationalTypeLabel(rawType,no,sourceTrain):type)}</span></span>
       <span class="train-operation-time start-time">${escapeAttr(formatRailwayDisplayTime(startTime))}</span>
       <span class="train-operation-station start-station" title="${escapeAttr(start)}"><span class="operation-full">${escapeAttr(start)}</span><span class="operation-short">${escapeAttr(shortStart)}</span></span>
       <span class="train-operation-arrow" aria-hidden="true">→</span>
@@ -10472,7 +10491,7 @@ initRegionNavigation();
       ].filter(Boolean).join(' ');
       return `<div class="${historyRowClasses}">
         ${hideHistoryNumber?'':`<span class="train-operation-number">${escapeAttr(displayNo)}</span>`}
-        ${hideHistoryType?'':`<span class="station-timetable-type train-operation-type${typeLabel?'':' empty-operation-field'}"${rawType?` style="${badgeStyle}"`:''}>${escapeAttr(typeLabel)}</span>`}
+        ${hideHistoryType?'':`<span class="station-timetable-type train-operation-type${typeLabel?' '+getTrainTypeDisplayClass(sourceTrain):' empty-operation-field'}"${rawType?` style="${badgeStyle}"`:''}>${escapeAttr(typeLabel)}</span>`}
         <span class="train-operation-time">${escapeAttr(formatRailwayDisplayTime(startTime))}</span>
         <span class="train-operation-station start-station" title="${escapeAttr(start)}">${escapeAttr(start)}</span>
         <span class="train-operation-arrow" aria-hidden="true">→</span>
