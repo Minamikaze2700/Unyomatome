@@ -2457,17 +2457,37 @@ async function loadExternalRouteJsons(routeMeta){
   // 両方のJSONを列車データと線区定義だけ統合する。編成・種別色・運用連結は
   // 現在選択中の路線（primary）をそのまま使用する。
   const merged={...primary,lines:[],trains:{},stationDirections:{},operationChains:primary?.operationChains||{}};
-  // 行先略称はHTMLの路線設定に直書きせず各JSONで管理する。
-  // 横浜線ページでは共有区間の京浜東北・根岸線JSONも読み込むため、
-  // primary（現在路線）の指定を優先しつつ、関連JSONの略称も統合する。
-  merged.destinationAliases={...(primary?.destinationAliases&&typeof primary.destinationAliases==='object'&&!Array.isArray(primary.destinationAliases)?primary.destinationAliases:{})};
-  for(const {json:aliasJson} of payloads.slice(1)){
-    const aliases=aliasJson?.destinationAliases;
-    if(!aliases||typeof aliases!=='object'||Array.isArray(aliases)) continue;
-    for(const [destination,shortName] of Object.entries(aliases)){
-      if(!Object.prototype.hasOwnProperty.call(merged.destinationAliases,destination)) merged.destinationAliases[destination]=shortName;
+  // 略称設定はHTMLの路線メタデータだけでなく、各JSONに登録された内容を統合する。
+  // 京浜東北・根岸線／横浜線は関連JSONの列車も同じ画面に現れるため、
+  // 行先と種別の略称をまとめて統合し、現在路線(primary)の設定を優先する。
+  const mergeAliasMap=(key)=>{
+    const out={};
+    // 関連JSONから先に入れ、primaryの値で上書きして現在路線を優先。
+    for(const {json:aliasJson} of payloads.slice(1)){
+      const map=aliasJson?.[key];
+      if(map&&typeof map==='object'&&!Array.isArray(map)) Object.assign(out,map);
     }
+    const primaryMap=primary?.[key];
+    if(primaryMap&&typeof primaryMap==='object'&&!Array.isArray(primaryMap)) Object.assign(out,primaryMap);
+    return out;
+  };
+  for(const key of ['destinationAliases','typeShortMap','typeAbbreviations','typeAliases','typeDetailMap']){
+    merged[key]=mergeAliasMap(key);
   }
+  // ルール形式（contains / containsAll / trainNoSuffix）も関連JSONから統合。
+  merged.typeShortRules=[
+    ...(Array.isArray(primary?.typeShortRules)?primary.typeShortRules:[]),
+    ...payloads.slice(1).flatMap(({json:aliasJson})=>Array.isArray(aliasJson?.typeShortRules)?aliasJson.typeShortRules:[])
+  ];
+  // route.abbreviations.types の配列形式にも対応。ID参照の設定も失わない。
+  const typeAbbrs=[];
+  for(const {json:aliasJson} of payloads.slice(1)){
+    const a=aliasJson?.abbreviations?.types||aliasJson?.route?.abbreviations?.types;
+    if(Array.isArray(a)) typeAbbrs.push(...a);
+  }
+  const primaryTypeAbbrs=primary?.abbreviations?.types||primary?.route?.abbreviations?.types;
+  if(Array.isArray(primaryTypeAbbrs)) typeAbbrs.push(...primaryTypeAbbrs);
+  merged.abbreviations={...(primary?.abbreviations&&typeof primary.abbreviations==='object'?primary.abbreviations:{}),types:typeAbbrs};
   const seenLines=new Set();
   for(const {json} of payloads){
     for(const line of (Array.isArray(json?.lines)?json.lines:[])){
@@ -3293,12 +3313,18 @@ function getJsonAlias(value, kind='station'){
   return '';
 }
 
-function getShortType(type, trainNo=''){
+function getShortType(type, trainNo='', train=null){
   const value=String(type||'').trim();
   if(!value) return '';
   const json=activeJson||{};
+  const sourceJson=train?.rawTrain||train||{};
+  const sourceMaps=[sourceJson.typeShortMap,sourceJson.typeAbbreviations,sourceJson.typeAliases,
+    sourceJson.abbreviations?.types,sourceJson.route?.typeShortMap,sourceJson.route?.typeAbbreviations,
+    sourceJson.route?.typeAliases,sourceJson.route?.abbreviations?.types];
+  const sourceEntities=jsonAliasEntities(sourceJson,'type');
+  for(const map of sourceMaps){const result=aliasFromMap(map,value,sourceEntities,'type');if(result)return result;}
+  // 現在路線のJSON設定を優先し、route.abbreviations.types の targetId 形式にも対応。
   const entities=jsonAliasEntities(json,'type');
-  // JSONの略称を最優先し、route.abbreviations.types の targetId 形式にも対応。
   const jsonMaps=[json.typeShortMap,json.typeAbbreviations,json.typeAliases,json.abbreviations?.types,
     json.route?.typeShortMap,json.route?.typeAbbreviations,json.route?.typeAliases,json.route?.abbreviations?.types];
   for(const map of jsonMaps){const result=aliasFromMap(map,value,entities,'type');if(result)return result;}
@@ -4394,8 +4420,10 @@ function trainLabelText(t){
   // PC用だけ正式名称へ切り替える処理をなくし、略称設定を両方の表示に反映する。
   const shortDest=isCircular ? '環状' : getShortDest(t?.dest);
   const displayType=getTrainTypeDisplayLabel(t);
-  const shortType=isShinanoMainRoute()?displayType:getShortType(type,t?.no);
-  const fullLabel=type?`${displayType} ${shortDest}`:shortDest;
+  // 行先略称はPCでも使用しているため、種別もJSONの略称設定をPC・スマホ共通で適用する。
+  // 略称が未設定の種別は getShortType() が元の表示名を返すので、既存表示は維持される。
+  const shortType=isShinanoMainRoute()?displayType:getShortType(type,t?.no,t);
+  const fullLabel=type?`${shortType} ${shortDest}`:shortDest;
   const shortLabel=type?`${shortType} ${shortDest}`:shortDest;
   return `<span class="train-label-full">${escapeAttr(fullLabel)}</span><span class="train-label-short">${escapeAttr(shortLabel)}</span>`;
 }
@@ -10353,7 +10381,7 @@ initRegionNavigation();
     const hasRealNumber=isDisplayableOperationTrainNumber(candidateNo,sourceTrain);
     const no=hasRealNumber ? candidateNo : '';
     const rawType=String(entry?.type||'').trim();
-    const type=rawType ? getShortType(rawType,no) : '';
+    const type=rawType ? getShortType(rawType,no,sourceTrain) : '';
     const start=String(entry?.start||'').trim();
     const shortStart=operationStationLabel(start);
     const startTime=String(entry?.startTime||'');
