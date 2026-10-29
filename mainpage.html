@@ -7921,13 +7921,18 @@ initRegionNavigation();
   window.linkedTrainNumbersForFormationUI=linkedTrainNumbersForFormationUI;
 
   function formationCountForTrain(train){
-    // 2列車以上の運用連結は「1列番＝1編成」。列車数をスロット数にし、各スロットを別列番へ保存する。
+    // 連結列車数が明示されていない場合は、運用連結情報などから推測せず1列車として扱う。
+    // 複数列車を扱う路線・列車は JSON の linkedTrainCountDefault / linkedTrainCount で明示する。
+    const configuredLinkedCount = activeJson?.linkedTrainCountDefault
+      ?? train?.linkedTrainCount
+      ?? train?.連結列車数;
+    if (configuredLinkedCount === undefined || configuredLinkedCount === null || configuredLinkedCount === '') return 1;
+    const requestedCount = clampFormationCount(configuredLinkedCount);
+    if (requestedCount <= 1) return 1;
+
+    // 連結列車数が明示された場合のみ、運用連結の列車を各スロットへ対応させる。
     const linked=linkedTrainNumbersForFormationUI(train);
-    if(linked.length>1) return clampFormationCount(linked.length);
-    // 単独列車は従来どおりJSONの formationCountDefault / 列車のformationCountを使用。
-    const jsonCount = activeJson?.formationCountDefault ?? train?.formationCount;
-    if (jsonCount === undefined || jsonCount === null || jsonCount === '') return 1;
-    return clampFormationCount(jsonCount);
+    return Math.min(requestedCount, Math.max(1, linked.length));
   }
   window.formationCountForTrain=formationCountForTrain;
 
