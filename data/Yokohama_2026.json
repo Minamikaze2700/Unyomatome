@@ -85,16 +85,6 @@
         {
           "name": "東神奈川",
           "nameEn": "Higashi-Kanagawa"
-        }
-      ]
-    },
-    {
-      "name": "京浜東北・根岸線",
-      "color": "#00adcd",
-      "stations": [
-        {
-          "name": "東神奈川",
-          "nameEn": "Higashi-Kanagawa"
         },
         {
           "name": "横浜",
@@ -144,7 +134,12 @@
           "name": "大船",
           "nameEn": "Ofuna"
         }
-      ]
+      ],
+      "directions": {
+        "up": "八王子・大宮方面",
+        "down": "大船方面"
+      },
+      "numberingImage": "https://minamikaze2700.github.io/Unyomatome/images/Yokohama_numbering.png"
     }
   ],
   "stationDirections": {
@@ -80100,679 +80095,172 @@
           "id": "H001F",
           "name": "H001",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H001.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6001",
-            "サハE233-6201",
-            "モハE232-6001",
-            "モハE233-6001",
-            "サハE233-6001",
-            "モハE232-6401",
-            "モハE233-6401",
-            "クハE233-6001"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 新津事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H002F",
           "name": "H002",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H002.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6002",
-            "サハE233-6202",
-            "モハE232-6002",
-            "モハE233-6002",
-            "サハE233-6002",
-            "モハE232-6402",
-            "モハE233-6402",
-            "クハE233-6002"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 新津事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H003F",
           "name": "H003",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H003.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6003",
-            "サハE233-6203",
-            "モハE232-6003",
-            "モハE233-6003",
-            "サハE233-6003",
-            "モハE232-6403",
-            "モハE233-6403",
-            "クハE233-6003"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 新津事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H004F",
           "name": "H004",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H004.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6004",
-            "サハE233-6204",
-            "モハE232-6004",
-            "モハE233-6004",
-            "サハE233-6004",
-            "モハE232-6404",
-            "モハE233-6404",
-            "クハE233-6004"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 新津事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H005F",
           "name": "H005",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H005.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6005",
-            "サハE233-6205",
-            "モハE232-6005",
-            "モハE233-6005",
-            "サハE233-6005",
-            "モハE232-6405",
-            "モハE233-6405",
-            "クハE233-6005"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 新津事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H006F",
           "name": "H006",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H006.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6006",
-            "サハE233-6206",
-            "モハE232-6006",
-            "モハE233-6006",
-            "サハE233-6006",
-            "モハE232-6406",
-            "モハE233-6406",
-            "クハE233-6006"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 新津事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H007F",
           "name": "H007",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H007.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6007",
-            "サハE233-6207",
-            "モハE232-6007",
-            "モハE233-6007",
-            "サハE233-6007",
-            "モハE232-6407",
-            "モハE233-6407",
-            "クハE233-6007"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 新津事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H008F",
           "name": "H008",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H008.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6008",
-            "サハE233-6208",
-            "モハE232-6008",
-            "モハE233-6008",
-            "サハE233-6008",
-            "モハE232-6408",
-            "モハE233-6408",
-            "クハE233-6008"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 新津事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H009F",
           "name": "H009",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H009.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6009",
-            "サハE233-6209",
-            "モハE232-6009",
-            "モハE233-6009",
-            "サハE233-6009",
-            "モハE232-6409",
-            "モハE233-6409",
-            "クハE233-6009"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 新津事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H010F",
           "name": "H010",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H010.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6010",
-            "サハE233-6210",
-            "モハE232-6010",
-            "モハE233-6010",
-            "サハE233-6010",
-            "モハE232-6410",
-            "モハE233-6410",
-            "クハE233-6010"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 新津事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H011F",
           "name": "H011",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H011.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6011",
-            "サハE233-6211",
-            "モハE232-6011",
-            "モハE233-6011",
-            "サハE233-6011",
-            "モハE232-6411",
-            "モハE233-6411",
-            "クハE233-6011"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 新津事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H012F",
           "name": "H012",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H012.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6012",
-            "サハE233-6212",
-            "モハE232-6012",
-            "モハE233-6012",
-            "サハE233-6012",
-            "モハE232-6412",
-            "モハE233-6412",
-            "クハE233-6012"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 新津事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H013F",
           "name": "H013",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H013.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6013",
-            "サハE233-6213",
-            "モハE232-6013",
-            "モハE233-6013",
-            "サハE233-6013",
-            "モハE232-6413",
-            "モハE233-6413",
-            "クハE233-6013"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 新津事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H014F",
           "name": "H014",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H014.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6014",
-            "サハE233-6214",
-            "モハE232-6014",
-            "モハE233-6014",
-            "サハE233-6014",
-            "モハE232-6414",
-            "モハE233-6414",
-            "クハE233-6014"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 新津事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H015F",
           "name": "H015",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H015.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6015",
-            "サハE233-6215",
-            "モハE232-6015",
-            "モハE233-6015",
-            "サハE233-6015",
-            "モハE232-6415",
-            "モハE233-6415",
-            "クハE233-6015"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 新津事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H016F",
           "name": "H016",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H016.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6016",
-            "サハE233-6216",
-            "モハE232-6016",
-            "モハE233-6016",
-            "サハE233-6016",
-            "モハE232-6416",
-            "モハE233-6416",
-            "クハE233-6016"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 横浜事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H017F",
           "name": "H017",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H017.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6017",
-            "サハE233-6217",
-            "モハE232-6017",
-            "モハE233-6017",
-            "サハE233-6017",
-            "モハE232-6417",
-            "モハE233-6417",
-            "クハE233-6017"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 横浜事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H018F",
           "name": "H018",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H018.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6018",
-            "サハE233-6218",
-            "モハE232-6018",
-            "モハE233-6018",
-            "サハE233-6018",
-            "モハE232-6418",
-            "モハE233-6418",
-            "クハE233-6018"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 横浜事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H019F",
           "name": "H019",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H019.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6019",
-            "サハE233-6219",
-            "モハE232-6019",
-            "モハE233-6019",
-            "サハE233-6019",
-            "モハE232-6419",
-            "モハE233-6419",
-            "クハE233-6019"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 横浜事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H020F",
           "name": "H020",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H020.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6020",
-            "サハE233-6220",
-            "モハE232-6020",
-            "モハE233-6020",
-            "サハE233-6020",
-            "モハE232-6420",
-            "モハE233-6420",
-            "クハE233-6020"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 横浜事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H021F",
           "name": "H021",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H021.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6021",
-            "サハE233-6221",
-            "モハE232-6021",
-            "モハE233-6021",
-            "サハE233-6021",
-            "モハE232-6421",
-            "モハE233-6421",
-            "クハE233-6021"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 横浜事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H022F",
           "name": "H022",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H022.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6022",
-            "サハE233-6222",
-            "モハE232-6022",
-            "モハE233-6022",
-            "サハE233-6022",
-            "モハE232-6422",
-            "モハE233-6422",
-            "クハE233-6022"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 横浜事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H023F",
           "name": "H023",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H023.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6023",
-            "サハE233-6223",
-            "モハE232-6023",
-            "モハE233-6023",
-            "サハE233-6023",
-            "モハE232-6423",
-            "モハE233-6423",
-            "クハE233-6023"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 横浜事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H024F",
           "name": "H024",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H024.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6024",
-            "サハE233-6224",
-            "モハE232-6024",
-            "モハE233-6024",
-            "サハE233-6024",
-            "モハE232-6424",
-            "モハE233-6424",
-            "クハE233-6024"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 横浜事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H025F",
           "name": "H025",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H025.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6025",
-            "サハE233-6225",
-            "モハE232-6025",
-            "モハE233-6025",
-            "サハE233-6025",
-            "モハE232-6425",
-            "モハE233-6425",
-            "クハE233-6025"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 横浜事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H026F",
           "name": "H026",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H026.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6026",
-            "サハE233-6226",
-            "モハE232-6026",
-            "モハE233-6026",
-            "サハE233-6026",
-            "モハE232-6426",
-            "モハE233-6426",
-            "クハE233-6026"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 横浜事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H027F",
           "name": "H027",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H027.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6027",
-            "サハE233-6227",
-            "モハE232-6027",
-            "モハE233-6027",
-            "サハE233-6027",
-            "モハE232-6427",
-            "モハE233-6427",
-            "クハE233-6027"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 横浜事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         },
         {
           "id": "H028F",
           "name": "H028",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JH_H028.png",
-          "cars": 8,
-          "carNames": [
-            "クハE232-6028",
-            "サハE233-6228",
-            "モハE232-6028",
-            "モハE233-6028",
-            "サハE233-6028",
-            "モハE232-6428",
-            "モハE233-6428",
-            "クハE233-6028"
-          ],
-          "family": "yokohama",
-          "type": "E233系6000番台",
-          "manufacturingYear": "2014年",
-          "manufacturer": "総合車両製作所 横浜事業所",
-          "weakCoolingCars": [
-            5
-          ],
-          "womenOnlyCars": []
+          "cars": 8
         }
       ],
-      "family": "yokohama",
-      "formationType": "E233系6000番台",
-      "manufacturingYear": "2014年",
-      "manufacturer": "総合車両製作所（新津事業所・横浜事業所）"
+      "family": "yokohama"
     }
   ],
   "formationCountDefault": 1,
@@ -82764,6 +82252,34 @@
   "destinationAliases": {
     "八王子": "八王",
     "東神奈川": "東神",
-    "桜木町": "桜木"
+    "桜木町": "桜木",
+    "南浦和": "南浦",
+    "東十条": "東十"
+  },
+  "stationShortMap": {
+    "八王子": "八王",
+    "東神奈川": "東神",
+    "桜木町": "桜木",
+    "南浦和": "南浦",
+    "東十条": "東十"
+  },
+  "typeShortMap": {
+    "普通": "各停",
+    "各駅停車": "各停",
+    "区間急行": "区急"
+  },
+  "typeAbbreviations": {
+    "普通": "各停",
+    "各駅停車": "各停",
+    "区間急行": "区急"
+  },
+  "typeDetailMap": {
+    "普通": "各駅停車",
+    "各停": "各駅停車"
+  },
+  "typeClassMap": {
+    "快速": "yokohama-express",
+    "普通": "yokohama-local",
+    "各停": "yokohama-local"
   }
 }
