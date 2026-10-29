@@ -5343,6 +5343,11 @@ let selectionSyncInProgress=false;
 let pendingFormationTimestamps={平日:{},休日:{}};
 async function selectFormation(formId){
   if(!formationInputAllowed()) return;
+  // 野田線の8158Fは新規入力を禁止。履歴表示用データは削除しない。
+  if(String(formId??'').replace(/F$/i,'')==='8158' && (String(activeRouteMeta?.formationFamily||activeJson?.formationFamily||'')==='noda')){
+    syncStatus('8158Fは新規登録できません');
+    return;
+  }
   const formation=formationById(formId);
   if(formation?.disabled || UNAVAILABLE_FORMATIONS.has(normalizeStoredFormationId(formId))) {
     syncStatus('この編成は入力できません');
@@ -7923,6 +7928,8 @@ initRegionNavigation();
   window.linkedTrainNumbersForFormationUI=linkedTrainNumbersForFormationUI;
 
   function formationCountForTrain(train){
+    // 東武野田線は1列車につき1編成。運用連結情報の誤検出で入力欄を2編成に増やさない。
+    if(String(activeJson?.formationFamily||activeRouteMeta?.formationFamily||train?.formationFamily||'')==='noda') return 1;
     // 2列車以上の運用連結は「1列番＝1編成」。列車数をスロット数にし、各スロットを別列番へ保存する。
     const linked=linkedTrainNumbersForFormationUI(train);
     if(linked.length>1) return clampFormationCount(linked.length);
@@ -8084,7 +8091,9 @@ initRegionNavigation();
       // すべての個体差に属する個別編成をまとめて表示。
       const variantItems=(group.variants||[]).flatMap(variant=>Array.isArray(variant.items)?variant.items:[]);
       for(const item of [...variantItems,...(group.items||[])]){
-        // inputSelectable:false は新規入力の選択肢からのみ除外する。
+        // 野田線8158FはJSON属性が正しく伝播しない経路でも選択肢に出さない。
+        if(String(activeJson?.formationFamily||activeRouteMeta?.formationFamily||'')==='noda' && String(item?.id||'').replace(/F$/i,'')==='8158') continue;
+        // inputSelectable:false は新規入力の選択肢からのみ除外する.
         // FORMATIONS自体には残すため、過去の登録履歴の表示は維持される。
         if(item?.inputSelectable===false) continue;
         const id=String(item.id||'').replace(/F$/i,'');
@@ -8288,6 +8297,11 @@ initRegionNavigation();
   };
   async function saveFormationAtSlot(slot,id){
     if(!formationInputAllowed()) return;
+    if(String(activeJson?.formationFamily||activeRouteMeta?.formationFamily||'')==='noda' && String(id??'').replace(/F$/i,'')==='8158'){
+      const err=document.getElementById('formationInputError'); if(err) err.textContent='8158Fは新規登録できません。';
+      syncStatus('8158Fは新規登録できません');
+      return;
+    }
     const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction||null)||currentTrainSnapshot;
     if(!train) return;
     const count=formationCountForTrain(train);
