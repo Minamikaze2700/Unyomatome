@@ -175,21 +175,12 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8111.png",
           "family": "noda",
           "carNames": [
-            "8411",
-            "8811",
-            "8711",
-            "8311",
+            "8111",
             "8211",
-            "8111"
-          ],
-          "manufacturer": "日本車輌・富士重工",
-          "type": "8000型",
-          "manufacturingYear": "1963年・1972年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
+            "8311",
+            "8611",
+            "8711",
+            "8411"
           ]
         },
         {
@@ -197,24 +188,15 @@
           "name": "8158F",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8158.png",
           "family": "noda",
-          "selectableType": false,
           "carNames": [
-            "8458",
-            "8858",
-            "8758",
-            "8358",
+            "8158",
             "8258",
-            "8158"
+            "8358",
+            "8658",
+            "8758",
+            "8458"
           ],
-          "manufacturer": "アルナ工機",
-          "type": "8000型",
-          "manufacturingYear": "1972年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
-          ]
+          "inputSelectable": false
         },
         {
           "id": "8162",
@@ -222,21 +204,12 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8162.png",
           "family": "noda",
           "carNames": [
-            "8462",
-            "8862",
-            "8762",
-            "8362",
+            "8162",
             "8262",
-            "8162"
-          ],
-          "manufacturer": "富士重工",
-          "type": "8000型",
-          "manufacturingYear": "1973年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
+            "8362",
+            "8662",
+            "8762",
+            "8462"
           ]
         },
         {
@@ -245,59 +218,12 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8163.png",
           "family": "noda",
           "carNames": [
-            "8463",
-            "8863",
-            "8763",
-            "8363",
+            "8163",
             "8263",
-            "8163"
-          ],
-          "carFeatures": {
-            "8463": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "8863": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "8763": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "8363": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "8263": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "8163": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ]
-          },
-          "manufacturer": "東急車輛",
-          "type": "8000型",
-          "manufacturingYear": "1973年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
+            "8363",
+            "8663",
+            "8763",
+            "8463"
           ]
         },
         {
@@ -306,21 +232,12 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8166.png",
           "family": "noda",
           "carNames": [
-            "8466",
-            "8866",
-            "8766",
-            "8366",
+            "8166",
             "8266",
-            "8166"
-          ],
-          "manufacturer": "アルナ工機",
-          "type": "8000型",
-          "manufacturingYear": "1974年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
+            "8366",
+            "8666",
+            "8766",
+            "8466"
           ]
         },
         {
@@ -329,21 +246,12 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8170.png",
           "family": "noda",
           "carNames": [
-            "8470",
-            "8870",
-            "8770",
-            "8370",
+            "8170",
             "8270",
-            "8170"
-          ],
-          "manufacturer": "アルナ工機",
-          "type": "8000型",
-          "manufacturingYear": "1976年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
+            "8370",
+            "8670",
+            "8770",
+            "8470"
           ]
         },
         {
@@ -352,21 +260,12 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB8192.png",
           "family": "noda",
           "carNames": [
-            "8492",
-            "8892",
-            "8792",
-            "8392",
+            "8192",
             "8292",
-            "8192"
-          ],
-          "manufacturer": "東急車輛",
-          "type": "8000型",
-          "manufacturingYear": "1980年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
+            "8392",
+            "8692",
+            "8792",
+            "8492"
           ]
         },
         {
@@ -375,21 +274,12 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81110.png",
           "family": "noda",
           "carNames": [
-            "84110",
-            "88110",
-            "87110",
-            "83110",
+            "81110",
             "82110",
-            "81110"
-          ],
-          "manufacturer": "アルナ工機",
-          "type": "8000型",
-          "manufacturingYear": "1982年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
+            "83110",
+            "86110",
+            "87110",
+            "84110"
           ]
         },
         {
@@ -398,21 +288,12 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81113.png",
           "family": "noda",
           "carNames": [
-            "84113",
-            "88113",
-            "87113",
-            "83113",
+            "81113",
             "82113",
-            "81113"
-          ],
-          "manufacturer": "アルナ工機",
-          "type": "8000型",
-          "manufacturingYear": "1982年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
+            "83113",
+            "86113",
+            "87113",
+            "84113"
           ]
         },
         {
@@ -421,46 +302,20 @@
           "img": "https://minamikaze2700.github.io/Unyomatome/images/TB81114.png",
           "family": "noda",
           "carNames": [
-            "84114",
-            "88114",
-            "87114",
-            "83114",
+            "81114",
             "82114",
-            "81114"
-          ],
-          "manufacturer": "アルナ工機",
-          "type": "8000型",
-          "manufacturingYear": "1982年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
+            "83114",
+            "86114",
+            "87114",
+            "84114"
           ]
         }
-      ],
-      "formationType": "8000型",
-      "manufacturingYear": "1963年～1983年",
-      "manufacturer": "アルナ工機（旧ナニワ工機）・日本車輌製造・汽車製造・東急車輛製造・富士重工業"
+      ]
     },
     {
-      "type": "10030型",
+      "type": "10030型（更新）",
       "typeImg": "https://minamikaze2700.github.io/Unyomatome/images/TD10030.png",
       "family": "noda",
-      "variants": [
-        {
-          "id": "10030型更新",
-          "name": "10030型更新",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TD10030.png",
-          "items": []
-        },
-        {
-          "id": "10030型未更新",
-          "name": "10030型未更新",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TD10050.png",
-          "items": []
-        }
-      ],
       "items": [
         {
           "id": "11631",
@@ -474,15 +329,6 @@
             "13631",
             "12631",
             "11631"
-          ],
-          "manufacturer": "アルナ工機",
-          "type": "10030型",
-          "manufacturingYear": "1988年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
           ]
         },
         {
@@ -497,15 +343,6 @@
             "13632",
             "12632",
             "11632"
-          ],
-          "manufacturer": "アルナ工機",
-          "type": "10030型",
-          "manufacturingYear": "1988年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
           ]
         },
         {
@@ -520,15 +357,6 @@
             "13633",
             "12633",
             "11633"
-          ],
-          "manufacturer": "富士重工",
-          "type": "10030型",
-          "manufacturingYear": "1988年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
           ]
         },
         {
@@ -543,15 +371,6 @@
             "13635",
             "12635",
             "11635"
-          ],
-          "manufacturer": "アルナ工機",
-          "type": "10030型",
-          "manufacturingYear": "1990年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
           ]
         },
         {
@@ -566,17 +385,15 @@
             "13636",
             "12636",
             "11636"
-          ],
-          "manufacturer": "アルナ工機",
-          "type": "10030型",
-          "manufacturingYear": "1990年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
           ]
-        },
+        }
+      ]
+    },
+    {
+      "type": "10030型（未更新）",
+      "typeImg": "https://minamikaze2700.github.io/Unyomatome/images/TD10050.png",
+      "family": "noda",
+      "items": [
         {
           "id": "11651",
           "name": "11651F",
@@ -589,53 +406,6 @@
             "13651",
             "12651",
             "11651"
-          ],
-          "carFeatures": {
-            "16651": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "15651": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "14651": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "13651": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "12651": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "11651": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ]
-          },
-          "manufacturer": "東急車輛",
-          "type": "10030型",
-          "manufacturingYear": "1992年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
           ]
         },
         {
@@ -650,53 +420,6 @@
             "13652",
             "12652",
             "11652"
-          ],
-          "carFeatures": {
-            "16652": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "15652": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "14652": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "13652": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "12652": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "11652": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ]
-          },
-          "manufacturer": "アルナ工機",
-          "type": "10030型",
-          "manufacturingYear": "1992年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
           ]
         },
         {
@@ -711,53 +434,6 @@
             "13653",
             "12653",
             "11653"
-          ],
-          "carFeatures": {
-            "16653": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "15653": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "14653": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "13653": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "12653": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "11653": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ]
-          },
-          "manufacturer": "アルナ工機",
-          "type": "10030型",
-          "manufacturingYear": "1992年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
           ]
         },
         {
@@ -772,631 +448,15 @@
             "13654",
             "12654",
             "11654"
-          ],
-          "carFeatures": {
-            "16654": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "15654": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "14654": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "13654": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "12654": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ],
-            "11654": [
-              {
-                "type": "機器類",
-                "name": "行先表示字幕式"
-              }
-            ]
-          },
-          "manufacturer": "アルナ工機",
-          "type": "10030型",
-          "manufacturingYear": "1992年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
           ]
         }
-      ],
-      "formationType": "10030型",
-      "manufacturingYear": "1988年～1996年",
-      "manufacturer": "アルナ工機・東急車輛製造・富士重工業"
+      ]
     },
     {
-      "type": "60000型",
+      "type": "60000型（6両）",
       "typeImg": "https://minamikaze2700.github.io/Unyomatome/images/TB60600.png",
       "family": "noda",
-      "variants": [
-        {
-          "id": "60000型5両",
-          "name": "60000型5両",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB60500.png",
-          "items": []
-        },
-        {
-          "id": "60000型6両",
-          "name": "60000型6両",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB60600.png",
-          "items": []
-        }
-      ],
       "items": [
-        {
-          "id": "61501",
-          "name": "61501F",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61501.png",
-          "family": "noda",
-          "carCount": 5,
-          "carNames": [
-            "65501",
-            "64501",
-            "63501",
-            "62501",
-            "61501"
-          ],
-          "carFeatures": {
-            "65501": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "64501": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "63501": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "62501": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "61501": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ]
-          },
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2013年・2025年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
-          ]
-        },
-        {
-          "id": "61502",
-          "name": "61502F",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61502.png",
-          "family": "noda",
-          "carCount": 5,
-          "carNames": [
-            "65502",
-            "64502",
-            "63502",
-            "62502",
-            "61502"
-          ],
-          "carFeatures": {
-            "65502": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "64502": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "63502": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "62502": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "61502": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ]
-          },
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2013年・2025年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
-          ]
-        },
-        {
-          "id": "61503",
-          "name": "61503F",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61503.png",
-          "family": "noda",
-          "carCount": 5,
-          "carNames": [
-            "65503",
-            "64503",
-            "63503",
-            "62503",
-            "61503"
-          ],
-          "carFeatures": {
-            "65503": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "64503": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "63503": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "62503": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "61503": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ]
-          },
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2014年・2025年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
-          ]
-        },
-        {
-          "id": "61504",
-          "name": "61504F",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61504.png",
-          "family": "noda",
-          "carCount": 5,
-          "carNames": [
-            "65504",
-            "64504",
-            "63504",
-            "62504",
-            "61504"
-          ],
-          "carFeatures": {
-            "65504": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "64504": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "63504": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "62504": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "61504": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ]
-          },
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2014年・2026年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
-          ]
-        },
-        {
-          "id": "61505",
-          "name": "61505F",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61505.png",
-          "family": "noda",
-          "carCount": 5,
-          "carNames": [
-            "65505",
-            "64505",
-            "63505",
-            "62505",
-            "61505"
-          ],
-          "carFeatures": {
-            "65505": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "64505": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "63505": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "62505": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "61505": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ]
-          },
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2014年・2025年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
-          ]
-        },
-        {
-          "id": "61506",
-          "name": "61506F",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61506.png",
-          "family": "noda",
-          "carCount": 5,
-          "carNames": [
-            "65506",
-            "64506",
-            "63506",
-            "62506",
-            "61506"
-          ],
-          "carFeatures": {
-            "65506": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "64506": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "63506": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "62506": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "61506": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ]
-          },
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2014年・2026年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
-          ]
-        },
-        {
-          "id": "61507",
-          "name": "61507F",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61507.png",
-          "family": "noda",
-          "carCount": 5,
-          "carNames": [
-            "65507",
-            "64507",
-            "63507",
-            "62507",
-            "61507"
-          ],
-          "carFeatures": {
-            "65507": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "64507": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "63507": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "62507": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "61507": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ]
-          },
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2014年・2026年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
-          ]
-        },
-        {
-          "id": "61508",
-          "name": "61508F",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61508.png",
-          "family": "noda",
-          "carCount": 5,
-          "carNames": [
-            "65508",
-            "64508",
-            "63508",
-            "62508",
-            "61508"
-          ],
-          "carFeatures": {
-            "65508": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "64508": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "63508": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "62508": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "61508": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ]
-          },
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2014年・2026年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
-          ]
-        },
-        {
-          "id": "61509",
-          "name": "61509F",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61509.png",
-          "family": "noda",
-          "disabled": true,
-          "carCount": 5,
-          "carNames": [
-            "65509",
-            "64509",
-            "63509",
-            "62509",
-            "61509"
-          ],
-          "carFeatures": {
-            "65509": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "64509": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "63509": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "62509": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "61509": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ]
-          },
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2014年・2026年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
-          ]
-        },
-        {
-          "id": "61510",
-          "name": "61510F",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61510.png",
-          "family": "noda",
-          "disabled": true,
-          "carCount": 5,
-          "carNames": [
-            "65510",
-            "64510",
-            "63510",
-            "62510",
-            "61510"
-          ],
-          "carFeatures": {
-            "65510": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "64510": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "63510": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "62510": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "61510": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ]
-          },
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2014年・2026年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
-          ]
-        },
         {
           "id": "61611",
           "name": "61611F",
@@ -1410,53 +470,6 @@
             "63611",
             "62611",
             "61611"
-          ],
-          "carFeatures": {
-            "66611": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "65611": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "64611": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "63611": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "62611": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "61611": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ]
-          },
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2015年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
           ]
         },
         {
@@ -1472,15 +485,6 @@
             "63612",
             "62612",
             "61612"
-          ],
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2015年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
           ]
         },
         {
@@ -1496,15 +500,6 @@
             "63613",
             "62613",
             "61613"
-          ],
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2015年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
           ]
         },
         {
@@ -1520,15 +515,6 @@
             "63614",
             "62614",
             "61614"
-          ],
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2015年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
           ]
         },
         {
@@ -1544,15 +530,6 @@
             "63615",
             "62615",
             "61615"
-          ],
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2015年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
           ]
         },
         {
@@ -1568,15 +545,6 @@
             "63616",
             "62616",
             "61616"
-          ],
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2015年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
           ]
         },
         {
@@ -1592,15 +560,6 @@
             "63617",
             "62617",
             "61617"
-          ],
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2015年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
           ]
         },
         {
@@ -1617,78 +576,163 @@
             "63618",
             "62618",
             "61618"
-          ],
-          "carFeatures": {
-            "66618": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "65618": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "64618": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "63618": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "62618": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ],
-            "61618": [
-              {
-                "type": "機器類",
-                "name": "行先表示FC"
-              }
-            ]
-          },
-          "manufacturer": "日立製作所",
-          "type": "60000型",
-          "manufacturingYear": "2015年",
-          "weakCoolingCars": [
-            4
-          ],
-          "womenOnlyCars": [
-            6
           ]
         }
-      ],
-      "formationType": "60000型",
-      "manufacturingYear": "2013年～2015年",
-      "manufacturer": "日立製作所"
+      ]
+    },
+    {
+      "type": "60000型（5両）",
+      "typeImg": "https://minamikaze2700.github.io/Unyomatome/images/TB60500.png",
+      "family": "noda",
+      "items": [
+        {
+          "id": "61501",
+          "name": "61501F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61501.png",
+          "family": "noda",
+          "carCount": 5,
+          "carNames": [
+            "65501",
+            "64501",
+            "63501",
+            "62501",
+            "61501"
+          ]
+        },
+        {
+          "id": "61502",
+          "name": "61502F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61502.png",
+          "family": "noda",
+          "carCount": 5,
+          "carNames": [
+            "65502",
+            "64502",
+            "63502",
+            "62502",
+            "61502"
+          ]
+        },
+        {
+          "id": "61503",
+          "name": "61503F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61503.png",
+          "family": "noda",
+          "carCount": 5,
+          "carNames": [
+            "65503",
+            "64503",
+            "63503",
+            "62503",
+            "61503"
+          ]
+        },
+        {
+          "id": "61504",
+          "name": "61504F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61504.png",
+          "family": "noda",
+          "carCount": 5,
+          "carNames": [
+            "65504",
+            "64504",
+            "63504",
+            "62504",
+            "61504"
+          ]
+        },
+        {
+          "id": "61505",
+          "name": "61505F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61505.png",
+          "family": "noda",
+          "carCount": 5,
+          "carNames": [
+            "65505",
+            "64505",
+            "63505",
+            "62505",
+            "61505"
+          ]
+        },
+        {
+          "id": "61506",
+          "name": "61506F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61506.png",
+          "family": "noda",
+          "carCount": 5,
+          "carNames": [
+            "65506",
+            "64506",
+            "63506",
+            "62506",
+            "61506"
+          ]
+        },
+        {
+          "id": "61507",
+          "name": "61507F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61507.png",
+          "family": "noda",
+          "carCount": 5,
+          "carNames": [
+            "65507",
+            "64507",
+            "63507",
+            "62507",
+            "61507"
+          ]
+        },
+        {
+          "id": "61508",
+          "name": "61508F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61508.png",
+          "family": "noda",
+          "carCount": 5,
+          "carNames": [
+            "65508",
+            "64508",
+            "63508",
+            "62508",
+            "61508"
+          ]
+        },
+        {
+          "id": "61509",
+          "name": "61509F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61509.png",
+          "family": "noda",
+          "disabled": true,
+          "carCount": 5,
+          "carNames": [
+            "65509",
+            "64509",
+            "63509",
+            "62509",
+            "61509"
+          ]
+        },
+        {
+          "id": "61510",
+          "name": "61510F",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB61510.png",
+          "family": "noda",
+          "disabled": true,
+          "carCount": 5,
+          "carNames": [
+            "65510",
+            "64510",
+            "63510",
+            "62510",
+            "61510"
+          ]
+        }
+      ]
     },
     {
       "type": "80000系",
       "typeImg": "https://minamikaze2700.github.io/Unyomatome/images/TB80000.png",
       "family": "noda",
-      "variants": [
-        {
-          "id": "80000系みまモニあり",
-          "name": "80000系みまモニあり",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB80000.png",
-          "items": []
-        },
-        {
-          "id": "80000系みまモニなし",
-          "name": "80000系みまモニなし",
-          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB80000.png",
-          "items": []
-        }
-      ],
       "items": [
         {
           "id": "81501",
@@ -1701,15 +745,6 @@
             "83501",
             "82501",
             "81501"
-          ],
-          "manufacturer": "近畿車輛",
-          "type": "80000型",
-          "manufacturingYear": "2025年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
           ]
         },
         {
@@ -1723,15 +758,6 @@
             "83502",
             "82502",
             "81502"
-          ],
-          "manufacturer": "近畿車輛",
-          "type": "80000型",
-          "manufacturingYear": "2025年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
           ]
         },
         {
@@ -1745,15 +771,6 @@
             "83503",
             "82503",
             "81503"
-          ],
-          "manufacturer": "近畿車輛",
-          "type": "80000型",
-          "manufacturingYear": "2025年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
           ]
         },
         {
@@ -1767,15 +784,6 @@
             "83504",
             "82504",
             "81504"
-          ],
-          "manufacturer": "近畿車輛",
-          "type": "80000型",
-          "manufacturingYear": "2025年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
           ]
         },
         {
@@ -1789,15 +797,6 @@
             "83505",
             "82505",
             "81505"
-          ],
-          "manufacturer": "近畿車輛",
-          "type": "80000型",
-          "manufacturingYear": "2025年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
           ]
         },
         {
@@ -1811,23 +810,6 @@
             "83551",
             "82551",
             "81551"
-          ],
-          "manufacturer": "日立製作所・近畿車輛",
-          "type": "80050型",
-          "carFeatures": {
-            "83551": [
-              {
-                "type": "車歴",
-                "name": "元60000型64602号車"
-              }
-            ]
-          },
-          "manufacturingYear": "2025年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
           ]
         },
         {
@@ -1841,23 +823,6 @@
             "83552",
             "82552",
             "81552"
-          ],
-          "manufacturer": "日立製作所・近畿車輛",
-          "type": "80050型",
-          "carFeatures": {
-            "83552": [
-              {
-                "type": "車歴",
-                "name": "元60000型64603号車"
-              }
-            ]
-          },
-          "manufacturingYear": "2025年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
           ]
         },
         {
@@ -1871,23 +836,6 @@
             "83553",
             "82553",
             "81553"
-          ],
-          "manufacturer": "日立製作所・近畿車輛",
-          "type": "80050型",
-          "carFeatures": {
-            "83553": [
-              {
-                "type": "車歴",
-                "name": "元60000型64605号車"
-              }
-            ]
-          },
-          "manufacturingYear": "2026年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
           ]
         },
         {
@@ -1901,23 +849,6 @@
             "83554",
             "82554",
             "81554"
-          ],
-          "manufacturer": "日立製作所・近畿車輛",
-          "type": "80050型",
-          "carFeatures": {
-            "83554": [
-              {
-                "type": "車歴",
-                "name": "元60000型64607号車"
-              }
-            ]
-          },
-          "manufacturingYear": "2026年",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
           ]
         },
         {
@@ -1932,19 +863,9 @@
             "83555",
             "82555",
             "81555"
-          ],
-          "type": "80050型",
-          "weakCoolingCars": [
-            3
-          ],
-          "womenOnlyCars": [
-            5
           ]
         }
-      ],
-      "formationType": "80000系",
-      "manufacturingYear": "2024年～2026年",
-      "manufacturer": "近畿車輛・日立製作所"
+      ]
     }
   ],
   "vehicleToFormation": {
@@ -85294,148 +84215,270 @@
       [
         "802A",
         "129A",
-        "138A",
+        "138A"
+      ],
+      [
         "157A",
         "166A"
       ],
       [
         "127A",
-        "136A",
+        "136A"
+      ],
+      [
         "153A",
-        "160A",
+        "160A"
+      ],
+      [
         "177A",
-        "184A",
+        "184A"
+      ],
+      [
         "193A",
-        "200A",
+        "200A"
+      ],
+      [
         "209A",
-        "216A",
+        "216A"
+      ],
+      [
         "225A",
-        "232A",
+        "232A"
+      ],
+      [
         "241A",
-        "248A",
-        "257A",
-        "264A",
+        "248A"
+      ],
+      [
+        "257A"
+      ],
+      [
+        "264A"
+      ],
+      [
         "273A",
-        "280A",
-        "289A",
-        "296A",
+        "280A"
+      ],
+      [
+        "289A"
+      ],
+      [
+        "296A"
+      ],
+      [
         "305A",
-        "312A",
+        "312A"
+      ],
+      [
         "321A",
-        "328A",
+        "328A"
+      ],
+      [
         "337A",
         "346A"
       ],
       [
-        "111",
+        "111"
+      ],
+      [
         "810A",
-        "429A",
-        "434A",
+        "429A"
+      ],
+      [
+        "434A"
+      ],
+      [
         "466A",
-        "479A",
-        "476A",
-        "839A",
+        "479A"
+      ],
+      [
+        "476A"
+      ],
+      [
+        "839A"
+      ],
+      [
         "848A",
-        "521A",
+        "521A"
+      ],
+      [
         "518A",
-        "531A",
+        "531A"
+      ],
+      [
         "528A",
-        "561A",
+        "561A"
+      ],
+      [
         "564A",
         "703A"
       ],
       [
         "804A",
-        "409A",
+        "409A"
+      ],
+      [
         "414A",
         "817A"
       ],
       [
-        "403A",
+        "403A"
+      ],
+      [
         "408A",
-        "443A",
+        "443A"
+      ],
+      [
         "446A",
-        "477A",
+        "477A"
+      ],
+      [
         "474A",
-        "505A",
+        "505A"
+      ],
+      [
         "502A",
-        "535A",
+        "535A"
+      ],
+      [
         "530A",
-        "567A",
+        "567A"
+      ],
+      [
         "570A",
-        "603A",
+        "603A"
+      ],
+      [
         "604A",
-        "633A",
+        "633A"
+      ],
+      [
         "632A"
       ],
       [
         "806A",
-        "419A",
+        "419A"
+      ],
+      [
         "424A",
-        "463A",
+        "463A"
+      ],
+      [
         "460A",
-        "491A",
+        "491A"
+      ],
+      [
         "488A",
-        "501A",
+        "501A"
+      ],
+      [
         "498A",
-        "847A",
+        "847A"
+      ],
+      [
         "856A",
-        "545A",
+        "545A"
+      ],
+      [
         "544A"
       ],
       [
         "808A",
-        "425A",
+        "425A"
+      ],
+      [
         "430A",
-        "467A",
+        "467A"
+      ],
+      [
         "464A",
-        "835A",
+        "835A"
+      ],
+      [
         "844A",
-        "509A",
+        "509A"
+      ],
+      [
         "506A",
-        "519A",
+        "519A"
+      ],
+      [
         "516A",
-        "853A",
-        "862A",
+        "853A"
+      ],
+      [
+        "862A"
+      ],
+      [
         "866A",
-        "583A",
+        "583A"
+      ],
+      [
         "586A",
-        "617A",
+        "617A"
+      ],
+      [
         "616A"
       ],
       [
         "812A",
-        "435A",
+        "435A"
+      ],
+      [
         "440A",
-        "827A",
+        "827A"
+      ],
+      [
         "836A",
         "2121A",
         "2124A",
         "2133A",
         "2136A",
-        "3403A",
+        "3403A"
+      ],
+      [
         "556A",
         "591A"
       ],
       [
         "816A",
-        "811A",
+        "811A"
+      ],
+      [
         "828A",
-        "461A",
+        "461A"
+      ],
+      [
         "2404A",
-        "833A",
-        "842A",
-        "503A",
+        "833A"
+      ],
+      [
+        "842A"
+      ],
+      [
+        "503A"
+      ],
+      [
         "500A",
-        "513A",
+        "513A"
+      ],
+      [
         "510A",
-        "851A",
+        "851A"
+      ],
+      [
         "860A",
-        "555A",
+        "555A"
+      ],
+      [
         "558A",
-        "593A",
+        "593A"
+      ],
+      [
         "594A",
-        "623A",
+        "623A"
+      ],
+      [
         "622A",
         "705A"
       ],
@@ -85463,7 +84506,9 @@
         "2162A",
         "2163A",
         "340A",
-        "349A",
+        "349A"
+      ],
+      [
         "359A"
       ],
       [
@@ -85473,557 +84518,1018 @@
       ],
       [
         "111A",
-        "116A",
+        "116A"
+      ],
+      [
         "133A",
-        "140A",
+        "140A"
+      ],
+      [
         "2107A",
-        "164A",
+        "164A"
+      ],
+      [
         "2111A",
-        "2114A",
+        "2114A"
+      ],
+      [
         "2115A",
         "2118A",
         "2127A",
         "2130A",
-        "2401A",
+        "2401A"
+      ],
+      [
         "532A",
-        "543A",
+        "543A"
+      ],
+      [
         "542A",
-        "581A",
+        "581A"
+      ],
+      [
         "584A",
-        "615A",
+        "615A"
+      ],
+      [
         "614A",
-        "641A",
+        "641A"
+      ],
+      [
         "640A"
       ],
       [
         "702A",
         "139A",
-        "148A",
+        "148A"
+      ],
+      [
         "167A",
-        "176A",
-        "472A",
+        "176A"
+      ],
+      [
+        "473A"
+      ],
+      [
         "470A",
-        "837A",
+        "837A"
+      ],
+      [
         "846A",
-        "515A",
+        "515A"
+      ],
+      [
         "512A",
-        "525A",
+        "525A"
+      ],
+      [
         "522A",
-        "855A",
+        "855A"
+      ],
+      [
         "864A",
-        "573A",
+        "573A"
+      ],
+      [
         "576A",
-        "609A",
+        "609A"
+      ],
+      [
         "610A",
-        "637A",
-        "366A"
+        "637A"
+      ],
+      [
+        "636A"
       ],
       [
         "704A",
-        "415A",
+        "415A"
+      ],
+      [
         "420A",
-        "823A",
+        "823A"
+      ],
+      [
         "834A",
         "2119A",
         "2122A",
         "2131A",
         "2134A",
-        "3401A",
+        "3401A"
+      ],
+      [
         "548A",
         "701A"
       ],
       [
         "113A",
-        "120A",
+        "120A"
+      ],
+      [
         "137A",
-        "146A",
+        "146A"
+      ],
+      [
         "163A",
-        "170A",
+        "170A"
+      ],
+      [
         "183A",
-        "190A",
+        "190A"
+      ],
+      [
         "199A",
-        "206A",
+        "206A"
+      ],
+      [
         "215A",
-        "222A",
+        "222A"
+      ],
+      [
         "231A",
-        "238A",
+        "238A"
+      ],
+      [
         "247A",
-        "254A",
+        "254A"
+      ],
+      [
         "263A",
-        "270A",
+        "270A"
+      ],
+      [
         "279A",
-        "286A",
+        "286A"
+      ],
+      [
         "295A",
-        "302A",
+        "302A"
+      ],
+      [
         "311A",
-        "318A",
+        "318A"
+      ],
+      [
         "327A",
-        "334A",
+        "334A"
+      ],
+      [
         "345A"
       ],
       [
         "103",
         "402A",
-        "801A",
+        "801A"
+      ],
+      [
         "814A",
-        "809A",
+        "809A"
+      ],
+      [
         "826A",
-        "459A",
+        "459A"
+      ],
+      [
         "458A",
-        "487A",
+        "487A"
+      ],
+      [
         "484A",
-        "517A",
+        "517A"
+      ],
+      [
         "514A",
-        "547A",
+        "547A"
+      ],
+      [
         "546A",
-        "585A",
+        "585A"
+      ],
+      [
         "588A",
-        "619A",
+        "619A"
+      ],
+      [
         "618A",
         "361A"
       ],
       [
         "115A",
-        "124A",
-        "141A",
-        "2106A",
-        "165A",
-        "172A",
-        "485A",
-        "482A",
-        "495A",
-        "492A",
-        "845A",
-        "854A",
-        "539A",
-        "536A",
-        "575A",
-        "578A",
-        "611A",
-        "612A",
-        "639A",
-        "368A"
+        "124A"
       ],
       [
-        "401A",
+        "141A",
+        "2106A"
+      ],
+      [
+        "165A",
+        "172A",
+        "485A"
+      ],
+      [
+        "482A",
+        "495A"
+      ],
+      [
+        "492A",
+        "845A"
+      ],
+      [
+        "854A",
+        "539A"
+      ],
+      [
+        "536A",
+        "575A"
+      ],
+      [
+        "578A",
+        "611A"
+      ],
+      [
+        "612A",
+        "639A"
+      ],
+      [
+        "638A"
+      ],
+      [
+        "401A"
+      ],
+      [
         "406A",
-        "439A",
+        "439A"
+      ],
+      [
         "442A",
-        "455A",
+        "455A"
+      ],
+      [
         "2402A",
-        "831A",
+        "831A"
+      ],
+      [
         "840A",
-        "497A",
+        "497A"
+      ],
+      [
         "494A",
-        "507A",
+        "507A"
+      ],
+      [
         "504A",
-        "849A",
+        "849A"
+      ],
+      [
         "858A",
-        "551A",
+        "551A"
+      ],
+      [
         "552A",
-        "589A",
+        "589A"
+      ],
+      [
         "592A",
         "859A"
       ],
       [
         "121A",
-        "2102A",
+        "2102A"
+      ],
+      [
         "145A",
-        "152A",
+        "152A"
+      ],
+      [
         "169A",
-        "178A",
+        "178A"
+      ],
+      [
         "187A",
-        "194A",
+        "194A"
+      ],
+      [
         "203A",
-        "210A",
+        "210A"
+      ],
+      [
         "219A",
-        "226A",
+        "226A"
+      ],
+      [
         "235A",
-        "242A",
+        "242A"
+      ],
+      [
         "251A",
-        "258A",
+        "258A"
+      ],
+      [
         "267A",
-        "274A",
+        "274A"
+      ],
+      [
         "283A",
-        "290A",
+        "290A"
+      ],
+      [
         "299A",
-        "306A",
+        "306A"
+      ],
+      [
         "315A",
-        "322A",
+        "322A"
+      ],
+      [
         "331A",
         "338A"
       ],
       [
-        "405A",
+        "405A"
+      ],
+      [
         "410A",
-        "451A",
+        "451A"
+      ],
+      [
         "452A",
-        "483A",
+        "483A"
+      ],
+      [
         "480A",
-        "511A",
+        "511A"
+      ],
+      [
         "508A",
-        "541A",
+        "541A"
+      ],
+      [
         "538A",
-        "577A",
+        "577A"
+      ],
+      [
         "580A",
         "613A"
       ],
       [
         "706A",
-        "433A",
+        "433A"
+      ],
+      [
         "438A",
-        "471A",
+        "471A"
+      ],
+      [
         "468A",
-        "499A",
+        "499A"
+      ],
+      [
         "496A",
-        "529A",
+        "529A"
+      ],
+      [
         "526A",
-        "559A",
-        "562A",
-        "597A",
+        "559A"
+      ],
+      [
+        "562A"
+      ],
+      [
+        "597A"
+      ],
+      [
         "598A",
-        "627A",
+        "627A"
+      ],
+      [
         "626A",
         "707A"
       ],
       [
-        "407A",
+        "407A"
+      ],
+      [
         "412A",
-        "421A",
+        "421A"
+      ],
+      [
         "426A",
-        "465A",
+        "465A"
+      ],
+      [
         "462A",
-        "493A",
+        "493A"
+      ],
+      [
         "490A",
-        "523A",
+        "523A"
+      ],
+      [
         "520A",
-        "553A",
+        "553A"
+      ],
+      [
         "554A",
-        "569A",
+        "569A"
+      ],
+      [
         "572A",
-        "605A",
+        "605A"
+      ],
+      [
         "606A",
         "861A"
       ],
       [
         "708A",
-        "807A",
-        "842A",
-        "457A",
-        "456A",
-        "557A",
+        "807A"
+      ],
+      [
+        "824A"
+      ],
+      [
+        "457A"
+      ],
+      [
+        "456A"
+      ],
+      [
+        "557A"
+      ],
+      [
         "560A",
-        "595A",
+        "595A"
+      ],
+      [
         "596A",
-        "625A",
+        "625A"
+      ],
+      [
         "624A"
       ],
       [
-        "411A",
+        "411A"
+      ],
+      [
         "416A",
         "819A"
       ],
       [
-        "413A",
+        "413A"
+      ],
+      [
         "418A",
-        "821A",
+        "821A"
+      ],
+      [
         "832A",
-        "475A",
+        "475A"
+      ],
+      [
         "472A"
       ],
       [
         "211A",
-        "218A",
+        "218A"
+      ],
+      [
         "227A",
-        "234A",
+        "234A"
+      ],
+      [
         "243A",
-        "250A",
+        "250A"
+      ],
+      [
         "259A",
-        "266A",
+        "266A"
+      ],
+      [
         "275A",
-        "282A",
+        "282A"
+      ],
+      [
         "291A",
-        "298A",
+        "298A"
+      ],
+      [
         "307A",
-        "314A",
+        "314A"
+      ],
+      [
         "323A",
-        "330A",
+        "330A"
+      ],
+      [
         "339A",
-        "348A",
+        "348A"
+      ],
+      [
         "353A",
         "358A"
       ],
       [
-        "417A",
+        "417A"
+      ],
+      [
         "422A",
-        "431A",
+        "431A"
+      ],
+      [
         "436A"
       ],
       [
         "710A",
-        "813A",
+        "813A"
+      ],
+      [
         "830A",
         "825A"
       ],
       [
-        "427A",
+        "427A"
+      ],
+      [
         "432A",
-        "441A",
+        "441A"
+      ],
+      [
         "444A"
       ],
       [
         "712A",
-        "565A",
+        "565A"
+      ],
+      [
         "568A",
-        "601A",
+        "601A"
+      ],
+      [
         "602A",
-        "631A",
+        "631A"
+      ],
+      [
         "630A",
         "865A"
       ],
       [
         "105A",
-        "108A",
+        "108A"
+      ],
+      [
         "125A",
-        "132A",
+        "132A"
+      ],
+      [
         "149A",
         "158A"
       ],
       [
         "404A",
-        "423A",
+        "423A"
+      ],
+      [
         "428A",
-        "437A",
+        "437A"
+      ],
+      [
         "3402A",
         "2117A",
         "2120A",
         "2129A",
         "2132A",
-        "2403A",
+        "2403A"
+      ],
+      [
         "540A",
-        "579A",
+        "579A"
+      ],
+      [
         "582A"
       ],
       [
         "119A",
-        "128A",
+        "128A"
+      ],
+      [
         "147A",
-        "156A",
+        "156A"
+      ],
+      [
         "173A",
-        "2112A",
+        "2112A"
+      ],
+      [
         "185A",
-        "192A",
+        "192A"
+      ],
+      [
         "201A",
-        "208A",
+        "208A"
+      ],
+      [
         "217A",
-        "224A",
+        "224A"
+      ],
+      [
         "233A",
-        "240A",
+        "240A"
+      ],
+      [
         "249A",
-        "256A",
+        "256A"
+      ],
+      [
         "265A",
-        "272A",
+        "272A"
+      ],
+      [
         "281A",
-        "288A",
+        "288A"
+      ],
+      [
         "297A",
-        "304A",
+        "304A"
+      ],
+      [
         "313A",
-        "320A",
+        "320A"
+      ],
+      [
         "329A",
-        "336A",
+        "336A"
+      ],
+      [
         "347A",
-        "352A",
+        "352A"
+      ],
+      [
         "357A"
       ],
       [
         "101A",
         "104A",
-        "805A",
+        "805A"
+      ],
+      [
         "822A",
-        "453A",
-        "454A",
-        "549A",
+        "453A"
+      ],
+      [
+        "454A"
+      ],
+      [
+        "549A"
+      ],
+      [
         "550A",
-        "587A",
+        "587A"
+      ],
+      [
         "590A",
-        "621A",
+        "621A"
+      ],
+      [
         "620A",
         "643A"
       ],
       [
         "103A",
-        "106A",
+        "106A"
+      ],
+      [
         "117A",
-        "126A",
+        "126A"
+      ],
+      [
         "143A",
-        "150A",
+        "150A"
+      ],
+      [
         "2109A",
-        "174A",
+        "174A"
+      ],
+      [
         "2113A",
         "2116A",
         "2125A",
         "2128A",
         "2137A",
-        "2140A",
+        "2140A"
+      ],
+      [
         "2141A",
-        "2144A",
+        "2144A"
+      ],
+      [
         "2145A",
-        "2148A",
+        "2148A"
+      ],
+      [
         "2149A",
-        "2152A",
-        "2153A",
-        "1256A",
+        "2152A"
+      ],
+      [
+        "2153A"
+      ],
+      [
+        "2156A"
+      ],
+      [
         "2157A",
-        "2160A",
+        "2160A"
+      ],
+      [
         "2161A",
-        "2164A",
+        "2164A"
+      ],
+      [
         "341A",
-        "350A",
+        "350A"
+      ],
+      [
         "355A",
         "360A"
       ],
       [
         "107A",
         "110A",
-        "445A",
+        "445A"
+      ],
+      [
         "448A"
       ],
       [
-        "112A",
+        "112A"
+      ],
+      [
         "2101A",
-        "134A",
+        "134A"
+      ],
+      [
         "151A",
-        "2108A",
+        "2108A"
+      ],
+      [
         "175A",
-        "182A",
+        "182A"
+      ],
+      [
         "191A",
-        "198A",
+        "198A"
+      ],
+      [
         "207A",
-        "214A",
+        "214A"
+      ],
+      [
         "223A",
-        "230A",
+        "230A"
+      ],
+      [
         "239A",
-        "246A",
+        "246A"
+      ],
+      [
         "255A",
-        "262A",
+        "262A"
+      ],
+      [
         "271A",
-        "278A",
+        "278A"
+      ],
+      [
         "287A",
-        "294A",
+        "294A"
+      ],
+      [
         "303A",
-        "310A",
+        "310A"
+      ],
+      [
         "319A",
-        "326A",
+        "326A"
+      ],
+      [
         "335A",
-        "344A",
+        "344A"
+      ],
+      [
         "351A",
         "356A"
       ],
       [
         "123A",
-        "130A",
+        "130A"
+      ],
+      [
         "2105A",
-        "154A",
-        "171A",
-        "180A",
+        "154A"
+      ],
+      [
+        "171A"
+      ],
+      [
+        "180A"
+      ],
+      [
         "189A",
-        "196A",
+        "196A"
+      ],
+      [
         "205A",
-        "212A",
+        "212A"
+      ],
+      [
         "221A",
-        "228A",
+        "228A"
+      ],
+      [
         "237A",
-        "244A",
+        "244A"
+      ],
+      [
         "253A",
-        "260A",
+        "260A"
+      ],
+      [
         "269A",
-        "276A",
-        "285A",
-        "292A",
+        "276A"
+      ],
+      [
+        "285A"
+      ],
+      [
+        "292A"
+      ],
+      [
         "301A",
-        "308A",
+        "308A"
+      ],
+      [
         "317A",
-        "324A",
+        "324A"
+      ],
+      [
         "333A",
         "342A"
       ],
       [
-        "118A",
+        "118A"
+      ],
+      [
         "135A",
-        "142A",
+        "142A"
+      ],
+      [
         "159A",
-        "168A",
+        "168A"
+      ],
+      [
         "181A",
-        "188A",
-        "197A",
-        "204A",
+        "188A"
+      ],
+      [
+        "197A"
+      ],
+      [
+        "204A"
+      ],
+      [
         "213A",
-        "220A",
+        "220A"
+      ],
+      [
         "229A",
-        "236A",
+        "236A"
+      ],
+      [
         "245A",
-        "252A",
+        "252A"
+      ],
+      [
         "261A",
-        "268A",
+        "268A"
+      ],
+      [
         "277A",
-        "284A",
+        "284A"
+      ],
+      [
         "293A",
-        "300A",
+        "300A"
+      ],
+      [
         "309A",
-        "316A",
+        "316A"
+      ],
+      [
         "325A",
-        "332A",
+        "332A"
+      ],
+      [
         "343A"
       ],
       [
         "131A",
-        "2104A",
+        "2104A"
+      ],
+      [
         "155A",
         "162A"
       ],
       [
         "102A",
-        "803A",
+        "803A"
+      ],
+      [
         "820A",
-        "449A",
+        "449A"
+      ],
+      [
         "450A",
-        "481A",
+        "481A"
+      ],
+      [
         "478A",
-        "489A",
+        "489A"
+      ],
+      [
         "486A",
-        "843A",
+        "843A"
+      ],
+      [
         "852A",
-        "533A",
+        "533A"
+      ],
+      [
         "2406A",
-        "563A",
+        "563A"
+      ],
+      [
         "566A",
-        "599A",
+        "599A"
+      ],
+      [
         "600A",
-        "629A",
+        "629A"
+      ],
+      [
         "628A",
         "863A"
       ],
       [
-        "122A",
+        "122A"
+      ],
+      [
         "2103A",
-        "144A",
-        "2110A",
+        "144A"
+      ],
+      [
+        "2110A"
+      ],
+      [
         "179A",
-        "186A",
+        "186A"
+      ],
+      [
         "195A",
         "202A",
-        "841A",
-        "850A",
-        "527A",
+        "841A"
+      ],
+      [
+        "850A"
+      ],
+      [
+        "527A"
+      ],
+      [
         "524A",
-        "537A",
+        "537A"
+      ],
+      [
         "534A",
-        "571A",
+        "571A"
+      ],
+      [
         "574A",
-        "607A",
+        "607A"
+      ],
+      [
         "608A",
-        "635A",
+        "635A"
+      ],
+      [
         "634A"
+      ],
+      [
+        "1256A"
+      ],
+      [
+        "366A"
+      ],
+      [
+        "368A"
       ],
       [
         "354A"
@@ -86238,10 +85744,31 @@
       }
     }
   },
-  "destinationAliases": {
-    "春日部": "春日",
-    "七光台": "七光",
-    "清水公園": "清水",
-    "野田市": "野田"
+  "formationDisplay": {
+    "mergeParentheticalGroups": true,
+    "selectableTypes": true,
+    "displayFullVariantNames": true,
+    "order": [
+      "8000型",
+      "10030型",
+      "60000型",
+      "80000系"
+    ],
+    "syntheticVariants": {
+      "80000系": [
+        {
+          "id": "__NODA_MIMA_MONI_YES__",
+          "name": "80000系みまモニ有",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB80000.png",
+          "displayAsFullName": true
+        },
+        {
+          "id": "__NODA_MIMA_MONI_NO__",
+          "name": "80000系みまモニ無",
+          "img": "https://minamikaze2700.github.io/Unyomatome/images/TB80000.png",
+          "displayAsFullName": true
+        }
+      ]
+    }
   }
 }
