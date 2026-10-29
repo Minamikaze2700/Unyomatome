@@ -8873,11 +8873,14 @@ initRegionNavigation();
     const route=normalizeId(record.route||activeRouteName);
     const role=window.currentPermissionCodeForRoute?.(route)||'';
     if(role==='a'||role==='l') return true;
+    // 全体管理人・該当路線の路線管理人に加え、元の登録者本人も削除可能。
+    // 表示名だけでは本人判定せず、ユーザーIDまたは認証UIDで照合する。
+    const currentUserId=normalizeId(currentUserProfile?.id);
+    const currentUid=normalizeId(currentAuthUser?.uid||currentUserProfile?.uid);
+    const recordUserId=normalizeId(record.userId||record.r);
     const recordUid=normalizeId(record.uid);
-    if(recordUid) return recordUid===normalizeId(currentAuthUser.uid);
-    // 旧形式の履歴にUIDがない場合だけ、登録者IDで本人判定する。
-    const recordUserId=normalizeId(record.userId);
-    return !!recordUserId && recordUserId===normalizeId(currentUserProfile?.id);
+    return (!!currentUserId && !!recordUserId && currentUserId===recordUserId)
+      || (!!currentUid && !!recordUid && currentUid===recordUid);
   };
 
   function roleLabel(code){ return code==='a'?'管理人':code==='l'?'路線管理人':''; }
@@ -9958,7 +9961,10 @@ initRegionNavigation();
       const deletableKeys=[...new Set(group.posts
         .filter(item=>!item.isFirebaseCurrentSnapshot)
         .map(item=>String(item._recordId||'').trim()).filter(Boolean))];
-      const deleteButton=deletableKeys.length
+      const canManageHistory=deletableKeys.length>0
+        && typeof window.canDeleteFormationInputHistoryRecord==='function'
+        && window.canDeleteFormationInputHistoryRecord(post);
+      const deleteButton=canManageHistory
         ? `<button type="button" class="formation-input-history-delete" aria-label="この編成入力履歴を削除" onclick="window.deleteFormationInputHistoryRecord('${escapeJs(deletableKeys.join('|'))}')">削除</button>`
         : '';
       return `<div class="formation-input-history-item" data-history-key="${escapeAttr(post._recordId||post.key)}" data-history-duplicates="${group.posts.length}">
