@@ -18185,5 +18185,58 @@
     "湯田中": "湯田",
     "長野": "長野",
     "須坂": "須坂"
+  },
+  "stationShortMap": {
+    "信州中野": "中野",
+    "湯田中": "湯田",
+    "長野": "長野",
+    "須坂": "須坂"
+  },
+  "typeShortRules": [
+    {
+      "containsAll": [
+        "ゆけむり",
+        "のんびり"
+      ],
+      "result": "A特"
+    },
+    {
+      "contains": "特急",
+      "trainNoSuffix": "A",
+      "result": "A特"
+    },
+    {
+      "contains": "特急",
+      "trainNoSuffix": "B",
+      "result": "B特"
+    },
+    {
+      "containsAll": [
+        "特急",
+        "ゆけむり"
+      ],
+      "result": "A特"
+    },
+    {
+      "containsAll": [
+        "特急",
+        "スノーモンキー"
+      ],
+      "result": "B特"
+    }
+  ],
+  "typeShortMap": {
+    "A特急": "A特",
+    "B特急": "B特",
+    "特急ゆけむり": "A特",
+    "特急ゆけむりのんびり": "A特",
+    "特急スノーモンキー": "B特"
+  },
+  "typeAbbreviations": {
+    "A特急": "A特",
+    "B特急": "B特",
+    "特急ゆけむり": "A特",
+    "特急ゆけむりのんびり": "A特",
+    "特急スノーモンキー": "B特"
   }
 }
