@@ -7371,6 +7371,34 @@ initRegionNavigation();
     return !!latestFormationInputHistoryEntry(family,date,trainNo);
   };
 
+  // 連結運用の集約表示とは別に、Firebase上の「指定した列番自身」の編成を取得する。
+  // 複数列車連結時、編集欄の各スロットはそれぞれ独立した列番に対応する。
+  window.ownRegisteredFormationForTrainNo=function(train,candidateNo){
+    if(!train || !candidateNo) return '';
+    const family=formationFamilyForTrain(train);
+    const date=formationDateKey();
+    const area=storageAreaForFamily(family);
+    const stored=formationRemoteByFamily[family]?.areaStateByDate?.[date]?.[area]||{};
+    const key=String(candidateNo||'').trim();
+    let saved=stored[key]&&typeof stored[key]==='object'?stored[key]:null;
+    if(!saved){
+      const normalized=normalizeTrainNo(key);
+      for(const [savedNo,entry] of Object.entries(stored)){
+        if(normalizeTrainNo(savedNo)===normalized && entry && typeof entry==='object'){saved=entry;break;}
+      }
+    }
+    const historyEntry=latestFormationInputHistoryEntry(family,date,key);
+    if(historyEntry){
+      const stateValue=String(saved?.f||'').trim();
+      if(stateValue && storedFormationIsNewerThanHistory(saved,historyEntry)) return stateValue;
+      const historyValue=String(historyEntry.f||'').trim();
+      if(historyEntry.unselected || !historyValue || isUnselectedFormationId(historyValue)) return '';
+      return historyValue;
+    }
+    if(wasFormationInputHistoryCleared(family,date,key)) return '';
+    return String(saved?.f||'').trim();
+  };
+
   function syncDerivedStateForFamily(family){
     const remote=formationRemoteByFamily[family];
     if(!remote) return;
@@ -7498,8 +7526,43 @@ initRegionNavigation();
       return {found:false,value:''};
     };
 
-    // 選択中の列車自身、次に直前列車、さらにその前の列車の順で確認する。
-    // これにより A→B→C で A・B に登録があり、Cを選択した場合はBの編成になる。
+    // 連結列車はFirebaseに列番ごとに1編成ずつ保存する。
+    // HTML側ではチェーン順に各列番の明示登録だけを集約し、A+B+Cとして表示する。
+    // 旧形式で1つのfに複数IDが入っている場合も、表示時に分解して重複を避ける。
+    if(chainNos.length>1){
+      const combined=[];
+      const seenFormationIds=new Set();
+      let foundAny=false;
+      let foundNonEmpty=false;
+      for(const candidateNo of chainNos){
+        const result=resolveForNo(candidateNo);
+        if(!result.found) continue;
+        foundAny=true;
+        const value=String(result.value||'').trim();
+        if(!value) continue;
+        foundNonEmpty=true;
+        for(const part of value.split('+').map(x=>x.trim()).filter(Boolean)){
+          if(window.isUnselectedFormationId?.(part)) continue;
+          const key=part.replace(/F$/i,'');
+          if(seenFormationIds.has(key)) continue;
+          seenFormationIds.add(key);
+          combined.push(key);
+        }
+      }
+      if(combined.length){
+        try{train.__formationExplicitlyUnselected=false;}catch(e){}
+        return combined.join('+');
+      }
+      if(foundAny && !foundNonEmpty){
+        try{train.__formationExplicitlyUnselected=true;}catch(e){}
+        return null;
+      }
+      // チェーンの2本以上を個別保存する方式では、ほかの列番からの暗黙フォールバックを行わない。
+      try{train.__formationExplicitlyUnselected=false;}catch(e){}
+      return null;
+    }
+
+    // 単独列車は従来どおり、選択中の列車自身→直前列車→後続列車の順で確認する。
     for(let i=targetIndex;i>=0;i--){
       const result=resolveForNo(chainNos[i]);
       if(result.found){
@@ -7835,9 +7898,33 @@ initRegionNavigation();
     return Math.max(1,Math.min(MAX_FORMATION_SLOTS,Math.trunc(n)));
   }
 
+  function linkedTrainNumbersForFormationUI(train,day=currentDay){
+    const no=String(train?.no||'').trim();
+    if(!no) return [];
+    const info=typeof findChain==='function'?findChain(day,no):null;
+    const chain=info?(OPERATION_CHAINS?.[day]?.[info.chainIndex]||[]):[];
+    const numbers=[];
+    for(const entry of chain){
+      const value=String(entry?.no||entry||'').trim();
+      if(value&&!numbers.some(existing=>normalizeTrainNo(existing)===normalizeTrainNo(value))) numbers.push(value);
+    }
+    if(numbers.length>1){
+      const normalized=normalizeTrainNo(no);
+      if(!numbers.some(value=>normalizeTrainNo(value)===normalized)){
+        const index=Math.max(0,Math.min(numbers.length,Number(info?.entryIndex)||0));
+        numbers.splice(index,0,no);
+      }
+      return numbers.slice(0,MAX_FORMATION_SLOTS);
+    }
+    return [no];
+  }
+  window.linkedTrainNumbersForFormationUI=linkedTrainNumbersForFormationUI;
+
   function formationCountForTrain(train){
-    // 編成数は読み込んだ路線JSONだけを参照する。JSONに設定がなければ1編成。
-    // 列車単位のformationCountも、列車データ自体がJSONから来ている場合のみ有効。
+    // 2列車以上の運用連結は「1列番＝1編成」。列車数をスロット数にし、各スロットを別列番へ保存する。
+    const linked=linkedTrainNumbersForFormationUI(train);
+    if(linked.length>1) return clampFormationCount(linked.length);
+    // 単独列車は従来どおりJSONの formationCountDefault / 列車のformationCountを使用。
     const jsonCount = activeJson?.formationCountDefault ?? train?.formationCount;
     if (jsonCount === undefined || jsonCount === null || jsonCount === '') return 1;
     return clampFormationCount(jsonCount);
@@ -7919,6 +8006,26 @@ initRegionNavigation();
   };
 
   function selectedIdsForTrain(train){
+    const linked=linkedTrainNumbersForFormationUI(train);
+    if(linked.length>1 && typeof window.ownRegisteredFormationForTrainNo==='function'){
+      const slots=Array(MAX_FORMATION_SLOTS).fill('');
+      const rawByTrain=linked.map(no=>String(window.ownRegisteredFormationForTrainNo(train,no)||'').trim());
+      // 新形式は各列番1ID。旧形式で先頭列番にA+B+Cと保存されていた場合は、
+      // 互換表示としてチェーンの空きスロットへ展開する。
+      rawByTrain.forEach((raw,index)=>{
+        const parts=formationIds(raw).filter(id=>!window.isUnselectedFormationId?.(id));
+        if(parts.length===1 && !slots[index]) slots[index]=parts[0];
+      });
+      rawByTrain.forEach((raw,index)=>{
+        const parts=formationIds(raw).filter(id=>!window.isUnselectedFormationId?.(id));
+        if(parts.length<=1) return;
+        parts.forEach((part,offset)=>{
+          const target=index+offset;
+          if(target<slots.length && !slots[target]) slots[target]=part;
+        });
+      });
+      return slots;
+    }
     const raw=effectiveFormationIdForTrain(train);
     const current=formationIds(raw).filter(id=>!window.isUnselectedFormationId?.(id));
     const out=[];
@@ -8130,11 +8237,13 @@ initRegionNavigation();
     const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction||null)||currentTrainSnapshot;
     if(!train) return;
     const count=formationCountForTrain(train);
+    const linked=linkedTrainNumbersForFormationUI(train);
+    const splitPerLinkedTrain=linked.length>1;
     const raw=String(input?.value||'').trim();
     if(!raw){ if(err) err.textContent='編成番号を入力してください。'; input?.focus(); return; }
     const pieces=raw.split('+').map(x=>x.trim()).filter(Boolean);
     if(pieces.length>count){
-      if(err) err.textContent=`この列車は最大${count}編成です。${count}個以内の編成を「+」で区切って入力してください。`;
+      if(err) err.textContent=`この列車は最大${count}個です。${count}個以内の編成番号を「+」で区切って入力してください。`;
       input?.focus();return;
     }
     const ids=[];
@@ -8145,50 +8254,102 @@ initRegionNavigation();
       if(!id){if(err)err.textContent='編成を特定できません。';input?.focus();return;}
       ids.push(id);
     }
-    // A編成/S編成は共通選択肢なので重複可。A01/S01などの個別編成だけ重複禁止。
+    // A編成/S編成は共通選択肢なので重複可。個別編成だけ重複禁止。
     const realIds=ids.filter(id=>!/^([AS]編成)$/.test(String(id).replace(/F$/i,'')));
     if(new Set(realIds).size!==realIds.length){
       if(err)err.textContent='同じ実編成を重複して登録することはできません。';
       input?.focus();
       return;
     }
-    currentTrainSnapshot={...currentTrainSnapshot,formation:ids.join('+'),__formationExplicitlyUnselected:false};
-    train.formation=ids.join('+');
-    train.__formationExplicitlyUnselected=false;
-    await recordSelection(train,ids.join('+'));
+    if(splitPerLinkedTrain){
+      // 連結チェーンは各列番に1件ずつ保存する。HTMLでは登録値をチェーン順に連結表示する。
+      for(let i=0;i<ids.length;i++){
+        const no=linked[i];
+        const base=liveTrain(no)||findOperationTrainRecord(no,currentDay)||train;
+        const perTrain={...base,no:String(no),direction:base?.direction||train?.direction||''};
+        await recordSelection(perTrain,ids[i]);
+      }
+      refreshAllTrainDataCache();
+      currentTrainSnapshot=liveTrain(currentTrainNo,currentTrainSnapshot?.direction||null)||currentTrainSnapshot;
+    }else{
+      currentTrainSnapshot={...currentTrainSnapshot,formation:ids.join('+'),__formationExplicitlyUnselected:false};
+      train.formation=ids.join('+');
+      train.__formationExplicitlyUnselected=false;
+      await recordSelection(train,ids.join('+'));
+    }
     isEditMode=false;document.getElementById('bottomSheet')?.classList.remove('editing');
     closeFormationDropdown();
     updateSheetContent();renderTrainPositions();
   };
-
   async function saveFormationAtSlot(slot,id){
     if(!formationInputAllowed()) return;
     const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction||null)||currentTrainSnapshot;
     if(!train) return;
     const count=formationCountForTrain(train);
     if(slot<0||slot>=count)return;
+    const linked=linkedTrainNumbersForFormationUI(train);
+    const splitPerLinkedTrain=linked.length>1;
     const ids=selectedIdsForTrain(train);
     const normalized=(id===INITIAL_FORMATION_SELECTION.id || window.isUnselectedFormationId?.(id))?'':String(normalizeStoredFormationId(id)||'');
-    if(!normalized){
-      // 未選択はクリックされたスロットだけに適用する。
-      // 保存形式は A+B+C のため、空スロットを除いて残りの編成を元の順序で詰めて保存する。
-      if(!ids[slot]){
-        restoreHiroDropdown();
+
+    if(splitPerLinkedTrain){
+      const targetNo=linked[slot];
+      if(!targetNo) return;
+      const base=liveTrain(targetNo)||findOperationTrainRecord(targetNo,currentDay)||train;
+      const targetTrain={...base,no:String(targetNo),direction:base?.direction||train?.direction||''};
+      if(!normalized && !ids[slot]){restoreHiroDropdown();return;}
+      if(normalized && UNAVAILABLE_FORMATIONS.has(normalized)){
+        const err=document.getElementById('formationInputError'); if(err)err.textContent='この編成は入力できません。';
         return;
       }
+      if(normalized && !formationById(normalized)){
+        const err=document.getElementById('formationInputError'); if(err)err.textContent='選択した編成を特定できません。';
+        return;
+      }
+      if(normalized && !(formationById(normalized)?.generic)){
+        const duplicate=ids.some((value,index)=>index!==slot&&value&&String(value).replace(/F$/i,'')===normalized&&!(formationById(value)?.generic));
+        if(duplicate){const err=document.getElementById('formationInputError');if(err)err.textContent='同じ実編成を重複して登録することはできません。';return;}
+      }
+      // 旧データに1列番分のA+B+Cが残っている場合は、表示中のスロット構成を
+      // 列番ごとの値へ移行してから、今回選んだ列番だけ入力履歴を追加する。
+      const legacyComposite=linked.some(no=>formationIds(window.ownRegisteredFormationForTrainNo?.(train,no)||'').length>1);
+      ids[slot]=normalized;
+      if(legacyComposite){
+        for(let i=0;i<linked.length;i++){
+          const no=linked[i];
+          const baseTrain=liveTrain(no)||findOperationTrainRecord(no,currentDay)||train;
+          const perTrain={...baseTrain,no:String(no),direction:baseTrain?.direction||train?.direction||''};
+          await recordSelection(perTrain,ids[i]||null,{skipInputHistory:true});
+        }
+        await recordSelection(targetTrain,normalized||null);
+      }else{
+        await recordSelection(targetTrain,normalized||null);
+      }
+      refreshAllTrainDataCache();
+      currentTrainSnapshot=liveTrain(currentTrainNo,currentTrainSnapshot?.direction||null)||currentTrainSnapshot;
+      restoreHiroDropdown();
+      const latestIds=selectedIdsForTrain(currentTrainSnapshot||train);
+      const complete=linked.every((_,index)=>!!latestIds[index]);
+      isEditMode=!complete;
+      document.getElementById('bottomSheet')?.classList.toggle('editing',isEditMode);
+      updateSheetContent();
+      renderTrainPositions();
+      return;
+    }
+
+    // 単独列車の複数編成入力は従来処理を維持する。
+    if(!normalized){
+      if(!ids[slot]){restoreHiroDropdown();return;}
       ids[slot]='';
       const remaining=ids.slice(0,count).filter(Boolean);
       const saved=remaining.join('+');
-      const complete=remaining.length===count;
       const explicitlyUnselected=!saved;
       currentTrainSnapshot={...currentTrainSnapshot,formation:saved||null,__formationExplicitlyUnselected:explicitlyUnselected};
       train.formation=saved||null;
       train.__formationExplicitlyUnselected=explicitlyUnselected;
-      // 残りの編成がある場合はその組み合わせを保持し、途中選択の履歴を増やさない。
-      // 全スロットが空になった場合のみ、明示的な全解除イベントとして記録する。
-      await recordSelection(train,saved||null,{skipInputHistory:!!saved&&!complete});
+      await recordSelection(train,saved||null,{skipInputHistory:!!saved&&remaining.length<count});
       restoreHiroDropdown();
-      isEditMode=!!saved&&!complete;
+      isEditMode=!!saved&&remaining.length<count;
       document.getElementById('bottomSheet')?.classList.toggle('editing',isEditMode);
       updateSheetContent();
       renderTrainPositions();
@@ -8202,16 +8363,8 @@ initRegionNavigation();
       const err=document.getElementById('formationInputError'); if(err)err.textContent='選択した編成を特定できません。'; return;
     }
     if(normalized && !(formationById(normalized)?.generic)){
-      const duplicate=ids.some((v,i)=>{
-        if(i===slot || !v) return false;
-        const other=String(v).replace(/F$/i,'');
-        return other===normalized && !(formationById(other)?.generic);
-      });
-      if(duplicate){
-        const err=document.getElementById('formationInputError');
-        if(err) err.textContent='';
-        return;
-      }
+      const duplicate=ids.some((v,i)=>i!==slot&&v&&String(v).replace(/F$/i,'')===normalized&&!(formationById(v)?.generic));
+      if(duplicate){const err=document.getElementById('formationInputError');if(err)err.textContent='同じ実編成を重複して登録することはできません。';return;}
     }
     if(normalized && slot>0 && !ids.slice(0,slot).every(Boolean)){
       const err=document.getElementById('formationInputError'); if(err)err.textContent='前寄りの編成から順番に選択してください。'; return;
@@ -8224,11 +8377,8 @@ initRegionNavigation();
     train.__formationExplicitlyUnselected=false;
     await recordSelection(train,saved||null,{skipInputHistory:!complete});
     restoreHiroDropdown();
-    if(complete){
-      isEditMode=false;document.getElementById('bottomSheet')?.classList.remove('editing');
-    }else{
-      isEditMode=true;document.getElementById('bottomSheet')?.classList.add('editing');
-    }
+    if(complete){isEditMode=false;document.getElementById('bottomSheet')?.classList.remove('editing');}
+    else{isEditMode=true;document.getElementById('bottomSheet')?.classList.add('editing');}
     updateSheetContent();renderTrainPositions();
   }
   window.selectFormationAtSlot=saveFormationAtSlot;
