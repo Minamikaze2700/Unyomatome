@@ -3657,7 +3657,9 @@ function formationDropdownHTML(train){
       return `<div class="option-header option-subheader option-selectable-category ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':`onclick="selectFormation('${escapeJs(variant.id)}')"`}><img src="${esc(variant?.img||fallbackTrainImageUrl())}" class="option-img"><span>${esc(variant?.name||variant?.id)}</span></div>`;
     }).join('');
     const variantItems=(group?.variants||[]).flatMap(v=>Array.isArray(v?.items)?v.items:[]);
-    const items=[...variantItems,...(group?.items||[])].map(item=>{
+    const items=[...variantItems,...(group?.items||[])]
+      .filter(item=>item?.inputSelectable!==false)
+      .map(item=>{
       const disabled=!!item?.disabled||UNAVAILABLE_FORMATIONS.has(String(item?.id));
       return `<div class="option-item ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':`onclick="selectFormation('${escapeJs(item.id)}')"`}><img src="${esc(item?.img||fallbackTrainImageUrl())}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${esc(item?.name||item?.id)}</span></div>`;
     }).join('');
@@ -4941,74 +4943,14 @@ function stationTimetableHTML(station, selectedDirection='up'){
     return [name];
   };
   const stationTimetableFormationHTML=(train)=>{
-    // 時刻表では連結運用の各列車を別行で表示する。
-    // 列車数未設定時の「1列車」ルールは登録処理に適用し、表示は実際に連結チェーンにある列車を列挙する。
-    // JSONに最大併結数がある場合はその数を上限とする。
-    const visibleTrains=typeof getVisibleTrains==='function'?getVisibleTrains():[];
-    let linkedNos=[String(train?.no||'').trim()].filter(Boolean);
-    try{
-      if(typeof linkedTrainNumbersForFormationUI==='function'){
-        const chainNos=linkedTrainNumbersForFormationUI(train);
-        if(chainNos.length) linkedNos=chainNos;
-      }
-    }catch(e){ console.warn('時刻表の連結列車取得に失敗しました',e); }
-    // 列車ごとの編成入力日時が同じ場合だけ、時刻表上でも同一の連結列車として表示する。
-    // OPERATION_CHAINS上で隣接していても、別時刻に登録された列車は連結表示に含めない。
-    try{
-      if(linkedNos.length>1 && typeof formationFamilyForTrain==='function'){
-        const family=formationFamilyForTrain(train);
-        const date=typeof formationDateKey==='function'?formationDateKey():String(selectedDateKey||operationDateKey());
-        const area=typeof window.storageAreaForFamily==='function'?window.storageAreaForFamily(family):'__ROOT__';
-        const areaData=formationRemoteByFamily?.[family]?.areaStateByDate?.[date]?.[area]||{};
-        const timestampForNo=no=>{
-          // 入力履歴の日時を第一優先にする。状態ノードの t は同期で変わる可能性がある。
-          let stamp=0;
-          if(typeof window.latestFormationInputHistoryEntry==='function'){
-            const history=window.latestFormationInputHistoryEntry(family,date,no);
-            stamp=typeof window.formationHistoryTimestampMs==='function'?window.formationHistoryTimestampMs(history):0;
-          }
-          if(!stamp){
-            let entry=areaData[String(no||'').trim()]||null;
-            if(!entry){
-              const normalized=normalizeTrainNo(no);
-              for(const [savedNo,candidate] of Object.entries(areaData)){
-                if(normalizeTrainNo(savedNo)===normalized){entry=candidate;break;}
-              }
-            }
-            stamp=typeof window.storedFormationTimestampMs==='function'?window.storedFormationTimestampMs(entry):0;
-          }
-          return stamp?Math.floor(stamp/60000):0;
-        };
-        const currentNo=String(train?.no||'').trim();
-        const currentStamp=timestampForNo(currentNo);
-        linkedNos=linkedNos.filter(no=>{
-          if(normalizeTrainNo(no)===normalizeTrainNo(currentNo)) return true;
-          const otherStamp=timestampForNo(no);
-          // 入力日時が両方取得でき、分単位で一致する列車だけを同時入力の連結表示対象にする。
-          // 日時不明・別時刻なら、運用チェーン上で隣接していても絶対にまとめない。
-          return currentStamp>0 && otherStamp>0 && currentStamp===otherStamp;
-        });
-        if(!linkedNos.some(no=>normalizeTrainNo(no)===normalizeTrainNo(currentNo))) linkedNos.unshift(currentNo);
-      }
-    }catch(e){ console.warn('時刻表の編成入力日時判定に失敗しました',e); linkedNos=[String(train?.no||'').trim()].filter(Boolean); }
-    const maxConfigured=activeJson?.併結可能 ?? activeJson?.maxCoupledTrains ?? activeJson?.maxLinkedTrains;
-    if(maxConfigured!==undefined && maxConfigured!==null && String(maxConfigured).trim()!==''){
-      const n=Number(maxConfigured);
-      if(Number.isFinite(n)&&n>=1) linkedNos=linkedNos.slice(0,Math.trunc(n));
-    }
-    const renderOne=(no)=>{
-      const linkedTrain=visibleTrains.find(item=>normalizeTrainNo(item?.no)===normalizeTrainNo(no))
-        || (normalizeTrainNo(train?.no)===normalizeTrainNo(no)?train:null);
-      const raw=linkedTrain?effectiveFormationIdForTrain(linkedTrain):'';
-      const ids=String(raw||'').split('+').map(v=>v.trim()).filter(Boolean);
-      const names=ids.map(id=>String(selectionDisplayObjectForTrain(linkedTrain,id)?.name||selectionDisplayObject(id)?.name||id).trim());
-      const lines=names.length?names.flatMap(value=>{
-        const match=value.match(/^([\s\S]*?[系形型])\s*(.+)$/);
-        return match?[match[1].trim(),match[2].trim()]:[value];
-      }):['—'];
-      return `<span class="station-timetable-formation-train-line" data-linked-train="${escapeAttr(no)}">${lines.map(value=>`<span class="station-timetable-formation-line">${escapeAttr(value)}</span>`).join('')}</span>`;
-    };
-    return `<span class="station-timetable-formation">${linkedNos.map(renderOne).join('')}</span>`;
+    const parts=stationTimetableFormationParts(train);
+    // 形式名の「系・形・型」の直後で折り返し、編成表示を読みやすくする。
+    const lines=parts.flatMap(value=>{
+      const text=String(value??'').trim();
+      const match=text.match(/^([\s\S]*?[系形型])\s*(.+)$/);
+      return match?[match[1].trim(),match[2].trim()]:[text];
+    });
+    return `<span class="station-timetable-formation">${lines.map(x=>`<span class="station-timetable-formation-line">${escapeAttr(x)}</span>`).join('')}</span>`;
   };
 
   const renderDirection=(key)=>{
@@ -7587,26 +7529,9 @@ initRegionNavigation();
     };
 
     // 連結列車はFirebaseに列番ごとに1編成ずつ保存する。
-    // ただし「同一列車」として集約するのは、編成入力履歴の日時が同じ列番だけ。
-    // 別時刻なら、最後に入力された列番だけを表示対象にする。
+    // HTML側ではチェーン順に各列番の明示登録だけを集約し、A+B+Cとして表示する。
+    // 旧形式で1つのfに複数IDが入っている場合も、表示時に分解して重複を避ける。
     if(chainNos.length>1){
-      const inputMinuteForNo=(candidateNo)=>{
-        const history=latestFormationInputHistoryEntry(family,date,candidateNo);
-        const stamp=formationHistoryTimestampMs(history);
-        return stamp>0?Math.floor(stamp/60000):0;
-      };
-      const timed=chainNos.map((candidateNo,index)=>({candidateNo,index,minute:inputMinuteForNo(candidateNo)}))
-        .filter(item=>item.minute>0);
-      if(timed.length){
-        const latestMinute=Math.max(...timed.map(item=>item.minute));
-        const latestGroup=timed.filter(item=>item.minute===latestMinute);
-        // 同時刻入力の列番だけを残す。日時不明・別時刻の列番は集約しない。
-        chainNos=latestGroup.map(item=>item.candidateNo);
-      }else{
-        // 入力履歴日時が判定できない場合は連結集約せず、選択中の列番自身だけにする。
-        chainNos=[no];
-      }
-      if(chainNos.length>1 || chainNos.length===1){
       const combined=[];
       const seenFormationIds=new Set();
       let foundAny=false;
@@ -7637,7 +7562,6 @@ initRegionNavigation();
       // チェーンの2本以上を個別保存する方式では、ほかの列番からの暗黙フォールバックを行わない。
       try{train.__formationExplicitlyUnselected=false;}catch(e){}
       return null;
-      }
     }
 
     // 単独列車は従来どおり、選択中の列車自身→直前列車→後続列車の順で確認する。
@@ -7999,18 +7923,13 @@ initRegionNavigation();
   window.linkedTrainNumbersForFormationUI=linkedTrainNumbersForFormationUI;
 
   function formationCountForTrain(train){
-    // 未設定時は1列車。JSONに最大併結数があれば、個別設定があっても超過させない。
-    const maxConfigured = activeJson?.併結可能 ?? activeJson?.maxCoupledTrains ?? activeJson?.maxLinkedTrains;
-    const maxCount = (maxConfigured === undefined || maxConfigured === null || maxConfigured === '')
-      ? MAX_FORMATION_SLOTS : clampFormationCount(maxConfigured);
-    const configuredLinkedCount = activeJson?.linkedTrainCountDefault
-      ?? train?.linkedTrainCount
-      ?? train?.連結列車数;
-    if (configuredLinkedCount === undefined || configuredLinkedCount === null || configuredLinkedCount === '') return 1;
-    const requestedCount = Math.min(clampFormationCount(configuredLinkedCount), maxCount);
-    if (requestedCount <= 1) return 1;
+    // 2列車以上の運用連結は「1列番＝1編成」。列車数をスロット数にし、各スロットを別列番へ保存する。
     const linked=linkedTrainNumbersForFormationUI(train);
-    return Math.min(requestedCount, maxCount, Math.max(1, linked.length));
+    if(linked.length>1) return clampFormationCount(linked.length);
+    // 単独列車は従来どおりJSONの formationCountDefault / 列車のformationCountを使用。
+    const jsonCount = activeJson?.formationCountDefault ?? train?.formationCount;
+    if (jsonCount === undefined || jsonCount === null || jsonCount === '') return 1;
+    return clampFormationCount(jsonCount);
   }
   window.formationCountForTrain=formationCountForTrain;
 
@@ -8093,39 +8012,8 @@ initRegionNavigation();
     if(linked.length>1 && typeof window.ownRegisteredFormationForTrainNo==='function'){
       const slots=Array(MAX_FORMATION_SLOTS).fill('');
       const rawByTrain=linked.map(no=>String(window.ownRegisteredFormationForTrainNo(train,no)||'').trim());
-      // 入力日時が異なる列番は別々の登録イベントとして扱い、同一編成列車にまとめない。
-      const family=formationFamilyForTrain(train), date=formationDateKey(), area=storageAreaForFamily(family);
-      const areaData=formationRemoteByFamily[family]?.areaStateByDate?.[date]?.[area]||{};
-      const timestampForNo=no=>{
-        // 連結判定では、状態ノードの更新時刻ではなく「編成入力履歴」の日時を優先する。
-        // 状態ノードの t は同期等で更新される場合があるため、別時刻の入力を誤って同時扱いしない。
-        const hist=latestFormationInputHistoryEntry(family,date,no);
-        let stamp=formationHistoryTimestampMs(hist);
-        if(!stamp){
-          let entry=areaData[String(no||'').trim()]||null;
-          if(!entry){
-            const norm=normalizeTrainNo(no);
-            for(const [savedNo,candidate] of Object.entries(areaData)){
-              if(normalizeTrainNo(savedNo)===norm){entry=candidate;break;}
-            }
-          }
-          // 履歴が存在しない場合だけ状態データを補助利用する。
-          stamp=storedFormationTimestampMs(entry);
-        }
-        return stamp?Math.floor(stamp/60000):0;
-      };
-      const currentNo=String(train?.no||'').trim();
-      const currentStamp=timestampForNo(currentNo);
-      const allowedLinked=linked.filter(no=>{
-        const stamp=timestampForNo(no);
-        // 日時不明をワイルドカード扱いしない。入力履歴の時刻が一致する列車だけを同一連結群にする。
-        return normalizeTrainNo(no)===normalizeTrainNo(currentNo)
-          || (currentStamp>0 && stamp>0 && stamp===currentStamp);
-      }).slice(0,formationCountForTrain(train));
-      const allowedSet=new Set(allowedLinked.map(no=>normalizeTrainNo(no)));
-      linked.forEach((no,index)=>{if(!allowedSet.has(normalizeTrainNo(no))) rawByTrain[index]='';});
       // 新形式は各列番1ID。旧形式で先頭列番にA+B+Cと保存されていた場合は、
-      // 互換表示としてチェーンの空きスロットへ展開する。ただしJSONの最大併結数まで。
+      // 互換表示としてチェーンの空きスロットへ展開する。
       rawByTrain.forEach((raw,index)=>{
         const parts=formationIds(raw).filter(id=>!window.isUnselectedFormationId?.(id));
         if(parts.length===1 && !slots[index]) slots[index]=parts[0];
@@ -8135,7 +8023,7 @@ initRegionNavigation();
         if(parts.length<=1) return;
         parts.forEach((part,offset)=>{
           const target=index+offset;
-          if(target<Math.min(slots.length,formationCountForTrain(train)) && !slots[target]) slots[target]=part;
+          if(target<slots.length && !slots[target]) slots[target]=part;
         });
       });
       return slots;
@@ -8196,6 +8084,9 @@ initRegionNavigation();
       // すべての個体差に属する個別編成をまとめて表示。
       const variantItems=(group.variants||[]).flatMap(variant=>Array.isArray(variant.items)?variant.items:[]);
       for(const item of [...variantItems,...(group.items||[])]){
+        // inputSelectable:false は新規入力の選択肢からのみ除外する。
+        // FORMATIONS自体には残すため、過去の登録履歴の表示は維持される。
+        if(item?.inputSelectable===false) continue;
         const id=String(item.id||'').replace(/F$/i,'');
         if(!id) continue;
         const disabled=!!item.disabled || UNAVAILABLE_FORMATIONS.has(id);
@@ -8788,7 +8679,17 @@ initRegionNavigation();
     return saveFormationAtSlot(0,formId);
   };
 
-  /* 駅時刻表の編成表示は上部の共通レンダラーを使用する。 */
+  /* 駅時刻表の編成欄も + 順をそのまま前寄り→後寄りで表示。 */
+  stationTimetableFormationHTML=function(train){
+    const ids=formationIds(effectiveFormationIdForTrain(train));
+    if(!ids.length) return '<span class="station-timetable-formation">—</span>';
+    const lines=ids.flatMap(id=>{
+      const name=String(selectionDisplayObject(id)?.name||id).trim();
+      const match=name.match(/^([\s\S]*?[系形型])\s*(.+)$/);
+      return match?[match[1].trim(),match[2].trim()]:[name];
+    });
+    return `<span class="station-timetable-formation">${lines.map(name=>`<span class="station-timetable-formation-line">${esc(name)}</span>`).join('')}</span>`;
+  };
 
   /* 全列車画像取得系の旧呼び出しを複数編成の前寄り画像へ寄せる。 */
   trainImageFor= imageForTrain;
@@ -8812,8 +8713,6 @@ initRegionNavigation();
 
   const style=document.createElement('style');
   style.textContent=`
-    .station-timetable-formation-train-line{display:flex;flex-direction:column;align-items:flex-start;margin:0 0 3px;}
-    .station-timetable-formation-train-line:last-child{margin-bottom:0;}
     .hiro-formation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%;}
     .hiro-formation-grid.count-1{grid-template-columns:minmax(0,1fr);}.hiro-formation-grid.count-2{grid-template-columns:repeat(2,minmax(0,1fr));}
     .hiro-formation-slot{position:relative;min-width:0;}
@@ -8873,14 +8772,11 @@ initRegionNavigation();
     const route=normalizeId(record.route||activeRouteName);
     const role=window.currentPermissionCodeForRoute?.(route)||'';
     if(role==='a'||role==='l') return true;
-    // 全体管理人・該当路線の路線管理人に加え、元の登録者本人も削除可能。
-    // 表示名だけでは本人判定せず、ユーザーIDまたは認証UIDで照合する。
-    const currentUserId=normalizeId(currentUserProfile?.id);
-    const currentUid=normalizeId(currentAuthUser?.uid||currentUserProfile?.uid);
-    const recordUserId=normalizeId(record.userId||record.r);
     const recordUid=normalizeId(record.uid);
-    return (!!currentUserId && !!recordUserId && currentUserId===recordUserId)
-      || (!!currentUid && !!recordUid && currentUid===recordUid);
+    if(recordUid) return recordUid===normalizeId(currentAuthUser.uid);
+    // 旧形式の履歴にUIDがない場合だけ、登録者IDで本人判定する。
+    const recordUserId=normalizeId(record.userId);
+    return !!recordUserId && recordUserId===normalizeId(currentUserProfile?.id);
   };
 
   function roleLabel(code){ return code==='a'?'管理人':code==='l'?'路線管理人':''; }
@@ -9961,10 +9857,7 @@ initRegionNavigation();
       const deletableKeys=[...new Set(group.posts
         .filter(item=>!item.isFirebaseCurrentSnapshot)
         .map(item=>String(item._recordId||'').trim()).filter(Boolean))];
-      const canManageHistory=deletableKeys.length>0
-        && typeof window.canDeleteFormationInputHistoryRecord==='function'
-        && window.canDeleteFormationInputHistoryRecord(post);
-      const deleteButton=canManageHistory
+      const deleteButton=deletableKeys.length
         ? `<button type="button" class="formation-input-history-delete" aria-label="この編成入力履歴を削除" onclick="window.deleteFormationInputHistoryRecord('${escapeJs(deletableKeys.join('|'))}')">削除</button>`
         : '';
       return `<div class="formation-input-history-item" data-history-key="${escapeAttr(post._recordId||post.key)}" data-history-duplicates="${group.posts.length}">
