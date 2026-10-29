@@ -556,7 +556,7 @@ button,input,select,textarea{font-family:inherit}
 .timetable-item:first-child::before{top:50%}
 .timetable-item:last-child::after{bottom:50%}
 .timetable-item.dotted-route-guide::before,.timetable-item.dotted-route-guide::after{
-  background-image:repeating-linear-gradient(to bottom,var(--station-route-color,var(--primary)) 0 7px,transparent 7px 14px) !important;
+  background-image:repeating-linear-gradient(to bottom,var(--station-route-color,var(--primary)) 0 4px,transparent 4px 8px) !important;
   background-size:100% 100% !important;background-position:0 0 !important;background-repeat:repeat-y !important;
 }
 .time-dot{position:relative;width:18px;height:18px;background:var(--station-route-color,var(--primary));border-radius:50%;z-index:2;margin-right:16px;flex:none}
@@ -900,7 +900,7 @@ body{padding-bottom:42px !important;}
   background-position:top,bottom !important;
   background-repeat:no-repeat !important;
 }
-.dotted-route-guide::before{background:repeating-linear-gradient(to bottom,var(--station-route-color,var(--primary)) 0 7px,transparent 7px 14px) !important;}
+.dotted-route-guide::before{background:repeating-linear-gradient(to bottom,var(--station-route-color,var(--primary)) 0 4px,transparent 4px 8px) !important;}
 /* Today operation: the number/type elements are display:none when absent, so their grid tracks must also be omitted. */
 .train-operation-wrap.hide-operation-number .train-operation-row{grid-template-columns:44px 78px minmax(0,1fr) 36px 78px minmax(0,1fr) !important;}
 .train-operation-wrap.hide-operation-type .train-operation-row{grid-template-columns:86px 78px minmax(0,1fr) 36px 78px minmax(0,1fr) !important;}
@@ -920,13 +920,13 @@ body{padding-bottom:42px !important;}
   background-repeat:no-repeat !important;
 }
 .timetable-item.dotted-route-guide::before{
-  background-image:repeating-linear-gradient(to bottom,var(--station-route-color,var(--primary)) 0 7px,transparent 7px 14px) !important;
+  background-image:repeating-linear-gradient(to bottom,var(--station-route-color,var(--primary)) 0 4px,transparent 4px 8px) !important;
   background-size:100% 100% !important;
   background-position:center !important;
   background-repeat:repeat !important;
 }
 .timetable-item.dotted-route-guide:first-child::before{
-  background-image:repeating-linear-gradient(to bottom,transparent 0 7px,var(--station-route-color,var(--primary)) 7px 14px) !important;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 4px,var(--station-route-color,var(--primary)) 4px 8px) !important;
   background-size:100% 100% !important;
 }
 </style>
@@ -954,8 +954,8 @@ body{padding-bottom:42px !important;}
   -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
 }
 .timetable-item.dotted-route-guide::before,.timetable-item.dotted-route-guide::after{
-  -webkit-mask-image:repeating-linear-gradient(to bottom,#000 0 7px,transparent 7px 14px) !important;
-  mask-image:repeating-linear-gradient(to bottom,#000 0 7px,transparent 7px 14px) !important;
+  -webkit-mask-image:repeating-linear-gradient(to bottom,#000 0 4px,transparent 4px 8px) !important;
+  mask-image:repeating-linear-gradient(to bottom,#000 0 4px,transparent 4px 8px) !important;
   background-size:100% 100% !important;background-position:0 0 !important;background-repeat:no-repeat !important;
 }
 .timetable-item.dotted-route-guide::before{
@@ -2742,7 +2742,7 @@ function timetableRowsHTML(stops,trainContext=null){
     return {
       images:`linear-gradient(to right,${stops})`,
       sizes:'100% 100%',positions:'0 0',repeat:'no-repeat',
-      mask:dotted?'repeating-linear-gradient(to bottom,#000 0 7px,transparent 7px 14px)':'none'
+      mask:dotted?'repeating-linear-gradient(to bottom,#000 0 4px,transparent 4px 8px)':'none'
     };
   };
   return rows.map((row,index)=>{
@@ -6503,7 +6503,7 @@ function timetableRowsHTML(stops,trainContext=null){
   const chikuhiStations=fukuokaChikuhiStationSet();
   const isChikuhiSegment=(a,b)=>isFukuoka && !!a && !!b && a!==b && chikuhiStations.has(String(a)) && chikuhiStations.has(String(b));
   const isDottedRouteSegment=(a,b,arrivalIndex=-1)=>isChikuhiSegment(a,b)||(arrivalIndex>=0&&rows[arrivalIndex]?.dottedBefore===true);
-  const dottedMask='repeating-linear-gradient(to bottom,#000 0 7px,transparent 7px 14px)';
+  const dottedMask='repeating-linear-gradient(to bottom,#000 0 4px,transparent 4px 8px)';
   return rows.map((row,index)=>{
     const rawTimes=row.times.length>=2?row.times.slice(0,2):row.times.slice(0,1);
     const formattedTimes=rawTimes.map(formatRailwayDisplayTime);
@@ -6911,10 +6911,10 @@ function initRegionNavigation(){
     .rail-segment{position:absolute;left:0;width:100%;}
     .timetable-item::before{background:linear-gradient(to bottom,var(--route-line-top-bg,#666) 0 50%,var(--route-line-bottom-bg,#666) 50% 100%);}
     .timetable-item.chikuhi-next::before{
-      background:linear-gradient(to bottom,var(--route-line-top,#666) 0 50%,transparent 50% 100%),repeating-linear-gradient(to bottom,var(--station-route-color,#666) 0 7px,transparent 7px 14px);
+      background:linear-gradient(to bottom,var(--route-line-top,#666) 0 50%,transparent 50% 100%),repeating-linear-gradient(to bottom,var(--station-route-color,#666) 0 4px,transparent 4px 8px);
     }
     .timetable-item.chikuhi-prev::before{
-      background:linear-gradient(to bottom,transparent 0 50%,var(--route-line-bottom,#666) 50% 100%),repeating-linear-gradient(to bottom,var(--station-route-color,#666) 0 7px,transparent 7px 14px);
+      background:linear-gradient(to bottom,transparent 0 50%,var(--route-line-bottom,#666) 50% 100%),repeating-linear-gradient(to bottom,var(--station-route-color,#666) 0 4px,transparent 4px 8px);
     }
     .time-dot{background:var(--station-route-color-bg,#666);}
     .train-label.route-normal,.station-timetable-type.route-normal,.type-badge.route-normal{background:var(--train-type-color,#666);color:#fff;}
