@@ -503,6 +503,8 @@ button,input,select,textarea{font-family:inherit}
 .type-badge.b-express{background:#f39800}
 .train-title{font-size:0.95rem;font-weight:700;margin-left:6px}
 .train-title.no-type{margin-left:0}
+.train-service-name{display:inline-block;margin-left:6px;font-size:.92rem;font-weight:800;white-space:nowrap}
+.train-service-number{display:inline-block;margin-left:3px;font-size:.86rem;font-weight:800;color:#555;white-space:nowrap}
 .train-number{color:#1b6e27;font-weight:800;float:right;margin-right:15px}
 .formation-id{font-size:1.2rem;font-weight:800;color:#444 !important;margin-top:4px;display:flex;align-items:center;flex-wrap:wrap;gap:0 6px}
 .capacity-info{color:#666;font-size:.85rem;margin-top:4px}
@@ -1142,8 +1144,8 @@ const RESET_HOUR=3;
 const RESET_DWELL_MIN=2;
 const TURNBACK_SWITCH_MIN=1;
 const TRAIN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/HiroshimaArea_2026.json';
-const KOBE_KAIGAN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/KobeCity_Kaigan_2026_split_20261030_v2.json';
-const KOBE_SEISHIN_YAMATE_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/KobeCity_SeishinYamate_2026_split_20261030_v2.json';
+const KOBE_KAIGAN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/KobeCity_Kaigan_2026.json';
+const KOBE_SEISHIN_YAMATE_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/KobeCity_SeishinYamate_2026.json';
 const NANKAI_KOYA_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/NankaiKoya_2026.json';
 const DEFAULT_ROUTE_TITLE='運用まとめ - メインページ';
 const LAST_ROUTE_STORAGE_KEY='routeLastRoute_v1';
@@ -1221,8 +1223,8 @@ const ROUTE_REGISTRY={
   '南海泉北線':{
     id:'nankai-senboku',
     json:NANKAI_KOYA_DATA_URL,
-    jsonLines:['高野線','泉北線'],
-    range:'なんば～和泉中央',
+    jsonLines:['泉北線'],
+    range:'中百舌鳥～和泉中央',
     area:'南海',
     storageRoot:'南海高野線',
     storageArea:null,
@@ -1232,6 +1234,7 @@ const ROUTE_REGISTRY={
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/NK_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/NK_noimage.png',
     typeColors:{'各停':'#687072','準急':'#1c83cf','区急':'#00a65a'},
+    typeDetailMap:{'各停':'各停'},
     destinationAliases:{'なんば':'難波','和泉中央':'和泉','中百舌鳥':'中ﾓｽﾞ'},
     access:{public:false,routeAdmins:[]},
     formationInputExample:'5501F / 7501F / 8301F'
@@ -1552,6 +1555,9 @@ const ROUTE_SCHEDULE_CONFIG={
   ],
   '福岡市地下鉄 七隈線':[
     {from:'2026-04-01',to:'2027-03-13',file:'FukuokaCity_Nanakuma_2026.json'}
+  ],
+  'ふくちか2系統':[
+    {from:'2026-03-14',to:'2027-03-13',file:'FukuokaCity_KukoHakozaki_2026.json'}
   ],
   '東武野田線':[
     {from:'2024-03-16',to:'2026-11-20',file:'TobuNoda_2024.json'},
@@ -2235,7 +2241,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
     if(!allNumbers.length) return [];
   }
 
-  const stops=raw.stops.map(st=>{
+  const normalizeStopRows=source=>(Array.isArray(source)?source:[]).map(st=>{
     const hasTime=!!String(st?.arrival||st?.departure||st?.time||'').trim();
     return {
       station:String(st?.station||''),
@@ -2255,6 +2261,10 @@ function normalizeExternalTrain(raw,day,direction,meta){
       isStop:hasTime
     };
   }).filter(st=>st.station);
+  const stops=normalizeStopRows(raw.stops);
+  const stationGuideStops=Array.isArray(raw?.stationGuideStops)
+    ? normalizeStopRows(raw.stationGuideStops)
+    : stops;
   if(!stops.length) return [];
 
   // 列車が実際に跨っている全線区名を色判定用コンテキストとして保持。
@@ -2347,6 +2357,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
     sectionTypeSegments,
     sectionNumberSegments,
     servedLineNames,
+    stationGuideStops,
     sourceTypeColors:(raw?.__sourceTypeColors&&typeof raw.__sourceTypeColors==='object')?{...raw.__sourceTypeColors}:{},
     sourceJsonUrl:String(raw?.__sourceJsonUrl||''),
     stops,
@@ -2933,7 +2944,7 @@ function timetableRowsHTML(stops,trainContext=null){
   }).join('');
 }
 let TIMETABLE_HTML_CACHE = new Map();
-function timetableHTMLForCurrentDay(t){ return timetableRowsHTML((t||{}).stops||[],t||null); }
+function timetableHTMLForCurrentDay(t){ return timetableRowsHTML((t||{}).stationGuideStops||(t||{}).stops||[],t||null); }
 
 
 function todayKey(d=new Date()){
@@ -4222,6 +4233,15 @@ function getTrainTypeDisplayLabel(train, includeShinanoServiceDetails=false, pos
     if(type==='普通') return '普通';
   }
   return getDetailType(type);
+}
+function nankaiServiceNameHTML(train){
+  if(String(train?.formationFamily||'')!=='nankai-koya') return '';
+  const raw=train?.rawTrain||{};
+  const name=String(train?.trainName||raw?.trainName||'').trim();
+  const rawNumber=String(train?.serviceNumber??raw?.serviceNumber??'').trim();
+  if(!name&&!rawNumber) return '';
+  const number=rawNumber ? (/号$/.test(rawNumber)?rawNumber:`${rawNumber}号`) : '';
+  return `${name?`<span class="train-service-name">${escapeAttr(name)}</span>`:''}${number?`<span class="train-service-number">${escapeAttr(number)}</span>`:''}`;
 }
 function getTrainTypeDisplayClass(train,position=null){
   const type=getTrainTypeAtPosition(train,position);
@@ -11573,7 +11593,7 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
         <div class="train-card">
           <img src="${(train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id)?originalSelected.img:defaultTrainImage(train)}" class="train-card-img">
           <div class="train-info-main">
-            <div>${cardType?`<span class="type-badge ${getTrainTypeDisplayClass(train,cardTypePosition)}" style="${typeBadgeInlineStyle(train,cardTypePosition)}">${getTrainTypeDisplayLabel(train,true,cardTypePosition)}</span>`:''}<span class="train-title${cardType?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>
+            <div>${cardType?`<span class="type-badge ${getTrainTypeDisplayClass(train,cardTypePosition)}" style="${typeBadgeInlineStyle(train,cardTypePosition)}">${getTrainTypeDisplayLabel(train,true,cardTypePosition)}</span>`:''}${nankaiServiceNameHTML(train)}<span class="train-title${cardType?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>
               <div class="input-trigger-btn">編成を入力中</div>
             ${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}
           </div>
@@ -11594,7 +11614,7 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
     content.innerHTML=`
       <div class="train-card${cardClass}" ${cardClick}>
         <img src="${imgSrc}" class="train-card-img">
-        <div class="train-info-main"><div>${cardType?`<span class="type-badge ${getTrainTypeDisplayClass(train,cardTypePosition)}" style="${typeBadgeInlineStyle(train,cardTypePosition)}">${getTrainTypeDisplayLabel(train,true,cardTypePosition)}</span>`:''}<span class="train-title${cardType?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id?`<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`:`<div class="input-trigger-btn">${noFormationText}</div>`}${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id&&formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
+        <div class="train-info-main"><div>${cardType?`<span class="type-badge ${getTrainTypeDisplayClass(train,cardTypePosition)}" style="${typeBadgeInlineStyle(train,cardTypePosition)}">${getTrainTypeDisplayLabel(train,true,cardTypePosition)}</span>`:''}${nankaiServiceNameHTML(train)}<span class="train-title${cardType?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id?`<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`:`<div class="input-trigger-btn">${noFormationText}</div>`}${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id&&formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
       </div>
 
       <div class="train-info-tabs" style="--train-info-color:${tabColor}">
