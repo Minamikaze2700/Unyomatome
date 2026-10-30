@@ -7,7 +7,7 @@
   "sourceTimetable": {
     "file": "無題のスプレッドシート.xlsx",
     "sheet": "下り平日",
-    "note": "提供された下り平日シートを使用。列車表示・停車駅は泉北線区間（中百舌鳥～和泉中央）のみ。上り・土休日の表は資料に含まれない。"
+    "note": "下り平日の時刻表。路線表示は中百舌鳥～和泉中央に限定。停車駅案内には元表のなんば～中百舌鳥の時刻も併記し、列車位置計算用 stops とは stationGuideStops で分離。"
   },
   "sourceReferences": [
     "https://nankai-web-lab.blogspot.com/p/nankai-formation.html",
@@ -125,20 +125,12 @@
       }
     }
   ],
-  "routeDirections": {
-    "高野線": {
-      "up": "なんば方面",
-      "down": "中百舌鳥方面"
-    },
-    "泉北線": {
-      "up": "中百舌鳥方面",
-      "down": "和泉中央方面"
-    }
-  },
-  "routeRanges": {
-    "高野線": "なんば～中百舌鳥",
-    "泉北線": "中百舌鳥～和泉中央"
-  },
+  "routeDirections": [
+    "泉北線"
+  ],
+  "routeRanges": [
+    "泉北線"
+  ],
   "destinationAliases": {
     "なんば": "難波",
     "和泉中央": "和泉",
@@ -3285,7 +3277,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "05:32"
+            },
+            {
+              "station": "深井",
+              "time": "05:35"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "05:39"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "05:42"
+            },
+            {
+              "station": "光明池",
+              "time": "05:45"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "05:47"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5703",
@@ -3328,7 +3346,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "05:45"
+            },
+            {
+              "station": "深井",
+              "time": "05:48"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "05:52"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "05:55"
+            },
+            {
+              "station": "光明池",
+              "time": "05:58"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "06:00"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5705",
@@ -3371,7 +3415,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "05:54"
+            },
+            {
+              "station": "深井",
+              "time": "05:58"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "06:02"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "06:05"
+            },
+            {
+              "station": "光明池",
+              "time": "06:07"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "06:10"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5707",
@@ -3414,7 +3484,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "06:07"
+            },
+            {
+              "station": "深井",
+              "time": "06:10"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "06:14"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "06:17"
+            },
+            {
+              "station": "光明池",
+              "time": "06:20"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "06:22"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5709",
@@ -3457,7 +3553,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "06:20"
+            },
+            {
+              "station": "深井",
+              "time": "06:23"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "06:27"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "06:30"
+            },
+            {
+              "station": "光明池",
+              "time": "06:33"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "06:35"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5711",
@@ -3500,7 +3622,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "06:30"
+            },
+            {
+              "station": "深井",
+              "time": "06:33"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "06:37"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "06:40"
+            },
+            {
+              "station": "光明池",
+              "time": "06:43"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "06:45"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5713",
@@ -3543,7 +3691,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "06:41"
+            },
+            {
+              "station": "深井",
+              "time": "06:44"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "06:48"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "06:51"
+            },
+            {
+              "station": "光明池",
+              "time": "06:54"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "06:56"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5715",
@@ -3586,7 +3760,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "06:50"
+            },
+            {
+              "station": "深井",
+              "time": "06:53"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "06:57"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "07:00"
+            },
+            {
+              "station": "光明池",
+              "time": "07:03"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "07:05"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4101",
@@ -3626,10 +3826,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "06:40"
+            },
+            {
+              "station": "新今宮",
+              "time": "06:42"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "06:45"
+            },
+            {
+              "station": "堺東",
+              "time": "06:53"
+            },
+            {
+              "station": "三国が丘",
+              "time": "06:55"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "06:56"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "06:58",
+              "arrival": "06:57"
+            },
+            {
+              "station": "深井",
+              "time": "07:02"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "07:06"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "07:09"
+            },
+            {
+              "station": "光明池",
+              "time": "07:12"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "07:14"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5717",
@@ -3672,7 +3924,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "07:04"
+            },
+            {
+              "station": "深井",
+              "time": "07:07"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "07:11"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "07:14"
+            },
+            {
+              "station": "光明池",
+              "time": "07:17"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "07:19"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4103",
@@ -3712,10 +3990,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "06:55"
+            },
+            {
+              "station": "新今宮",
+              "time": "06:58"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "07:00"
+            },
+            {
+              "station": "堺東",
+              "time": "07:07"
+            },
+            {
+              "station": "三国が丘",
+              "time": "07:09"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "07:11"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "07:13",
+              "arrival": "07:12"
+            },
+            {
+              "station": "深井",
+              "time": "07:17"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "07:21"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "07:24"
+            },
+            {
+              "station": "光明池",
+              "time": "07:27"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "07:29"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5719",
@@ -3758,7 +4088,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "07:22"
+            },
+            {
+              "station": "深井",
+              "time": "07:26"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "07:30"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "07:33"
+            },
+            {
+              "station": "光明池",
+              "time": "07:35"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "07:38"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4105",
@@ -3798,10 +4154,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "07:09"
+            },
+            {
+              "station": "新今宮",
+              "time": "07:12"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "07:15"
+            },
+            {
+              "station": "堺東",
+              "time": "07:23"
+            },
+            {
+              "station": "三国が丘",
+              "time": "07:25"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "07:27"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "07:29",
+              "arrival": "07:28"
+            },
+            {
+              "station": "深井",
+              "time": "07:33"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "07:37"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "07:39"
+            },
+            {
+              "station": "光明池",
+              "time": "07:42"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "07:45"
+            }
+          ]
         },
         {
           "id": "NK-平-下-0201",
@@ -3839,10 +4247,53 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "特急泉北ライナー61号"
+          "type": "特急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "07:18"
+            },
+            {
+              "station": "新今宮",
+              "time": "07:21"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "07:23"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "07:41",
+              "segmentColors": [
+                "#308646",
+                "#a6b14e"
+              ]
+            },
+            {
+              "station": "栂・美木多",
+              "time": "07:44"
+            },
+            {
+              "station": "光明池",
+              "time": "07:47"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "07:49"
+            }
+          ],
+          "trainName": "泉北ライナー",
+          "serviceNumber": "61"
         },
         {
           "id": "NK-平-下-5721",
@@ -3885,7 +4336,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "07:37"
+            },
+            {
+              "station": "深井",
+              "time": "07:41"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "07:45"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "07:48"
+            },
+            {
+              "station": "光明池",
+              "time": "07:51"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "07:53"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5723",
@@ -3928,7 +4405,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "07:41"
+            },
+            {
+              "station": "深井",
+              "time": "07:45"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "07:49"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "07:52"
+            },
+            {
+              "station": "光明池",
+              "time": "07:55"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "07:57"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4107",
@@ -3968,10 +4471,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "07:26"
+            },
+            {
+              "station": "新今宮",
+              "time": "07:29"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "07:32"
+            },
+            {
+              "station": "堺東",
+              "time": "07:40"
+            },
+            {
+              "station": "三国が丘",
+              "time": "07:42"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "07:44"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "07:46",
+              "arrival": "07:45"
+            },
+            {
+              "station": "深井",
+              "time": "07:50"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "07:54"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "07:57"
+            },
+            {
+              "station": "光明池",
+              "time": "08:00"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "08:03"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5725",
@@ -4014,7 +4569,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "07:56"
+            },
+            {
+              "station": "深井",
+              "time": "08:00"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "08:04"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "08:06"
+            },
+            {
+              "station": "光明池",
+              "time": "08:09"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "08:12"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3201",
@@ -4053,10 +4634,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "07:33"
+            },
+            {
+              "station": "新今宮",
+              "time": "07:35"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "07:38"
+            },
+            {
+              "station": "堺東",
+              "time": "07:46"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "07:54"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "07:58"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "08:01"
+            },
+            {
+              "station": "光明池",
+              "time": "08:03"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "08:06"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5727",
@@ -4099,7 +4722,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "08:11"
+            },
+            {
+              "station": "深井",
+              "time": "08:15"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "08:19"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "08:21"
+            },
+            {
+              "station": "光明池",
+              "time": "08:24"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "08:27"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4109",
@@ -4139,10 +4788,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "07:44"
+            },
+            {
+              "station": "新今宮",
+              "time": "07:47"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "07:50"
+            },
+            {
+              "station": "堺東",
+              "time": "07:59"
+            },
+            {
+              "station": "三国が丘",
+              "time": "08:01"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "08:03"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "08:05",
+              "arrival": "08:04"
+            },
+            {
+              "station": "深井",
+              "time": "08:09"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "08:13"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "08:16"
+            },
+            {
+              "station": "光明池",
+              "time": "08:18"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "08:21"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5729",
@@ -4185,7 +4886,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "08:23"
+            },
+            {
+              "station": "深井",
+              "time": "08:27"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "08:31"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "08:34"
+            },
+            {
+              "station": "光明池",
+              "time": "08:36"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "08:39"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5601",
@@ -4227,7 +4954,32 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "08:34"
+            },
+            {
+              "station": "深井",
+              "time": "08:37"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "08:41"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "08:44"
+            },
+            {
+              "station": "光明池",
+              "time": "08:46"
+            },
+            {
+              "station": "和泉中央"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4111",
@@ -4267,10 +5019,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "07:57"
+            },
+            {
+              "station": "新今宮",
+              "time": "08:00"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "08:03"
+            },
+            {
+              "station": "堺東",
+              "time": "08:11"
+            },
+            {
+              "station": "三国が丘",
+              "time": "08:13"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "08:15"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "08:17",
+              "arrival": "08:16"
+            },
+            {
+              "station": "深井",
+              "time": "08:21"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "08:25"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "08:28"
+            },
+            {
+              "station": "光明池",
+              "time": "08:30"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "08:33"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4113",
@@ -4310,10 +5114,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "08:07"
+            },
+            {
+              "station": "新今宮",
+              "time": "08:10"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "08:13"
+            },
+            {
+              "station": "堺東",
+              "time": "08:22"
+            },
+            {
+              "station": "三国が丘",
+              "time": "08:24"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "08:26"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "08:28",
+              "arrival": "08:27"
+            },
+            {
+              "station": "深井",
+              "time": "08:32"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "08:36"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "08:39"
+            },
+            {
+              "station": "光明池",
+              "time": "08:41"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "08:44"
+            }
+          ]
         },
         {
           "id": "NK-平-下-0203",
@@ -4351,10 +5207,53 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "特急泉北ライナー63号"
+          "type": "特急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "08:17"
+            },
+            {
+              "station": "新今宮",
+              "time": "08:20"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "08:23"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "08:45",
+              "segmentColors": [
+                "#308646",
+                "#a6b14e"
+              ]
+            },
+            {
+              "station": "栂・美木多",
+              "time": "08:47"
+            },
+            {
+              "station": "光明池",
+              "time": "08:50"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "08:53"
+            }
+          ],
+          "trainName": "泉北ライナー",
+          "serviceNumber": "63"
         },
         {
           "id": "NK-平-下-4115",
@@ -4394,10 +5293,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "08:21"
+            },
+            {
+              "station": "新今宮",
+              "time": "08:24"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "08:27"
+            },
+            {
+              "station": "堺東",
+              "time": "08:35"
+            },
+            {
+              "station": "三国が丘",
+              "time": "08:37"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "08:39"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "08:41",
+              "arrival": "08:40"
+            },
+            {
+              "station": "深井",
+              "time": "08:45"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "08:49"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "08:52"
+            },
+            {
+              "station": "光明池",
+              "time": "08:54"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "08:57"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5603",
@@ -4439,7 +5390,32 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "08:45"
+            },
+            {
+              "station": "深井",
+              "time": "08:48"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "08:52"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "08:55"
+            },
+            {
+              "station": "光明池",
+              "time": "08:57"
+            },
+            {
+              "station": "和泉中央"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4117",
@@ -4479,10 +5455,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "08:29"
+            },
+            {
+              "station": "新今宮",
+              "time": "08:32"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "08:35"
+            },
+            {
+              "station": "堺東",
+              "time": "08:44"
+            },
+            {
+              "station": "三国が丘",
+              "time": "08:46"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "08:47"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "08:49",
+              "arrival": "08:48"
+            },
+            {
+              "station": "深井",
+              "time": "08:53"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "08:57"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "09:00"
+            },
+            {
+              "station": "光明池",
+              "time": "09:03"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "09:05"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5605",
@@ -4524,7 +5552,32 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "09:01"
+            },
+            {
+              "station": "深井",
+              "time": "09:05"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "09:09"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "09:12"
+            },
+            {
+              "station": "光明池",
+              "time": "09:14"
+            },
+            {
+              "station": "和泉中央"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3203",
@@ -4563,10 +5616,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "08:38"
+            },
+            {
+              "station": "新今宮",
+              "time": "08:40"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "08:43"
+            },
+            {
+              "station": "堺東",
+              "time": "08:52"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "08:58"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "09:02"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "09:05"
+            },
+            {
+              "station": "光明池",
+              "time": "09:08"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "09:10"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4119",
@@ -4606,10 +5701,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "08:47"
+            },
+            {
+              "station": "新今宮",
+              "time": "08:50"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "08:53"
+            },
+            {
+              "station": "堺東",
+              "time": "09:01"
+            },
+            {
+              "station": "三国が丘",
+              "time": "09:03"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "09:04"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "09:06",
+              "arrival": "09:05"
+            },
+            {
+              "station": "深井",
+              "time": "09:10"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "09:14"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "09:17"
+            },
+            {
+              "station": "光明池",
+              "time": "09:19"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "09:22"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5731",
@@ -4652,7 +5799,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "09:24"
+            },
+            {
+              "station": "深井",
+              "time": "09:27"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "09:31"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "09:34"
+            },
+            {
+              "station": "光明池",
+              "time": "09:37"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "09:39"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4121",
@@ -4692,10 +5865,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "08:57"
+            },
+            {
+              "station": "新今宮",
+              "time": "09:00"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "09:03"
+            },
+            {
+              "station": "堺東",
+              "time": "09:12"
+            },
+            {
+              "station": "三国が丘",
+              "time": "09:14"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "09:15"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "09:17",
+              "arrival": "09:16"
+            },
+            {
+              "station": "深井",
+              "time": "09:21"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "09:25"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "09:28"
+            },
+            {
+              "station": "光明池",
+              "time": "09:30"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "09:33"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5733",
@@ -4738,7 +5963,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "09:37"
+            },
+            {
+              "station": "深井",
+              "time": "09:40"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "09:44"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "09:47"
+            },
+            {
+              "station": "光明池",
+              "time": "09:50"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "09:52"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3205",
@@ -4777,10 +6028,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "09:26"
+            },
+            {
+              "station": "新今宮",
+              "time": "09:28"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "09:31"
+            },
+            {
+              "station": "堺東",
+              "time": "09:38"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "09:45"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "09:49"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "09:52"
+            },
+            {
+              "station": "光明池",
+              "time": "09:55"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "09:57"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4123",
@@ -4820,10 +6113,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "09:36"
+            },
+            {
+              "station": "新今宮",
+              "time": "09:38"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "09:41"
+            },
+            {
+              "station": "堺東",
+              "time": "09:49"
+            },
+            {
+              "station": "三国が丘",
+              "time": "09:51"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "09:52"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "09:54",
+              "arrival": "09:53"
+            },
+            {
+              "station": "深井",
+              "time": "09:58"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "10:02"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "10:05"
+            },
+            {
+              "station": "光明池",
+              "time": "10:07"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "10:10"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5735",
@@ -4866,7 +6211,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "10:04"
+            },
+            {
+              "station": "深井",
+              "time": "10:07"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "10:11"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "10:14"
+            },
+            {
+              "station": "光明池",
+              "time": "10:17"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "10:19"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4125",
@@ -4906,10 +6277,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "09:55"
+            },
+            {
+              "station": "新今宮",
+              "time": "09:57"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "10:00"
+            },
+            {
+              "station": "堺東",
+              "time": "10:08"
+            },
+            {
+              "station": "三国が丘",
+              "time": "10:10"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "10:11"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "10:13",
+              "arrival": "10:12"
+            },
+            {
+              "station": "深井",
+              "time": "10:17"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "10:21"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "10:24"
+            },
+            {
+              "station": "光明池",
+              "time": "10:27"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "10:29"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5737",
@@ -4952,7 +6375,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "10:28"
+            },
+            {
+              "station": "深井",
+              "time": "10:31"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "10:35"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "10:38"
+            },
+            {
+              "station": "光明池",
+              "time": "10:41"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "10:43"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3207",
@@ -4991,10 +6440,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "10:08"
+            },
+            {
+              "station": "新今宮",
+              "time": "10:10"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "10:13"
+            },
+            {
+              "station": "堺東",
+              "time": "10:20"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "10:28"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "10:32"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "10:34"
+            },
+            {
+              "station": "光明池",
+              "time": "10:37"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "10:40"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4127",
@@ -5034,10 +6525,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "10:18"
+            },
+            {
+              "station": "新今宮",
+              "time": "10:21"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "10:23"
+            },
+            {
+              "station": "堺東",
+              "time": "10:31"
+            },
+            {
+              "station": "三国が丘",
+              "time": "10:33"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "10:35"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "10:37",
+              "arrival": "10:36"
+            },
+            {
+              "station": "深井",
+              "time": "10:41"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "10:45"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "10:47"
+            },
+            {
+              "station": "光明池",
+              "time": "10:50"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "10:53"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5739",
@@ -5080,7 +6623,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "10:50"
+            },
+            {
+              "station": "深井",
+              "time": "10:53"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "10:57"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "11:00"
+            },
+            {
+              "station": "光明池",
+              "time": "11:03"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "11:05"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3209",
@@ -5119,10 +6688,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "10:30"
+            },
+            {
+              "station": "新今宮",
+              "time": "10:32"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "10:35"
+            },
+            {
+              "station": "堺東",
+              "time": "10:43"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "10:49"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "10:53"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "10:56"
+            },
+            {
+              "station": "光明池",
+              "time": "10:58"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "11:01"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4129",
@@ -5162,10 +6773,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "10:42"
+            },
+            {
+              "station": "新今宮",
+              "time": "10:44"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "10:47"
+            },
+            {
+              "station": "堺東",
+              "time": "10:55"
+            },
+            {
+              "station": "三国が丘",
+              "time": "10:57"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "10:58"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "11:00",
+              "arrival": "10:59"
+            },
+            {
+              "station": "深井",
+              "time": "11:04"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "11:08"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "11:11"
+            },
+            {
+              "station": "光明池",
+              "time": "11:14"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "11:16"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5741",
@@ -5208,7 +6871,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "11:14"
+            },
+            {
+              "station": "深井",
+              "time": "11:17"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "11:21"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "11:24"
+            },
+            {
+              "station": "光明池",
+              "time": "11:27"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "11:30"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3211",
@@ -5247,10 +6936,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "10:54"
+            },
+            {
+              "station": "新今宮",
+              "time": "10:57"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "10:59"
+            },
+            {
+              "station": "堺東",
+              "time": "11:07"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "11:13"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "11:17"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "11:20"
+            },
+            {
+              "station": "光明池",
+              "time": "11:23"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "11:25"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4131",
@@ -5290,10 +7021,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "11:09"
+            },
+            {
+              "station": "新今宮",
+              "time": "11:12"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "11:14"
+            },
+            {
+              "station": "堺東",
+              "time": "11:22"
+            },
+            {
+              "station": "三国が丘",
+              "time": "11:24"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "11:26"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "11:28",
+              "arrival": "11:27"
+            },
+            {
+              "station": "深井",
+              "time": "11:32"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "11:36"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "11:38"
+            },
+            {
+              "station": "光明池",
+              "time": "11:41"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "11:44"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3213",
@@ -5332,10 +7115,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "11:19"
+            },
+            {
+              "station": "新今宮",
+              "time": "11:21"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "11:24"
+            },
+            {
+              "station": "堺東",
+              "time": "11:31"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "11:38"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "11:42"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "11:44"
+            },
+            {
+              "station": "光明池",
+              "time": "11:47"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "11:50"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5743",
@@ -5378,7 +7203,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "11:42"
+            },
+            {
+              "station": "深井",
+              "time": "11:45"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "11:49"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "11:52"
+            },
+            {
+              "station": "光明池",
+              "time": "11:55"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "11:57"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3215",
@@ -5417,10 +7268,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "11:34"
+            },
+            {
+              "station": "新今宮",
+              "time": "11:36"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "11:39"
+            },
+            {
+              "station": "堺東",
+              "time": "11:46"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "11:53"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "11:57"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "11:59"
+            },
+            {
+              "station": "光明池",
+              "time": "12:02"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "12:05"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4133",
@@ -5460,10 +7353,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "11:39"
+            },
+            {
+              "station": "新今宮",
+              "time": "11:42"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "11:44"
+            },
+            {
+              "station": "堺東",
+              "time": "11:52"
+            },
+            {
+              "station": "三国が丘",
+              "time": "11:54"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "11:56"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "11:58",
+              "arrival": "11:57"
+            },
+            {
+              "station": "深井",
+              "time": "12:02"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "12:06"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "12:08"
+            },
+            {
+              "station": "光明池",
+              "time": "12:11"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "12:14"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3217",
@@ -5502,10 +7447,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "11:49"
+            },
+            {
+              "station": "新今宮",
+              "time": "11:51"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "11:54"
+            },
+            {
+              "station": "堺東",
+              "time": "12:01"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "12:08"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "12:12"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "12:14"
+            },
+            {
+              "station": "光明池",
+              "time": "12:17"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "12:20"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5745",
@@ -5548,7 +7535,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "12:12"
+            },
+            {
+              "station": "深井",
+              "time": "12:15"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "12:19"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "12:22"
+            },
+            {
+              "station": "光明池",
+              "time": "12:25"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "12:27"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3219",
@@ -5587,10 +7600,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "12:04"
+            },
+            {
+              "station": "新今宮",
+              "time": "12:06"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "12:09"
+            },
+            {
+              "station": "堺東",
+              "time": "12:16"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "12:23"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "12:27"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "12:29"
+            },
+            {
+              "station": "光明池",
+              "time": "12:32"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "12:35"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4135",
@@ -5630,10 +7685,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "12:09"
+            },
+            {
+              "station": "新今宮",
+              "time": "12:12"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "12:14"
+            },
+            {
+              "station": "堺東",
+              "time": "12:22"
+            },
+            {
+              "station": "三国が丘",
+              "time": "12:24"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "12:26"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "12:28",
+              "arrival": "12:27"
+            },
+            {
+              "station": "深井",
+              "time": "12:32"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "12:36"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "12:38"
+            },
+            {
+              "station": "光明池",
+              "time": "12:41"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "12:44"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3221",
@@ -5672,10 +7779,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "12:19"
+            },
+            {
+              "station": "新今宮",
+              "time": "12:21"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "12:24"
+            },
+            {
+              "station": "堺東",
+              "time": "12:31"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "12:38"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "12:42"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "12:44"
+            },
+            {
+              "station": "光明池",
+              "time": "12:47"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "12:50"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5747",
@@ -5718,7 +7867,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "12:42"
+            },
+            {
+              "station": "深井",
+              "time": "12:45"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "12:49"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "12:52"
+            },
+            {
+              "station": "光明池",
+              "time": "12:55"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "12:57"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3223",
@@ -5757,10 +7932,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "12:34"
+            },
+            {
+              "station": "新今宮",
+              "time": "12:36"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "12:39"
+            },
+            {
+              "station": "堺東",
+              "time": "12:46"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "12:53"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "12:57"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "12:59"
+            },
+            {
+              "station": "光明池",
+              "time": "13:02"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "13:05"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4137",
@@ -5800,10 +8017,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "12:39"
+            },
+            {
+              "station": "新今宮",
+              "time": "12:42"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "12:44"
+            },
+            {
+              "station": "堺東",
+              "time": "12:52"
+            },
+            {
+              "station": "三国が丘",
+              "time": "12:54"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "12:56"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "12:58",
+              "arrival": "12:57"
+            },
+            {
+              "station": "深井",
+              "time": "13:02"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "13:06"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "13:08"
+            },
+            {
+              "station": "光明池",
+              "time": "13:11"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "13:14"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3225",
@@ -5842,10 +8111,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "12:49"
+            },
+            {
+              "station": "新今宮",
+              "time": "12:51"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "12:54"
+            },
+            {
+              "station": "堺東",
+              "time": "13:02"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "13:09"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "13:13"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "13:15"
+            },
+            {
+              "station": "光明池",
+              "time": "13:18"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "13:21"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5749",
@@ -5888,7 +8199,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "13:12"
+            },
+            {
+              "station": "深井",
+              "time": "13:15"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "13:19"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "13:22"
+            },
+            {
+              "station": "光明池",
+              "time": "13:25"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "13:27"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3227",
@@ -5927,10 +8264,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "13:04"
+            },
+            {
+              "station": "新今宮",
+              "time": "13:06"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "13:09"
+            },
+            {
+              "station": "堺東",
+              "time": "13:16"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "13:23"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "13:27"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "13:29"
+            },
+            {
+              "station": "光明池",
+              "time": "13:32"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "13:35"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4139",
@@ -5970,10 +8349,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "13:09"
+            },
+            {
+              "station": "新今宮",
+              "time": "13:12"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "13:14"
+            },
+            {
+              "station": "堺東",
+              "time": "13:22"
+            },
+            {
+              "station": "三国が丘",
+              "time": "13:24"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "13:26"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "13:28",
+              "arrival": "13:27"
+            },
+            {
+              "station": "深井",
+              "time": "13:32"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "13:36"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "13:38"
+            },
+            {
+              "station": "光明池",
+              "time": "13:41"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "13:44"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3229",
@@ -6012,10 +8443,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "13:19"
+            },
+            {
+              "station": "新今宮",
+              "time": "13:21"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "13:24"
+            },
+            {
+              "station": "堺東",
+              "time": "13:31"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "13:38"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "13:42"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "13:44"
+            },
+            {
+              "station": "光明池",
+              "time": "13:47"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "13:50"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5751",
@@ -6058,7 +8531,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "13:42"
+            },
+            {
+              "station": "深井",
+              "time": "13:45"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "13:49"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "13:52"
+            },
+            {
+              "station": "光明池",
+              "time": "13:55"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "13:57"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3231",
@@ -6097,10 +8596,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "13:34"
+            },
+            {
+              "station": "新今宮",
+              "time": "13:36"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "13:39"
+            },
+            {
+              "station": "堺東",
+              "time": "13:46"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "13:53"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "13:57"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "13:59"
+            },
+            {
+              "station": "光明池",
+              "time": "14:02"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "14:05"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4141",
@@ -6140,10 +8681,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "13:39"
+            },
+            {
+              "station": "新今宮",
+              "time": "13:42"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "13:44"
+            },
+            {
+              "station": "堺東",
+              "time": "13:52"
+            },
+            {
+              "station": "三国が丘",
+              "time": "13:54"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "13:56"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "13:58",
+              "arrival": "13:57"
+            },
+            {
+              "station": "深井",
+              "time": "14:02"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "14:06"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "14:08"
+            },
+            {
+              "station": "光明池",
+              "time": "14:11"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "14:14"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3233",
@@ -6182,10 +8775,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "13:49"
+            },
+            {
+              "station": "新今宮",
+              "time": "13:51"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "13:54"
+            },
+            {
+              "station": "堺東",
+              "time": "14:01"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "14:08"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "14:12"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "14:14"
+            },
+            {
+              "station": "光明池",
+              "time": "14:17"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "14:20"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5753",
@@ -6228,7 +8863,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "14:12"
+            },
+            {
+              "station": "深井",
+              "time": "14:15"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "14:19"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "14:22"
+            },
+            {
+              "station": "光明池",
+              "time": "14:25"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "14:27"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3235",
@@ -6267,10 +8928,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "14:04"
+            },
+            {
+              "station": "新今宮",
+              "time": "14:06"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "14:09"
+            },
+            {
+              "station": "堺東",
+              "time": "14:16"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "14:23"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "14:27"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "14:29"
+            },
+            {
+              "station": "光明池",
+              "time": "14:32"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "14:35"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4143",
@@ -6310,10 +9013,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "14:09"
+            },
+            {
+              "station": "新今宮",
+              "time": "14:12"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "14:14"
+            },
+            {
+              "station": "堺東",
+              "time": "14:22"
+            },
+            {
+              "station": "三国が丘",
+              "time": "14:24"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "14:26"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "14:28",
+              "arrival": "14:27"
+            },
+            {
+              "station": "深井",
+              "time": "14:32"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "14:36"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "14:38"
+            },
+            {
+              "station": "光明池",
+              "time": "14:41"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "14:44"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3237",
@@ -6352,10 +9107,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "14:19"
+            },
+            {
+              "station": "新今宮",
+              "time": "14:21"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "14:24"
+            },
+            {
+              "station": "堺東",
+              "time": "14:31"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "14:38"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "14:42"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "14:44"
+            },
+            {
+              "station": "光明池",
+              "time": "14:47"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "14:50"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5755",
@@ -6398,7 +9195,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "14:42"
+            },
+            {
+              "station": "深井",
+              "time": "14:45"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "14:49"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "14:52"
+            },
+            {
+              "station": "光明池",
+              "time": "14:55"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "14:57"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3239",
@@ -6437,10 +9260,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "14:34"
+            },
+            {
+              "station": "新今宮",
+              "time": "14:36"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "14:39"
+            },
+            {
+              "station": "堺東",
+              "time": "14:46"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "14:53"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "14:57"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "14:59"
+            },
+            {
+              "station": "光明池",
+              "time": "15:02"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "15:05"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4145",
@@ -6480,10 +9345,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "14:39"
+            },
+            {
+              "station": "新今宮",
+              "time": "14:42"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "14:44"
+            },
+            {
+              "station": "堺東",
+              "time": "14:52"
+            },
+            {
+              "station": "三国が丘",
+              "time": "14:54"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "14:56"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "14:58",
+              "arrival": "14:57"
+            },
+            {
+              "station": "深井",
+              "time": "15:02"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "15:06"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "15:08"
+            },
+            {
+              "station": "光明池",
+              "time": "15:11"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "15:14"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3241",
@@ -6522,10 +9439,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "14:49"
+            },
+            {
+              "station": "新今宮",
+              "time": "14:51"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "14:54"
+            },
+            {
+              "station": "堺東",
+              "time": "15:01"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "15:08"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "15:12"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "15:14"
+            },
+            {
+              "station": "光明池",
+              "time": "15:17"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "15:20"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5757",
@@ -6568,7 +9527,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "15:12"
+            },
+            {
+              "station": "深井",
+              "time": "15:15"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "15:19"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "15:22"
+            },
+            {
+              "station": "光明池",
+              "time": "15:25"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "15:27"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3243",
@@ -6607,10 +9592,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "15:04"
+            },
+            {
+              "station": "新今宮",
+              "time": "15:06"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "15:09"
+            },
+            {
+              "station": "堺東",
+              "time": "15:16"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "15:23"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "15:27"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "15:29"
+            },
+            {
+              "station": "光明池",
+              "time": "15:32"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "15:35"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4147",
@@ -6650,10 +9677,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "15:09"
+            },
+            {
+              "station": "新今宮",
+              "time": "15:12"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "15:14"
+            },
+            {
+              "station": "堺東",
+              "time": "15:22"
+            },
+            {
+              "station": "三国が丘",
+              "time": "15:24"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "15:26"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "15:28",
+              "arrival": "15:27"
+            },
+            {
+              "station": "深井",
+              "time": "15:32"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "15:36"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "15:38"
+            },
+            {
+              "station": "光明池",
+              "time": "15:41"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "15:44"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3245",
@@ -6692,10 +9771,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "15:19"
+            },
+            {
+              "station": "新今宮",
+              "time": "15:21"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "15:24"
+            },
+            {
+              "station": "堺東",
+              "time": "15:31"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "15:38"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "15:42"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "15:44"
+            },
+            {
+              "station": "光明池",
+              "time": "15:47"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "15:50"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5759",
@@ -6738,7 +9859,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "15:42"
+            },
+            {
+              "station": "深井",
+              "time": "15:45"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "15:49"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "15:52"
+            },
+            {
+              "station": "光明池",
+              "time": "15:55"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "15:57"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3247",
@@ -6777,10 +9924,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "15:34"
+            },
+            {
+              "station": "新今宮",
+              "time": "15:36"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "15:39"
+            },
+            {
+              "station": "堺東",
+              "time": "15:46"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "15:53"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "15:57"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "15:59"
+            },
+            {
+              "station": "光明池",
+              "time": "16:02"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "16:05"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4149",
@@ -6820,10 +10009,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "15:39"
+            },
+            {
+              "station": "新今宮",
+              "time": "15:42"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "15:44"
+            },
+            {
+              "station": "堺東",
+              "time": "15:52"
+            },
+            {
+              "station": "三国が丘",
+              "time": "15:54"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "15:56"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "15:58",
+              "arrival": "15:57"
+            },
+            {
+              "station": "深井",
+              "time": "16:02"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "16:06"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "16:08"
+            },
+            {
+              "station": "光明池",
+              "time": "16:11"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "16:14"
+            }
+          ]
         },
         {
           "id": "NK-平-下-3249",
@@ -6862,10 +10103,52 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "区急"
+          "type": "区急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "15:49"
+            },
+            {
+              "station": "新今宮",
+              "time": "15:51"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "15:54"
+            },
+            {
+              "station": "堺東",
+              "time": "16:01"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井",
+              "time": "16:08"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "16:12"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "16:14"
+            },
+            {
+              "station": "光明池",
+              "time": "16:17"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "16:20"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5761",
@@ -6908,7 +10191,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "16:12"
+            },
+            {
+              "station": "深井",
+              "time": "16:15"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "16:19"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "16:22"
+            },
+            {
+              "station": "光明池",
+              "time": "16:25"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "16:27"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4151",
@@ -6948,10 +10257,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "16:04"
+            },
+            {
+              "station": "新今宮",
+              "time": "16:06"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "16:09"
+            },
+            {
+              "station": "堺東",
+              "time": "16:17"
+            },
+            {
+              "station": "三国が丘",
+              "time": "16:19"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "16:20"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "16:23",
+              "arrival": "16:22"
+            },
+            {
+              "station": "深井",
+              "time": "16:26"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "16:30"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "16:33"
+            },
+            {
+              "station": "光明池",
+              "time": "16:36"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "16:38"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4153",
@@ -6991,10 +10352,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "16:09"
+            },
+            {
+              "station": "新今宮",
+              "time": "16:12"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "16:14"
+            },
+            {
+              "station": "堺東",
+              "time": "16:23"
+            },
+            {
+              "station": "三国が丘",
+              "time": "16:25"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "16:26"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "16:28",
+              "arrival": "16:27"
+            },
+            {
+              "station": "深井",
+              "time": "16:32"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "16:36"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "16:39"
+            },
+            {
+              "station": "光明池",
+              "time": "16:41"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "16:44"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4155",
@@ -7034,10 +10447,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "16:19"
+            },
+            {
+              "station": "新今宮",
+              "time": "16:21"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "16:24"
+            },
+            {
+              "station": "堺東",
+              "time": "16:32"
+            },
+            {
+              "station": "三国が丘",
+              "time": "16:34"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "16:35"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "16:38",
+              "arrival": "16:37"
+            },
+            {
+              "station": "深井",
+              "time": "16:41"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "16:45"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "16:48"
+            },
+            {
+              "station": "光明池",
+              "time": "16:51"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "16:53"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5763",
@@ -7080,7 +10545,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "16:43"
+            },
+            {
+              "station": "深井",
+              "time": "16:47"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "16:51"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "16:54"
+            },
+            {
+              "station": "光明池",
+              "time": "16:56"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "16:59"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4157",
@@ -7120,10 +10611,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "16:34"
+            },
+            {
+              "station": "新今宮",
+              "time": "16:37"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "16:40"
+            },
+            {
+              "station": "堺東",
+              "time": "16:47"
+            },
+            {
+              "station": "三国が丘",
+              "time": "16:49"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "16:51"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "16:53",
+              "arrival": "16:52"
+            },
+            {
+              "station": "深井",
+              "time": "16:57"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "17:01"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "17:04"
+            },
+            {
+              "station": "光明池",
+              "time": "17:06"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "17:09"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4159",
@@ -7163,10 +10706,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "16:40"
+            },
+            {
+              "station": "新今宮",
+              "time": "16:42"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "16:45"
+            },
+            {
+              "station": "堺東",
+              "time": "16:53"
+            },
+            {
+              "station": "三国が丘",
+              "time": "16:55"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "16:57"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "16:59",
+              "arrival": "16:58"
+            },
+            {
+              "station": "深井",
+              "time": "17:03"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "17:07"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "17:09"
+            },
+            {
+              "station": "光明池",
+              "time": "17:12"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "17:15"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4161",
@@ -7206,10 +10801,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "16:49"
+            },
+            {
+              "station": "新今宮",
+              "time": "16:52"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "16:54"
+            },
+            {
+              "station": "堺東",
+              "time": "17:02"
+            },
+            {
+              "station": "三国が丘",
+              "time": "17:04"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "17:05"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "17:08",
+              "arrival": "17:07"
+            },
+            {
+              "station": "深井",
+              "time": "17:11"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "17:15"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "17:18"
+            },
+            {
+              "station": "光明池",
+              "time": "17:21"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "17:23"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5765",
@@ -7252,7 +10899,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "17:20"
+            },
+            {
+              "station": "深井",
+              "time": "17:23"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "17:27"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "17:30"
+            },
+            {
+              "station": "光明池",
+              "time": "17:33"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "17:35"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4163",
@@ -7292,10 +10965,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "17:04"
+            },
+            {
+              "station": "新今宮",
+              "time": "17:07"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "17:11"
+            },
+            {
+              "station": "堺東",
+              "time": "17:19"
+            },
+            {
+              "station": "三国が丘",
+              "time": "17:21"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "17:23"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "17:25",
+              "arrival": "17:24"
+            },
+            {
+              "station": "深井",
+              "time": "17:29"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "17:33"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "17:35"
+            },
+            {
+              "station": "光明池",
+              "time": "17:38"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "17:41"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5767",
@@ -7338,7 +11063,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "17:30"
+            },
+            {
+              "station": "深井",
+              "time": "17:34"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "17:38"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "17:41"
+            },
+            {
+              "station": "光明池",
+              "time": "17:44"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "17:46"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4165",
@@ -7378,10 +11129,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "17:17"
+            },
+            {
+              "station": "新今宮",
+              "time": "17:20"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "17:24"
+            },
+            {
+              "station": "堺東",
+              "time": "17:32"
+            },
+            {
+              "station": "三国が丘",
+              "time": "17:34"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "17:36"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "17:38",
+              "arrival": "17:37"
+            },
+            {
+              "station": "深井",
+              "time": "17:42"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "17:46"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "17:49"
+            },
+            {
+              "station": "光明池",
+              "time": "17:51"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "17:54"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5769",
@@ -7424,7 +11227,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "17:54"
+            },
+            {
+              "station": "深井",
+              "time": "17:58"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "18:02"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "18:05"
+            },
+            {
+              "station": "光明池",
+              "time": "18:08"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "18:10"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4167",
@@ -7464,10 +11293,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "17:30"
+            },
+            {
+              "station": "新今宮",
+              "time": "17:33"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "17:36"
+            },
+            {
+              "station": "堺東",
+              "time": "17:44"
+            },
+            {
+              "station": "三国が丘",
+              "time": "17:46"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "17:48"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "17:50",
+              "arrival": "17:49"
+            },
+            {
+              "station": "深井",
+              "time": "17:54"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "17:58"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "18:01"
+            },
+            {
+              "station": "光明池",
+              "time": "18:04"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "18:07"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4169",
@@ -7507,10 +11388,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "17:41"
+            },
+            {
+              "station": "新今宮",
+              "time": "17:44"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "17:47"
+            },
+            {
+              "station": "堺東",
+              "time": "17:57"
+            },
+            {
+              "station": "三国が丘",
+              "time": "18:00"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "18:02"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "18:04",
+              "arrival": "18:03"
+            },
+            {
+              "station": "深井",
+              "time": "18:08"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "18:12"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "18:15"
+            },
+            {
+              "station": "光明池",
+              "time": "18:17"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "18:20"
+            }
+          ]
         },
         {
           "id": "NK-平-下-0205",
@@ -7548,10 +11481,53 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "特急泉北ライナー65号"
+          "type": "特急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "17:44"
+            },
+            {
+              "station": "新今宮",
+              "time": "17:46"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "17:49"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "18:06",
+              "segmentColors": [
+                "#308646",
+                "#a6b14e"
+              ]
+            },
+            {
+              "station": "栂・美木多",
+              "time": "18:08"
+            },
+            {
+              "station": "光明池",
+              "time": "18:12"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "18:15"
+            }
+          ],
+          "trainName": "泉北ライナー",
+          "serviceNumber": "65"
         },
         {
           "id": "NK-平-下-4171",
@@ -7591,10 +11567,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "17:53"
+            },
+            {
+              "station": "新今宮",
+              "time": "17:56"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "18:00"
+            },
+            {
+              "station": "堺東",
+              "time": "18:08"
+            },
+            {
+              "station": "三国が丘",
+              "time": "18:10"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "18:12"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "18:14",
+              "arrival": "18:13"
+            },
+            {
+              "station": "深井",
+              "time": "18:18"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "18:22"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "18:25"
+            },
+            {
+              "station": "光明池",
+              "time": "18:27"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "18:30"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4173",
@@ -7634,10 +11662,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "18:03"
+            },
+            {
+              "station": "新今宮",
+              "time": "18:06"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "18:10"
+            },
+            {
+              "station": "堺東",
+              "time": "18:18"
+            },
+            {
+              "station": "三国が丘",
+              "time": "18:20"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "18:22"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "18:24",
+              "arrival": "18:23"
+            },
+            {
+              "station": "深井",
+              "time": "18:28"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "18:32"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "18:35"
+            },
+            {
+              "station": "光明池",
+              "time": "18:38"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "18:41"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4175",
@@ -7677,10 +11757,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "18:13"
+            },
+            {
+              "station": "新今宮",
+              "time": "18:16"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "18:19"
+            },
+            {
+              "station": "堺東",
+              "time": "18:28"
+            },
+            {
+              "station": "三国が丘",
+              "time": "18:31"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "18:32"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "18:34",
+              "arrival": "18:33"
+            },
+            {
+              "station": "深井",
+              "time": "18:38"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "18:43"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "18:45"
+            },
+            {
+              "station": "光明池",
+              "time": "18:48"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "18:51"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5771",
@@ -7723,7 +11855,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "18:42"
+            },
+            {
+              "station": "深井",
+              "time": "18:46"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "18:50"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "18:53"
+            },
+            {
+              "station": "光明池",
+              "time": "18:55"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "18:58"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4177",
@@ -7763,10 +11921,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "18:26"
+            },
+            {
+              "station": "新今宮",
+              "time": "18:29"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "18:32"
+            },
+            {
+              "station": "堺東",
+              "time": "18:41"
+            },
+            {
+              "station": "三国が丘",
+              "time": "18:43"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "18:45"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "18:47",
+              "arrival": "18:46"
+            },
+            {
+              "station": "深井",
+              "time": "18:51"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "18:55"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "18:58"
+            },
+            {
+              "station": "光明池",
+              "time": "19:01"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "19:03"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4179",
@@ -7806,10 +12016,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "18:35"
+            },
+            {
+              "station": "新今宮",
+              "time": "18:38"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "18:42"
+            },
+            {
+              "station": "堺東",
+              "time": "18:50"
+            },
+            {
+              "station": "三国が丘",
+              "time": "18:53"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "18:54"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "18:56",
+              "arrival": "18:55"
+            },
+            {
+              "station": "深井",
+              "time": "19:00"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "19:05"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "19:07"
+            },
+            {
+              "station": "光明池",
+              "time": "19:10"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "19:13"
+            }
+          ]
         },
         {
           "id": "NK-平-下-0207",
@@ -7847,10 +12109,53 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "特急泉北ライナー67号"
+          "type": "特急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "18:41"
+            },
+            {
+              "station": "新今宮",
+              "time": "18:44"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "18:47"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "19:08",
+              "segmentColors": [
+                "#308646",
+                "#a6b14e"
+              ]
+            },
+            {
+              "station": "栂・美木多",
+              "time": "19:11"
+            },
+            {
+              "station": "光明池",
+              "time": "19:14"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "19:16"
+            }
+          ],
+          "trainName": "泉北ライナー",
+          "serviceNumber": "67"
         },
         {
           "id": "NK-平-下-4181",
@@ -7890,10 +12195,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "18:46"
+            },
+            {
+              "station": "新今宮",
+              "time": "18:49"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "18:53"
+            },
+            {
+              "station": "堺東",
+              "time": "19:03"
+            },
+            {
+              "station": "三国が丘",
+              "time": "19:05"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "19:07"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "19:09",
+              "arrival": "19:08"
+            },
+            {
+              "station": "深井",
+              "time": "19:13"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "19:17"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "19:20"
+            },
+            {
+              "station": "光明池",
+              "time": "19:22"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "19:25"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4183",
@@ -7933,10 +12290,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "18:56"
+            },
+            {
+              "station": "新今宮",
+              "time": "18:59"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "19:02"
+            },
+            {
+              "station": "堺東",
+              "time": "19:11"
+            },
+            {
+              "station": "三国が丘",
+              "time": "19:13"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "19:15"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "19:17",
+              "arrival": "19:16"
+            },
+            {
+              "station": "深井",
+              "time": "19:21"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "19:25"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "19:28"
+            },
+            {
+              "station": "光明池",
+              "time": "19:31"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "19:34"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5607",
@@ -7978,7 +12387,32 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "19:24"
+            },
+            {
+              "station": "深井",
+              "time": "19:28"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "19:32"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "19:35"
+            },
+            {
+              "station": "光明池",
+              "time": "19:37"
+            },
+            {
+              "station": "和泉中央"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4185",
@@ -8018,10 +12452,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "19:07"
+            },
+            {
+              "station": "新今宮",
+              "time": "19:09"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "19:13"
+            },
+            {
+              "station": "堺東",
+              "time": "19:23"
+            },
+            {
+              "station": "三国が丘",
+              "time": "19:25"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "19:27"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "19:29",
+              "arrival": "19:28"
+            },
+            {
+              "station": "深井",
+              "time": "19:33"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "19:37"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "19:40"
+            },
+            {
+              "station": "光明池",
+              "time": "19:42"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "19:45"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4187",
@@ -8061,10 +12547,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "19:18"
+            },
+            {
+              "station": "新今宮",
+              "time": "19:20"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "19:24"
+            },
+            {
+              "station": "堺東",
+              "time": "19:34"
+            },
+            {
+              "station": "三国が丘",
+              "time": "19:37"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "19:39"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "19:41",
+              "arrival": "19:40"
+            },
+            {
+              "station": "深井",
+              "time": "19:45"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "19:49"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "19:52"
+            },
+            {
+              "station": "光明池",
+              "time": "19:55"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "19:57"
+            }
+          ]
         },
         {
           "id": "NK-平-下-0209",
@@ -8102,10 +12640,53 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "特急泉北ライナー69号"
+          "type": "特急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "19:20"
+            },
+            {
+              "station": "新今宮",
+              "time": "19:23"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "19:26"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "19:43",
+              "segmentColors": [
+                "#308646",
+                "#a6b14e"
+              ]
+            },
+            {
+              "station": "栂・美木多",
+              "time": "19:46"
+            },
+            {
+              "station": "光明池",
+              "time": "19:48"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "19:51"
+            }
+          ],
+          "trainName": "泉北ライナー",
+          "serviceNumber": "69"
         },
         {
           "id": "NK-平-下-5773",
@@ -8148,7 +12729,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "19:45"
+            },
+            {
+              "station": "深井",
+              "time": "19:49"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "19:53"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "19:56"
+            },
+            {
+              "station": "光明池",
+              "time": "19:58"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "20:01"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4189",
@@ -8188,10 +12795,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "19:30"
+            },
+            {
+              "station": "新今宮",
+              "time": "19:32"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "19:36"
+            },
+            {
+              "station": "堺東",
+              "time": "19:44"
+            },
+            {
+              "station": "三国が丘",
+              "time": "19:46"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "19:48"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "19:50",
+              "arrival": "19:49"
+            },
+            {
+              "station": "深井",
+              "time": "19:54"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "19:58"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "20:01"
+            },
+            {
+              "station": "光明池",
+              "time": "20:04"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "20:07"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5775",
@@ -8234,7 +12893,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "19:58"
+            },
+            {
+              "station": "深井",
+              "time": "20:02"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "20:06"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "20:09"
+            },
+            {
+              "station": "光明池",
+              "time": "20:11"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "20:14"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4191",
@@ -8274,10 +12959,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "19:41"
+            },
+            {
+              "station": "新今宮",
+              "time": "19:43"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "19:47"
+            },
+            {
+              "station": "堺東",
+              "time": "19:56"
+            },
+            {
+              "station": "三国が丘",
+              "time": "19:58"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "20:00"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "20:02",
+              "arrival": "20:01"
+            },
+            {
+              "station": "深井",
+              "time": "20:06"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "20:10"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "20:13"
+            },
+            {
+              "station": "光明池",
+              "time": "20:15"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "20:18"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4193",
@@ -8317,10 +13054,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "19:53"
+            },
+            {
+              "station": "新今宮",
+              "time": "19:55"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "19:59"
+            },
+            {
+              "station": "堺東",
+              "time": "20:08"
+            },
+            {
+              "station": "三国が丘",
+              "time": "20:10"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "20:12"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "20:14",
+              "arrival": "20:13"
+            },
+            {
+              "station": "深井",
+              "time": "20:18"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "20:22"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "20:25"
+            },
+            {
+              "station": "光明池",
+              "time": "20:27"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "20:30"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5609",
@@ -8362,7 +13151,32 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "20:24"
+            },
+            {
+              "station": "深井",
+              "time": "20:28"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "20:32"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "20:35"
+            },
+            {
+              "station": "光明池",
+              "time": "20:37"
+            },
+            {
+              "station": "和泉中央"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4195",
@@ -8402,10 +13216,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "20:07"
+            },
+            {
+              "station": "新今宮",
+              "time": "20:10"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "20:13"
+            },
+            {
+              "station": "堺東",
+              "time": "20:22"
+            },
+            {
+              "station": "三国が丘",
+              "time": "20:24"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "20:25"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "20:27",
+              "arrival": "20:26"
+            },
+            {
+              "station": "深井",
+              "time": "20:31"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "20:36"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "20:38"
+            },
+            {
+              "station": "光明池",
+              "time": "20:41"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "20:44"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4197",
@@ -8445,10 +13311,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "20:17"
+            },
+            {
+              "station": "新今宮",
+              "time": "20:19"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "20:23"
+            },
+            {
+              "station": "堺東",
+              "time": "20:33"
+            },
+            {
+              "station": "三国が丘",
+              "time": "20:36"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "20:37"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "20:39",
+              "arrival": "20:38"
+            },
+            {
+              "station": "深井",
+              "time": "20:43"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "20:48"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "20:50"
+            },
+            {
+              "station": "光明池",
+              "time": "20:53"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "20:56"
+            }
+          ]
         },
         {
           "id": "NK-平-下-0211",
@@ -8486,10 +13404,53 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "特急泉北ライナー71号"
+          "type": "特急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "20:20"
+            },
+            {
+              "station": "新今宮",
+              "time": "20:22"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "20:25"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "20:41",
+              "segmentColors": [
+                "#308646",
+                "#a6b14e"
+              ]
+            },
+            {
+              "station": "栂・美木多",
+              "time": "20:44"
+            },
+            {
+              "station": "光明池",
+              "time": "20:47"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "20:50"
+            }
+          ],
+          "trainName": "泉北ライナー",
+          "serviceNumber": "71"
         },
         {
           "id": "NK-平-下-5777",
@@ -8531,7 +13492,34 @@
           "servedLineNames": [
             "泉北線"
           ],
-          "lineKind": "nankai"
+          "lineKind": "nankai",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "20:43"
+            },
+            {
+              "station": "深井",
+              "time": "20:47"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "20:51"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "20:54"
+            },
+            {
+              "station": "光明池",
+              "time": "20:56"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "20:59"
+            }
+          ],
+          "type": "各停"
         },
         {
           "id": "NK-平-下-4199",
@@ -8571,10 +13559,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "20:30"
+            },
+            {
+              "station": "新今宮",
+              "time": "20:32"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "20:35"
+            },
+            {
+              "station": "堺東",
+              "time": "20:43"
+            },
+            {
+              "station": "三国が丘",
+              "time": "20:45"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "20:47"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "20:49",
+              "arrival": "20:48"
+            },
+            {
+              "station": "深井",
+              "time": "20:53"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "20:57"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "21:00"
+            },
+            {
+              "station": "光明池",
+              "time": "21:02"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "21:05"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4201",
@@ -8614,10 +13654,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "20:42"
+            },
+            {
+              "station": "新今宮",
+              "time": "20:45"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "20:48"
+            },
+            {
+              "station": "堺東",
+              "time": "20:56"
+            },
+            {
+              "station": "三国が丘",
+              "time": "20:58"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "20:59"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "21:01",
+              "arrival": "21:00"
+            },
+            {
+              "station": "深井",
+              "time": "21:05"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "21:09"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "21:12"
+            },
+            {
+              "station": "光明池",
+              "time": "21:15"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "21:18"
+            }
+          ]
         },
         {
           "id": "NK-平-下-0213",
@@ -8655,10 +13747,53 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "特急泉北ライナー73号"
+          "type": "特急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "20:50"
+            },
+            {
+              "station": "新今宮",
+              "time": "20:52"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "20:55"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "21:13",
+              "segmentColors": [
+                "#308646",
+                "#a6b14e"
+              ]
+            },
+            {
+              "station": "栂・美木多",
+              "time": "21:16"
+            },
+            {
+              "station": "光明池",
+              "time": "21:19"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "21:22"
+            }
+          ],
+          "trainName": "泉北ライナー",
+          "serviceNumber": "73"
         },
         {
           "id": "NK-平-下-4203",
@@ -8698,10 +13833,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "20:56"
+            },
+            {
+              "station": "新今宮",
+              "time": "20:58"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "21:01"
+            },
+            {
+              "station": "堺東",
+              "time": "21:09"
+            },
+            {
+              "station": "三国が丘",
+              "time": "21:11"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "21:12"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "21:14",
+              "arrival": "21:13"
+            },
+            {
+              "station": "深井",
+              "time": "21:18"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "21:22"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "21:25"
+            },
+            {
+              "station": "光明池",
+              "time": "21:28"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "21:31"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5779",
@@ -8744,7 +13931,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "21:24"
+            },
+            {
+              "station": "深井",
+              "time": "21:27"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "21:31"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "21:34"
+            },
+            {
+              "station": "光明池",
+              "time": "21:37"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "21:39"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4205",
@@ -8784,10 +13997,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "21:07"
+            },
+            {
+              "station": "新今宮",
+              "time": "21:10"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "21:13"
+            },
+            {
+              "station": "堺東",
+              "time": "21:22"
+            },
+            {
+              "station": "三国が丘",
+              "time": "21:24"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "21:25"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "21:27",
+              "arrival": "21:26"
+            },
+            {
+              "station": "深井",
+              "time": "21:31"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "21:35"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "21:38"
+            },
+            {
+              "station": "光明池",
+              "time": "21:41"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "21:44"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4207",
@@ -8827,10 +14092,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "21:18"
+            },
+            {
+              "station": "新今宮",
+              "time": "21:20"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "21:23"
+            },
+            {
+              "station": "堺東",
+              "time": "21:31"
+            },
+            {
+              "station": "三国が丘",
+              "time": "21:33"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "21:35"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "21:37",
+              "arrival": "21:36"
+            },
+            {
+              "station": "深井",
+              "time": "21:41"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "21:45"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "21:48"
+            },
+            {
+              "station": "光明池",
+              "time": "21:50"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "21:53"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5781",
@@ -8873,7 +14190,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "21:45"
+            },
+            {
+              "station": "深井",
+              "time": "21:48"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "21:52"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "21:55"
+            },
+            {
+              "station": "光明池",
+              "time": "21:58"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "22:00"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4209",
@@ -8913,10 +14256,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "21:30"
+            },
+            {
+              "station": "新今宮",
+              "time": "21:32"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "21:35"
+            },
+            {
+              "station": "堺東",
+              "time": "21:43"
+            },
+            {
+              "station": "三国が丘",
+              "time": "21:45"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "21:47"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "21:49",
+              "arrival": "21:48"
+            },
+            {
+              "station": "深井",
+              "time": "21:53"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "21:57"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "22:00"
+            },
+            {
+              "station": "光明池",
+              "time": "22:02"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "22:05"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4211",
@@ -8956,10 +14351,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "21:41"
+            },
+            {
+              "station": "新今宮",
+              "time": "21:43"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "21:46"
+            },
+            {
+              "station": "堺東",
+              "time": "21:57"
+            },
+            {
+              "station": "三国が丘",
+              "time": "22:00"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "22:01"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "22:04",
+              "arrival": "22:03"
+            },
+            {
+              "station": "深井",
+              "time": "22:08"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "22:12"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "22:14"
+            },
+            {
+              "station": "光明池",
+              "time": "22:17"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "22:20"
+            }
+          ]
         },
         {
           "id": "NK-平-下-0215",
@@ -8997,10 +14444,53 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "特急泉北ライナー75号"
+          "type": "特急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "21:44"
+            },
+            {
+              "station": "新今宮",
+              "time": "21:47"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "21:49"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "22:06",
+              "segmentColors": [
+                "#308646",
+                "#a6b14e"
+              ]
+            },
+            {
+              "station": "栂・美木多",
+              "time": "22:08"
+            },
+            {
+              "station": "光明池",
+              "time": "22:11"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "22:14"
+            }
+          ],
+          "trainName": "泉北ライナー",
+          "serviceNumber": "75"
         },
         {
           "id": "NK-平-下-4213",
@@ -9040,10 +14530,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "21:53"
+            },
+            {
+              "station": "新今宮",
+              "time": "21:56"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "21:59"
+            },
+            {
+              "station": "堺東",
+              "time": "22:07"
+            },
+            {
+              "station": "三国が丘",
+              "time": "22:09"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "22:10"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "22:12",
+              "arrival": "22:11"
+            },
+            {
+              "station": "深井",
+              "time": "22:16"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "22:20"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "22:23"
+            },
+            {
+              "station": "光明池",
+              "time": "22:26"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "22:29"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5783",
@@ -9086,7 +14628,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "22:21"
+            },
+            {
+              "station": "深井",
+              "time": "22:24"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "22:28"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "22:31"
+            },
+            {
+              "station": "光明池",
+              "time": "22:34"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "22:36"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4215",
@@ -9126,10 +14694,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "22:07"
+            },
+            {
+              "station": "新今宮",
+              "time": "22:10"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "22:13"
+            },
+            {
+              "station": "堺東",
+              "time": "22:21"
+            },
+            {
+              "station": "三国が丘",
+              "time": "22:23"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "22:24"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "22:27",
+              "arrival": "22:26"
+            },
+            {
+              "station": "深井",
+              "time": "22:31"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "22:35"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "22:37"
+            },
+            {
+              "station": "光明池",
+              "time": "22:40"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "22:43"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4217",
@@ -9169,10 +14789,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "22:17"
+            },
+            {
+              "station": "新今宮",
+              "time": "22:19"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "22:22"
+            },
+            {
+              "station": "堺東",
+              "time": "22:33"
+            },
+            {
+              "station": "三国が丘",
+              "time": "22:36"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "22:37"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "22:39",
+              "arrival": "22:38"
+            },
+            {
+              "station": "深井",
+              "time": "22:43"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "22:47"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "22:50"
+            },
+            {
+              "station": "光明池",
+              "time": "22:53"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "22:56"
+            }
+          ]
         },
         {
           "id": "NK-平-下-0217",
@@ -9210,10 +14882,53 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "特急泉北ライナー77号"
+          "type": "特急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "22:19"
+            },
+            {
+              "station": "新今宮",
+              "time": "22:22"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "22:24"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "22:41",
+              "segmentColors": [
+                "#308646",
+                "#a6b14e"
+              ]
+            },
+            {
+              "station": "栂・美木多",
+              "time": "22:44"
+            },
+            {
+              "station": "光明池",
+              "time": "22:47"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "22:50"
+            }
+          ],
+          "trainName": "泉北ライナー",
+          "serviceNumber": "77"
         },
         {
           "id": "NK-平-下-4219",
@@ -9253,10 +14968,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "22:30"
+            },
+            {
+              "station": "新今宮",
+              "time": "22:33"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "22:35"
+            },
+            {
+              "station": "堺東",
+              "time": "22:43"
+            },
+            {
+              "station": "三国が丘",
+              "time": "22:45"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "22:46"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "22:48",
+              "arrival": "22:47"
+            },
+            {
+              "station": "深井",
+              "time": "22:52"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "22:56"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "22:59"
+            },
+            {
+              "station": "光明池",
+              "time": "23:02"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "23:05"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5785",
@@ -9299,7 +15066,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "22:55"
+            },
+            {
+              "station": "深井",
+              "time": "22:58"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "23:02"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "23:05"
+            },
+            {
+              "station": "光明池",
+              "time": "23:08"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "23:10"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4221",
@@ -9339,10 +15132,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "22:42"
+            },
+            {
+              "station": "新今宮",
+              "time": "22:45"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "22:48"
+            },
+            {
+              "station": "堺東",
+              "time": "22:56"
+            },
+            {
+              "station": "三国が丘",
+              "time": "22:58"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "22:59"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "23:01",
+              "arrival": "23:00"
+            },
+            {
+              "station": "深井",
+              "time": "23:05"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "23:09"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "23:12"
+            },
+            {
+              "station": "光明池",
+              "time": "23:15"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "23:18"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5611",
@@ -9384,7 +15229,32 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "23:06"
+            },
+            {
+              "station": "深井",
+              "time": "23:10"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "23:14"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "23:17"
+            },
+            {
+              "station": "光明池",
+              "time": "23:19"
+            },
+            {
+              "station": "和泉中央"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4223",
@@ -9424,10 +15294,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "22:54"
+            },
+            {
+              "station": "新今宮",
+              "time": "22:56"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "22:59"
+            },
+            {
+              "station": "堺東",
+              "time": "23:07"
+            },
+            {
+              "station": "三国が丘",
+              "time": "23:09"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "23:10"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "23:12",
+              "arrival": "23:11"
+            },
+            {
+              "station": "深井",
+              "time": "23:16"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "23:20"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "23:23"
+            },
+            {
+              "station": "光明池",
+              "time": "23:26"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "23:29"
+            }
+          ]
         },
         {
           "id": "NK-平-下-0219",
@@ -9465,10 +15387,53 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "特急泉北ライナー79号"
+          "type": "特急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "23:02"
+            },
+            {
+              "station": "新今宮",
+              "time": "23:05"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "23:07"
+            },
+            {
+              "station": "中百舌鳥"
+            },
+            {
+              "station": "深井"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "23:24",
+              "segmentColors": [
+                "#308646",
+                "#a6b14e"
+              ]
+            },
+            {
+              "station": "栂・美木多",
+              "time": "23:27"
+            },
+            {
+              "station": "光明池",
+              "time": "23:30"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "23:32"
+            }
+          ],
+          "trainName": "泉北ライナー",
+          "serviceNumber": "79"
         },
         {
           "id": "NK-平-下-5787",
@@ -9511,7 +15476,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "23:23"
+            },
+            {
+              "station": "深井",
+              "time": "23:27"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "23:31"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "23:34"
+            },
+            {
+              "station": "光明池",
+              "time": "23:37"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "23:39"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4225",
@@ -9551,10 +15542,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "23:16"
+            },
+            {
+              "station": "新今宮",
+              "time": "23:18"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "23:21"
+            },
+            {
+              "station": "堺東",
+              "time": "23:29"
+            },
+            {
+              "station": "三国が丘",
+              "time": "23:31"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "23:32"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "23:35",
+              "arrival": "23:34"
+            },
+            {
+              "station": "深井",
+              "time": "23:39"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "23:43"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "23:45"
+            },
+            {
+              "station": "光明池",
+              "time": "23:48"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "23:51"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5789",
@@ -9597,7 +15640,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "23:52"
+            },
+            {
+              "station": "深井",
+              "time": "23:55"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "23:59"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "24:02"
+            },
+            {
+              "station": "光明池",
+              "time": "24:05"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "24:07"
+            }
+          ]
         },
         {
           "id": "NK-平-下-4227",
@@ -9637,10 +15706,62 @@
             }
           ],
           "servedLineNames": [
+            "高野線",
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "準急"
+          "type": "準急",
+          "stationGuideStops": [
+            {
+              "station": "なんば",
+              "departure": "23:47"
+            },
+            {
+              "station": "新今宮",
+              "time": "23:49"
+            },
+            {
+              "station": "天下茶屋",
+              "time": "23:52"
+            },
+            {
+              "station": "堺東",
+              "time": "23:59"
+            },
+            {
+              "station": "三国が丘",
+              "time": "24:01"
+            },
+            {
+              "station": "百舌鳥八幡",
+              "time": "24:02"
+            },
+            {
+              "station": "中百舌鳥",
+              "departure": "24:05",
+              "arrival": "24:04"
+            },
+            {
+              "station": "深井",
+              "time": "24:08"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "24:12"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "24:15"
+            },
+            {
+              "station": "光明池",
+              "time": "24:18"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "24:20"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5791",
@@ -9683,7 +15804,33 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "24:19"
+            },
+            {
+              "station": "深井",
+              "time": "24:22"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "24:26"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "24:29"
+            },
+            {
+              "station": "光明池",
+              "time": "24:32"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "24:34"
+            }
+          ]
         },
         {
           "id": "NK-平-下-5793",
@@ -9726,12 +15873,41 @@
             "泉北線"
           ],
           "lineKind": "nankai",
-          "type": "各停"
+          "type": "各停",
+          "stationGuideStops": [
+            {
+              "station": "中百舌鳥",
+              "departure": "24:30"
+            },
+            {
+              "station": "深井",
+              "time": "24:33"
+            },
+            {
+              "station": "泉ケ丘",
+              "time": "24:37"
+            },
+            {
+              "station": "栂・美木多",
+              "time": "24:40"
+            },
+            {
+              "station": "光明池",
+              "time": "24:43"
+            },
+            {
+              "station": "和泉中央",
+              "arrival": "24:45"
+            }
+          ]
         }
       ]
     }
   },
   "displayLineNames": [
     "泉北線"
-  ]
+  ],
+  "typeDetailMap": {
+    "各停": "各停"
+  }
 }
