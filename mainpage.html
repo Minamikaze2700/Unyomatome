@@ -1462,6 +1462,8 @@ const ROUTE_REGISTRY={
     formationFamily:'shinano',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Shinano_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Shinano_noimage.png',
+    // JSONが旧版・キャッシュ版でも行先略称が必ず効くよう路線側にも保持する。
+    destinationAliases:{'軽井沢':'軽井','妙高高原':'妙高高','長野':'長野','小諸':'小諸','上田':'上田','戸倉':'戸倉','豊野':'豊野'},
     prescribedFormationRule:'common',
     access:{public:false,routeAdmins:[]},
     formationInputExample:'S101 / S11 / SR1'
@@ -1478,6 +1480,7 @@ const ROUTE_REGISTRY={
     formationFamily:'shinano',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Shinano_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Shinano_noimage.png',
+    destinationAliases:{'軽井沢':'軽井','妙高高原':'妙高高','長野':'長野','小諸':'小諸','上田':'上田','戸倉':'戸倉','豊野':'豊野'},
     prescribedFormationRule:'common',
     access:{public:false,routeAdmins:[]},
     formationInputExample:'S101 / S11 / SR1'
@@ -2549,14 +2552,41 @@ async function loadExternalRouteJsons(routeMeta){
       const rootColors=(json?.typeColors&&typeof json.typeColors==='object')?json.typeColors:{};
       sourceColors={...rootColors};
     }
-    return {...rawTrain,__sourceTypeColors:sourceColors,__sourceJsonUrl:String(json?._sourceJsonUrl||'')};
+    const sourceTypeAliasConfig={
+      typeShortMap:json?.typeShortMap,
+      typeAbbreviations:json?.typeAbbreviations,
+      typeAliases:json?.typeAliases,
+      typeShortRules:json?.typeShortRules,
+      types:json?.types,
+      trainTypes:json?.trainTypes,
+      serviceTypes:json?.serviceTypes,
+      typeDefinitions:json?.typeDefinitions,
+      abbreviations:json?.abbreviations,
+      route:{
+        typeShortMap:json?.route?.typeShortMap,
+        typeAbbreviations:json?.route?.typeAbbreviations,
+        typeAliases:json?.route?.typeAliases,
+        typeShortRules:json?.route?.typeShortRules,
+        types:json?.route?.types,
+        trainTypes:json?.route?.trainTypes,
+        serviceTypes:json?.route?.serviceTypes,
+        abbreviations:json?.route?.abbreviations
+      }
+    };
+    return {...rawTrain,__sourceTypeColors:sourceColors,__sourceTypeAliasConfig:sourceTypeAliasConfig,__sourceJsonUrl:String(json?._sourceJsonUrl||'')};
   };
   for(const payload of payloads){
     try{ if(payload.json) payload.json._sourceJsonUrl=payload.url; }catch(e){}
     const days=payload.json?.trains;
     if(days&&typeof days==='object'){
-      for(const dayObj of Object.values(days)){
+      for(const [dayKey,dayObj] of Object.entries(days)){
         if(!dayObj||typeof dayObj!=='object') continue;
+        // 配列形式（福岡市地下鉄など）と方面別オブジェクト形式の両方で
+        // 元JSONの種別略称設定を各列車に保持する。
+        if(Array.isArray(dayObj)){
+          days[dayKey]=dayObj.map(raw=>annotateSourceTypeColors(raw,payload.json));
+          continue;
+        }
         for(const direction of ['上り','下り']){
           const list=Array.isArray(dayObj?.[direction])?dayObj[direction]:[];
           dayObj[direction]=list.map(raw=>annotateSourceTypeColors(raw,payload.json));
@@ -3278,44 +3308,171 @@ function getVisibleTrains(){
   const source=getDisplayedTrainSource();
   return source.map(t=>liveTrain(t.no,t.direction)||t);
 }
-function getShortType(type, trainNo=''){
-  const value=String(type||'');
-  if(!value) return '';
-  const routeMeta=activeRouteMeta||{};
-  const direct=routeMeta.typeShortMap?.[value];
-  if(direct!==undefined && direct!==null && String(direct).trim()) return String(direct);
-  const jsonMaps=[activeJson?.typeShortMap,activeJson?.typeAbbreviations,activeJson?.route?.abbreviations?.types];
-  for(const map of jsonMaps){
-    if(!map) continue;
-    if(!Array.isArray(map) && typeof map==='object' && Object.prototype.hasOwnProperty.call(map,value)){
-      const result=map[value];
-      if(result!==undefined && result!==null && String(result).trim()) return String(result);
+function aliasText(entry){
+  if(entry===undefined||entry===null) return '';
+  if(typeof entry!=='object') return String(entry).trim();
+  return String(entry.value??entry.abbr??entry.short??entry.shortName??entry.abbreviation??entry.result??entry.displayName??'').trim();
+}
+function aliasEntityName(entity, kind){
+  if(!entity||typeof entity!=='object') return '';
+  return String(kind==='station'
+    ? (entity.name??entity.station??entity.stationName??entity.targetName??entity.label??'')
+    : (entity.name??entity.type??entity.typeName??entity.targetName??entity.label??entity.title??'')).trim();
+}
+function aliasEntityId(entity){
+  return String(entity?.id??entity?.stationId??entity?.typeId??entity?.key??'').trim();
+}
+function jsonAliasEntities(json, kind){
+  if(!json) return [];
+  if(kind==='station'){
+    const result=[];
+    if(Array.isArray(json.stations)) result.push(...json.stations);
+    if(Array.isArray(json.route?.stations)) result.push(...json.route.stations);
+    if(Array.isArray(json.lines)) for(const line of json.lines){
+      if(Array.isArray(line?.stations)) result.push(...line.stations);
+      if(Array.isArray(line?.stationList)) result.push(...line.stationList);
     }
-    if(Array.isArray(map)){
-      const match=map.find(item=>String(item?.name??item?.type??item?.targetName??'').trim()===value);
-      if(match){const result=match.value??match.abbr??match.short;if(result!==undefined&&result!==null&&String(result).trim())return String(result);}
+    return result;
+  }
+  const result=[];
+  for(const value of [json.types,json.trainTypes,json.serviceTypes,json.typeDefinitions,json.route?.types,json.route?.trainTypes,json.route?.serviceTypes]){
+    if(Array.isArray(value)) result.push(...value);
+  }
+  return result;
+}
+function aliasFromMap(map, value, entities=[], kind='station'){
+  const target=String(value||'').trim();
+  if(!target||map==null) return '';
+  if(Array.isArray(map)){
+    // Direct name-based entries.
+    const byName=map.find(item=>aliasEntityName(item,kind)===target);
+    const byNameText=aliasText(byName);
+    if(byNameText) return byNameText;
+    // Database-editor exports link abbreviations to entity IDs via targetId.
+    const ids=new Set(entities.filter(item=>aliasEntityName(item,kind)===target).map(aliasEntityId).filter(Boolean));
+    if(ids.size){
+      const byId=map.find(item=>{
+        const id=String(item?.targetId??item?.target_id??item?.refId??item?.entityId??item?.stationId??item?.typeId??'').trim();
+        return id && ids.has(id);
+      });
+      const byIdText=aliasText(byId);
+      if(byIdText) return byIdText;
+    }
+    return '';
+  }
+  if(typeof map==='object'){
+    if(Object.prototype.hasOwnProperty.call(map,target)){
+      const direct=aliasText(map[target]);
+      if(direct) return direct;
+    }
+    // Some exports use {stationId: abbreviation} or {typeId: abbreviation}.
+    const ids=entities.filter(item=>aliasEntityName(item,kind)===target).map(aliasEntityId).filter(Boolean);
+    for(const id of ids){
+      if(Object.prototype.hasOwnProperty.call(map,id)){
+        const byId=aliasText(map[id]);
+        if(byId) return byId;
+      }
+    }
+    for(const key of ['stations','types','items','entries','values']){
+      if(Array.isArray(map[key])){
+        const nested=aliasFromMap(map[key],target,entities,kind);
+        if(nested) return nested;
+      }
     }
   }
-  const jsonTypes=Array.isArray(activeJson?.types)?activeJson.types:[];
-  const typeEntry=jsonTypes.find(item=>String(item?.name??item?.label??'').trim()===value);
-  const directAbbr=String(typeEntry?.abbr??typeEntry?.abbreviation??typeEntry?.shortName??'').trim();
-  if(directAbbr) return directAbbr;
-  const abbreviationEntries=activeJson?.route?.abbreviations?.types;
-  if(Array.isArray(abbreviationEntries)){
-    const matched=abbreviationEntries.find(item=>String(item?.targetId??'')===String(typeEntry?.id??''));
-    const result=String(matched?.value??matched?.abbr??'').trim();
+  return '';
+}
+function getJsonAlias(value, kind='station'){
+  const target=String(value||'').trim();
+  if(!target) return '';
+  const json=activeJson||{};
+  const routeMeta=activeRouteMeta||{};
+  const registryMeta=(typeof ROUTE_REGISTRY==='object'&&ROUTE_REGISTRY&&activeRouteName)?ROUTE_REGISTRY[activeRouteName]:null;
+  const entities=jsonAliasEntities(json,kind);
+  // Prefer the currently loaded JSON (including its direct entity fields and abbreviations).
+  const entity=entities.find(item=>aliasEntityName(item,kind)===target);
+  if(entity){
+    const direct=String(kind==='station'
+      ? (entity.abbr??entity.abbreviation??entity.shortName??entity.short??entity.shortLabel??'')
+      : (entity.abbr??entity.abbreviation??entity.shortName??entity.short??entity.shortLabel??'')).trim();
+    if(direct) return direct;
+  }
+  const maps=kind==='station' ? [
+    json.stationShortMap,json.stationAbbreviations,json.stationAliases,json.destinationAliases,
+    json.abbreviations?.stations,json.route?.stationShortMap,json.route?.stationAbbreviations,
+    json.route?.stationAliases,json.route?.destinationAliases,json.route?.abbreviations?.stations,
+    json.stationShortRules,
+    routeMeta.stationShortMap,routeMeta.stationAbbreviations,routeMeta.stationAliases,routeMeta.destinationAliases,
+    routeMeta.stationShortRules,
+    registryMeta?.stationShortMap,registryMeta?.stationAbbreviations,registryMeta?.stationAliases,registryMeta?.destinationAliases,registryMeta?.stationShortRules
+  ] : [
+    json.typeShortMap,json.typeAbbreviations,json.typeAliases,json.abbreviations?.types,
+    json.route?.typeShortMap,json.route?.typeAbbreviations,json.route?.typeAliases,json.route?.abbreviations?.types,
+    routeMeta.typeShortMap,routeMeta.typeAbbreviations,routeMeta.typeAliases,routeMeta.typeShortRules,
+    registryMeta?.typeShortMap,registryMeta?.typeAbbreviations,registryMeta?.typeAliases,registryMeta?.typeShortRules
+  ];
+  for(const map of maps){
+    const result=aliasFromMap(map,target,entities,kind);
     if(result) return result;
   }
-  const rules=[
-    ...(Array.isArray(routeMeta.typeShortRules)?routeMeta.typeShortRules:[]),
-    ...(Array.isArray(activeJson?.typeShortRules)?activeJson.typeShortRules:[])
-  ];
-  for(const rule of rules){
-    const containsAll=Array.isArray(rule.containsAll)?rule.containsAll:[];
-    if(containsAll.length && !containsAll.every(x=>value.includes(String(x)))) continue;
-    if(rule.contains && !value.includes(String(rule.contains))) continue;
-    if(rule.trainNoSuffix && !String(trainNo||'').toUpperCase().endsWith(String(rule.trainNoSuffix).toUpperCase())) continue;
-    if(rule.result!==undefined && String(rule.result).trim()) return String(rule.result);
+  // A rules entry can intentionally be based on partial type text or train number suffix.
+  if(kind==='type'){
+    const trainNo='';
+    for(const rules of [json.typeShortRules,routeMeta.typeShortRules,registryMeta?.typeShortRules]){
+      if(!Array.isArray(rules)) continue;
+      for(const rule of rules){
+        const containsAll=Array.isArray(rule.containsAll)?rule.containsAll:[];
+        if(containsAll.length&&!containsAll.every(x=>target.includes(String(x)))) continue;
+        if(rule.contains&&!target.includes(String(rule.contains))) continue;
+        if(rule.trainNoSuffix&&!trainNo.toUpperCase().endsWith(String(rule.trainNoSuffix).toUpperCase())) continue;
+        if(rule.result!==undefined&&String(rule.result).trim()) return String(rule.result).trim();
+      }
+    }
+  }
+  if(kind==='station'){
+    const rules=[json.stationShortRules,routeMeta.stationShortRules,registryMeta?.stationShortRules];
+    for(const list of rules){
+      if(!Array.isArray(list)) continue;
+      const rule=list.find(item=>String(item?.station??item?.name??item?.targetName??'').trim()===target);
+      if(rule&&rule.result!==undefined&&String(rule.result).trim()) return String(rule.result).trim();
+    }
+  }
+  return '';
+}
+
+function getShortType(type, trainNo='', train=null){
+  const value=String(type||'').trim();
+  if(!value) return '';
+  const json=activeJson||{};
+  const sourceJson=train?.rawTrain?.__sourceTypeAliasConfig||train?.__sourceTypeAliasConfig||train?.rawTrain||train||{};
+  const sourceMaps=[sourceJson.typeShortMap,sourceJson.typeAbbreviations,sourceJson.typeAliases,
+    sourceJson.abbreviations?.types,sourceJson.route?.typeShortMap,sourceJson.route?.typeAbbreviations,
+    sourceJson.route?.typeAliases,sourceJson.route?.abbreviations?.types];
+  const sourceEntities=jsonAliasEntities(sourceJson,'type');
+  for(const map of sourceMaps){const result=aliasFromMap(map,value,sourceEntities,'type');if(result)return result;}
+  // 現在路線のJSON設定を優先し、route.abbreviations.types の targetId 形式にも対応。
+  const entities=jsonAliasEntities(json,'type');
+  const jsonMaps=[json.typeShortMap,json.typeAbbreviations,json.typeAliases,json.abbreviations?.types,
+    json.route?.typeShortMap,json.route?.typeAbbreviations,json.route?.typeAliases,json.route?.abbreviations?.types];
+  for(const map of jsonMaps){const result=aliasFromMap(map,value,entities,'type');if(result)return result;}
+  const typeEntry=entities.find(item=>aliasEntityName(item,'type')===value);
+  const directAbbr=String(typeEntry?.abbr??typeEntry?.abbreviation??typeEntry?.shortName??typeEntry?.short??'').trim();
+  if(directAbbr) return directAbbr;
+  const registryMeta=(typeof ROUTE_REGISTRY==='object'&&ROUTE_REGISTRY&&activeRouteName)?ROUTE_REGISTRY[activeRouteName]:null;
+  const routeMeta=activeRouteMeta||{};
+  for(const rules of [json.typeShortRules,routeMeta.typeShortRules,registryMeta?.typeShortRules]){
+    if(!Array.isArray(rules)) continue;
+    for(const rule of rules){
+      const containsAll=Array.isArray(rule.containsAll)?rule.containsAll:[];
+      if(containsAll.length&&!containsAll.every(x=>value.includes(String(x)))) continue;
+      if(rule.contains&&!value.includes(String(rule.contains))) continue;
+      if(rule.trainNoSuffix&&!String(trainNo||'').toUpperCase().endsWith(String(rule.trainNoSuffix).toUpperCase())) continue;
+      if(rule.result!==undefined&&String(rule.result).trim()) return String(rule.result).trim();
+    }
+  }
+  // HTML側の旧設定は、JSONに値がない場合のみ互換用フォールバックとする。
+  for(const map of [routeMeta.typeShortMap,routeMeta.typeAbbreviations,routeMeta.typeAliases,registryMeta?.typeShortMap,registryMeta?.typeAbbreviations,registryMeta?.typeAliases]){
+    const result=aliasFromMap(map,value,entities,'type');if(result)return result;
   }
   if(value==='区間急行') return '区急';
   if(value==='各駅停車') return '各停';
@@ -4414,8 +4571,8 @@ function trainLabelText(t,position=null){
   // PC用だけ正式名称へ切り替える処理をなくし、略称設定を両方の表示に反映する。
   const shortDest=isCircular ? '環状' : getShortDest(t?.dest);
   const displayType=getTrainTypeDisplayLabel(displayTrain,false,position);
-  const shortType=isShinanoMainRoute()?displayType:getShortType(type,t?.no);
-  const fullLabel=type?`${displayType} ${shortDest}`:shortDest;
+  const shortType=isShinanoMainRoute()?displayType:getShortType(type,t?.no,t);
+  const fullLabel=type?`${shortType} ${shortDest}`:shortDest;
   const shortLabel=type?`${shortType} ${shortDest}`:shortDest;
   return `<span class="train-label-full">${escapeAttr(fullLabel)}</span><span class="train-label-short">${escapeAttr(shortLabel)}</span>`;
 }
@@ -10465,7 +10622,7 @@ initRegionNavigation();
     const hasRealNumber=isDisplayableOperationTrainNumber(candidateNo,sourceTrain);
     const no=hasRealNumber ? candidateNo : '';
     const rawType=String(entry?.type||'').trim();
-    const type=rawType ? getShortType(rawType,no) : '';
+    const type=rawType ? getShortType(rawType,no,sourceTrain) : '';
     const start=String(entry?.start||'').trim();
     const shortStart=operationStationLabel(start);
     const startTime=String(entry?.startTime||'');
@@ -11287,6 +11444,10 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
     const activeOp=currentTrainInfoTab==='operation';
     const activeForm=currentTrainInfoTab==='formation';
     const activeHistory=currentTrainInfoTab==='history';
+    // 直通列車の列車詳細でも、現在表示位置の区間種別を使う。
+    // 福岡市地下鉄区間では「普通」、JR筑肥線区間ではJSONの「普通／快速」を表示する。
+    const cardTypePosition=positionForTrain(train,currentMinutes())?.pos;
+    const cardType=getTrainTypeAtPosition(train,cardTypePosition);
 
     if(isEditMode && !readonly){
       /* 編成入力時は既存の編集画面をそのまま使用。 */
@@ -11295,7 +11456,7 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
         <div class="train-card">
           <img src="${(train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id)?originalSelected.img:defaultTrainImage(train)}" class="train-card-img">
           <div class="train-info-main">
-            <div>${String(train.type||'').trim()?`<span class="type-badge ${getTrainTypeDisplayClass(train)}" style="${typeBadgeInlineStyle(train)}">${getTrainTypeDisplayLabel(train, true)}</span>`:''}<span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>
+            <div>${cardType?`<span class="type-badge ${getTrainTypeDisplayClass(train,cardTypePosition)}" style="${typeBadgeInlineStyle(train,cardTypePosition)}">${getTrainTypeDisplayLabel(train,true,cardTypePosition)}</span>`:''}<span class="train-title${cardType?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>
               <div class="input-trigger-btn">編成を入力中</div>
             ${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}
           </div>
@@ -11316,7 +11477,7 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
     content.innerHTML=`
       <div class="train-card${cardClass}" ${cardClick}>
         <img src="${imgSrc}" class="train-card-img">
-        <div class="train-info-main"><div>${String(train.type||'').trim()?`<span class="type-badge ${getTrainTypeDisplayClass(train)}" style="${typeBadgeInlineStyle(train)}">${getTrainTypeDisplayLabel(train, true)}</span>`:''}<span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id?`<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`:`<div class="input-trigger-btn">${noFormationText}</div>`}${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id&&formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
+        <div class="train-info-main"><div>${cardType?`<span class="type-badge ${getTrainTypeDisplayClass(train,cardTypePosition)}" style="${typeBadgeInlineStyle(train,cardTypePosition)}">${getTrainTypeDisplayLabel(train,true,cardTypePosition)}</span>`:''}<span class="train-title${cardType?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id?`<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`:`<div class="input-trigger-btn">${noFormationText}</div>`}${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id&&formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
       </div>
 
       <div class="train-info-tabs" style="--train-info-color:${tabColor}">
