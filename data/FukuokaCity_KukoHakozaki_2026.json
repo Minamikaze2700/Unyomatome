@@ -699,67 +699,88 @@
       "routeCode": "",
       "stations": [
         {
-          "name": "姪浜"
+          "name": "姪浜",
+          "nameEn": "Meinohama"
         },
         {
-          "name": "下山門"
+          "name": "下山門",
+          "nameEn": "Shimoyamato"
         },
         {
-          "name": "今宿"
+          "name": "今宿",
+          "nameEn": "Imajuku"
         },
         {
-          "name": "九大学研都市"
+          "name": "九大学研都市",
+          "nameEn": "Kyudai-Gakkentoshi"
         },
         {
-          "name": "周船寺"
+          "name": "周船寺",
+          "nameEn": "Susenji"
         },
         {
-          "name": "波多江"
+          "name": "波多江",
+          "nameEn": "Hatae"
         },
         {
-          "name": "糸島高校前"
+          "name": "糸島高校前",
+          "nameEn": "Itoshima-Kokomae"
         },
         {
-          "name": "筑前前原"
+          "name": "筑前前原",
+          "nameEn": "Chikuzen-Maebaru"
         },
         {
-          "name": "美咲が丘"
+          "name": "美咲が丘",
+          "nameEn": "Misakigaoka"
         },
         {
-          "name": "加布里"
+          "name": "加布里",
+          "nameEn": "Kafuri"
         },
         {
-          "name": "一貴山"
+          "name": "一貴山",
+          "nameEn": "Ikisan"
         },
         {
-          "name": "筑前深江"
+          "name": "筑前深江",
+          "nameEn": "Chikuzen-Fukae"
         },
         {
-          "name": "大入"
+          "name": "大入",
+          "nameEn": "Dainyu"
         },
         {
-          "name": "福吉"
+          "name": "福吉",
+          "nameEn": "Fukuyoshi"
         },
         {
-          "name": "鹿家"
+          "name": "鹿家",
+          "nameEn": "Shikaka"
         },
         {
-          "name": "浜崎"
+          "name": "浜崎",
+          "nameEn": "Hamasaki"
         },
         {
-          "name": "虹ノ松原"
+          "name": "虹ノ松原",
+          "nameEn": "Nijinomatsubara"
         },
         {
-          "name": "東唐津"
+          "name": "東唐津",
+          "nameEn": "Higashi-Karatsu"
         },
         {
-          "name": "和多田"
+          "name": "和多田",
+          "nameEn": "Watada"
         },
         {
-          "name": "唐津"
+          "name": "唐津",
+          "nameEn": "Karatsu"
         },
         {
-          "name": "西唐津"
+          "name": "西唐津",
+          "nameEn": "Nishi-Karatsu"
         }
       ],
       "directions": {
@@ -945,13 +966,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "421"
+            "number": "421C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "筑前深江",
-            "number": "821"
+            "number": "821C"
           }
         ],
         "servedLineNames": [
@@ -1077,7 +1098,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "420"
+            "number": "420C"
           }
         ],
         "servedLineNames": [
@@ -1539,7 +1560,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "423"
+            "number": "423C"
           }
         ],
         "servedLineNames": [
@@ -1745,7 +1766,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "422"
+            "number": "422C"
           }
         ],
         "servedLineNames": [
@@ -2103,7 +2124,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "425"
+            "number": "425C"
           }
         ],
         "servedLineNames": [
@@ -2461,7 +2482,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "427"
+            "number": "427C"
           }
         ],
         "servedLineNames": [
@@ -2685,13 +2706,13 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "620"
+            "number": "620C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "620"
+            "number": "620C"
           }
         ],
         "servedLineNames": [
@@ -2867,13 +2888,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "429"
+            "number": "429C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "315"
+            "number": "315C"
           }
         ],
         "servedLineNames": [
@@ -3279,7 +3300,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "431"
+            "number": "431C"
           }
         ],
         "servedLineNames": [
@@ -3453,7 +3474,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "424"
+            "number": "424C"
           }
         ],
         "servedLineNames": [
@@ -3659,7 +3680,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "433"
+            "number": "433C"
           }
         ],
         "servedLineNames": [
@@ -3814,13 +3835,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "1620"
+            "number": "1620C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "1620"
+            "number": "1620C"
           }
         ],
         "servedLineNames": [
@@ -4234,13 +4255,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "621"
+            "number": "621C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "621"
+            "number": "621C"
           }
         ],
         "servedLineNames": [
@@ -4414,7 +4435,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "426"
+            "number": "426C"
           }
         ],
         "servedLineNames": [
@@ -4868,13 +4889,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "622"
+            "number": "622C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "622"
+            "number": "622C"
           }
         ],
         "servedLineNames": [
@@ -5023,13 +5044,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "435"
+            "number": "435C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "1321"
+            "number": "1321C"
           }
         ],
         "servedLineNames": [
@@ -5379,7 +5400,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "437"
+            "number": "437C"
           }
         ],
         "servedLineNames": [
@@ -5522,13 +5543,13 @@
             "line": "JR筑肥線",
             "fromStation": "筑前深江",
             "toStation": "筑前前原",
-            "number": "820"
+            "number": "820C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "428"
+            "number": "428C"
           }
         ],
         "servedLineNames": [
@@ -6006,7 +6027,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "340"
+            "number": "340C"
           }
         ],
         "servedLineNames": [
@@ -6182,13 +6203,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "439"
+            "number": "439C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "317"
+            "number": "317C"
           }
         ],
         "servedLineNames": [
@@ -6529,13 +6550,13 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "1622"
+            "number": "1622C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "1622"
+            "number": "1622C"
           }
         ],
         "servedLineNames": [
@@ -6830,13 +6851,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "441"
+            "number": "441C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "筑前深江",
-            "number": "823"
+            "number": "823C"
           }
         ],
         "servedLineNames": [
@@ -7186,7 +7207,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "432"
+            "number": "432C"
           }
         ],
         "servedLineNames": [
@@ -7608,13 +7629,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "624"
+            "number": "624C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "624"
+            "number": "624C"
           }
         ],
         "servedLineNames": [
@@ -7796,13 +7817,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "443"
+            "number": "443C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "319"
+            "number": "319C"
           }
         ],
         "servedLineNames": [
@@ -8097,13 +8118,13 @@
             "line": "JR筑肥線",
             "fromStation": "筑前深江",
             "toStation": "筑前前原",
-            "number": "822"
+            "number": "822C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "434"
+            "number": "434C"
           }
         ],
         "servedLineNames": [
@@ -8421,7 +8442,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "436"
+            "number": "436C"
           }
         ],
         "servedLineNames": [
@@ -8739,7 +8760,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "445"
+            "number": "445C"
           }
         ],
         "servedLineNames": [
@@ -8945,7 +8966,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "438"
+            "number": "438C"
           }
         ],
         "servedLineNames": [
@@ -9300,13 +9321,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "1624"
+            "number": "1624C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "1624"
+            "number": "1624C"
           }
         ],
         "servedLineNames": [
@@ -9432,7 +9453,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "447"
+            "number": "447C"
           }
         ],
         "servedLineNames": [
@@ -10024,13 +10045,13 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "626"
+            "number": "626C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "626"
+            "number": "626C"
           }
         ],
         "servedLineNames": [
@@ -10156,7 +10177,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "449"
+            "number": "449C"
           }
         ],
         "servedLineNames": [
@@ -10354,7 +10375,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "440"
+            "number": "440C"
           }
         ],
         "servedLineNames": [
@@ -10824,7 +10845,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "451"
+            "number": "451C"
           }
         ],
         "servedLineNames": [
@@ -11006,13 +11027,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "318"
+            "number": "318C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "442"
+            "number": "442C"
           }
         ],
         "servedLineNames": [
@@ -11618,13 +11639,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "623"
+            "number": "623C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "623"
+            "number": "623C"
           }
         ],
         "servedLineNames": [
@@ -11798,7 +11819,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "444"
+            "number": "444C"
           }
         ],
         "servedLineNames": [
@@ -12292,7 +12313,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "455"
+            "number": "455C"
           }
         ],
         "servedLineNames": [
@@ -12618,7 +12639,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "446"
+            "number": "446C"
           }
         ],
         "servedLineNames": [
@@ -13109,13 +13130,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "1621"
+            "number": "1621C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "1621"
+            "number": "1621C"
           }
         ],
         "servedLineNames": [
@@ -13499,13 +13520,13 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "322"
+            "number": "322C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "448"
+            "number": "448C"
           }
         ],
         "servedLineNames": [
@@ -13873,13 +13894,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "457"
+            "number": "457C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "325"
+            "number": "325C"
           }
         ],
         "servedLineNames": [
@@ -14349,7 +14370,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "450"
+            "number": "450C"
           }
         ],
         "servedLineNames": [
@@ -14627,7 +14648,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "459"
+            "number": "459C"
           }
         ],
         "servedLineNames": [
@@ -15105,7 +15126,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "461"
+            "number": "461C"
           }
         ],
         "servedLineNames": [
@@ -15248,13 +15269,13 @@
             "line": "JR筑肥線",
             "fromStation": "筑前深江",
             "toStation": "筑前前原",
-            "number": "824"
+            "number": "824C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "452"
+            "number": "452C"
           }
         ],
         "servedLineNames": [
@@ -16052,13 +16073,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "463"
+            "number": "463C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "327"
+            "number": "327C"
           }
         ],
         "servedLineNames": [
@@ -16234,13 +16255,13 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "628"
+            "number": "628C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "628"
+            "number": "628C"
           }
         ],
         "servedLineNames": [
@@ -16366,7 +16387,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "465"
+            "number": "465C"
           }
         ],
         "servedLineNames": [
@@ -16700,7 +16721,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "456"
+            "number": "456C"
           }
         ],
         "servedLineNames": [
@@ -17047,13 +17068,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "1623"
+            "number": "1623C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "1623"
+            "number": "1623C"
           }
         ],
         "servedLineNames": [
@@ -17429,13 +17450,13 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "326"
+            "number": "326C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "458"
+            "number": "458C"
           }
         ],
         "servedLineNames": [
@@ -17889,13 +17910,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "625"
+            "number": "625C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "625"
+            "number": "625C"
           }
         ],
         "servedLineNames": [
@@ -18149,7 +18170,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "460"
+            "number": "460C"
           }
         ],
         "servedLineNames": [
@@ -18547,7 +18568,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "469"
+            "number": "469C"
           }
         ],
         "servedLineNames": [
@@ -19003,13 +19024,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "471"
+            "number": "471C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "331"
+            "number": "331C"
           }
         ],
         "servedLineNames": [
@@ -19239,13 +19260,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "328"
+            "number": "328C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "462"
+            "number": "462C"
           }
         ],
         "servedLineNames": [
@@ -19831,7 +19852,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "464"
+            "number": "464C"
           }
         ],
         "servedLineNames": [
@@ -19957,7 +19978,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "473"
+            "number": "473C"
           }
         ],
         "servedLineNames": [
@@ -20391,7 +20412,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "466"
+            "number": "466C"
           }
         ],
         "servedLineNames": [
@@ -20573,13 +20594,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "475"
+            "number": "475C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "333"
+            "number": "333C"
           }
         ],
         "servedLineNames": [
@@ -21081,7 +21102,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "468"
+            "number": "468C"
           }
         ],
         "servedLineNames": [
@@ -21207,7 +21228,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "477"
+            "number": "477C"
           }
         ],
         "servedLineNames": [
@@ -21759,13 +21780,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "479"
+            "number": "479C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "335"
+            "number": "335C"
           }
         ],
         "servedLineNames": [
@@ -21947,13 +21968,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "630"
+            "number": "630C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "630"
+            "number": "630C"
           }
         ],
         "servedLineNames": [
@@ -22455,7 +22476,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "472"
+            "number": "472C"
           }
         ],
         "servedLineNames": [
@@ -22581,7 +22602,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "481"
+            "number": "481C"
           }
         ],
         "servedLineNames": [
@@ -23083,7 +23104,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "474"
+            "number": "474C"
           }
         ],
         "servedLineNames": [
@@ -23265,13 +23286,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "627"
+            "number": "627C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "627"
+            "number": "627C"
           }
         ],
         "servedLineNames": [
@@ -23773,7 +23794,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "476"
+            "number": "476C"
           }
         ],
         "servedLineNames": [
@@ -23899,7 +23920,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "485"
+            "number": "485C"
           }
         ],
         "servedLineNames": [
@@ -24401,7 +24422,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "478"
+            "number": "478C"
           }
         ],
         "servedLineNames": [
@@ -24527,7 +24548,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "487"
+            "number": "487C"
           }
         ],
         "servedLineNames": [
@@ -25029,7 +25050,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "489"
+            "number": "489C"
           }
         ],
         "servedLineNames": [
@@ -25155,7 +25176,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "480"
+            "number": "480C"
           }
         ],
         "servedLineNames": [
@@ -25713,13 +25734,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "491"
+            "number": "491C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "341"
+            "number": "341C"
           }
         ],
         "servedLineNames": [
@@ -25901,13 +25922,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "632"
+            "number": "632C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "632"
+            "number": "632C"
           }
         ],
         "servedLineNames": [
@@ -26409,7 +26430,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "484"
+            "number": "484C"
           }
         ],
         "servedLineNames": [
@@ -26535,7 +26556,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "493"
+            "number": "493C"
           }
         ],
         "servedLineNames": [
@@ -27087,13 +27108,13 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "340"
+            "number": "340C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "486"
+            "number": "486C"
           }
         ],
         "servedLineNames": [
@@ -27275,13 +27296,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "495"
+            "number": "495C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "343"
+            "number": "343C"
           }
         ],
         "servedLineNames": [
@@ -27783,7 +27804,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "488"
+            "number": "488C"
           }
         ],
         "servedLineNames": [
@@ -27909,7 +27930,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "497"
+            "number": "497C"
           }
         ],
         "servedLineNames": [
@@ -28391,7 +28412,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "490"
+            "number": "490C"
           }
         ],
         "servedLineNames": [
@@ -28567,13 +28588,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "499"
+            "number": "499C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "345"
+            "number": "345C"
           }
         ],
         "servedLineNames": [
@@ -29055,7 +29076,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "492"
+            "number": "492C"
           }
         ],
         "servedLineNames": [
@@ -29181,7 +29202,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "521"
+            "number": "521C"
           }
         ],
         "servedLineNames": [
@@ -29719,13 +29740,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "523"
+            "number": "523C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "347"
+            "number": "347C"
           }
         ],
         "servedLineNames": [
@@ -29851,7 +29872,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "494"
+            "number": "494C"
           }
         ],
         "servedLineNames": [
@@ -30353,7 +30374,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "525"
+            "number": "525C"
           }
         ],
         "servedLineNames": [
@@ -30479,7 +30500,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "496"
+            "number": "496C"
           }
         ],
         "servedLineNames": [
@@ -30981,7 +31002,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "527"
+            "number": "527C"
           }
         ],
         "servedLineNames": [
@@ -31107,7 +31128,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "498"
+            "number": "498C"
           }
         ],
         "servedLineNames": [
@@ -31589,7 +31610,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "520"
+            "number": "520C"
           }
         ],
         "servedLineNames": [
@@ -31715,7 +31736,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "529"
+            "number": "529C"
           }
         ],
         "servedLineNames": [
@@ -32265,13 +32286,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "531"
+            "number": "531C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "351"
+            "number": "351C"
           }
         ],
         "servedLineNames": [
@@ -32453,13 +32474,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "348"
+            "number": "348C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "522"
+            "number": "522C"
           }
         ],
         "servedLineNames": [
@@ -33053,7 +33074,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "533"
+            "number": "533C"
           }
         ],
         "servedLineNames": [
@@ -33179,7 +33200,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "524"
+            "number": "524C"
           }
         ],
         "servedLineNames": [
@@ -33827,13 +33848,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "535"
+            "number": "535C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "353"
+            "number": "353C"
           }
         ],
         "servedLineNames": [
@@ -33959,7 +33980,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "526"
+            "number": "526C"
           }
         ],
         "servedLineNames": [
@@ -34589,7 +34610,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "528"
+            "number": "528C"
           }
         ],
         "servedLineNames": [
@@ -34732,13 +34753,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "825"
+            "number": "825C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "筑前深江",
-            "number": "825"
+            "number": "825C"
           }
         ],
         "servedLineNames": [
@@ -35432,13 +35453,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "352"
+            "number": "352C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "530"
+            "number": "530C"
           }
         ],
         "servedLineNames": [
@@ -35620,13 +35641,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "629"
+            "number": "629C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "629"
+            "number": "629C"
           }
         ],
         "servedLineNames": [
@@ -36368,7 +36389,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "537"
+            "number": "537C"
           }
         ],
         "servedLineNames": [
@@ -36622,7 +36643,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "532"
+            "number": "532C"
           }
         ],
         "servedLineNames": [
@@ -37214,13 +37235,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "539"
+            "number": "539C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "355"
+            "number": "355C"
           }
         ],
         "servedLineNames": [
@@ -37375,13 +37396,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "1626"
+            "number": "1626C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "1626"
+            "number": "1626C"
           }
         ],
         "servedLineNames": [
@@ -38051,7 +38072,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "534"
+            "number": "534C"
           }
         ],
         "servedLineNames": [
@@ -38194,13 +38215,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "541"
+            "number": "541C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "筑前深江",
-            "number": "827"
+            "number": "827C"
           }
         ],
         "servedLineNames": [
@@ -38742,7 +38763,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "536"
+            "number": "536C"
           }
         ],
         "servedLineNames": [
@@ -39121,13 +39142,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "1625"
+            "number": "1625C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "1625"
+            "number": "1625C"
           }
         ],
         "servedLineNames": [
@@ -39493,7 +39514,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "538"
+            "number": "538C"
           }
         ],
         "servedLineNames": [
@@ -39893,13 +39914,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "543"
+            "number": "543C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "357"
+            "number": "357C"
           }
         ],
         "servedLineNames": [
@@ -40545,13 +40566,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "634"
+            "number": "634C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "634"
+            "number": "634C"
           }
         ],
         "servedLineNames": [
@@ -40694,13 +40715,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "545"
+            "number": "545C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "筑前深江",
-            "number": "829"
+            "number": "829C"
           }
         ],
         "servedLineNames": [
@@ -41420,13 +41441,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "547"
+            "number": "547C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "359"
+            "number": "359C"
           }
         ],
         "servedLineNames": [
@@ -41608,13 +41629,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "358"
+            "number": "358C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "540"
+            "number": "540C"
           }
         ],
         "servedLineNames": [
@@ -42356,7 +42377,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "542"
+            "number": "542C"
           }
         ],
         "servedLineNames": [
@@ -42671,13 +42692,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "1627"
+            "number": "1627C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "1627"
+            "number": "1627C"
           }
         ],
         "servedLineNames": [
@@ -43187,7 +43208,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "544"
+            "number": "544C"
           }
         ],
         "servedLineNames": [
@@ -43473,7 +43494,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "549"
+            "number": "549C"
           }
         ],
         "servedLineNames": [
@@ -44185,13 +44206,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "551"
+            "number": "551C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "363"
+            "number": "363C"
           }
         ],
         "servedLineNames": [
@@ -44317,7 +44338,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "546"
+            "number": "546C"
           }
         ],
         "servedLineNames": [
@@ -44915,7 +44936,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "553"
+            "number": "553C"
           }
         ],
         "servedLineNames": [
@@ -45091,13 +45112,13 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "362"
+            "number": "362C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "548"
+            "number": "548C"
           }
         ],
         "servedLineNames": [
@@ -45727,7 +45748,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "555"
+            "number": "555C"
           }
         ],
         "servedLineNames": [
@@ -45989,13 +46010,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "636"
+            "number": "636C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "636"
+            "number": "636C"
           }
         ],
         "servedLineNames": [
@@ -46393,7 +46414,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "557"
+            "number": "557C"
           }
         ],
         "servedLineNames": [
@@ -46664,13 +46685,13 @@
             "line": "JR筑肥線",
             "fromStation": "筑前深江",
             "toStation": "筑前前原",
-            "number": "830"
+            "number": "830C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "550"
+            "number": "550C"
           }
         ],
         "servedLineNames": [
@@ -46916,7 +46937,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "552"
+            "number": "552C"
           }
         ],
         "servedLineNames": [
@@ -47316,13 +47337,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "631"
+            "number": "631C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "631"
+            "number": "631C"
           }
         ],
         "servedLineNames": [
@@ -47626,13 +47647,13 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "364"
+            "number": "364C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "554"
+            "number": "554C"
           }
         ],
         "servedLineNames": [
@@ -48030,7 +48051,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "559"
+            "number": "559C"
           }
         ],
         "servedLineNames": [
@@ -48212,13 +48233,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "561"
+            "number": "561C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "367"
+            "number": "367C"
           }
         ],
         "servedLineNames": [
@@ -48392,7 +48413,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "556"
+            "number": "556C"
           }
         ],
         "servedLineNames": [
@@ -48870,7 +48891,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "563"
+            "number": "563C"
           }
         ],
         "servedLineNames": [
@@ -49438,13 +49459,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "633"
+            "number": "633C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "633"
+            "number": "633C"
           }
         ],
         "servedLineNames": [
@@ -50234,13 +50255,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "565"
+            "number": "565C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "369"
+            "number": "369C"
           }
         ],
         "servedLineNames": [
@@ -50758,7 +50779,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "567"
+            "number": "567C"
           }
         ],
         "servedLineNames": [
@@ -51980,13 +52001,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "569"
+            "number": "569C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "373"
+            "number": "373C"
           }
         ],
         "servedLineNames": [
@@ -53048,7 +53069,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "635"
+            "number": "635C"
           }
         ],
         "servedLineNames": [
@@ -53702,7 +53723,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "571"
+            "number": "571C"
           }
         ],
         "servedLineNames": [
@@ -54356,7 +54377,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "573"
+            "number": "573C"
           }
         ],
         "servedLineNames": [
@@ -54895,7 +54916,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "310"
+            "number": "310C"
           }
         ],
         "servedLineNames": [
@@ -54993,7 +55014,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "312"
+            "number": "312C"
           }
         ],
         "servedLineNames": [
@@ -55091,7 +55112,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "314"
+            "number": "314C"
           }
         ],
         "servedLineNames": [
@@ -55189,7 +55210,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "316"
+            "number": "316C"
           }
         ],
         "servedLineNames": [
@@ -55287,7 +55308,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "320"
+            "number": "320C"
           }
         ],
         "servedLineNames": [
@@ -55379,7 +55400,7 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "330"
+            "number": "330C"
           }
         ],
         "servedLineNames": [
@@ -55477,7 +55498,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "334"
+            "number": "334C"
           }
         ],
         "servedLineNames": [
@@ -55575,7 +55596,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "336"
+            "number": "336C"
           }
         ],
         "servedLineNames": [
@@ -55673,7 +55694,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "342"
+            "number": "342C"
           }
         ],
         "servedLineNames": [
@@ -55765,7 +55786,7 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "344"
+            "number": "344C"
           }
         ],
         "servedLineNames": [
@@ -55863,7 +55884,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "346"
+            "number": "346C"
           }
         ],
         "servedLineNames": [
@@ -55961,7 +55982,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "350"
+            "number": "350C"
           }
         ],
         "servedLineNames": [
@@ -56053,7 +56074,7 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "354"
+            "number": "354C"
           }
         ],
         "servedLineNames": [
@@ -56145,7 +56166,7 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "356"
+            "number": "356C"
           }
         ],
         "servedLineNames": [
@@ -56204,7 +56225,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前深江",
             "toStation": "筑前前原",
-            "number": "826"
+            "number": "826C"
           }
         ],
         "servedLineNames": [
@@ -56302,7 +56323,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "360"
+            "number": "360C"
           }
         ],
         "servedLineNames": [
@@ -56361,7 +56382,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前深江",
             "toStation": "筑前前原",
-            "number": "828"
+            "number": "828C"
           }
         ],
         "servedLineNames": [
@@ -56459,7 +56480,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "311"
+            "number": "311C"
           }
         ],
         "servedLineNames": [
@@ -56551,7 +56572,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "321"
+            "number": "321C"
           }
         ],
         "servedLineNames": [
@@ -56649,7 +56670,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "339"
+            "number": "339C"
           }
         ],
         "servedLineNames": [
@@ -56747,7 +56768,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "349"
+            "number": "349C"
           }
         ],
         "servedLineNames": [
@@ -56845,7 +56866,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "361"
+            "number": "361C"
           }
         ],
         "servedLineNames": [
@@ -56943,7 +56964,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "365"
+            "number": "365C"
           }
         ],
         "servedLineNames": [
@@ -57041,7 +57062,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "371"
+            "number": "371C"
           }
         ],
         "servedLineNames": [
@@ -57160,7 +57181,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "421"
+            "number": "421C"
           }
         ],
         "servedLineNames": [
@@ -57286,7 +57307,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "420"
+            "number": "420C"
           }
         ],
         "servedLineNames": [
@@ -57748,13 +57769,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "423"
+            "number": "423C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "313"
+            "number": "313C"
           }
         ],
         "servedLineNames": [
@@ -57880,7 +57901,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "422"
+            "number": "422C"
           }
         ],
         "servedLineNames": [
@@ -58512,13 +58533,13 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "620"
+            "number": "620C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "620"
+            "number": "620C"
           }
         ],
         "servedLineNames": [
@@ -58690,13 +58711,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "427"
+            "number": "427C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "315"
+            "number": "315C"
           }
         ],
         "servedLineNames": [
@@ -58974,7 +58995,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "429"
+            "number": "429C"
           }
         ],
         "servedLineNames": [
@@ -59260,7 +59281,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "424"
+            "number": "424C"
           }
         ],
         "servedLineNames": [
@@ -59522,13 +59543,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "621"
+            "number": "621C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "621"
+            "number": "621C"
           }
         ],
         "servedLineNames": [
@@ -59854,7 +59875,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "435"
+            "number": "435C"
           }
         ],
         "servedLineNames": [
@@ -59980,7 +60001,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "426"
+            "number": "426C"
           }
         ],
         "servedLineNames": [
@@ -60330,7 +60351,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "428"
+            "number": "428C"
           }
         ],
         "servedLineNames": [
@@ -60584,7 +60605,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "439"
+            "number": "439C"
           }
         ],
         "servedLineNames": [
@@ -60910,7 +60931,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "760"
+            "number": "760C"
           }
         ],
         "servedLineNames": [
@@ -61428,7 +61449,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "761"
+            "number": "761C"
           }
         ],
         "servedLineNames": [
@@ -61610,13 +61631,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "624"
+            "number": "624C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "624"
+            "number": "624C"
           }
         ],
         "servedLineNames": [
@@ -62142,7 +62163,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "445"
+            "number": "445C"
           }
         ],
         "servedLineNames": [
@@ -62470,13 +62491,13 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "790"
+            "number": "790C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "790"
+            "number": "790C"
           }
         ],
         "servedLineNames": [
@@ -62763,13 +62784,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "1681"
+            "number": "1681C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "1681"
+            "number": "1681C"
           }
         ],
         "servedLineNames": [
@@ -63041,13 +63062,13 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "380"
+            "number": "380C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "762"
+            "number": "762C"
           }
         ],
         "servedLineNames": [
@@ -63245,7 +63266,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "449"
+            "number": "449C"
           }
         ],
         "servedLineNames": [
@@ -63531,7 +63552,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "442"
+            "number": "442C"
           }
         ],
         "servedLineNames": [
@@ -63953,13 +63974,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "453"
+            "number": "453C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "323"
+            "number": "323C"
           }
         ],
         "servedLineNames": [
@@ -64301,13 +64322,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "320"
+            "number": "320C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "444"
+            "number": "444C"
           }
         ],
         "servedLineNames": [
@@ -64722,13 +64743,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "1680"
+            "number": "1680C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "1680"
+            "number": "1680C"
           }
         ],
         "servedLineNames": [
@@ -65054,7 +65075,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "448"
+            "number": "448C"
           }
         ],
         "servedLineNames": [
@@ -65180,7 +65201,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "763"
+            "number": "763C"
           }
         ],
         "servedLineNames": [
@@ -65610,7 +65631,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "457"
+            "number": "457C"
           }
         ],
         "servedLineNames": [
@@ -66000,13 +66021,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "792"
+            "number": "792C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "792"
+            "number": "792C"
           }
         ],
         "servedLineNames": [
@@ -66189,13 +66210,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "1683"
+            "number": "1683C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "1683"
+            "number": "1683C"
           }
         ],
         "servedLineNames": [
@@ -66523,13 +66544,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "459"
+            "number": "459C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "325"
+            "number": "325C"
           }
         ],
         "servedLineNames": [
@@ -66655,7 +66676,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "452"
+            "number": "452C"
           }
         ],
         "servedLineNames": [
@@ -67181,7 +67202,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "454"
+            "number": "454C"
           }
         ],
         "servedLineNames": [
@@ -67443,13 +67464,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "791"
+            "number": "791C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "791"
+            "number": "791C"
           }
         ],
         "servedLineNames": [
@@ -67704,13 +67725,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "1682"
+            "number": "1682C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "1682"
+            "number": "1682C"
           }
         ],
         "servedLineNames": [
@@ -68044,7 +68065,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "465"
+            "number": "465C"
           }
         ],
         "servedLineNames": [
@@ -68170,7 +68191,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "456"
+            "number": "456C"
           }
         ],
         "servedLineNames": [
@@ -68536,7 +68557,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "765"
+            "number": "765C"
           }
         ],
         "servedLineNames": [
@@ -68742,7 +68763,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "458"
+            "number": "458C"
           }
         ],
         "servedLineNames": [
@@ -69005,13 +69026,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "1685"
+            "number": "1685C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "1685"
+            "number": "1685C"
           }
         ],
         "servedLineNames": [
@@ -69337,7 +69358,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "460"
+            "number": "460C"
           }
         ],
         "servedLineNames": [
@@ -69463,7 +69484,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "469"
+            "number": "469C"
           }
         ],
         "servedLineNames": [
@@ -70027,13 +70048,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "471"
+            "number": "471C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "331"
+            "number": "331C"
           }
         ],
         "servedLineNames": [
@@ -70343,13 +70364,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "794"
+            "number": "794C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "794"
+            "number": "794C"
           }
         ],
         "servedLineNames": [
@@ -70556,13 +70577,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "1684"
+            "number": "1684C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "1684"
+            "number": "1684C"
           }
         ],
         "servedLineNames": [
@@ -70876,7 +70897,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "473"
+            "number": "473C"
           }
         ],
         "servedLineNames": [
@@ -71050,7 +71071,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "464"
+            "number": "464C"
           }
         ],
         "servedLineNames": [
@@ -71492,13 +71513,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "475"
+            "number": "475C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "333"
+            "number": "333C"
           }
         ],
         "servedLineNames": [
@@ -71740,7 +71761,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "464"
+            "number": "464C"
           }
         ],
         "servedLineNames": [
@@ -71866,7 +71887,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "767"
+            "number": "767C"
           }
         ],
         "servedLineNames": [
@@ -72410,13 +72431,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "793"
+            "number": "793C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "793"
+            "number": "793C"
           }
         ],
         "servedLineNames": [
@@ -72542,7 +72563,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "468"
+            "number": "468C"
           }
         ],
         "servedLineNames": [
@@ -73104,7 +73125,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "479"
+            "number": "479C"
           }
         ],
         "servedLineNames": [
@@ -73230,7 +73251,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "470"
+            "number": "470C"
           }
         ],
         "servedLineNames": [
@@ -73664,7 +73685,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "472"
+            "number": "472C"
           }
         ],
         "servedLineNames": [
@@ -73790,7 +73811,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "481"
+            "number": "481C"
           }
         ],
         "servedLineNames": [
@@ -74348,13 +74369,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "483"
+            "number": "483C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "337"
+            "number": "337C"
           }
         ],
         "servedLineNames": [
@@ -74480,7 +74501,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "474"
+            "number": "474C"
           }
         ],
         "servedLineNames": [
@@ -74982,7 +75003,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "485"
+            "number": "485C"
           }
         ],
         "servedLineNames": [
@@ -75108,7 +75129,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "476"
+            "number": "476C"
           }
         ],
         "servedLineNames": [
@@ -75646,13 +75667,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "487"
+            "number": "487C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "339"
+            "number": "339C"
           }
         ],
         "servedLineNames": [
@@ -75834,13 +75855,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "796"
+            "number": "796C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "796"
+            "number": "796C"
           }
         ],
         "servedLineNames": [
@@ -76322,7 +76343,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "489"
+            "number": "489C"
           }
         ],
         "servedLineNames": [
@@ -76448,7 +76469,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "480"
+            "number": "480C"
           }
         ],
         "servedLineNames": [
@@ -76950,7 +76971,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "491"
+            "number": "491C"
           }
         ],
         "servedLineNames": [
@@ -77132,13 +77153,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "338"
+            "number": "338C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "482"
+            "number": "482C"
           }
         ],
         "servedLineNames": [
@@ -77640,7 +77661,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "493"
+            "number": "493C"
           }
         ],
         "servedLineNames": [
@@ -77766,7 +77787,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "484"
+            "number": "484C"
           }
         ],
         "servedLineNames": [
@@ -78324,13 +78345,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "495"
+            "number": "495C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "343"
+            "number": "343C"
           }
         ],
         "servedLineNames": [
@@ -78456,7 +78477,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "486"
+            "number": "486C"
           }
         ],
         "servedLineNames": [
@@ -78958,7 +78979,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "497"
+            "number": "497C"
           }
         ],
         "servedLineNames": [
@@ -79200,7 +79221,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "488"
+            "number": "488C"
           }
         ],
         "servedLineNames": [
@@ -79586,7 +79607,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "490"
+            "number": "490C"
           }
         ],
         "servedLineNames": [
@@ -79762,13 +79783,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "499"
+            "number": "499C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "345"
+            "number": "345C"
           }
         ],
         "servedLineNames": [
@@ -80270,7 +80291,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "49"
+            "number": "49C"
           }
         ],
         "servedLineNames": [
@@ -80444,7 +80465,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "521"
+            "number": "521C"
           }
         ],
         "servedLineNames": [
@@ -80910,7 +80931,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "494"
+            "number": "494C"
           }
         ],
         "servedLineNames": [
@@ -81086,13 +81107,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "523"
+            "number": "523C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "383"
+            "number": "383C"
           }
         ],
         "servedLineNames": [
@@ -81674,7 +81695,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "525"
+            "number": "525C"
           }
         ],
         "servedLineNames": [
@@ -81800,7 +81821,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "496"
+            "number": "496C"
           }
         ],
         "servedLineNames": [
@@ -82362,13 +82383,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "527"
+            "number": "527C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "349"
+            "number": "349C"
           }
         ],
         "servedLineNames": [
@@ -82550,13 +82571,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "346"
+            "number": "346C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "498"
+            "number": "498C"
           }
         ],
         "servedLineNames": [
@@ -83058,7 +83079,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "529"
+            "number": "529C"
           }
         ],
         "servedLineNames": [
@@ -83264,7 +83285,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "520"
+            "number": "520C"
           }
         ],
         "servedLineNames": [
@@ -83818,7 +83839,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "522"
+            "number": "522C"
           }
         ],
         "servedLineNames": [
@@ -83944,7 +83965,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "531"
+            "number": "531C"
           }
         ],
         "servedLineNames": [
@@ -84278,7 +84299,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "524"
+            "number": "524C"
           }
         ],
         "servedLineNames": [
@@ -84644,7 +84665,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "533"
+            "number": "533C"
           }
         ],
         "servedLineNames": [
@@ -84906,13 +84927,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "350"
+            "number": "350C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "526"
+            "number": "526C"
           }
         ],
         "servedLineNames": [
@@ -85118,7 +85139,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "535"
+            "number": "535C"
           }
         ],
         "servedLineNames": [
@@ -85716,7 +85737,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "769"
+            "number": "769C"
           }
         ],
         "servedLineNames": [
@@ -85890,7 +85911,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "764"
+            "number": "764C"
           }
         ],
         "servedLineNames": [
@@ -86216,7 +86237,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "528"
+            "number": "528C"
           }
         ],
         "servedLineNames": [
@@ -86342,7 +86363,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "771"
+            "number": "771C"
           }
         ],
         "servedLineNames": [
@@ -86525,13 +86546,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "1686"
+            "number": "1686C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "1686"
+            "number": "1686C"
           }
         ],
         "servedLineNames": [
@@ -86987,13 +87008,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "773"
+            "number": "773C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "385"
+            "number": "385C"
           }
         ],
         "servedLineNames": [
@@ -87119,7 +87140,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "766"
+            "number": "766C"
           }
         ],
         "servedLineNames": [
@@ -87717,7 +87738,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "537"
+            "number": "537C"
           }
         ],
         "servedLineNames": [
@@ -87923,7 +87944,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "532"
+            "number": "532C"
           }
         ],
         "servedLineNames": [
@@ -88058,13 +88079,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "1687"
+            "number": "1687C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "1687"
+            "number": "1687C"
           }
         ],
         "servedLineNames": [
@@ -88390,7 +88411,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "775"
+            "number": "775C"
           }
         ],
         "servedLineNames": [
@@ -88564,7 +88585,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "534"
+            "number": "534C"
           }
         ],
         "servedLineNames": [
@@ -89232,13 +89253,13 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "356"
+            "number": "356C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "536"
+            "number": "536C"
           }
         ],
         "servedLineNames": [
@@ -89364,7 +89385,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "777"
+            "number": "777C"
           }
         ],
         "servedLineNames": [
@@ -89619,13 +89640,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "1688"
+            "number": "1688C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "1688"
+            "number": "1688C"
           }
         ],
         "servedLineNames": [
@@ -89831,7 +89852,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "543"
+            "number": "543C"
           }
         ],
         "servedLineNames": [
@@ -90037,7 +90058,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "768"
+            "number": "768C"
           }
         ],
         "servedLineNames": [
@@ -90558,13 +90579,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "1689"
+            "number": "1689C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "1689"
+            "number": "1689C"
           }
         ],
         "servedLineNames": [
@@ -90770,7 +90791,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "770"
+            "number": "770C"
           }
         ],
         "servedLineNames": [
@@ -91014,13 +91035,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "547"
+            "number": "547C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "359"
+            "number": "359C"
           }
         ],
         "servedLineNames": [
@@ -91194,7 +91215,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "540"
+            "number": "540C"
           }
         ],
         "servedLineNames": [
@@ -91320,7 +91341,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "779"
+            "number": "779C"
           }
         ],
         "servedLineNames": [
@@ -91950,13 +91971,13 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "360"
+            "number": "360C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "542"
+            "number": "542C"
           }
         ],
         "servedLineNames": [
@@ -92082,7 +92103,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "781"
+            "number": "781C"
           }
         ],
         "servedLineNames": [
@@ -92448,7 +92469,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "549"
+            "number": "549C"
           }
         ],
         "servedLineNames": [
@@ -92574,7 +92595,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "544"
+            "number": "544C"
           }
         ],
         "servedLineNames": [
@@ -93150,13 +93171,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "551"
+            "number": "551C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "363"
+            "number": "363C"
           }
         ],
         "servedLineNames": [
@@ -93330,7 +93351,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "546"
+            "number": "546C"
           }
         ],
         "servedLineNames": [
@@ -93648,7 +93669,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "553"
+            "number": "553C"
           }
         ],
         "servedLineNames": [
@@ -93774,7 +93795,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "548"
+            "number": "548C"
           }
         ],
         "servedLineNames": [
@@ -94332,7 +94353,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "772"
+            "number": "772C"
           }
         ],
         "servedLineNames": [
@@ -94514,13 +94535,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "555"
+            "number": "555C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "365"
+            "number": "365C"
           }
         ],
         "servedLineNames": [
@@ -94766,7 +94787,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "557"
+            "number": "557C"
           }
         ],
         "servedLineNames": [
@@ -95124,7 +95145,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "550"
+            "number": "550C"
           }
         ],
         "servedLineNames": [
@@ -95490,7 +95511,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "552"
+            "number": "552C"
           }
         ],
         "servedLineNames": [
@@ -95666,13 +95687,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "783"
+            "number": "783C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "391"
+            "number": "391C"
           }
         ],
         "servedLineNames": [
@@ -96150,7 +96171,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "554"
+            "number": "554C"
           }
         ],
         "servedLineNames": [
@@ -96276,7 +96297,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "559"
+            "number": "559C"
           }
         ],
         "servedLineNames": [
@@ -96730,13 +96751,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "795"
+            "number": "795C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "795"
+            "number": "795C"
           }
         ],
         "servedLineNames": [
@@ -96942,7 +96963,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "556"
+            "number": "556C"
           }
         ],
         "servedLineNames": [
@@ -97420,7 +97441,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "姪浜",
-            "number": "558"
+            "number": "558C"
           }
         ],
         "servedLineNames": [
@@ -97546,7 +97567,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "563"
+            "number": "563C"
           }
         ],
         "servedLineNames": [
@@ -97954,7 +97975,7 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "368"
+            "number": "368C"
           }
         ],
         "servedLineNames": [
@@ -98210,13 +98231,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "633"
+            "number": "633C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "633"
+            "number": "633C"
           }
         ],
         "servedLineNames": [
@@ -98910,7 +98931,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "565"
+            "number": "565C"
           }
         ],
         "servedLineNames": [
@@ -99540,7 +99561,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "567"
+            "number": "567C"
           }
         ],
         "servedLineNames": [
@@ -100370,7 +100391,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "569"
+            "number": "569C"
           }
         ],
         "servedLineNames": [
@@ -101272,13 +101293,13 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "635"
+            "number": "635C"
           },
           {
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "635"
+            "number": "635C"
           }
         ],
         "servedLineNames": [
@@ -101860,7 +101881,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "571"
+            "number": "571C"
           }
         ],
         "servedLineNames": [
@@ -102578,7 +102599,7 @@
             "line": "JR筑肥線",
             "fromStation": "姪浜",
             "toStation": "筑前前原",
-            "number": "573"
+            "number": "573C"
           }
         ],
         "servedLineNames": [
@@ -103117,7 +103138,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "310"
+            "number": "310C"
           }
         ],
         "servedLineNames": [
@@ -103215,7 +103236,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "312"
+            "number": "312C"
           }
         ],
         "servedLineNames": [
@@ -103313,7 +103334,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "314"
+            "number": "314C"
           }
         ],
         "servedLineNames": [
@@ -103405,7 +103426,7 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "324"
+            "number": "324C"
           }
         ],
         "servedLineNames": [
@@ -103497,7 +103518,7 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "326"
+            "number": "326C"
           }
         ],
         "servedLineNames": [
@@ -103595,7 +103616,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "382"
+            "number": "382C"
           }
         ],
         "servedLineNames": [
@@ -103693,7 +103714,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "332"
+            "number": "332C"
           }
         ],
         "servedLineNames": [
@@ -103785,7 +103806,7 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "384"
+            "number": "384C"
           }
         ],
         "servedLineNames": [
@@ -103877,7 +103898,7 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "340"
+            "number": "340C"
           }
         ],
         "servedLineNames": [
@@ -103975,7 +103996,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "342"
+            "number": "342C"
           }
         ],
         "servedLineNames": [
@@ -104067,7 +104088,7 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "344"
+            "number": "344C"
           }
         ],
         "servedLineNames": [
@@ -104165,7 +104186,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "348"
+            "number": "348C"
           }
         ],
         "servedLineNames": [
@@ -104263,7 +104284,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "352"
+            "number": "352C"
           }
         ],
         "servedLineNames": [
@@ -104355,7 +104376,7 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "354"
+            "number": "354C"
           }
         ],
         "servedLineNames": [
@@ -104453,7 +104474,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "358"
+            "number": "358C"
           }
         ],
         "servedLineNames": [
@@ -104545,7 +104566,7 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "362"
+            "number": "362C"
           }
         ],
         "servedLineNames": [
@@ -104637,7 +104658,7 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "386"
+            "number": "386C"
           }
         ],
         "servedLineNames": [
@@ -104729,7 +104750,7 @@
             "line": "JR筑肥線",
             "fromStation": "唐津",
             "toStation": "筑前前原",
-            "number": "364"
+            "number": "364C"
           }
         ],
         "servedLineNames": [
@@ -104827,7 +104848,7 @@
             "line": "JR筑肥線",
             "fromStation": "西唐津",
             "toStation": "筑前前原",
-            "number": "388"
+            "number": "388C"
           }
         ],
         "servedLineNames": [
@@ -104925,7 +104946,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "311"
+            "number": "311C"
           }
         ],
         "servedLineNames": [
@@ -105017,7 +105038,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "317"
+            "number": "317C"
           }
         ],
         "servedLineNames": [
@@ -105109,7 +105130,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "381"
+            "number": "381C"
           }
         ],
         "servedLineNames": [
@@ -105207,7 +105228,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "329"
+            "number": "329C"
           }
         ],
         "servedLineNames": [
@@ -105305,7 +105326,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "341"
+            "number": "341C"
           }
         ],
         "servedLineNames": [
@@ -105403,7 +105424,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "351"
+            "number": "351C"
           }
         ],
         "servedLineNames": [
@@ -105495,7 +105516,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "353"
+            "number": "353C"
           }
         ],
         "servedLineNames": [
@@ -105587,7 +105608,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "355"
+            "number": "355C"
           }
         ],
         "servedLineNames": [
@@ -105685,7 +105706,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "387"
+            "number": "387C"
           }
         ],
         "servedLineNames": [
@@ -105777,7 +105798,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "唐津",
-            "number": "389"
+            "number": "389C"
           }
         ],
         "servedLineNames": [
@@ -105875,7 +105896,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "369"
+            "number": "369C"
           }
         ],
         "servedLineNames": [
@@ -105973,7 +105994,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "371"
+            "number": "371C"
           }
         ],
         "servedLineNames": [
@@ -106071,7 +106092,7 @@
             "line": "JR筑肥線",
             "fromStation": "筑前前原",
             "toStation": "西唐津",
-            "number": "373"
+            "number": "373C"
           }
         ],
         "servedLineNames": [
