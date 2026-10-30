@@ -996,6 +996,11 @@ body{padding-bottom:42px !important;}
   background-image:var(--route-line-bottom-bg,linear-gradient(to bottom,var(--station-route-color,var(--primary)),var(--station-route-color,var(--primary)))) !important;
 }
 </style>
+<style id="fukuoka-chikuhi-station-english-and-solid-guides">
+.station-text.fukuoka-station-text{align-items:flex-start;justify-content:center;flex-direction:column;gap:1px;}
+.station-text .station-text-ja{display:block;line-height:1.05;}
+.station-text .station-text-en{display:block;font-size:.68em;font-weight:500;line-height:1.05;letter-spacing:.01em;color:#555;}
+</style>
 </head>
 <body>
 
@@ -2329,8 +2334,50 @@ function normalizeExternalTrain(raw,day,direction,meta){
     rawTrain:raw
   }];
 }
+function fukuokaSectionNumberAtStation(train,stationName){
+  const station=String(stationName||'').trim();
+  if(!station || !Array.isArray(train?.sectionNumberSegments)) return '';
+  const stops=Array.isArray(train?.stops)?train.stops:[];
+  const targetIndex=stops.findIndex(st=>String(st?.station||'').trim()===station);
+  if(targetIndex<0) return '';
+  const matches=train.sectionNumberSegments.filter(segment=>{
+    // 福岡市地下鉄側の列番は常に非表示。JR筑肥線区間の番号だけを許可する。
+    if(String(segment?.line||'')!=='JR筑肥線') return false;
+    const fromIndex=stops.findIndex(st=>String(st?.station||'').trim()===String(segment?.fromStation||'').trim());
+    const toIndex=stops.findIndex(st=>String(st?.station||'').trim()===String(segment?.toStation||'').trim());
+    if(fromIndex<0 || toIndex<0) return false;
+    return targetIndex>=Math.min(fromIndex,toIndex) && targetIndex<=Math.max(fromIndex,toIndex);
+  });
+  return String(matches.length?matches[matches.length-1]?.number||'':'');
+}
+function fukuokaSectionNumberAtPosition(train,pos){
+  const p=Number(pos);
+  if(!Number.isFinite(p)) return '';
+  const lower=Math.max(0,Math.floor(p));
+  const upper=Math.max(lower,Math.ceil(p));
+  const first=STATIONS?.[lower]?.nameJa||'';
+  const second=STATIONS?.[upper]?.nameJa||first;
+  if(!first) return '';
+  const stops=Array.isArray(train?.stops)?train.stops:[];
+  const firstIndex=stops.findIndex(st=>String(st?.station||'').trim()===String(first).trim());
+  const secondIndex=stops.findIndex(st=>String(st?.station||'').trim()===String(second).trim());
+  if(firstIndex<0 || secondIndex<0) return '';
+  const matches=(Array.isArray(train?.sectionNumberSegments)?train.sectionNumberSegments:[]).filter(segment=>{
+    if(String(segment?.line||'')!=='JR筑肥線') return false;
+    const fromIndex=stops.findIndex(st=>String(st?.station||'').trim()===String(segment?.fromStation||'').trim());
+    const toIndex=stops.findIndex(st=>String(st?.station||'').trim()===String(segment?.toStation||'').trim());
+    if(fromIndex<0 || toIndex<0) return false;
+    const lo=Math.min(fromIndex,toIndex), hi=Math.max(fromIndex,toIndex);
+    return firstIndex>=lo && firstIndex<=hi && secondIndex>=lo && secondIndex<=hi;
+  });
+  return String(matches.length?matches[matches.length-1]?.number||'':'');
+}
 function trainDisplayNoAtStation(train,stationName){
-  if(!train || train.hideTrainNumber) return '';
+  if(!train) return '';
+  if(isFukuokaCompositeRoute(activeRouteMeta) && Array.isArray(train.sectionNumberSegments)){
+    return fukuokaSectionNumberAtStation(train,stationName);
+  }
+  if(train.hideTrainNumber) return '';
   const station=String(stationName||'');
   if(Array.isArray(train.sectionNumberSegments)){
     return trainDisplayNoAtPosition(train,stationIndex(station));
@@ -2381,6 +2428,7 @@ function getTrainTypeSegmentAtPosition(train,pos=null){
 }
 function trainDisplayNoAtPosition(train,pos){
   if(Array.isArray(train?.sectionNumberSegments)){
+    if(isFukuokaCompositeRoute(activeRouteMeta)) return fukuokaSectionNumberAtPosition(train,pos);
     const section=sectionSegmentAtPosition(train.sectionNumberSegments,pos);
     return String(section?.number||'');
   }
@@ -2794,10 +2842,12 @@ function timetableRowsHTML(stops,trainContext=null){
       ? rows[endIndex].segmentColors.map(c=>String(c||'').trim()).filter(Boolean) : [];
     return configured.length ? configured : [fallbackSegmentColor(startIndex,endIndex)];
   };
+  const isFukuokaGuide=isFukuokaCompositeRoute(activeRouteMeta);
   const chikuhiStations=fukuokaChikuhiStationSet();
   const isChikuhiSegment=(a,b)=>chikuhiStations.has(String(a||''))&&chikuhiStations.has(String(b||''))&&String(a||'')!==String(b||'');
-  const isDottedRouteSegment=(a,b,arrivalIndex=-1)=>isChikuhiSegment(a,b)||(arrivalIndex>=0&&rows[arrivalIndex]?.dottedBefore===true);
-  const globalDotted=!!activeRouteMeta?.dottedTimetableGuide;
+  // 福岡の筑肥線区間も含め、停車駅案内は全区間を実線表示にする。
+  const isDottedRouteSegment=(a,b,arrivalIndex=-1)=>!isFukuokaGuide && (isChikuhiSegment(a,b)||(arrivalIndex>=0&&rows[arrivalIndex]?.dottedBefore===true));
+  const globalDotted=!isFukuokaGuide && !!activeRouteMeta?.dottedTimetableGuide;
   const lineBg=(colors,dotted=false)=>{
     const list=(Array.isArray(colors)?colors:[]).map(c=>String(c||'').trim()).filter(Boolean);
     const safe=list.length?list:['#666'];
@@ -2813,8 +2863,10 @@ function timetableRowsHTML(stops,trainContext=null){
       mask:dotted?'repeating-linear-gradient(to bottom,#000 0 7px,transparent 7px 14px)':'none'
     };
   };
+  const fukuokaMaster=isFukuokaCompositeRoute(activeRouteMeta)?fukuokaStationMaster(activeJson):null;
   return rows.map((row,index)=>{
     const rawTimes=rows[index].times.length>=2?rows[index].times.slice(0,2):rows[index].times.slice(0,1);
+    const stationNameEn=String(fukuokaMaster?.get(row.station)?.nameEn||'').trim();
     const formattedTimes=rawTimes.map(formatRailwayDisplayTime);
     const times=(formattedTimes.length>=2&&formattedTimes[0]===formattedTimes[1])?[formattedTimes[0]]:formattedTimes;
     const twoLine=times.length>=2;
@@ -2831,7 +2883,7 @@ function timetableRowsHTML(stops,trainContext=null){
     const classes=['timetable-item',globalDotted?'dotted-route-guide':''].filter(Boolean).join(' ');
     const markerClass=row.boardingOnly?' boarding-only':(row.alightingOnly?' alighting-only':'');
     const markerTitle=row.boardingOnly?'乗車専用駅':(row.alightingOnly?'降車専用駅':'');
-    return `<div class="${classes}" style="--route-line-top-bg:${top.images};--route-line-top-size:${top.sizes};--route-line-top-position:${top.positions};--route-line-top-repeat:${top.repeat};--route-line-top-mask:${top.mask};--route-line-bottom-bg:${bottom.images};--route-line-bottom-size:${bottom.sizes};--route-line-bottom-position:${bottom.positions};--route-line-bottom-repeat:${bottom.repeat};--route-line-bottom-mask:${bottom.mask};--station-route-color:${dotColor};--station-route-color-bg:${dotColor}"><div class="time-dot${markerClass}"${markerTitle?` title="${markerTitle}" aria-label="${markerTitle}"`:''}></div><div class="time-text${twoLine?' two-line':''}">${times.map(t=>`<span>${t}</span>`).join('')}</div><div class="station-text">${row.station}</div></div>`;
+    return `<div class="${classes}" style="--route-line-top-bg:${top.images};--route-line-top-size:${top.sizes};--route-line-top-position:${top.positions};--route-line-top-repeat:${top.repeat};--route-line-top-mask:${top.mask};--route-line-bottom-bg:${bottom.images};--route-line-bottom-size:${bottom.sizes};--route-line-bottom-position:${bottom.positions};--route-line-bottom-repeat:${bottom.repeat};--route-line-bottom-mask:${bottom.mask};--station-route-color:${dotColor};--station-route-color-bg:${dotColor}"><div class="time-dot${markerClass}"${markerTitle?` title="${markerTitle}" aria-label="${markerTitle}"`:''}></div><div class="time-text${twoLine?' two-line':''}">${times.map(t=>`<span>${t}</span>`).join('')}</div><div class="station-text${stationNameEn?' fukuoka-station-text':''}"><span class="station-text-ja">${esc(row.station)}</span>${stationNameEn?`<span class="station-text-en">${esc(stationNameEn)}</span>`:''}</div></div>`;
   }).join('');
 }
 let TIMETABLE_HTML_CACHE = new Map();
@@ -5048,6 +5100,10 @@ function stationTimetableHTML(station, selectedDirection='up'){
       const destination=`${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}`;
       const isNext=index===nextIndex;
       const isOrigin=String(train?.start||'')===stationName;
+      // 種別と駅位置は各行（列車）ごとに求める。forEach側のローカル変数を
+      // renderDirectionのmap内から参照してReferenceErrorになる問題を修正。
+      const stationPosition=stationIndex(stationName);
+      const stationType=getTrainTypeAtPosition(train,stationPosition);
 
       return `
         <button
