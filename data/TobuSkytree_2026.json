@@ -1,4 +1,3 @@
-
 {
   "schemaVersion": 2,
   "id": "tobu-skytree",
@@ -687,7 +686,26 @@
         ]
       ]
     },
-    "fadeSegmentsWhenBranchOpen": [],
+    "fadeSegmentsWhenBranchOpen": [
+      {
+        "branch": "nikko",
+        "from": "和戸",
+        "to": "南栗橋",
+        "useLine": "伊勢崎線"
+      },
+      {
+        "branch": "hibiya",
+        "from": "北千住",
+        "to": "南千住",
+        "useLine": "スカイツリーライン"
+      },
+      {
+        "branch": "hanzomon",
+        "from": "曳舟",
+        "to": "押上",
+        "useLine": "スカイツリーライン"
+      }
+    ],
     "visualGapSegmentsWhenBranchOpen": [
       {
         "branch": "hibiya",
@@ -716,43 +734,7 @@
         "田園都市線"
       ]
     },
-    "blendSegmentsWhenBranchOpen": [
-      {
-        "branch": "nikko",
-        "from": "和戸",
-        "to": "南栗橋",
-        "fromLine": "伊勢崎線",
-        "toLine": "日光線"
-      },
-      {
-        "branch": "nikko",
-        "from": "杉戸高野台",
-        "to": "東武動物公園",
-        "fromLine": "日光線",
-        "toLine": "伊勢崎線"
-      },
-      {
-        "branch": "hibiya",
-        "from": "北千住",
-        "to": "南千住",
-        "fromLine": "スカイツリーライン",
-        "toLine": "日比谷線"
-      },
-      {
-        "branch": "hanzomon",
-        "from": "曳舟",
-        "to": "押上",
-        "fromLine": "スカイツリーライン",
-        "toLine": "半蔵門線"
-      },
-      {
-        "branch": "hanzomon",
-        "from": "渋谷",
-        "to": "池尻大橋",
-        "fromLine": "半蔵門線",
-        "toLine": "田園都市線"
-      }
-    ]
+    "blendSegmentsWhenBranchOpen": []
   },
   "segmentColorRules": [
     {
