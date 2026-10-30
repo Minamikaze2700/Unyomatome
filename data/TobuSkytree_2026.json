@@ -691,37 +691,25 @@
         "branch": "nikko",
         "from": "和戸",
         "to": "南栗橋",
-        "useLine": "伊勢崎線"
+        "useLine": "伊勢崎線",
+        "direction": "up"
       },
       {
         "branch": "hibiya",
-        "from": "北千住",
-        "to": "南千住",
-        "useLine": "スカイツリーライン"
+        "from": "中目黒",
+        "to": "牛田",
+        "useLine": "スカイツリーライン",
+        "direction": "down"
       },
       {
         "branch": "hanzomon",
-        "from": "曳舟",
-        "to": "押上",
-        "useLine": "スカイツリーライン"
+        "from": "中央林間",
+        "to": "とうきょうスカイツリー",
+        "useLine": "スカイツリーライン",
+        "direction": "down"
       }
     ],
-    "visualGapSegmentsWhenBranchOpen": [
-      {
-        "branch": "hibiya",
-        "pair": [
-          "中目黒",
-          "牛田"
-        ]
-      },
-      {
-        "branch": "hanzomon",
-        "pair": [
-          "中央林間",
-          "とうきょうスカイツリー"
-        ]
-      }
-    ],
+    "visualGapSegmentsWhenBranchOpen": [],
     "junctionLineNames": {
       "日光線": [
         "日光線"
