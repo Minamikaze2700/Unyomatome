@@ -3931,7 +3931,9 @@ function formationDropdownHTML(train){
       return `<div class="option-header option-subheader option-selectable-category ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':`onclick="selectFormation('${escapeJs(variant.id)}')"`}><img src="${esc(variant?.img||fallbackTrainImageUrl())}" class="option-img"><span>${esc(variant?.name||variant?.id)}</span></div>`;
     }).join('');
     const variantItems=(group?.variants||[]).flatMap(v=>Array.isArray(v?.items)?v.items:[]);
-    const items=[...variantItems,...(group?.items||[])].map(item=>{
+    const items=[...variantItems,...(group?.items||[])]
+      .filter(item=>item?.inputSelectable!==false && !isNoda8158InputBlocked(train,item?.id))
+      .map(item=>{
       const disabled=!!item?.disabled||UNAVAILABLE_FORMATIONS.has(String(item?.id));
       return `<div class="option-item ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':`onclick="selectFormation('${escapeJs(item.id)}')"`}><img src="${esc(item?.img||fallbackTrainImageUrl())}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${esc(item?.name||item?.id)}</span></div>`;
     }).join('');
@@ -3948,6 +3950,15 @@ function formationRouteAllowed(target,train){
   if(String(train?.formationFamily||activeRouteMeta?.formationFamily||'')==='fukuoka-kuko-hakozaki'
       || String(activeRouteMeta?.formationFamily||'')==='fukuoka-kuko-hakozaki') return true;
   return !!route && routes.includes(route);
+}
+function isNoda8158InputBlocked(train,id){
+  const canonical=String(id??'').trim().replace(/F$/i,'');
+  if(canonical!=='8158') return false;
+  const routeName=String(train?.routeName||activeRouteName||'').trim();
+  const routeMeta=(typeof ROUTE_REGISTRY==='object' && ROUTE_REGISTRY && routeName)
+    ? (ROUTE_REGISTRY[routeName]||activeRouteMeta||{}) : (activeRouteMeta||{});
+  const family=String(routeMeta?.formationFamily||activeJson?.formationFamily||train?.formationFamily||'');
+  return family==='noda';
 }
 function formationAllowedForTrain(train,id){
   if(!id || id===INITIAL_FORMATION_SELECTION.id) return true;
@@ -5631,6 +5642,10 @@ let selectionSyncInProgress=false;
 let pendingFormationTimestamps={平日:{},休日:{}};
 async function selectFormation(formId){
   if(!formationInputAllowed()) return;
+  if(isNoda8158InputBlocked(currentTrainSnapshot||liveTrain(currentTrainNo)||null,formId)){
+    syncStatus('8158Fは新規登録できません');
+    return;
+  }
   const formation=formationById(formId);
   if(formation?.disabled || UNAVAILABLE_FORMATIONS.has(normalizeStoredFormationId(formId))) {
     syncStatus('この編成は入力できません');
@@ -8216,13 +8231,23 @@ initRegionNavigation();
   window.linkedTrainNumbersForFormationUI=linkedTrainNumbersForFormationUI;
 
   function formationCountForTrain(train){
-    // 2列車以上の運用連結は「1列番＝1編成」。列車数をスロット数にし、各スロットを別列番へ保存する。
+    // 東武野田線は1列車につき1編成。連結情報によって入力枠が増えることを防ぐ。
+    const routeName=String(train?.routeName||activeRouteName||'').trim();
+    const routeMeta=(typeof ROUTE_REGISTRY==='object' && ROUTE_REGISTRY && routeName)
+      ? (ROUTE_REGISTRY[routeName]||activeRouteMeta||{}) : (activeRouteMeta||{});
+    const family=String(routeMeta?.formationFamily||activeJson?.formationFamily||train?.formationFamily||'');
+    if(family==='noda') return 1;
+
+    // 最大編成数はJSONの設定を優先し、なければ路線設定・列車設定を参照。
+    // いずれにも設定がない路線は既定の1編成とする。
+    const configuredCount=activeJson?.formationCountDefault ?? routeMeta?.formationCountDefault ?? train?.formationCount;
+    const maxCount=(configuredCount===undefined || configuredCount===null || configuredCount==='')
+      ? DEFAULT_FORMATION_COUNT : clampFormationCount(configuredCount);
+
+    // 連結列車は「1列番＝1編成」。ただし路線で指定された最大数を超えない。
     const linked=linkedTrainNumbersForFormationUI(train);
-    if(linked.length>1) return clampFormationCount(linked.length);
-    // 単独列車は従来どおりJSONの formationCountDefault / 列車のformationCountを使用。
-    const jsonCount = activeJson?.formationCountDefault ?? train?.formationCount;
-    if (jsonCount === undefined || jsonCount === null || jsonCount === '') return 1;
-    return clampFormationCount(jsonCount);
+    if(linked.length>1) return Math.min(clampFormationCount(linked.length),maxCount);
+    return maxCount;
   }
   window.formationCountForTrain=formationCountForTrain;
 
@@ -8377,6 +8402,8 @@ initRegionNavigation();
       // すべての個体差に属する個別編成をまとめて表示。
       const variantItems=(group.variants||[]).flatMap(variant=>Array.isArray(variant.items)?variant.items:[]);
       for(const item of [...variantItems,...(group.items||[])]){
+        // inputSelectable:false は新規入力の候補からのみ除外し、履歴表示用データは残す。
+        if(item?.inputSelectable===false || isNoda8158InputBlocked(currentTrainSnapshot||{},item?.id)) continue;
         const id=String(item.id||'').replace(/F$/i,'');
         if(!id) continue;
         const disabled=!!item.disabled || UNAVAILABLE_FORMATIONS.has(id);
@@ -8547,6 +8574,11 @@ initRegionNavigation();
       if(!r.ok){if(err)err.textContent=r.error;input?.focus();return;}
       const id=normalizeStoredFormationId(r.id);
       if(!id){if(err)err.textContent='編成を特定できません。';input?.focus();return;}
+      if(isNoda8158InputBlocked(train,id)){
+        if(err) err.textContent='8158Fは新規登録できません。';
+        syncStatus('8158Fは新規登録できません');
+        input?.focus();return;
+      }
       ids.push(id);
     }
     // A編成/S編成は共通選択肢なので重複可。個別編成だけ重複禁止。
@@ -8578,6 +8610,12 @@ initRegionNavigation();
   };
   async function saveFormationAtSlot(slot,id){
     if(!formationInputAllowed()) return;
+    if(isNoda8158InputBlocked(currentTrainSnapshot||liveTrain(currentTrainNo)||null,id)){
+      const err=document.getElementById('formationInputError');
+      if(err) err.textContent='8158Fは新規登録できません。';
+      syncStatus('8158Fは新規登録できません');
+      return;
+    }
     const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction||null)||currentTrainSnapshot;
     if(!train) return;
     const count=formationCountForTrain(train);
