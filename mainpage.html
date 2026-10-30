@@ -556,7 +556,7 @@ button,input,select,textarea{font-family:inherit}
 .timetable-item:first-child::before{top:50%}
 .timetable-item:last-child::after{bottom:50%}
 .timetable-item.dotted-route-guide::before,.timetable-item.dotted-route-guide::after{
-  background-image:repeating-linear-gradient(to bottom,var(--station-route-color,var(--primary)) 0 4px,transparent 4px 8px) !important;
+  background-image:repeating-linear-gradient(to bottom,var(--station-route-color,var(--primary)) 0 7px,transparent 7px 14px) !important;
   background-size:100% 100% !important;background-position:0 0 !important;background-repeat:repeat-y !important;
 }
 .time-dot{position:relative;width:18px;height:18px;background:var(--station-route-color,var(--primary));border-radius:50%;z-index:2;margin-right:16px;flex:none}
@@ -900,7 +900,7 @@ body{padding-bottom:42px !important;}
   background-position:top,bottom !important;
   background-repeat:no-repeat !important;
 }
-.dotted-route-guide::before{background:repeating-linear-gradient(to bottom,var(--station-route-color,var(--primary)) 0 4px,transparent 4px 8px) !important;}
+.dotted-route-guide::before{background:repeating-linear-gradient(to bottom,var(--station-route-color,var(--primary)) 0 7px,transparent 7px 14px) !important;}
 /* Today operation: the number/type elements are display:none when absent, so their grid tracks must also be omitted. */
 .train-operation-wrap.hide-operation-number .train-operation-row{grid-template-columns:44px 78px minmax(0,1fr) 36px 78px minmax(0,1fr) !important;}
 .train-operation-wrap.hide-operation-type .train-operation-row{grid-template-columns:86px 78px minmax(0,1fr) 36px 78px minmax(0,1fr) !important;}
@@ -920,13 +920,13 @@ body{padding-bottom:42px !important;}
   background-repeat:no-repeat !important;
 }
 .timetable-item.dotted-route-guide::before{
-  background-image:repeating-linear-gradient(to bottom,var(--station-route-color,var(--primary)) 0 4px,transparent 4px 8px) !important;
+  background-image:repeating-linear-gradient(to bottom,var(--station-route-color,var(--primary)) 0 7px,transparent 7px 14px) !important;
   background-size:100% 100% !important;
   background-position:center !important;
   background-repeat:repeat !important;
 }
 .timetable-item.dotted-route-guide:first-child::before{
-  background-image:repeating-linear-gradient(to bottom,transparent 0 4px,var(--station-route-color,var(--primary)) 4px 8px) !important;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 7px,var(--station-route-color,var(--primary)) 7px 14px) !important;
   background-size:100% 100% !important;
 }
 </style>
@@ -954,8 +954,8 @@ body{padding-bottom:42px !important;}
   -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
 }
 .timetable-item.dotted-route-guide::before,.timetable-item.dotted-route-guide::after{
-  -webkit-mask-image:repeating-linear-gradient(to bottom,#000 0 4px,transparent 4px 8px) !important;
-  mask-image:repeating-linear-gradient(to bottom,#000 0 4px,transparent 4px 8px) !important;
+  -webkit-mask-image:repeating-linear-gradient(to bottom,#000 0 7px,transparent 7px 14px) !important;
+  mask-image:repeating-linear-gradient(to bottom,#000 0 7px,transparent 7px 14px) !important;
   background-size:100% 100% !important;background-position:0 0 !important;background-repeat:no-repeat !important;
 }
 .timetable-item.dotted-route-guide::before{
@@ -2175,11 +2175,20 @@ function normalizeExternalTrain(raw,day,direction,meta){
   const allowedLineNames=new Set(Array.isArray(meta?.jsonLines)?meta.jsonLines:[]);
   const rawTrainNumbers=(raw?.trainNumbers&&typeof raw.trainNumbers==='object')?raw.trainNumbers:{};
   const rawNo=normalizeTrainNo(raw?.no??raw?.trainNo??'');
+  // 同じ列車でも区間によって種別・列車番号の有無が変わる路線に対応。
+  // ここでは駅間の定義だけ保持し、表示時に現在位置から該当区間を選ぶ。
+  const sectionTypeSegments=Array.isArray(raw?.sectionTypeSegments)
+    ? raw.sectionTypeSegments.filter(x=>x&&typeof x==='object').map(x=>({...x}))
+    : null;
+  const sectionNumberSegments=Array.isArray(raw?.sectionNumberSegments)
+    ? raw.sectionNumberSegments.filter(x=>x&&typeof x==='object').map(x=>({...x,number:normalizeTrainNo(x.number??x.no??'')})).filter(x=>x.number)
+    : null;
+  const hasSectionTrainNumber=!!sectionNumberSegments?.length;
   // 列車番号は「現在表示中の路線」だけでなく、JSONに収録された全線区分を保持する。
   // 可部線・呉線のページでも、山陽本線を走る列車の番号をその列車自身の番号として表示できるようにする。
   const rawNumberEntries=Object.entries(rawTrainNumbers).filter(([,val])=>Array.isArray(val));
   const hasTrainNumberFromObject=rawNumberEntries.some(([,val])=>val.some(n=>String(n??'').trim()));
-  const hasTrainNumber=hasTrainNumberFromObject || !!rawNo;
+  const hasTrainNumber=hasTrainNumberFromObject || !!rawNo || hasSectionTrainNumber;
   const numbersByLine={};
   const allNumbers=[];
   if(hasTrainNumber){
@@ -2195,6 +2204,10 @@ function normalizeExternalTrain(raw,day,direction,meta){
     }
     if(rawNo && !allNumbers.includes(rawNo)) allNumbers.push(rawNo);
     if(rawNo && !rawNumberEntries.length) numbersByLine[String(raw?.lineKind||meta?.lineKind||'route')]=[rawNo];
+    for(const segment of (sectionNumberSegments||[])){
+      const sectionNo=normalizeTrainNo(segment?.number||'');
+      if(sectionNo && !allNumbers.includes(sectionNo)) allNumbers.push(sectionNo);
+    }
     if(!allNumbers.length) return [];
   }
 
@@ -2222,7 +2235,9 @@ function normalizeExternalTrain(raw,day,direction,meta){
 
   // 列車が実際に跨っている全線区名を色判定用コンテキストとして保持。
   // 列車番号を持たない単一路線では、現在の路線自体を使用する。
-  let servedLineNames=Object.keys(rawTrainNumbers).filter(name=>lineDefByName(name));
+  let servedLineNames=Array.isArray(raw?.servedLineNames)
+    ? raw.servedLineNames.map(x=>String(x||'').trim()).filter(name=>name&&lineDefByName(name))
+    : Object.keys(rawTrainNumbers).filter(name=>lineDefByName(name));
   if(!servedLineNames.length){
     servedLineNames=[...allowedLineNames].filter(name=>lineDefByName(name));
   }
@@ -2266,9 +2281,13 @@ function normalizeExternalTrain(raw,day,direction,meta){
 
   const firstTimed=stops.find(st=>st.isStop) || {};
   const lastTimed=[...stops].reverse().find(st=>st.isStop) || firstTimed;
-  const internalNo=hasTrainNumber
-    ? (allNumbers[0]||rawNo)
-    : String(raw?.id||raw?.uid||`${day}-${direction}-${String(firstTimed.station||'')}-${String(firstTimed.time||'')}`);
+  // 区間別番号を持つ直通列車では、列車番号は表示用の属性であり、
+  // Firebase・運用履歴の内部キーは従来のJSON idを維持する。
+  const internalNo=hasSectionTrainNumber
+    ? String(rawNo||raw?.id||raw?.uid||`${day}-${direction}-${String(firstTimed.station||'')}-${String(firstTimed.time||'')}`)
+    : (hasTrainNumber
+      ? (allNumbers[0]||rawNo)
+      : String(raw?.id||raw?.uid||`${day}-${direction}-${String(firstTimed.station||'')}-${String(firstTimed.time||'')}`));
   // noTrainTypes=true の路線は、JSON内にtype値が残っていても種別として扱わない。
   // 神戸市営地下鉄と樽見鉄道のような種別表示なしの路線に対応する。
   const suppressTrainTypes=meta?.noTrainTypes===true || activeJson?.noTrainTypes===true;
@@ -2279,7 +2298,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
   return [{
     no:internalNo,
     hasTrainNumber,
-    hideTrainNumber:!hasTrainNumber || meta?.noTrainNumbers===true || activeJson?.noTrainNumbers===true,
+    hideTrainNumber:!hasTrainNumber || ((meta?.noTrainNumbers===true || activeJson?.noTrainNumbers===true) && !hasSectionTrainNumber),
     noSequence:allNumbers,
     numbersByLine,
     numberSegments,
@@ -2301,6 +2320,8 @@ function normalizeExternalTrain(raw,day,direction,meta){
     prescribedFormation:String(raw?.prescribedFormation||raw?.prescribedFormationName||'').trim(),
     circular:raw?.circular===true,
     trainNumbers:(raw?.trainNumbers&&typeof raw.trainNumbers==='object')?raw.trainNumbers:(rawNo?{[String(servedLineNames[0]||raw?.lineKind||meta?.lineKind||'route')]:[rawNo]}:{}),
+    sectionTypeSegments,
+    sectionNumberSegments,
     servedLineNames,
     sourceTypeColors:(raw?.__sourceTypeColors&&typeof raw.__sourceTypeColors==='object')?{...raw.__sourceTypeColors}:{},
     sourceJsonUrl:String(raw?.__sourceJsonUrl||''),
@@ -2311,11 +2332,58 @@ function normalizeExternalTrain(raw,day,direction,meta){
 function trainDisplayNoAtStation(train,stationName){
   if(!train || train.hideTrainNumber) return '';
   const station=String(stationName||'');
+  if(Array.isArray(train.sectionNumberSegments)){
+    return trainDisplayNoAtPosition(train,stationIndex(station));
+  }
   const idx=(train.stops||[]).findIndex(s=>String(s?.station||'')===station);
   return trainDisplayNoAtPosition(train,idx>=0?idx:0);
 }
+function sectionSegmentAtPosition(segments,pos){
+  if(!Array.isArray(segments) || !segments.length) return null;
+  let p=Number(pos);
+  if(!Number.isFinite(p)){
+    const current=segments[0];
+    p=stationIndex(String(current?.fromStation||''));
+  }
+  if(!Number.isFinite(p) || p<0) return null;
+  const matches=segments.filter(segment=>{
+    const a=stationIndex(String(segment?.fromStation||''));
+    const b=stationIndex(String(segment?.toStation||''));
+    if(a<0||b<0) return false;
+    return p>=Math.min(a,b)-0.0001 && p<=Math.max(a,b)+0.0001;
+  });
+  // 区間境界の駅では、配列で後に定義された「次の区間」を優先する。
+  return matches.length?matches[matches.length-1]:null;
+}
+function getTrainTypeAtPosition(train,pos=null){
+  if(!Array.isArray(train?.sectionTypeSegments)) return String(train?.type||'').trim();
+  let resolved=pos;
+  if(resolved==null || !Number.isFinite(Number(resolved))){
+    resolved=positionForTrain(train,currentMinutes())?.pos;
+  }
+  if(resolved==null || !Number.isFinite(Number(resolved))){
+    resolved=stationIndex(String(train?.start||train?.stops?.[0]?.station||''));
+  }
+  const segment=sectionSegmentAtPosition(train.sectionTypeSegments,resolved);
+  if(!segment || segment.showType===false) return '';
+  return String(segment.type||'').trim();
+}
+function getTrainTypeSegmentAtPosition(train,pos=null){
+  if(!Array.isArray(train?.sectionTypeSegments)) return null;
+  let resolved=pos;
+  if(resolved==null || !Number.isFinite(Number(resolved))){
+    resolved=positionForTrain(train,currentMinutes())?.pos;
+  }
+  if(resolved==null || !Number.isFinite(Number(resolved))){
+    resolved=stationIndex(String(train?.start||train?.stops?.[0]?.station||''));
+  }
+  return sectionSegmentAtPosition(train.sectionTypeSegments,resolved);
+}
 function trainDisplayNoAtPosition(train,pos){
-  if(String(activeRouteMeta?.formationFamily||'')==='fukuoka-kuko-hakozaki') return '';
+  if(Array.isArray(train?.sectionNumberSegments)){
+    const section=sectionSegmentAtPosition(train.sectionNumberSegments,pos);
+    return String(section?.number||'');
+  }
   const segments=train?.numberSegments||{};
   const stationPos=Math.max(0,Number(pos)||0);
   // 現在区間を担当する路線から列番を解決。路線の変更がある場合は、その駅から新列番へ切り替える。
@@ -2457,37 +2525,17 @@ async function loadExternalRouteJsons(routeMeta){
   // 両方のJSONを列車データと線区定義だけ統合する。編成・種別色・運用連結は
   // 現在選択中の路線（primary）をそのまま使用する。
   const merged={...primary,lines:[],trains:{},stationDirections:{},operationChains:primary?.operationChains||{}};
-  // 略称設定はHTMLの路線メタデータだけでなく、各JSONに登録された内容を統合する。
-  // 京浜東北・根岸線／横浜線は関連JSONの列車も同じ画面に現れるため、
-  // 行先と種別の略称をまとめて統合し、現在路線(primary)の設定を優先する。
-  const mergeAliasMap=(key)=>{
-    const out={};
-    // 関連JSONから先に入れ、primaryの値で上書きして現在路線を優先。
-    for(const {json:aliasJson} of payloads.slice(1)){
-      const map=aliasJson?.[key];
-      if(map&&typeof map==='object'&&!Array.isArray(map)) Object.assign(out,map);
-    }
-    const primaryMap=primary?.[key];
-    if(primaryMap&&typeof primaryMap==='object'&&!Array.isArray(primaryMap)) Object.assign(out,primaryMap);
-    return out;
-  };
-  for(const key of ['destinationAliases','typeShortMap','typeAbbreviations','typeAliases','typeDetailMap']){
-    merged[key]=mergeAliasMap(key);
-  }
-  // ルール形式（contains / containsAll / trainNoSuffix）も関連JSONから統合。
-  merged.typeShortRules=[
-    ...(Array.isArray(primary?.typeShortRules)?primary.typeShortRules:[]),
-    ...payloads.slice(1).flatMap(({json:aliasJson})=>Array.isArray(aliasJson?.typeShortRules)?aliasJson.typeShortRules:[])
-  ];
-  // route.abbreviations.types の配列形式にも対応。ID参照の設定も失わない。
-  const typeAbbrs=[];
+  // 行先略称はHTMLの路線設定に直書きせず各JSONで管理する。
+  // 横浜線ページでは共有区間の京浜東北・根岸線JSONも読み込むため、
+  // primary（現在路線）の指定を優先しつつ、関連JSONの略称も統合する。
+  merged.destinationAliases={...(primary?.destinationAliases&&typeof primary.destinationAliases==='object'&&!Array.isArray(primary.destinationAliases)?primary.destinationAliases:{})};
   for(const {json:aliasJson} of payloads.slice(1)){
-    const a=aliasJson?.abbreviations?.types||aliasJson?.route?.abbreviations?.types;
-    if(Array.isArray(a)) typeAbbrs.push(...a);
+    const aliases=aliasJson?.destinationAliases;
+    if(!aliases||typeof aliases!=='object'||Array.isArray(aliases)) continue;
+    for(const [destination,shortName] of Object.entries(aliases)){
+      if(!Object.prototype.hasOwnProperty.call(merged.destinationAliases,destination)) merged.destinationAliases[destination]=shortName;
+    }
   }
-  const primaryTypeAbbrs=primary?.abbreviations?.types||primary?.route?.abbreviations?.types;
-  if(Array.isArray(primaryTypeAbbrs)) typeAbbrs.push(...primaryTypeAbbrs);
-  merged.abbreviations={...(primary?.abbreviations&&typeof primary.abbreviations==='object'?primary.abbreviations:{}),types:typeAbbrs};
   const seenLines=new Set();
   for(const {json} of payloads){
     for(const line of (Array.isArray(json?.lines)?json.lines:[])){
@@ -2762,7 +2810,7 @@ function timetableRowsHTML(stops,trainContext=null){
     return {
       images:`linear-gradient(to right,${stops})`,
       sizes:'100% 100%',positions:'0 0',repeat:'no-repeat',
-      mask:dotted?'repeating-linear-gradient(to bottom,#000 0 4px,transparent 4px 8px)':'none'
+      mask:dotted?'repeating-linear-gradient(to bottom,#000 0 7px,transparent 7px 14px)':'none'
     };
   };
   return rows.map((row,index)=>{
@@ -3181,171 +3229,44 @@ function getVisibleTrains(){
   const source=getDisplayedTrainSource();
   return source.map(t=>liveTrain(t.no,t.direction)||t);
 }
-function aliasText(entry){
-  if(entry===undefined||entry===null) return '';
-  if(typeof entry!=='object') return String(entry).trim();
-  return String(entry.value??entry.abbr??entry.short??entry.shortName??entry.abbreviation??entry.result??entry.displayName??'').trim();
-}
-function aliasEntityName(entity, kind){
-  if(!entity||typeof entity!=='object') return '';
-  return String(kind==='station'
-    ? (entity.name??entity.station??entity.stationName??entity.targetName??entity.label??'')
-    : (entity.name??entity.type??entity.typeName??entity.targetName??entity.label??entity.title??'')).trim();
-}
-function aliasEntityId(entity){
-  return String(entity?.id??entity?.stationId??entity?.typeId??entity?.key??'').trim();
-}
-function jsonAliasEntities(json, kind){
-  if(!json) return [];
-  if(kind==='station'){
-    const result=[];
-    if(Array.isArray(json.stations)) result.push(...json.stations);
-    if(Array.isArray(json.route?.stations)) result.push(...json.route.stations);
-    if(Array.isArray(json.lines)) for(const line of json.lines){
-      if(Array.isArray(line?.stations)) result.push(...line.stations);
-      if(Array.isArray(line?.stationList)) result.push(...line.stationList);
-    }
-    return result;
-  }
-  const result=[];
-  for(const value of [json.types,json.trainTypes,json.serviceTypes,json.typeDefinitions,json.route?.types,json.route?.trainTypes,json.route?.serviceTypes]){
-    if(Array.isArray(value)) result.push(...value);
-  }
-  return result;
-}
-function aliasFromMap(map, value, entities=[], kind='station'){
-  const target=String(value||'').trim();
-  if(!target||map==null) return '';
-  if(Array.isArray(map)){
-    // Direct name-based entries.
-    const byName=map.find(item=>aliasEntityName(item,kind)===target);
-    const byNameText=aliasText(byName);
-    if(byNameText) return byNameText;
-    // Database-editor exports link abbreviations to entity IDs via targetId.
-    const ids=new Set(entities.filter(item=>aliasEntityName(item,kind)===target).map(aliasEntityId).filter(Boolean));
-    if(ids.size){
-      const byId=map.find(item=>{
-        const id=String(item?.targetId??item?.target_id??item?.refId??item?.entityId??item?.stationId??item?.typeId??'').trim();
-        return id && ids.has(id);
-      });
-      const byIdText=aliasText(byId);
-      if(byIdText) return byIdText;
-    }
-    return '';
-  }
-  if(typeof map==='object'){
-    if(Object.prototype.hasOwnProperty.call(map,target)){
-      const direct=aliasText(map[target]);
-      if(direct) return direct;
-    }
-    // Some exports use {stationId: abbreviation} or {typeId: abbreviation}.
-    const ids=entities.filter(item=>aliasEntityName(item,kind)===target).map(aliasEntityId).filter(Boolean);
-    for(const id of ids){
-      if(Object.prototype.hasOwnProperty.call(map,id)){
-        const byId=aliasText(map[id]);
-        if(byId) return byId;
-      }
-    }
-    for(const key of ['stations','types','items','entries','values']){
-      if(Array.isArray(map[key])){
-        const nested=aliasFromMap(map[key],target,entities,kind);
-        if(nested) return nested;
-      }
-    }
-  }
-  return '';
-}
-function getJsonAlias(value, kind='station'){
-  const target=String(value||'').trim();
-  if(!target) return '';
-  const json=activeJson||{};
+function getShortType(type, trainNo=''){
+  const value=String(type||'');
+  if(!value) return '';
   const routeMeta=activeRouteMeta||{};
-  const registryMeta=(typeof ROUTE_REGISTRY==='object'&&ROUTE_REGISTRY&&activeRouteName)?ROUTE_REGISTRY[activeRouteName]:null;
-  const entities=jsonAliasEntities(json,kind);
-  // Prefer the currently loaded JSON (including its direct entity fields and abbreviations).
-  const entity=entities.find(item=>aliasEntityName(item,kind)===target);
-  if(entity){
-    const direct=String(kind==='station'
-      ? (entity.abbr??entity.abbreviation??entity.shortName??entity.short??entity.shortLabel??'')
-      : (entity.abbr??entity.abbreviation??entity.shortName??entity.short??entity.shortLabel??'')).trim();
-    if(direct) return direct;
+  const direct=routeMeta.typeShortMap?.[value];
+  if(direct!==undefined && direct!==null && String(direct).trim()) return String(direct);
+  const jsonMaps=[activeJson?.typeShortMap,activeJson?.typeAbbreviations,activeJson?.route?.abbreviations?.types];
+  for(const map of jsonMaps){
+    if(!map) continue;
+    if(!Array.isArray(map) && typeof map==='object' && Object.prototype.hasOwnProperty.call(map,value)){
+      const result=map[value];
+      if(result!==undefined && result!==null && String(result).trim()) return String(result);
+    }
+    if(Array.isArray(map)){
+      const match=map.find(item=>String(item?.name??item?.type??item?.targetName??'').trim()===value);
+      if(match){const result=match.value??match.abbr??match.short;if(result!==undefined&&result!==null&&String(result).trim())return String(result);}
+    }
   }
-  const maps=kind==='station' ? [
-    json.stationShortMap,json.stationAbbreviations,json.stationAliases,json.destinationAliases,
-    json.abbreviations?.stations,json.route?.stationShortMap,json.route?.stationAbbreviations,
-    json.route?.stationAliases,json.route?.destinationAliases,json.route?.abbreviations?.stations,
-    json.stationShortRules,
-    routeMeta.stationShortMap,routeMeta.stationAbbreviations,routeMeta.stationAliases,routeMeta.destinationAliases,
-    routeMeta.stationShortRules,
-    registryMeta?.stationShortMap,registryMeta?.stationAbbreviations,registryMeta?.stationAliases,registryMeta?.destinationAliases,registryMeta?.stationShortRules
-  ] : [
-    json.typeShortMap,json.typeAbbreviations,json.typeAliases,json.abbreviations?.types,
-    json.route?.typeShortMap,json.route?.typeAbbreviations,json.route?.typeAliases,json.route?.abbreviations?.types,
-    routeMeta.typeShortMap,routeMeta.typeAbbreviations,routeMeta.typeAliases,routeMeta.typeShortRules,
-    registryMeta?.typeShortMap,registryMeta?.typeAbbreviations,registryMeta?.typeAliases,registryMeta?.typeShortRules
-  ];
-  for(const map of maps){
-    const result=aliasFromMap(map,target,entities,kind);
+  const jsonTypes=Array.isArray(activeJson?.types)?activeJson.types:[];
+  const typeEntry=jsonTypes.find(item=>String(item?.name??item?.label??'').trim()===value);
+  const directAbbr=String(typeEntry?.abbr??typeEntry?.abbreviation??typeEntry?.shortName??'').trim();
+  if(directAbbr) return directAbbr;
+  const abbreviationEntries=activeJson?.route?.abbreviations?.types;
+  if(Array.isArray(abbreviationEntries)){
+    const matched=abbreviationEntries.find(item=>String(item?.targetId??'')===String(typeEntry?.id??''));
+    const result=String(matched?.value??matched?.abbr??'').trim();
     if(result) return result;
   }
-  // A rules entry can intentionally be based on partial type text or train number suffix.
-  if(kind==='type'){
-    const trainNo='';
-    for(const rules of [json.typeShortRules,routeMeta.typeShortRules,registryMeta?.typeShortRules]){
-      if(!Array.isArray(rules)) continue;
-      for(const rule of rules){
-        const containsAll=Array.isArray(rule.containsAll)?rule.containsAll:[];
-        if(containsAll.length&&!containsAll.every(x=>target.includes(String(x)))) continue;
-        if(rule.contains&&!target.includes(String(rule.contains))) continue;
-        if(rule.trainNoSuffix&&!trainNo.toUpperCase().endsWith(String(rule.trainNoSuffix).toUpperCase())) continue;
-        if(rule.result!==undefined&&String(rule.result).trim()) return String(rule.result).trim();
-      }
-    }
-  }
-  if(kind==='station'){
-    const rules=[json.stationShortRules,routeMeta.stationShortRules,registryMeta?.stationShortRules];
-    for(const list of rules){
-      if(!Array.isArray(list)) continue;
-      const rule=list.find(item=>String(item?.station??item?.name??item?.targetName??'').trim()===target);
-      if(rule&&rule.result!==undefined&&String(rule.result).trim()) return String(rule.result).trim();
-    }
-  }
-  return '';
-}
-
-function getShortType(type, trainNo='', train=null){
-  const value=String(type||'').trim();
-  if(!value) return '';
-  const json=activeJson||{};
-  const sourceJson=train?.rawTrain||train||{};
-  const sourceMaps=[sourceJson.typeShortMap,sourceJson.typeAbbreviations,sourceJson.typeAliases,
-    sourceJson.abbreviations?.types,sourceJson.route?.typeShortMap,sourceJson.route?.typeAbbreviations,
-    sourceJson.route?.typeAliases,sourceJson.route?.abbreviations?.types];
-  const sourceEntities=jsonAliasEntities(sourceJson,'type');
-  for(const map of sourceMaps){const result=aliasFromMap(map,value,sourceEntities,'type');if(result)return result;}
-  // 現在路線のJSON設定を優先し、route.abbreviations.types の targetId 形式にも対応。
-  const entities=jsonAliasEntities(json,'type');
-  const jsonMaps=[json.typeShortMap,json.typeAbbreviations,json.typeAliases,json.abbreviations?.types,
-    json.route?.typeShortMap,json.route?.typeAbbreviations,json.route?.typeAliases,json.route?.abbreviations?.types];
-  for(const map of jsonMaps){const result=aliasFromMap(map,value,entities,'type');if(result)return result;}
-  const typeEntry=entities.find(item=>aliasEntityName(item,'type')===value);
-  const directAbbr=String(typeEntry?.abbr??typeEntry?.abbreviation??typeEntry?.shortName??typeEntry?.short??'').trim();
-  if(directAbbr) return directAbbr;
-  const registryMeta=(typeof ROUTE_REGISTRY==='object'&&ROUTE_REGISTRY&&activeRouteName)?ROUTE_REGISTRY[activeRouteName]:null;
-  const routeMeta=activeRouteMeta||{};
-  for(const rules of [json.typeShortRules,routeMeta.typeShortRules,registryMeta?.typeShortRules]){
-    if(!Array.isArray(rules)) continue;
-    for(const rule of rules){
-      const containsAll=Array.isArray(rule.containsAll)?rule.containsAll:[];
-      if(containsAll.length&&!containsAll.every(x=>value.includes(String(x)))) continue;
-      if(rule.contains&&!value.includes(String(rule.contains))) continue;
-      if(rule.trainNoSuffix&&!String(trainNo||'').toUpperCase().endsWith(String(rule.trainNoSuffix).toUpperCase())) continue;
-      if(rule.result!==undefined&&String(rule.result).trim()) return String(rule.result).trim();
-    }
-  }
-  // HTML側の旧設定は、JSONに値がない場合のみ互換用フォールバックとする。
-  for(const map of [routeMeta.typeShortMap,routeMeta.typeAbbreviations,routeMeta.typeAliases,registryMeta?.typeShortMap,registryMeta?.typeAbbreviations,registryMeta?.typeAliases]){
-    const result=aliasFromMap(map,value,entities,'type');if(result)return result;
+  const rules=[
+    ...(Array.isArray(routeMeta.typeShortRules)?routeMeta.typeShortRules:[]),
+    ...(Array.isArray(activeJson?.typeShortRules)?activeJson.typeShortRules:[])
+  ];
+  for(const rule of rules){
+    const containsAll=Array.isArray(rule.containsAll)?rule.containsAll:[];
+    if(containsAll.length && !containsAll.every(x=>value.includes(String(x)))) continue;
+    if(rule.contains && !value.includes(String(rule.contains))) continue;
+    if(rule.trainNoSuffix && !String(trainNo||'').toUpperCase().endsWith(String(rule.trainNoSuffix).toUpperCase())) continue;
+    if(rule.result!==undefined && String(rule.result).trim()) return String(rule.result);
   }
   if(value==='区間急行') return '区急';
   if(value==='各駅停車') return '各停';
@@ -3387,7 +3308,32 @@ function displayTrainNo(train){ return (train && !train.hideTrainNumber) ? norma
 function getShortDest(dest){
   const value=String(dest||'').trim();
   if(!value) return '';
-  return getJsonAlias(value,'station') || value;
+  // 従来の行先略称処理に戻し、現在の路線設定と読み込み済みJSONの両方を参照する。
+  // JSON側に略称がない場合でも、路線設定の destinationAliases を適用できる。
+  const aliasMaps=[
+    activeRouteMeta?.destinationAliases,
+    activeRouteMeta?.stationAliases,
+    activeRouteMeta?.stationShortMap,
+    activeRouteMeta?.stationAbbreviations,
+    activeJson?.destinationAliases,
+    activeJson?.stationAliases,
+    activeJson?.stationShortMap,
+    activeJson?.stationAbbreviations,
+    activeJson?.route?.abbreviations?.destinations,
+    activeJson?.route?.abbreviations?.stations
+  ];
+  for(const aliases of aliasMaps){
+    if(aliases && typeof aliases==='object' && !Array.isArray(aliases) && Object.prototype.hasOwnProperty.call(aliases,value)){
+      const short=String(aliases[value]??'').trim();
+      if(short) return short;
+    }
+    if(Array.isArray(aliases)){
+      const match=aliases.find(item=>String(item?.name??item?.station??'').trim()===value);
+      const short=String(match?.value??match?.abbr??match?.short??'').trim();
+      if(short) return short;
+    }
+  }
+  return value;
 }
 function nthMondayDateKey(year,month,nth){
   const d=new Date(year,month-1,1);
@@ -3779,9 +3725,7 @@ function formationDropdownHTML(train){
       return `<div class="option-header option-subheader option-selectable-category ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':`onclick="selectFormation('${escapeJs(variant.id)}')"`}><img src="${esc(variant?.img||fallbackTrainImageUrl())}" class="option-img"><span>${esc(variant?.name||variant?.id)}</span></div>`;
     }).join('');
     const variantItems=(group?.variants||[]).flatMap(v=>Array.isArray(v?.items)?v.items:[]);
-    const items=[...variantItems,...(group?.items||[])]
-      .filter(item=>item?.inputSelectable!==false && item?.selectableType!==false)
-      .map(item=>{
+    const items=[...variantItems,...(group?.items||[])].map(item=>{
       const disabled=!!item?.disabled||UNAVAILABLE_FORMATIONS.has(String(item?.id));
       return `<div class="option-item ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':`onclick="selectFormation('${escapeJs(item.id)}')"`}><img src="${esc(item?.img||fallbackTrainImageUrl())}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${esc(item?.name||item?.id)}</span></div>`;
     }).join('');
@@ -4033,8 +3977,8 @@ function shinanoServiceTypeLabel(train){
   const suffix=number ? (/号$/.test(number)?number:`${number}号`) : '号';
   return `快速${name}${suffix}`;
 }
-function getTrainTypeDisplayLabel(train, includeShinanoServiceDetails=false){
-  const type=String(train?.type||'').trim();
+function getTrainTypeDisplayLabel(train, includeShinanoServiceDetails=false, position=null){
+  const type=getTrainTypeAtPosition(train,position);
   if(isShinanoMainRoute()){
     // 列車名・号数の合成表示は train-card のみに限定する。
     if(includeShinanoServiceDetails && type==='快速' && shinanoTrainName(train)) return shinanoServiceTypeLabel(train);
@@ -4043,28 +3987,28 @@ function getTrainTypeDisplayLabel(train, includeShinanoServiceDetails=false){
   }
   return getDetailType(type);
 }
-function getTrainTypeDisplayClass(train){
+function getTrainTypeDisplayClass(train,position=null){
+  const type=getTrainTypeAtPosition(train,position);
   if(isShinanoMainRoute()){
-    const type=String(train?.type||'').trim();
     if(type==='快速' && shinanoTrainName(train)) return 'shinano-named-service';
     if(type==='快速') return 'shinano-rapid';
     if(type==='普通') return 'shinano-local';
   }
-  return getExpressClass(train);
+  return getExpressClass(train,position);
 }
-function trainVisualKind(t){
-  if(isShinanoMainRoute()) return getTrainTypeDisplayClass(t);
-  return expressClassForTrain(t);
+function trainVisualKind(t,position=null){
+  if(isShinanoMainRoute()) return getTrainTypeDisplayClass(t,position);
+  return expressClassForTrain(t,position);
 }
-function expressClassForTrain(t){
-  const type=String(t?.type||'').trim();
+function expressClassForTrain(t,position=null){
+  const type=getTrainTypeAtPosition(t,position);
   if(type==='回送') return 'deadhead';
   const mapped=activeRouteMeta?.typeClassMap?.[type];
   if(mapped) return String(mapped);
   return (type.includes('快速')||type.includes('特急'))?'express':'route-normal';
 }
-function getExpressClass(train){
-  return expressClassForTrain(train);
+function getExpressClass(train,position=null){
+  return expressClassForTrain(train,position);
 }
 function stationEnglishTextColor(bg){
   const m=String(bg||'').trim().match(/^#([0-9a-fA-F]{6})$/);
@@ -4413,17 +4357,16 @@ function positionForTrain(t,minutes){
   return null;
 }
 
-function trainLabelText(t){
-  const type=String(t?.type||'').trim();
+function trainLabelText(t,position=null){
+  const type=getTrainTypeAtPosition(t,position);
+  const displayTrain=Array.isArray(t?.sectionTypeSegments)?{...t,type}:t;
   const isCircular=isCircularTrain(t);
   // 以前の表示仕様では、列車アイコンの行先はPC・スマホとも略称を使用していた。
   // PC用だけ正式名称へ切り替える処理をなくし、略称設定を両方の表示に反映する。
   const shortDest=isCircular ? '環状' : getShortDest(t?.dest);
-  const displayType=getTrainTypeDisplayLabel(t);
-  // 行先略称はPCでも使用しているため、種別もJSONの略称設定をPC・スマホ共通で適用する。
-  // 略称が未設定の種別は getShortType() が元の表示名を返すので、既存表示は維持される。
-  const shortType=isShinanoMainRoute()?displayType:getShortType(type,t?.no,t);
-  const fullLabel=type?`${shortType} ${shortDest}`:shortDest;
+  const displayType=getTrainTypeDisplayLabel(displayTrain,false,position);
+  const shortType=isShinanoMainRoute()?displayType:getShortType(type,t?.no);
+  const fullLabel=type?`${displayType} ${shortDest}`:shortDest;
   const shortLabel=type?`${shortType} ${shortDest}`:shortDest;
   return `<span class="train-label-full">${escapeAttr(fullLabel)}</span><span class="train-label-short">${escapeAttr(shortLabel)}</span>`;
 }
@@ -4673,7 +4616,9 @@ function renderTrainPositions(){
       let entry=TRAIN_ICON_CACHE.get(item.signature);
       let el=entry?.el;
       if(entry) entry.currentTrain=t;
-      const cls=trainVisualKind(t);
+      const currentType=getTrainTypeAtPosition(t,item.pos);
+      const typeAwareTrain=Array.isArray(t?.sectionTypeSegments)?{...t,type:currentType}:t;
+      const cls=trainVisualKind(t,item.pos);
       // 列車アイコン下部の編成表示は、列車オブジェクトの古い値ではなく
       // Firebase／選択中日付から復元した登録状態を正として表示する。
       const registeredFormation=registeredFormationForTrain(t);
@@ -4682,8 +4627,9 @@ function renderTrainPositions(){
         ?formationDisplayParts(formationIdForDisplay):[];
       const imageUrl=imageForTrain(t);
       const displayNo=trainDisplayNoAtPosition(t,item.pos);
-      const labelText=trainLabelText(t);
-      const contentKey=[displayNo,imageUrl,formationParts.join('\n'),cls,getMainLabelClass(t.type),labelText].join('|');
+      const labelText=trainLabelText(t,item.pos);
+      const currentLabelClass=getMainLabelClass(currentType);
+      const contentKey=[displayNo,imageUrl,formationParts.join('\n'),cls,currentLabelClass,labelText].join('|');
       const contentChanged=!entry||entry.contentKey!==contentKey;
 
       if(!el){
@@ -4699,7 +4645,7 @@ function renderTrainPositions(){
 
       const tForLayout=t;
       if(contentChanged){
-        el.innerHTML=`${displayNo?`<span class="train-no">${displayNo}</span>`:''}<img src="${imageUrl}" alt="${displayNo}">${formationParts.length?`<span class="train-no train-formation">${formationParts.map(x=>`<span>${String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`).join('')}</span>`:''}<span class="train-label ${cls} ${getMainLabelClass(tForLayout.type)}" style="${typeBadgeInlineStyle(tForLayout,item.pos)}">${labelText}</span>`;
+        el.innerHTML=`${displayNo?`<span class="train-no">${displayNo}</span>`:''}<img src="${imageUrl}" alt="${displayNo}">${formationParts.length?`<span class="train-no train-formation">${formationParts.map(x=>`<span>${String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`).join('')}</span>`:''}<span class="train-label ${cls} ${currentLabelClass}" style="${typeBadgeInlineStyle(typeAwareTrain,item.pos)}">${labelText}</span>`;
         entry.contentKey=contentKey;
         entry.layoutHeight=0;
         entry.ready=false;
@@ -5017,11 +4963,19 @@ function stationTimetableHTML(station, selectedDirection='up'){
     const isCircular=isCircularTrain(train);
     const isOrigin=String(train?.start||'')===stationName;
     const isTerminal=getShortDest(train?.dest||'')===stationName;
-    if(isTerminal && !isOrigin) return;
+    const allStops=Array.isArray(train?.stops)?train.stops:[];
+    const timedStops=allStops.filter(stop=>String(stop?.arrival||stop?.departure||stop?.time||'').trim());
+    const actualLastStop=timedStops[timedStops.length-1];
+    const isActualLastStop=String(actualLastStop?.station||'')===stationName;
+    // 終着駅では「到着した列車」を発車時刻表へ載せない。
+    // 行先文字列と駅名の表記揺れだけに頼らず、実際の最終停車駅でも判定する。
+    if((isTerminal||isActualLastStop) && !isOrigin) return;
     if(isCircular && isOrigin && isTerminal) return;
-    // 駅の時刻表には回送列車を掲載しない。
-    if(String(train?.type||'')==='回送') return;
-    const stops=(train.stops||[]).filter(stop=>String(stop?.station||'')===stationName);
+    const stationPosition=stationIndex(stationName);
+    const stationType=getTrainTypeAtPosition(train,stationPosition);
+    // 駅の時刻表には、その区間で回送扱いの列車を掲載しない。
+    if(stationType==='回送') return;
+    const stops=allStops.filter(stop=>String(stop?.station||'')===stationName);
     if(!stops.length) return;
     // 始発駅は最初の停車情報＝発車時刻、終着・途中駅は最後の停車情報を使用。
     const stop=isOrigin ? stops[0] : stops[stops.length-1];
@@ -5111,7 +5065,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
             ${stationTimetableFormationHTML(train)}
           </span>
           <span class="station-timetable-time">${escapeAttr(item.time)}</span>
-          ${String(train.type||'').trim()?`<span class="station-timetable-type ${escapeAttr(getTrainTypeDisplayClass(train))}" style="${typeBadgeInlineStyle(train,null,stationDirectionRouteColor(STATIONS.findIndex(st=>String(st?.nameJa||'')===stationName),key),stationName)}">${escapeAttr(getTrainTypeDisplayLabel(train))}</span>`:''}
+          ${stationType?`<span class="station-timetable-type ${escapeAttr(getTrainTypeDisplayClass(train,stationPosition))}" style="${typeBadgeInlineStyle(Array.isArray(train?.sectionTypeSegments)?{...train,type:stationType}:train,stationPosition,stationDirectionRouteColor(STATIONS.findIndex(st=>String(st?.nameJa||'')===stationName),key),stationName)}">${escapeAttr(getTrainTypeDisplayLabel(train,false,stationPosition))}</span>`:''}
           <span class="station-timetable-destination">
             <span class="station-timetable-destination-main"><span class="station-timetable-destination-station">${escapeAttr(getDisplayDestinationForTrain(train))}</span>${destinationGoSuffix(train)?'<span class="station-timetable-destination-go">行</span>':''}</span>
           </span>
@@ -5292,8 +5246,8 @@ function updateSheetContent(){
         <img src="${imgSrc}" class="train-card-img">
         <div class="train-info-main">
           <div>
-            ${String(train.type||'').trim()?`<span class="type-badge ${getTrainTypeDisplayClass(train)}" style="${typeBadgeInlineStyle(train)}">${getTrainTypeDisplayLabel(train, true)}</span>`:''}
-            <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>
+            ${getTrainTypeAtPosition(train,positionForTrain(train,currentMinutes())?.pos)?`<span class="type-badge ${getTrainTypeDisplayClass(train,positionForTrain(train,currentMinutes())?.pos)}" style="${typeBadgeInlineStyle(train,positionForTrain(train,currentMinutes())?.pos)}">${getTrainTypeDisplayLabel(train,true,positionForTrain(train,currentMinutes())?.pos)}</span>`:''}
+            <span class="train-title${getTrainTypeAtPosition(train,positionForTrain(train,currentMinutes())?.pos)?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>
             ${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}
           </div>
           ${effectiveFormationId && effectiveFormationId!==INITIAL_FORMATION_SELECTION.id
@@ -5314,8 +5268,8 @@ function updateSheetContent(){
         <img src="${(effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id)?selectedForm.img:defaultTrainImage(train)}" class="train-card-img">
         <div class="train-info-main">
           <div>
-            ${String(train.type||'').trim()?`<span class="type-badge ${getTrainTypeDisplayClass(train)}" style="${typeBadgeInlineStyle(train)}">${getTrainTypeDisplayLabel(train, true)}</span>`:''}
-            <span class="train-title${String(train.type||'').trim()?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>
+            ${getTrainTypeAtPosition(train,positionForTrain(train,currentMinutes())?.pos)?`<span class="type-badge ${getTrainTypeDisplayClass(train,positionForTrain(train,currentMinutes())?.pos)}" style="${typeBadgeInlineStyle(train,positionForTrain(train,currentMinutes())?.pos)}">${getTrainTypeDisplayLabel(train,true,positionForTrain(train,currentMinutes())?.pos)}</span>`:''}
+            <span class="train-title${getTrainTypeAtPosition(train,positionForTrain(train,currentMinutes())?.pos)?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>
             ${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}
           </div>
           <div class="input-trigger-btn">編成を入力中</div>
@@ -5467,11 +5421,6 @@ let selectionSyncInProgress=false;
 let pendingFormationTimestamps={平日:{},休日:{}};
 async function selectFormation(formId){
   if(!formationInputAllowed()) return;
-  // 野田線の8158Fは新規入力を禁止。履歴表示用データは削除しない。
-  if(String(formId??'').replace(/F$/i,'')==='8158' && (String(activeRouteMeta?.formationFamily||activeJson?.formationFamily||'')==='noda')){
-    syncStatus('8158Fは新規登録できません');
-    return;
-  }
   const formation=formationById(formId);
   if(formation?.disabled || UNAVAILABLE_FORMATIONS.has(normalizeStoredFormationId(formId))) {
     syncStatus('この編成は入力できません');
@@ -6634,7 +6583,7 @@ function timetableRowsHTML(stops,trainContext=null){
   const chikuhiStations=fukuokaChikuhiStationSet();
   const isChikuhiSegment=(a,b)=>isFukuoka && !!a && !!b && a!==b && chikuhiStations.has(String(a)) && chikuhiStations.has(String(b));
   const isDottedRouteSegment=(a,b,arrivalIndex=-1)=>isChikuhiSegment(a,b)||(arrivalIndex>=0&&rows[arrivalIndex]?.dottedBefore===true);
-  const dottedMask='repeating-linear-gradient(to bottom,#000 0 4px,transparent 4px 8px)';
+  const dottedMask='repeating-linear-gradient(to bottom,#000 0 7px,transparent 7px 14px)';
   return rows.map((row,index)=>{
     const rawTimes=row.times.length>=2?row.times.slice(0,2):row.times.slice(0,1);
     const formattedTimes=rawTimes.map(formatRailwayDisplayTime);
@@ -6847,7 +6796,12 @@ function typeColorFromByRoute(train,type,position=null,stationName='',stationDir
   return String(stationDirectionColor||'').trim();
 }
 function typeColorForTrain(train,position=null,stationName='',stationDirectionColor=null){
-  const type=String(train?.type||'').trim();
+  const sectionTypeSegment=getTrainTypeSegmentAtPosition(train,position);
+  if(Array.isArray(train?.sectionTypeSegments)){
+    if(!sectionTypeSegment) return String(displayedRouteColorForTrainPosition(train,position)||stationDirectionColor||activeRouteColors()[0]||'#666');
+    if(sectionTypeSegment.color) return String(sectionTypeSegment.color);
+  }
+  const type=getTrainTypeAtPosition(train,position);
   // JSONの通常の文字列色と、広島地区の typeColors.<種別>.byRoute の両方に対応する。
   const sourceColors=(train?.sourceTypeColors&&typeof train.sourceTypeColors==='object')?train.sourceTypeColors:{};
   const colors={...sourceColors,...(activeJson?.typeColors||{}),...(activeRouteMeta?.typeColors||{})};
@@ -6884,7 +6838,7 @@ function typeColorForTrain(train,position=null,stationName='',stationDirectionCo
   return fallback;
 }
 function typeBadgeAppearance(train,position=null,stationDirectionColor=null,stationName=''){
-  const type=String(train?.type||'普通');
+  const type=getTrainTypeAtPosition(train,position)||'普通';
   if(type==='回送') return {background:'#fff',color:'#111',border:'1px solid #bbb'};
   const resolvedPosition=position!=null
     ? position
@@ -6906,17 +6860,17 @@ function applyTypeBadgeAppearance(element,train,position=null,stationDirectionCo
   element.style.color=appearance.color;
   element.style.border=appearance.border;
 }
-function expressClassForTrain(t){
-  const type=String(t?.type||'').trim();
+function expressClassForTrain(t,position=null){
+  const type=getTrainTypeAtPosition(t,position);
   if(type==='回送') return 'deadhead';
   return (type.includes('快速')||type.includes('特急'))?'express':'route-normal';
 }
-function getExpressClass(train){ return expressClassForTrain(train); }
+function getExpressClass(train,position=null){ return expressClassForTrain(train,position); }
 function getMainLabelClass(type){
   const value=String(type||'').trim();
   return value==='回送'?'deadhead':(value.includes('快速')?'express':'route-normal');
 }
-function trainVisualKind(t){ return expressClassForTrain(t); }
+function trainVisualKind(t,position=null){ return expressClassForTrain(t,position); }
 function defaultTrainImage(){
   // 未登録・編成未選択時は、JSONのnoImageだけを使用する。
   // formationTypeImageは「形式そのもの」を選択した場合にだけformationById()から使用する。
@@ -7042,10 +6996,10 @@ function initRegionNavigation(){
     .rail-segment{position:absolute;left:0;width:100%;}
     .timetable-item::before{background:linear-gradient(to bottom,var(--route-line-top-bg,#666) 0 50%,var(--route-line-bottom-bg,#666) 50% 100%);}
     .timetable-item.chikuhi-next::before{
-      background:linear-gradient(to bottom,var(--route-line-top,#666) 0 50%,transparent 50% 100%),repeating-linear-gradient(to bottom,var(--station-route-color,#666) 0 4px,transparent 4px 8px);
+      background:linear-gradient(to bottom,var(--route-line-top,#666) 0 50%,transparent 50% 100%),repeating-linear-gradient(to bottom,var(--station-route-color,#666) 0 7px,transparent 7px 14px);
     }
     .timetable-item.chikuhi-prev::before{
-      background:linear-gradient(to bottom,transparent 0 50%,var(--route-line-bottom,#666) 50% 100%),repeating-linear-gradient(to bottom,var(--station-route-color,#666) 0 4px,transparent 4px 8px);
+      background:linear-gradient(to bottom,transparent 0 50%,var(--route-line-bottom,#666) 50% 100%),repeating-linear-gradient(to bottom,var(--station-route-color,#666) 0 7px,transparent 7px 14px);
     }
     .time-dot{background:var(--station-route-color-bg,#666);}
     .train-label.route-normal,.station-timetable-type.route-normal,.type-badge.route-normal{background:var(--train-type-color,#666);color:#fff;}
@@ -8052,8 +8006,6 @@ initRegionNavigation();
   window.linkedTrainNumbersForFormationUI=linkedTrainNumbersForFormationUI;
 
   function formationCountForTrain(train){
-    // 東武野田線は1列車につき1編成。運用連結情報の誤検出で入力欄を2編成に増やさない。
-    if(String(activeJson?.formationFamily||activeRouteMeta?.formationFamily||train?.formationFamily||'')==='noda') return 1;
     // 2列車以上の運用連結は「1列番＝1編成」。列車数をスロット数にし、各スロットを別列番へ保存する。
     const linked=linkedTrainNumbersForFormationUI(train);
     if(linked.length>1) return clampFormationCount(linked.length);
@@ -8215,11 +8167,6 @@ initRegionNavigation();
       // すべての個体差に属する個別編成をまとめて表示。
       const variantItems=(group.variants||[]).flatMap(variant=>Array.isArray(variant.items)?variant.items:[]);
       for(const item of [...variantItems,...(group.items||[])]){
-        // 野田線8158FはJSON属性が正しく伝播しない経路でも選択肢に出さない。
-        if(String(activeJson?.formationFamily||activeRouteMeta?.formationFamily||'')==='noda' && String(item?.id||'').replace(/F$/i,'')==='8158') continue;
-        // inputSelectable:false は新規入力の選択肢からのみ除外する.
-        // FORMATIONS自体には残すため、過去の登録履歴の表示は維持される。
-        if(item?.inputSelectable===false || item?.selectableType===false) continue;
         const id=String(item.id||'').replace(/F$/i,'');
         if(!id) continue;
         const disabled=!!item.disabled || UNAVAILABLE_FORMATIONS.has(id);
@@ -8421,11 +8368,6 @@ initRegionNavigation();
   };
   async function saveFormationAtSlot(slot,id){
     if(!formationInputAllowed()) return;
-    if(String(activeJson?.formationFamily||activeRouteMeta?.formationFamily||'')==='noda' && String(id??'').replace(/F$/i,'')==='8158'){
-      const err=document.getElementById('formationInputError'); if(err) err.textContent='8158Fは新規登録できません。';
-      syncStatus('8158Fは新規登録できません');
-      return;
-    }
     const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction||null)||currentTrainSnapshot;
     if(!train) return;
     const count=formationCountForTrain(train);
@@ -8738,11 +8680,52 @@ initRegionNavigation();
     try{await firebaseAuth.signInWithEmailAndPassword(values.email,values.password);}
     catch(e){console.error('メールログイン失敗',e);setAuthError(authErrorMessage(e));}
   }
+  const DISPOSABLE_EMAIL_DOMAIN_LIST_URL='https://disposable.github.io/disposable-email-domains/domains.txt';
+  let disposableEmailDomainSetPromise=null;
+  async function loadDisposableEmailDomainSet(){
+    if(!disposableEmailDomainSetPromise){
+      disposableEmailDomainSetPromise=(async()=>{
+        const response=await fetch(DISPOSABLE_EMAIL_DOMAIN_LIST_URL,{cache:'no-store'});
+        if(!response.ok) throw new Error(`使い捨てメール一覧の取得に失敗しました (${response.status})`);
+        const body=await response.text();
+        const domains=new Set(body.split(/\r?\n/).map(value=>value.trim().toLowerCase().replace(/\.$/,''))
+          .filter(value=>value && !value.startsWith('#') && value.includes('.') && !/\s/.test(value)));
+        if(domains.size<1000) throw new Error('使い捨てメール一覧の内容が不完全です');
+        return domains;
+      })().catch(error=>{disposableEmailDomainSetPromise=null;throw error;});
+    }
+    return disposableEmailDomainSetPromise;
+  }
+  function emailDomainExact(email){
+    const value=String(email||'').trim().toLowerCase();
+    const at=value.lastIndexOf('@');
+    if(at<=0 || at!==value.indexOf('@')) return '';
+    return value.slice(at+1).replace(/\.$/,'');
+  }
+  async function isDisposableEmailAddress(email){
+    const domain=emailDomainExact(email);
+    if(!domain) return false;
+    const domains=await loadDisposableEmailDomainSet();
+    // @以降のドメインが完全一致した場合のみ拒否。部分一致・サブドメイン一致はしない。
+    return domains.has(domain);
+  }
   async function createEmailAccount(){
     const values=emailAuthInputs();if(!values)return;
     setAuthError('');
-    try{await firebaseAuth.createUserWithEmailAndPassword(values.email,values.password);}
-    catch(e){console.error('メールアカウント登録失敗',e);setAuthError(authErrorMessage(e));}
+    try{
+      let disposable=false;
+      try{disposable=await isDisposableEmailAddress(values.email);}
+      catch(checkError){
+        console.error('使い捨てメールアドレス確認失敗',checkError);
+        setAuthError('使い捨てメールアドレス一覧を確認できませんでした。通信を確認して再度お試しください。');
+        return;
+      }
+      if(disposable){
+        setAuthError('使い捨てメールアドレスは登録できません。通常のメールアドレスを使用してください。');
+        return;
+      }
+      await firebaseAuth.createUserWithEmailAndPassword(values.email,values.password);
+    }catch(e){console.error('メールアカウント登録失敗',e);setAuthError(authErrorMessage(e));}
   }
   async function sendPasswordReset(){
     const email=String(document.getElementById('authEmailInput')?.value||'').trim();
@@ -10346,8 +10329,56 @@ initRegionNavigation();
   function operationStationLabel(name){
     const value=String(name||'').trim();
     if(!value) return '';
-    // 今日の運用の略称も、専用のHTML固定値ではなく読み込み済みJSONを参照する。
-    return getJsonAlias(value,'station') || value;
+
+    // 駅名略称はJSONに集約。destinationAliasesを標準キーとして使う。
+    const maps=[
+      activeRouteMeta?.destinationAliases,
+      activeRouteMeta?.stationAliases,
+      activeRouteMeta?.stationShortMap,
+      activeRouteMeta?.stationAbbreviations,
+      activeJson?.destinationAliases,
+      activeJson?.stationAliases,
+      activeJson?.stationShortMap,
+      activeJson?.stationAbbreviations
+    ];
+    for(const map of maps){
+      if(map && typeof map==='object' && !Array.isArray(map) && Object.prototype.hasOwnProperty.call(map,value)){
+        const short=String(map[value]??'').trim();
+        if(short) return short;
+      }
+      if(Array.isArray(map)){
+        const match=map.find(item=>String(item?.name??item?.station??'').trim()===value);
+        const short=String(match?.value??match?.abbr??match?.short??'').trim();
+        if(short) return short;
+      }
+    }
+
+    const dbStations=Array.isArray(activeJson?.stations)?activeJson.stations:[];
+    const dbStation=dbStations.find(st=>String(st?.name||'').trim()===value);
+    const directAbbr=String(dbStation?.abbr||'').trim();
+    if(directAbbr) return directAbbr;
+    const dbAbbrs=activeJson?.route?.abbreviations?.stations;
+    if(Array.isArray(dbAbbrs)){
+      const hit=dbAbbrs.find(a=>String(a?.targetId||'')===String(dbStation?.id||''));
+      const short=String(hit?.value||'').trim();
+      if(short) return short;
+    }
+    const lineStations=Array.isArray(activeJson?.lines)
+      ? activeJson.lines.flatMap(line=>Array.isArray(line?.stations)?line.stations:[])
+      : [];
+    const lineStation=lineStations.find(st=>String(st?.name||'').trim()===value);
+    const lineAbbr=String(lineStation?.abbr||'').trim();
+    if(lineAbbr) return lineAbbr;
+
+    const rules=[
+      ...(Array.isArray(activeRouteMeta?.stationShortRules)?activeRouteMeta.stationShortRules:[]),
+      ...(Array.isArray(activeJson?.stationShortRules)?activeJson.stationShortRules:[])
+    ];
+    for(const rule of rules){
+      const target=String(rule?.station??rule?.name??'').trim();
+      if(target && target===value && rule?.result!==undefined) return String(rule.result);
+    }
+    return value;
   }
 
   /* 03:00境界の運用時刻へそろえる。 */
@@ -10381,7 +10412,7 @@ initRegionNavigation();
     const hasRealNumber=isDisplayableOperationTrainNumber(candidateNo,sourceTrain);
     const no=hasRealNumber ? candidateNo : '';
     const rawType=String(entry?.type||'').trim();
-    const type=rawType ? getShortType(rawType,no,sourceTrain) : '';
+    const type=rawType ? getShortType(rawType,no) : '';
     const start=String(entry?.start||'').trim();
     const shortStart=operationStationLabel(start);
     const startTime=String(entry?.startTime||'');
