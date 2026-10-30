@@ -735,6 +735,8 @@ button,input,select,textarea{font-family:inherit}
 .type-badge.shinano-local,.train-label.shinano-local,.station-timetable-type.shinano-local{background:#1677d2!important;color:#fff!important;}
 .type-badge.shinano-rapid,.train-label.shinano-rapid,.station-timetable-type.shinano-rapid{background:#f39800!important;color:#fff!important;}
 .type-badge.shinano-named-service,.train-label.shinano-named-service,.station-timetable-type.shinano-named-service{background:#df1722!important;color:#fff!important;}
+
+.formation-input-history-input-meta{display:block;flex-basis:100%;font-size:11px;line-height:1.3;color:#64748b;}
 </style>
 <style id="today-operation-type-width-fix">
 /* 今日の運用：種別は2文字までなので、背景・列幅とも2文字相当に縮小 */
@@ -1140,7 +1142,9 @@ const RESET_HOUR=3;
 const RESET_DWELL_MIN=2;
 const TURNBACK_SWITCH_MIN=1;
 const TRAIN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/HiroshimaArea_2026.json';
-const KOBE_KAIGAN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/KobeCity_2026.json';
+const KOBE_KAIGAN_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/KobeCity_Kaigan_2026_split_20261030_v2.json';
+const KOBE_SEISHIN_YAMATE_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/KobeCity_SeishinYamate_2026_split_20261030_v2.json';
+const NANKAI_KOYA_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/NankaiKoya_2026_senboku_add_20261030_v2.json';
 const DEFAULT_ROUTE_TITLE='運用まとめ - メインページ';
 const LAST_ROUTE_STORAGE_KEY='routeLastRoute_v1';
 const ROUTE_REGISTRY={
@@ -1199,7 +1203,7 @@ const ROUTE_REGISTRY={
   },
   '西神・山手線':{
     id:'kobe-seishin-yamate',
-    json:KOBE_KAIGAN_DATA_URL,
+    json:KOBE_SEISHIN_YAMATE_DATA_URL,
     jsonLines:['西神・山手線'],
     range:'谷上～西神中央',
     area:'神戸市営',
@@ -1213,6 +1217,24 @@ const ROUTE_REGISTRY={
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png',
     access:{public:true,routeAdmins:[]},
     formationInputExample:'6000形'
+  },
+  '南海泉北線':{
+    id:'nankai-senboku',
+    json:NANKAI_KOYA_DATA_URL,
+    jsonLines:['高野線','泉北線'],
+    range:'なんば～和泉中央',
+    area:'南海',
+    storageRoot:'南海高野線',
+    storageArea:null,
+    company:'南海電気鉄道',
+    formationFamily:'nankai-koya',
+    formationCountDefault:2,
+    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/NK_noimage.png',
+    noImage:'https://minamikaze2700.github.io/Unyomatome/images/NK_noimage.png',
+    typeColors:{'各停':'#687072','準急':'#1c83cf','区急':'#00a65a'},
+    destinationAliases:{'なんば':'難波','和泉中央':'和泉','中百舌鳥':'中ﾓｽﾞ'},
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'5501F / 7501F / 8301F'
   },
   '京浜東北・根岸線':{
     id:'keihin-tohoku',
@@ -1499,10 +1521,10 @@ const ROUTE_SCHEDULE_CONFIG={
     {from:'2026-03-14',to:'2027-03-13',file:'HiroshimaArea_2026.json'}
   ],
   '海岸線':[
-    {from:'2026-03-14',to:'2027-03-13',file:'KobeCity_2026.json'}
+    {from:'2026-03-14',to:'2027-03-13',file:'KobeCity_Kaigan_2026_split_20261030_v2.json'}
   ],
   '西神・山手線':[
-    {from:'2026-03-14',to:'2027-03-13',file:'KobeCity_2026.json'}
+    {from:'2026-03-14',to:'2027-03-13',file:'KobeCity_SeishinYamate_2026_split_20261030_v2.json'}
   ],
   '京浜東北・根岸線':[
     {from:'2025-03-15',to:'2027-03-13',file:'KeihinTohoku_2025.json',relatedFiles:['Yokohama_2026.json']}
@@ -4838,8 +4860,7 @@ function renderTrainPositions(){
       const cls=trainVisualKind(t,item.pos);
       // 列車アイコン下部の編成表示は、列車オブジェクトの古い値ではなく
       // Firebase／選択中日付から復元した登録状態を正として表示する。
-      const registeredFormation=registeredFormationForTrain(t);
-      const formationIdForDisplay=registeredFormation||t.formation||'';
+      const formationIdForDisplay=effectiveFormationIdForTrain(t);
       const formationParts=formationIdForDisplay&&formationIdForDisplay!==INITIAL_FORMATION_SELECTION.id
         ?formationDisplayParts(formationIdForDisplay):[];
       const imageUrl=imageForTrain(t);
@@ -5440,7 +5461,12 @@ function effectiveFormationIdForTrain(train){
   if(!train) return '';
   const registered=registeredFormationForTrain(train);
   if(train.__formationExplicitlyUnselected) return '';
-  return String(registered||train.formation||'').trim();
+  const raw=String(registered||train.formation||'').trim();
+  if(!raw) return '';
+  // 併結列車のFirebase個別登録をHTMLで集約する際、路線に設定された最大編成数を超えて表示しない。
+  const maxCount=typeof window.formationCountForTrain==='function'
+    ? Math.max(1,Math.min(6,Number(window.formationCountForTrain(train))||1)) : 1;
+  return raw.split('+').map(value=>String(value||'').trim()).filter(Boolean).slice(0,maxCount).join('+');
 }
 function updateSheetContent(){
   closeFormationDropdown();
@@ -6251,6 +6277,11 @@ const REGION_DEFINITIONS={
     routes:[
       {name:'海岸線',id:'kobe-kaigan'},
       {name:'西神・山手線',id:'kobe-seishin-yamate'}
+    ]
+  },{
+    company:'南海電気鉄道',
+    routes:[
+      {name:'南海泉北線',id:'nankai-senboku'}
     ]
   }],
   '中国':[{
@@ -8072,15 +8103,27 @@ initRegionNavigation();
             let historyRef=db.ref(root).child('__formationInputHistory');
             if(area!=='__ROOT__') historyRef=historyRef.child(area);
             historyRef=historyRef.child(date).child(String(no));
+            const inputMeta=options?.inputMeta&&typeof options.inputMeta==='object'?options.inputMeta:{};
+            const inputAt=Number(inputMeta.inputAt)||Date.now();
             const historyPost={
               f:normalized||INITIAL_FORMATION_SELECTION.id,
-              at:Date.now(),
+              at:inputAt,
+              inputAt,
+              sameInput:inputMeta.sameInput===true,
+              formationOrder:Math.max(1,Math.trunc(Number(inputMeta.formationOrder)||1)),
+              formationCount:Math.max(1,Math.trunc(Number(inputMeta.formationCount)||1)),
               author:String(currentUserProfile?.name||currentAuthUser?.displayName||currentUserProfile?.id||'ユーザー').trim(),
               uid:String(currentAuthUser?.uid||currentUserProfile?.uid||''),
               userId:String(currentUserProfile?.id||''),
               route:String(activeRouteName||''),
               r:String(roleCode||'')
             };
+            if(inputMeta.inputGroupId) historyPost.inputGroupId=String(inputMeta.inputGroupId);
+            if(Array.isArray(inputMeta.formationIds)) historyPost.formationIds=inputMeta.formationIds.map(value=>String(value||'').trim()).filter(Boolean);
+            if(Array.isArray(inputMeta.formationEntries)) historyPost.formationEntries=inputMeta.formationEntries.map((entry,index)=>({
+              id:String(entry?.id||entry?.formationId||'').trim(),
+              order:Math.max(1,Math.trunc(Number(entry?.order)||index+1))
+            })).filter(entry=>entry.id);
             await historyRef.push().set(historyPost);
             // 新しい登録・未選択イベントが追加されたら、以前の全削除マーカーを解除する。
             let clearedRef=db.ref(root).child('__formationInputHistoryCleared');
@@ -8169,7 +8212,9 @@ initRegionNavigation();
     refreshAllTrainDataCache();
     saveLocalState();
     const skipInputHistory=options?.skipInputHistory===true;
-    const ok=await syncRegistrationToRemoteByFamily({[family]:{[selectedNo]:value}},{skipInputHistory});
+    const syncOptions={skipInputHistory};
+    if(options?.inputMeta&&typeof options.inputMeta==='object') syncOptions.inputMeta=options.inputMeta;
+    const ok=await syncRegistrationToRemoteByFamily({[family]:{[selectedNo]:value}},syncOptions);
     if(ok) delete pendingFormationState[selectedNo];
 
     // 複数編成の選択途中では入力履歴の投稿を追加しないが、現在状態の解決用キャッシュは
@@ -8589,20 +8634,40 @@ initRegionNavigation();
       return;
     }
     if(splitPerLinkedTrain){
-      // 連結チェーンは各列番に1件ずつ保存する。HTMLでは登録値をチェーン順に連結表示する。
+      // 「+」で一度に入力した各編成は、同じグループID・時刻で保存し、前寄りからの順番を個別記録する。
+      const inputAt=Date.now();
+      const inputGroupId=ids.length>1?`input_${inputAt}_${Math.random().toString(36).slice(2,8)}`:'';
       for(let i=0;i<ids.length;i++){
         const no=linked[i];
         const base=liveTrain(no)||findOperationTrainRecord(no,currentDay)||train;
         const perTrain={...base,no:String(no),direction:base?.direction||train?.direction||''};
-        await recordSelection(perTrain,ids[i]);
+        await recordSelection(perTrain,ids[i],{inputMeta:{
+          sameInput:ids.length>1,
+          inputGroupId,
+          inputAt,
+          formationOrder:i+1,
+          formationCount:ids.length,
+          formationIds:ids,
+          formationEntries:ids.map((id,index)=>({id,order:index+1}))
+        }});
       }
       refreshAllTrainDataCache();
       currentTrainSnapshot=liveTrain(currentTrainNo,currentTrainSnapshot?.direction||null)||currentTrainSnapshot;
     }else{
+      const inputAt=Date.now();
+      const inputGroupId=ids.length>1?`input_${inputAt}_${Math.random().toString(36).slice(2,8)}`:'';
       currentTrainSnapshot={...currentTrainSnapshot,formation:ids.join('+'),__formationExplicitlyUnselected:false};
       train.formation=ids.join('+');
       train.__formationExplicitlyUnselected=false;
-      await recordSelection(train,ids.join('+'));
+      await recordSelection(train,ids.join('+'),{inputMeta:{
+        sameInput:ids.length>1,
+        inputGroupId,
+        inputAt,
+        formationOrder:1,
+        formationCount:ids.length,
+        formationIds:ids,
+        formationEntries:ids.map((id,index)=>({id,order:index+1}))
+      }});
     }
     isEditMode=false;document.getElementById('bottomSheet')?.classList.remove('editing');
     closeFormationDropdown();
@@ -8654,9 +8719,15 @@ initRegionNavigation();
           const perTrain={...baseTrain,no:String(no),direction:baseTrain?.direction||train?.direction||''};
           await recordSelection(perTrain,ids[i]||null,{skipInputHistory:true});
         }
-        await recordSelection(targetTrain,normalized||null);
+        await recordSelection(targetTrain,normalized||null,{inputMeta:{
+          sameInput:false,inputAt:Date.now(),formationOrder:slot+1,formationCount:count,
+          formationIds:normalized?[normalized]:[],formationEntries:normalized?[{id:normalized,order:slot+1}]:[]
+        }});
       }else{
-        await recordSelection(targetTrain,normalized||null);
+        await recordSelection(targetTrain,normalized||null,{inputMeta:{
+          sameInput:false,inputAt:Date.now(),formationOrder:slot+1,formationCount:count,
+          formationIds:normalized?[normalized]:[],formationEntries:normalized?[{id:normalized,order:slot+1}]:[]
+        }});
       }
       refreshAllTrainDataCache();
       currentTrainSnapshot=liveTrain(currentTrainNo,currentTrainSnapshot?.direction||null)||currentTrainSnapshot;
@@ -8708,7 +8779,14 @@ initRegionNavigation();
     currentTrainSnapshot={...currentTrainSnapshot,formation:saved||null,__formationExplicitlyUnselected:false};
     train.formation=saved||null;
     train.__formationExplicitlyUnselected=false;
-    await recordSelection(train,saved||null,{skipInputHistory:!complete});
+    await recordSelection(train,saved||null,{
+      skipInputHistory:!complete,
+      inputMeta:complete?{
+        sameInput:false,inputAt:Date.now(),formationOrder:1,formationCount:ids.slice(0,count).filter(Boolean).length,
+        formationIds:ids.slice(0,count).filter(Boolean),
+        formationEntries:ids.slice(0,count).filter(Boolean).map((formationId,index)=>({id:formationId,order:index+1}))
+      }:undefined
+    });
     restoreHiroDropdown();
     if(complete){isEditMode=false;document.getElementById('bottomSheet')?.classList.remove('editing');}
     else{isEditMode=true;document.getElementById('bottomSheet')?.classList.add('editing');}
@@ -9836,8 +9914,7 @@ initRegionNavigation();
         used.push({pos:item.collisionPos,lane,group:laneGroup});
         const t=item.t; let entry=TRAIN_ICON_CACHE.get(item.signature); let el=entry?.el;
         if(entry) entry.currentTrain=t;
-        const cls=trainVisualKind(t); const registeredFormation=registeredFormationForTrain(t);
-        const formationId=registeredFormation||t.formation||'';
+        const cls=trainVisualKind(t); const formationId=effectiveFormationIdForTrain(t);
         const formationParts=formationId&&formationId!==INITIAL_FORMATION_SELECTION.id?formationDisplayParts(formationId):[];
         const imageUrl=imageForTrain(t); const displayNo=circularDisplayTrainNo(t); const labelText=trainLabelText(t);
         const contentKey=[displayNo,imageUrl,formationParts.join('\n'),cls,getMainLabelClass(t.type),labelText].join('|');
@@ -10220,6 +10297,11 @@ initRegionNavigation();
       const image=String(first.img||first.image||jsonNoImageUrl()||'');
       const author=String(post.author||post.userName||post.userId||'登録者不明');
       const datetime=formatFormationInputHistoryDateTime(post,post?._historyDate||context?.date);
+      const historyInputMeta=[];
+      if(typeof post.sameInput==='boolean') historyInputMeta.push(post.sameInput?'同時入力':'個別入力');
+      const order=Number(post.formationOrder);
+      if(Number.isFinite(order)&&order>0) historyInputMeta.push(`前寄りから${Math.trunc(order)}番目`);
+      const historyInputMetaHTML=historyInputMeta.length?`<span class="formation-input-history-input-meta">${escapeAttr(historyInputMeta.join('・'))}</span>`:'';
       // Firebaseの現在状態を補完表示した行には削除対象の投稿キーがないため、
       // 実際に保存された入力履歴の行だけ削除ボタンを表示する。
       // 権限判定は削除処理側でも必ず再確認する。
@@ -10232,7 +10314,7 @@ initRegionNavigation();
       return `<div class="formation-input-history-item" data-history-key="${escapeAttr(post._recordId||post.key)}" data-history-duplicates="${group.posts.length}">
         <img class="formation-input-history-image" src="${escapeAttr(image)}" alt="${escapeAttr(names.join('・'))}" onerror="this.onerror=null;this.src=jsonNoImageUrl()">
         <div class="formation-input-history-formation" title="${escapeAttr(names.join(' + '))}">${escapeAttr(names.join(' + '))}</div>
-        <div class="formation-input-history-meta"><span class="formation-input-history-datetime">${escapeAttr(datetime)}</span><span class="formation-input-history-author">${escapeAttr(author)}</span></div>
+        <div class="formation-input-history-meta"><span class="formation-input-history-datetime">${escapeAttr(datetime)}</span><span class="formation-input-history-author">${escapeAttr(author)}</span>${historyInputMetaHTML}</div>
         ${deleteButton}
       </div>`;
     }).join('');
