@@ -236608,487 +236608,6643 @@
           "name": "101",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_101.png",
           "cars": 10,
-          "disabled": true
+          "disabled": true,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1001",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1201",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1201",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1001",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1001",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1001",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1401",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1401",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1201",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1001",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "102F",
           "name": "102",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_102.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1002",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1202",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1202",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1002",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1002",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1002",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1402",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1402",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1202",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1002",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "104F",
           "name": "104",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_104.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1004",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1204",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1204",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1004",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1004",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1004",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1404",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1404",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1204",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1004",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "105F",
           "name": "105",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_105.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1005",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1205",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1205",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1005",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1005",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1005",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1405",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1405",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1205",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1005",
+              "manufactureYear": 2007,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "106F",
           "name": "106",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_106.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1006",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1206",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1206",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1006",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1006",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1006",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1406",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1406",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1206",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1006",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            }
+          ]
         },
         {
           "id": "107F",
           "name": "107",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_107.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1007",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1207",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1207",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1007",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1007",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1007",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1407",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1407",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1207",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1007",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "108F",
           "name": "108",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_108.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1008",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1208",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1208",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1008",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1008",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1008",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1408",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1408",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1208",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1008",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            }
+          ]
         },
         {
           "id": "109F",
           "name": "109",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_109.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1009",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1209",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1209",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1009",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1009",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1009",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1409",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1409",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1209",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1009",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "110F",
           "name": "110",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_110.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1010",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1210",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1210",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1010",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1010",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1010",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1410",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1410",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1210",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1010",
+              "manufactureYear": 2008,
+              "manufacturer": "川崎重工業",
+              "features": []
+            }
+          ]
         },
         {
           "id": "111F",
           "name": "111",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_111.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1011",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1211",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1211",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1011",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1011",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1011",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1411",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1411",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1211",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1011",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "112F",
           "name": "112",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_112.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1012",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1212",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1212",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1012",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1012",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1012",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1412",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1412",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1212",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1012",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "113F",
           "name": "113",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_113.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1013",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1213",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1213",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1013",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1013",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1013",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1413",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1413",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1213",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1013",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "114F",
           "name": "114",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_114.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1014",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1214",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1214",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1014",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1014",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1014",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1414",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1414",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1214",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1014",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "115F",
           "name": "115",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_115.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1015",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1215",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1215",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1015",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1015",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1015",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1415",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1415",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1215",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1015",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "116F",
           "name": "116",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_116.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1016",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1216",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1216",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1016",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1016",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1016",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1416",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1416",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1216",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1016",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "117F",
           "name": "117",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_117.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1017",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1217",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1217",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1017",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1017",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1017",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1417",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1417",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1217",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1017",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "118F",
           "name": "118",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_118.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1018",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1218",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1218",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1018",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1018",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1018",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1418",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1418",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1218",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1018",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "119F",
           "name": "119",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_119.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1019",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1219",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1219",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1019",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1019",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1019",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1419",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1419",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1219",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1019",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "120F",
           "name": "120",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_120.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1020",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1220",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1220",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1020",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1020",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1020",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1420",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1420",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1220",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1020",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "121F",
           "name": "121",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_121.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1021",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1221",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1221",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1021",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1021",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1021",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1421",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1421",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1221",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1021",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "122F",
           "name": "122",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_122.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1022",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1222",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1222",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1022",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1022",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1022",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1422",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1422",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1222",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1022",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "123F",
           "name": "123",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_123.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1023",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1223",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1223",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1023",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1023",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1023",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1423",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1423",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1223",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1023",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "124F",
           "name": "124",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_124.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1024",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1224",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1224",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1024",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1024",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1024",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1424",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1424",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1224",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1024",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "125F",
           "name": "125",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_125.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1025",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1225",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1225",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1025",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1025",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1025",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1425",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1425",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1225",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1025",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "126F",
           "name": "126",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_126.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1026",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1226",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1226",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1026",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1026",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1026",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1426",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1426",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1226",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1026",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "127F",
           "name": "127",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_127.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1027",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1227",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1227",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1027",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1027",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1027",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1427",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1427",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1227",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1027",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "128F",
           "name": "128",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_128.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1028",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1228",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1228",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1028",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1028",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1028",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1428",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1428",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1228",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1028",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "129F",
           "name": "129",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_129.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1029",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1229",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1229",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1029",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1029",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1029",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1429",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1429",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1229",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1029",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "130F",
           "name": "130",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_130.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1030",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1230",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1230",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1030",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1030",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1030",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1430",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1430",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1230",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1030",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "131F",
           "name": "131",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_131.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1031",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1231",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1231",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1031",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1031",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1031",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1431",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1431",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1231",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1031",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "132F",
           "name": "132",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_132.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1032",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1232",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1232",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1032",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1032",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1032",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1432",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1432",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1232",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1032",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "133F",
           "name": "133",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_133.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1033",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1233",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1233",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1033",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1033",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1033",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1433",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1433",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1233",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1033",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "134F",
           "name": "134",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_134.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1034",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1234",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1234",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1034",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1034",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1034",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1434",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1434",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1234",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1034",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "135F",
           "name": "135",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_135.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1035",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1235",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1235",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1035",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1035",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1035",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1435",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1435",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1235",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1035",
+              "manufactureYear": 2008,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "136F",
           "name": "136",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_136.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1036",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1236",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1236",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1036",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1036",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1036",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1436",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1436",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1236",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1036",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "137F",
           "name": "137",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_137.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1037",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1237",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1237",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1037",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1037",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1037",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1437",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1437",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1237",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1037",
+              "manufactureYear": 2008,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "138F",
           "name": "138",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_138.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1038",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1238",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1238",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1038",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1038",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1038",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1438",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1438",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1238",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1038",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "139F",
           "name": "139",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_139.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1039",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1239",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1239",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1039",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1039",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1039",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1439",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1439",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1239",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1039",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "140F",
           "name": "140",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_140.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1040",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1240",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1240",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1040",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1040",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1040",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1440",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1440",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1240",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1040",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "141F",
           "name": "141",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_141.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1041",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1241",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1241",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1041",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1041",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1041",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1441",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1441",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1241",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1041",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "142F",
           "name": "142",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_142.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1042",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1242",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1242",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1042",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1042",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1042",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1442",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1442",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1242",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1042",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "143F",
           "name": "143",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_143.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1043",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1243",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1243",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1043",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1043",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1043",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1443",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1443",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1243",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1043",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "144F",
           "name": "144",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_144.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1044",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1244",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1244",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1044",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1044",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1044",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1444",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1444",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1244",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1044",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "145F",
           "name": "145",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_145.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1045",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1245",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1245",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1045",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1045",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1045",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1445",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1445",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1245",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1045",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "146F",
           "name": "146",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_146.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1046",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1246",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1246",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1046",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1046",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1046",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1446",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1446",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1246",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1046",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "147F",
           "name": "147",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_147.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1047",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1247",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1247",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1047",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1047",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1047",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1447",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1447",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1247",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1047",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "148F",
           "name": "148",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_148.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1048",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1248",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1248",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1048",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1048",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1048",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1448",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1448",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1248",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1048",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "149F",
           "name": "149",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_149.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1049",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1249",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1249",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1049",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1049",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1049",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1449",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1449",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1249",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1049",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "150F",
           "name": "150",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_150.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1050",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1250",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1250",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1050",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1050",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1050",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1450",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1450",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1250",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1050",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "151F",
           "name": "151",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_151.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1051",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1251",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1251",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1051",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1051",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1051",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1451",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1451",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1251",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1051",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "152F",
           "name": "152",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_152.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1052",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1252",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1252",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1052",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1052",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1052",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1452",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1452",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1252",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1052",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "153F",
           "name": "153",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_153.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1053",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1253",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1253",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1053",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1053",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1053",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1453",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1453",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1253",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1053",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            }
+          ]
         },
         {
           "id": "154F",
           "name": "154",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_154.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1054",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1254",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1254",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1054",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1054",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1054",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1454",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1454",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1254",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1054",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            }
+          ]
         },
         {
           "id": "155F",
           "name": "155",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_155.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1055",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1255",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1255",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1055",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1055",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1055",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1455",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1455",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1255",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1055",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "156F",
           "name": "156",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_156.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1056",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1256",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1256",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1056",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1056",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1056",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1456",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1456",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1256",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1056",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "157F",
           "name": "157",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_157.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1057",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1257",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1257",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1057",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1057",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1057",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1457",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1457",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1257",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1057",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            }
+          ]
         },
         {
           "id": "158F",
           "name": "158",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_158.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1058",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1258",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1258",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1058",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1058",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1058",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1458",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1458",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1258",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1058",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            }
+          ]
         },
         {
           "id": "159F",
           "name": "159",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_159.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1059",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1259",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1259",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1059",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1059",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1059",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1459",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1459",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1259",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1059",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "160F",
           "name": "160",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_160.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1060",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1260",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1260",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1060",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1060",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1060",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1460",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1460",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1260",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1060",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "161F",
           "name": "161",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_161.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1061",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1261",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1261",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1061",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1061",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1061",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1461",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1461",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1261",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1061",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            }
+          ]
         },
         {
           "id": "162F",
           "name": "162",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_162.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1062",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1262",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1262",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1062",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1062",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1062",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1462",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1462",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1262",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1062",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            }
+          ]
         },
         {
           "id": "163F",
           "name": "163",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_163.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1063",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1263",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1263",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1063",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1063",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1063",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1463",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1463",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1263",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1063",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "164F",
           "name": "164",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_164.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1064",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1264",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1264",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1064",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1064",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1064",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1464",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1464",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1264",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1064",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "165F",
           "name": "165",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_165.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1065",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1265",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1265",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1065",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1065",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1065",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1465",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1465",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1265",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1065",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            }
+          ]
         },
         {
           "id": "166F",
           "name": "166",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_166.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1066",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1266",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1266",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1066",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1066",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1066",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1466",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1466",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1266",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1066",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "167F",
           "name": "167",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_167.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1067",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1267",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1267",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1067",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1067",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1067",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1467",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1467",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1267",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1067",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "168F",
           "name": "168",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_168.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1068",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1268",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1268",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1068",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1068",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1068",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1468",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1468",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1268",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1068",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "169F",
           "name": "169",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_169.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1069",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1269",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1269",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1069",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1069",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1069",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1469",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1469",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1269",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1069",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            }
+          ]
         },
         {
           "id": "170F",
           "name": "170",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_170.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1070",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1270",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1270",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1070",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1070",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1070",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1470",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1470",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1270",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1070",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "171F",
           "name": "171",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_171.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1071",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1271",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1271",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1071",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1071",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1071",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1471",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1471",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1271",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1071",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "172F",
           "name": "172",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_172.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1072",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1272",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1272",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1072",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1072",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1072",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1472",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1472",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1272",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1072",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            }
+          ]
         },
         {
           "id": "173F",
           "name": "173",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_173.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1073",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1273",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1273",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1073",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1073",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1073",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1473",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1473",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1273",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1073",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            }
+          ]
         },
         {
           "id": "174F",
           "name": "174",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_174.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1074",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1274",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1274",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1074",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1074",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1074",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1474",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1474",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1274",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1074",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "175F",
           "name": "175",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_175.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1075",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1275",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1275",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1075",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1075",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1075",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1475",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1475",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1275",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1075",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "176F",
           "name": "176",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_176.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1076",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1276",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1276",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1076",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1076",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1076",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1476",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1476",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1276",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1076",
+              "manufactureYear": 2009,
+              "manufacturer": "川崎重工業",
+              "features": []
+            }
+          ]
         },
         {
           "id": "178F",
           "name": "178",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_178.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1078",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1278",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1278",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1078",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1078",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1078",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1478",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1478",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1278",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1078",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "179F",
           "name": "179",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_179.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1079",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1279",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1279",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1079",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1079",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1079",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1479",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1479",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1279",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1079",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "180F",
           "name": "180",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_180.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1080",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1280",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1280",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1080",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1080",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1080",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1480",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1480",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1280",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1080",
+              "manufactureYear": 2009,
+              "manufacturer": "東急車輛製造",
+              "features": []
+            }
+          ]
         },
         {
           "id": "181F",
           "name": "181",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_181.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1081",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1281",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1281",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1081",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1081",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1081",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1481",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1481",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1281",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1081",
+              "manufactureYear": 2009,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "182F",
           "name": "182",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_182.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1082",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1282",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1282",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1082",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1082",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1082",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1482",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1482",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1282",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1082",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         },
         {
           "id": "183F",
           "name": "183",
           "img": "https://minamikaze2700.github.io/Unyomatome/images/JK_183.png",
-          "cars": 10
+          "cars": 10,
+          "carInfo": [
+            {
+              "car": 1,
+              "carNumber": "クハE232-1083",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 2,
+              "carNumber": "モハE232-1283",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 3,
+              "carNumber": "モハE233-1283",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "女性専用車"
+              ]
+            },
+            {
+              "car": 4,
+              "carNumber": "モハE232-1083",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": [
+                "弱冷房車"
+              ]
+            },
+            {
+              "car": 5,
+              "carNumber": "モハE233-1083",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 6,
+              "carNumber": "サハE233-1083",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 7,
+              "carNumber": "モハE232-1483",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 8,
+              "carNumber": "モハE233-1483",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 9,
+              "carNumber": "サハE233-1283",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            },
+            {
+              "car": 10,
+              "carNumber": "クハE233-1083",
+              "manufactureYear": 2010,
+              "manufacturer": "JR東日本 新津車両製作所",
+              "features": []
+            }
+          ]
         }
       ],
       "family": "keihin"
