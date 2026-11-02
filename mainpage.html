@@ -7613,14 +7613,20 @@ async function selectRoute(routeValue){
     window.history.replaceState({},'',url.toString());
   }catch(e){}
   closeRegionSheet();
+  // 路線切替の開始をダイヤグラムへ通知し、前路線の時刻エラーを即時に破棄する。
+  window.dispatchEvent(new CustomEvent('unyomatome:route-loading',{detail:{routeName}}));
   try{
     await loadLineTrainData(routeName);
+    window.dispatchEvent(new CustomEvent('unyomatome:route-loaded',{detail:{routeName}}));
     currentTrainNo=null; currentTrainSnapshot=null; currentStationId=null; stationTimetableDirection='up'; isEditMode=false; activeSheetMode='none';
     const sheet=document.getElementById('bottomSheet'),overlay=document.getElementById('overlay');
     if(sheet) sheet.classList.remove('active','editing'); if(overlay) overlay.style.display='none';
     syncCurrentScheduleDay(); refreshAllTrainDataCache(); renderLine();
     if(typeof updateOperationInfoStationOptions==='function') updateOperationInfoStationOptions();
-  }catch(e){ console.error('路線JSON読込失敗',e); alert(`路線データの読み込みに失敗しました。\n${e.message||e}`); }
+  }catch(e){
+    window.dispatchEvent(new CustomEvent('unyomatome:route-load-failed',{detail:{routeName,message:String(e?.message||e||'')}}));
+    console.error('路線JSON読込失敗',e); alert(`路線データの読み込みに失敗しました。\n${e.message||e}`);
+  }
 }
 function syncRegionNavLayout(){
   const nav=document.getElementById('regionNav');
@@ -10564,6 +10570,7 @@ initRegionNavigation();
         <button type="button" data-diagram-direction="down">下りのみ</button>
         <button type="button" data-diagram-direction="both" class="active">両方向</button>
       </div>
+      <button id="railwayDiagramTimeErrorToggle" class="railway-diagram-error-toggle active" type="button" aria-pressed="true" title="時刻データの異常箇所をダイヤグラム上に表示します">時刻ミス表示 0件</button>
       <div class="railway-diagram-zoom" aria-label="拡大縮小">
         <button id="railwayDiagramZoomOut" type="button" aria-label="縮小">−</button>
         <button id="railwayDiagramZoomIn" type="button" aria-label="拡大">＋</button>
@@ -10579,7 +10586,7 @@ initRegionNavigation();
       <span>分岐路線</span>
       <div class="railway-diagram-branch-buttons" id="railwayDiagramBranchButtons" role="group" aria-label="表示する分岐路線"></div>
     </div>
-    <div class="railway-diagram-meta"><span id="railwayDiagramSummary">時刻表を読み込み中</span></div>
+    <div class="railway-diagram-meta"><span id="railwayDiagramSummary">時刻表を読み込み中</span><span>列車線をクリック：列車情報 ／ ドラッグ：移動 ／ ホイール・ピンチ：拡大縮小</span></div>
     <div id="railwayDiagramViewport">
       <svg id="railwayDiagramSvg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1000 700" role="img" aria-label="駅と時刻のダイヤグラム">
         <g id="railwayDiagramTransform"></g>
@@ -11009,7 +11016,7 @@ initRegionNavigation();
     const dateText=String(selectedDateKey||'');
     const branchLabel=String(currentBranchChoice()?.label||'');
     return {svg:parts.join(''),width:contentWidth,height:contentHeight,trains:eventMap,stations,mode:spacing.mode,top,yPositions:spacing.y,errors:timeErrors,
-      minMinute,left,pxPerMinute,summary:`${routeName}${branchLabel?`　${branchLabel}`:''}${dateText?`　${dateText}`:''}　列車 ${count}本`};
+      minMinute,left,pxPerMinute,summary:`${routeName}${branchLabel?`　${branchLabel}`:''}${dateText?`　${dateText}`:''}　列車 ${count}本　／　時刻異常 ${timeErrors.length}件　／　駅間隔：${spacing.mode}`};
   }
   function minuteLabel(value){
     if(!Number.isFinite(value))return '—';
@@ -11285,6 +11292,28 @@ initRegionNavigation();
       updateTransform();
     });
   }
+  function resetDiagramForRouteChange(message='路線データを読み込み中…'){
+    hideTrainInfo();
+    transformGroup.innerHTML='';
+    empty.hidden=false;empty.textContent=message;
+    summary.textContent=message;
+    state.chartMeta=null;state.chartTrains=[];state.chartErrors=[];state.timeErrorCount=0;
+    state.contentWidth=1000;state.contentHeight=700;
+    updateTimeErrorToggle(0);
+  }
+  window.addEventListener('unyomatome:route-loading',()=>{
+    state.routeBranch='main';
+    resetDiagramForRouteChange();
+  });
+  window.addEventListener('unyomatome:route-loaded',()=>{
+    // モーダルが開いている場合は新しいactiveJsonから即座に再描画する。
+    if(overlay.classList.contains('active'))renderDiagram();
+    else resetDiagramForRouteChange('路線を切り替えました。ダイヤグラムを開くと表示します');
+  });
+  window.addEventListener('unyomatome:route-load-failed',()=>{
+    resetDiagramForRouteChange('路線データを読み込めませんでした');
+  });
+
   function openDiagram(){
     state.bodyOverflow=document.body.style.overflow;document.body.style.overflow='hidden';
     overlay.classList.add('active');overlay.setAttribute('aria-hidden','false');
