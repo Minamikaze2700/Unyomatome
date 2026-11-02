@@ -10472,7 +10472,8 @@ initRegionNavigation();
 .railway-diagram-error-toggle.active{background:#c62828;color:#fff;border-color:#a91f1f}
 .railway-diagram-error-toggle:focus-visible{outline:3px solid rgba(198,40,40,.28);outline-offset:2px}
 .railway-diagram-time-error-marker{pointer-events:all;cursor:pointer;outline:none}
-.railway-diagram-time-error-marker circle{fill:#d32f2f;stroke:#fff;stroke-width:2.2}
+.railway-diagram-time-error-marker .railway-diagram-time-error-hit-area{pointer-events:all;fill:transparent;stroke:transparent}
+.railway-diagram-time-error-marker .railway-diagram-time-error-visible{fill:#d32f2f;stroke:#fff;stroke-width:2.2;pointer-events:none}
 .railway-diagram-time-error-marker:hover circle,.railway-diagram-time-error-marker:focus circle{fill:#9f1717;stroke:#ffd6d6;stroke-width:3}
 .railway-diagram-time-error-marker text{fill:#fff;font-family:Arial,sans-serif;font-size:13px;font-weight:900;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .railway-diagram-error-detail{padding:10px 12px 12px;overflow:auto;min-height:0;color:#222;font-size:13px;line-height:1.5;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
@@ -10935,9 +10936,13 @@ initRegionNavigation();
     if(!allMinutes.length)return {empty:'時刻データがありません。',trains,stations};
     const minValue=allMinutes.reduce((a,b)=>Math.min(a,b),Infinity);
     const maxValue=allMinutes.reduce((a,b)=>Math.max(a,b),-Infinity);
-    let minMinute=Math.floor(minValue/60)*60;
-    let maxMinute=Math.ceil(maxValue/60)*60;
-    if(maxMinute<=minMinute)maxMinute=minMinute+60;
+    // 最初または最後の列車時刻がちょうど毎時00分の場合に限り、
+    // その側だけ1時間分の余白を追加する。00分以外では従来の時間軸範囲を維持。
+    const minIsOnHour=Math.abs(minValue%60)<0.001;
+    const maxIsOnHour=Math.abs(maxValue%60)<0.001;
+    let minMinute=Math.floor(minValue/60)*60-(minIsOnHour?60:0);
+    let maxMinute=Math.ceil(maxValue/60)*60+(maxIsOnHour?60:0);
+    if(maxMinute<=minMinute)maxMinute=minMinute+120;
     // v27で表示していた現在の横幅を100%とする。スライダーで50～300%に調整可能。
     const top=104,left=264,right=48,bottom=62,pxPerMinute=2.25*state.horizontalScale;
     const plotWidth=(maxMinute-minMinute)*pxPerMinute;
@@ -10997,7 +11002,7 @@ initRegionNavigation();
         const offset=(stack%3)*11;
         const markerY=y-13-Math.floor(stack/3)*10;
         const detail=`${error.trainNo}　${error.station}：${error.label}${error.raw?`（${error.raw}）`:''}`;
-        parts.push(`<g class="railway-diagram-time-error-marker" data-time-error-index="${errorIndex}" role="button" tabindex="0" aria-label="時刻エラー：${esc(detail)}。クリックで内容を表示" transform="translate(${x+offset} ${markerY})"><title>${esc(detail)}（クリックで詳細を表示）</title><circle r="9.5"/><text y="0.5">!</text></g>`);
+        parts.push(`<g class="railway-diagram-time-error-marker" data-time-error-index="${errorIndex}" role="button" tabindex="0" aria-label="時刻エラー：${esc(detail)}。クリックで内容を表示" transform="translate(${x+offset} ${markerY})"><title>${esc(detail)}（クリックで詳細を表示）</title><circle class="railway-diagram-time-error-hit-area" r="17" fill="transparent" stroke="transparent" pointer-events="all"/><circle class="railway-diagram-time-error-visible" r="9.5"/><text y="0.5">!</text></g>`);
       }
     }
     const routeName=String(activeRouteName||activeJson?.routeName||'');
@@ -11168,6 +11173,39 @@ initRegionNavigation();
     trainInfoPanel.querySelector('.railway-diagram-mini-close')?.addEventListener('click',hideTrainInfo);
     positionMiniTrainInfo(screenPoint);
   }
+  function openTimeErrorMarker(marker){
+    if(!marker||!trainInfoPanel)return false;
+    const index=Number(marker.getAttribute('data-time-error-index'));
+    const error=Number.isInteger(index)?state.chartErrors[index]:null;
+    if(!error)return false;
+    const viewportRect=viewport.getBoundingClientRect();
+    let screenPoint={x:viewportRect.width/2,y:viewportRect.height/2};
+    try{
+      const matrix=marker.getScreenCTM?.();
+      if(matrix){
+        screenPoint={x:matrix.e-viewportRect.left,y:matrix.f-viewportRect.top};
+      }
+    }catch(err){}
+    showTimeErrorInfo(error,screenPoint);
+    return !trainInfoPanel.hidden;
+  }
+  function bindTimeErrorMarkerEvents(){
+    transformGroup.querySelectorAll('.railway-diagram-time-error-marker').forEach(marker=>{
+      // マーカー上の操作をビューポートのドラッグ・ズーム処理へ流さない。
+      marker.addEventListener('pointerdown',event=>{event.stopPropagation();});
+      marker.addEventListener('click',event=>{
+        event.preventDefault();
+        event.stopPropagation();
+        openTimeErrorMarker(marker);
+      });
+      marker.addEventListener('keydown',event=>{
+        if(event.key!=='Enter'&&event.key!==' ')return;
+        event.preventDefault();
+        event.stopPropagation();
+        openTimeErrorMarker(marker);
+      });
+    });
+  }
   function showTrainInfo(item,segment,screenPoint){
     if(!trainInfoPanel||!item)return;
     selectedInfoContext={item,segment,screenPoint};
@@ -11236,6 +11274,7 @@ initRegionNavigation();
     state.chartMeta={minMinute:chart.minMinute,left:chart.left,pxPerMinute:chart.pxPerMinute,top:chart.top,yPositions:chart.yPositions};
     state.chartTrains=chart.trains||[];state.chartErrors=chart.errors||[];hideTrainInfo();
     transformGroup.innerHTML=chart.svg;
+    bindTimeErrorMarkerEvents();
     // 横幅調整時は、画面中央にあった時刻を保ったまま横方向だけを再配置する。
     requestAnimationFrame(()=>{
       if(!preserveView||!Number.isFinite(centerMinute)){fitDiagram();return;}
@@ -11305,28 +11344,6 @@ initRegionNavigation();
   trainInfoPanel?.addEventListener('pointermove',e=>e.stopPropagation());
   trainInfoPanel?.addEventListener('pointerup',e=>e.stopPropagation());
   trainInfoPanel?.addEventListener('click',e=>e.stopPropagation());
-  transformGroup.addEventListener('click',e=>{
-    const marker=e.target.closest?.('.railway-diagram-time-error-marker');
-    if(!marker)return;
-    e.stopPropagation();
-    const index=Number(marker.dataset.timeErrorIndex);
-    const error=state.chartMeta&&Array.isArray(state.chartErrors)?state.chartErrors[index]:null;
-    if(!error)return;
-    const r=viewport.getBoundingClientRect();
-    const ctm=transformGroup.getScreenCTM?.();
-    let screenPoint={x:r.width/2,y:r.height/2};
-    if(ctm&&marker.getScreenCTM){
-      const m=marker.getScreenCTM();
-      if(m){screenPoint={x:m.e+m.a*0,y:m.f+m.d*0};screenPoint.x-=r.left;screenPoint.y-=r.top;}
-    }
-    showTimeErrorInfo(error,screenPoint);
-  });
-  transformGroup.addEventListener('keydown',e=>{
-    if(e.key!=='Enter'&&e.key!==' ')return;
-    const marker=e.target.closest?.('.railway-diagram-time-error-marker');
-    if(!marker)return;
-    e.preventDefault();marker.dispatchEvent(new MouseEvent('click',{bubbles:true}));
-  });
   viewport.addEventListener('pointerdown',e=>{
     if(e.target.closest?.('#railwayDiagramTrainInfo'))return;
     // エラーマーカーのクリックは詳細パネル表示に使い、ダイヤグラムのドラッグ開始にしない。
