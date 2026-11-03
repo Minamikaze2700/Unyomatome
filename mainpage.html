@@ -10907,10 +10907,43 @@ initRegionNavigation();
     timeErrorToggle.textContent=`時刻ミス表示 ${Number(count)||0}件`;
     timeErrorToggle.title='赤い「!」は時刻データの不整合です。クリックで表示／非表示を切り替えます。';
   }
-  function trainColor(train,pos,station){
+  // ダイヤグラムの駅インデックスは、分岐路線を選択すると STATIONS の
+  // インデックスと異なる。sectionTypeSegments は列車自身の停車駅順で解決する。
+  function chartTrainForStationPair(train,stationA,stationB){
+    if(!train||!Array.isArray(train.sectionTypeSegments))return train;
+    const stops=Array.isArray(train.stops)?train.stops:[];
+    const indexOf=name=>stops.findIndex(row=>String(row?.station||'').trim()===String(name||'').trim());
+    const ia=indexOf(stationA),ib=indexOf(stationB);
+    if(ia<0||ib<0)return {...train,type:'',sectionTypeSegments:[]};
+    const lo=Math.min(ia,ib),hi=Math.max(ia,ib);
+    let matched=null;
+    for(const segment of train.sectionTypeSegments){
+      const from=indexOf(segment?.fromStation),to=indexOf(segment?.toStation);
+      if(from<0||to<0)continue;
+      const segmentLo=Math.min(from,to),segmentHi=Math.max(from,to);
+      if(lo>=segmentLo&&hi<=segmentHi)matched=segment;
+    }
+    if(!matched)return {...train,type:'',sectionTypeSegments:[]};
+    return {...train,type:matched.showType===false?'':String(matched.type||'').trim(),sectionTypeSegments:[]};
+  }
+  function trainColor(train,pos,stationA,stationB){
     try{
-      if(typeof typeColorForTrain==='function'){
-        const c=typeColorForTrain(train,pos,station||'',null);if(c&&String(c).trim())return String(c).trim();
+      if(Array.isArray(train?.sectionTypeSegments)){
+        const chartTrain=chartTrainForStationPair(train,stationA,stationB);
+        const type=String(chartTrain?.type||'').trim();
+        // 普通列車は種別色ではなく、その区間の実際の路線カラーを使用する。
+        if(!type||type==='普通'||type==='各駅停車'){
+          const lineColor=typeof trainServiceColorBetweenStations==='function'
+            ?trainServiceColorBetweenStations(stationA,stationB,train):'';
+          if(lineColor&&String(lineColor).trim())return String(lineColor).trim();
+        }
+        if(typeof typeColorForTrain==='function'){
+          const c=typeColorForTrain(chartTrain,null,stationA||stationB||'',null);
+          if(c&&String(c).trim())return String(c).trim();
+        }
+      }else if(typeof typeColorForTrain==='function'){
+        const c=typeColorForTrain(train,pos,stationA||stationB||'',null);
+        if(c&&String(c).trim())return String(c).trim();
       }
     }catch(e){}
     const type=String(train?.type||'');
@@ -11010,19 +11043,21 @@ initRegionNavigation();
     }
     // 列車スジ。停車駅では到着・発車時刻の差を横線として描画。
     for(let trainIndex=0;trainIndex<eventMap.length;trainIndex++){
-      const item=eventMap[trainIndex];const {train,events}=item;const no=String(train?.no||'列車');const type=String(train?.type||'普通');
+      const item=eventMap[trainIndex];const {train,events}=item;const no=String(train?.no||'列車');
+      const titleTrain=events.length>1?chartTrainForStationPair(train,events[0]?.station,events[1]?.station):train;
+      const type=String(titleTrain?.type||train?.type||'').trim()||'普通';
       parts.push(`<g class="diagram-train-line" data-train-index="${trainIndex}" stroke-linecap="round" stroke-linejoin="round" opacity="1">`);
       parts.push(`<title>${esc(no)}　${esc(type)}　${esc(train?.start||events[0]?.station||'')} → ${esc(train?.dest||events[events.length-1]?.station||'')}</title>`);
       if(events.length===1){
         const e=events[0],x=left+(e.minute-minMinute)*pxPerMinute,y=top+spacing.y[e.index];
-        const color=opaqueColor(trainColor(train,e.index,e.station));parts.push(`<circle cx="${x}" cy="${y}" r="2.7" fill="${esc(color)}"/>`);
+        const color=opaqueColor(trainColor(train,e.index,e.station,e.station));parts.push(`<circle cx="${x}" cy="${y}" r="2.7" fill="${esc(color)}"/>`);
         parts.push(`<circle cx="${x}" cy="${y}" r="9" fill="none" class="railway-diagram-train-hit" data-train-index="${trainIndex}"/>`);
       }
       for(let i=0;i<events.length-1;i++){
         const a=events[i],b=events[i+1];
         const x1=left+(a.minute-minMinute)*pxPerMinute,x2=left+(b.minute-minMinute)*pxPerMinute;
         const y1=top+spacing.y[a.index],y2=top+spacing.y[b.index];
-        const pos=(a.index+b.index)/2;const color=opaqueColor(trainColor(train,pos,a.station||b.station));
+        const pos=(a.index+b.index)/2;const color=opaqueColor(trainColor(train,pos,a.station,b.station));
         if(![x1,x2,y1,y2].every(Number.isFinite))continue;
         parts.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${esc(color)}" stroke-width="1.35"/>`);
         parts.push(`<line class="railway-diagram-train-hit" data-train-index="${trainIndex}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`);
@@ -11090,21 +11125,26 @@ initRegionNavigation();
     return no;
   }
   function miniTypeAt(train,segment){
-    const pos=segment&&segment.a&&segment.b?(Number(segment.a.index)+Number(segment.b.index))/2:null;
-    try{return typeof getTrainTypeDisplayLabel==='function'?String(getTrainTypeDisplayLabel(train,false,pos)||'').trim():String(train?.type||'').trim();}catch(e){return String(train?.type||'').trim();}
+    const a=segment?.a?.station,b=segment?.b?.station;
+    const chartTrain=chartTrainForStationPair(train,a,b);
+    try{return typeof getTrainTypeDisplayLabel==='function'?String(getTrainTypeDisplayLabel(chartTrain,false,null)||'').trim():String(chartTrain?.type||'').trim();}catch(e){return String(chartTrain?.type||'').trim();}
   }
   function miniTrainCardHTML(context){
     const train=context?.item?.train||{};
     const segment=context?.segment||{};
-    const pos=segment?.a&&segment?.b?(Number(segment.a.index)+Number(segment.b.index))/2:null;
+    const stationA=String(segment?.a?.station||'').trim();
+    const stationB=String(segment?.b?.station||'').trim();
+    const chartTrain=chartTrainForStationPair(train,stationA,stationB);
+    const sectionColor=typeof trainServiceColorBetweenStations==='function'
+      ?trainServiceColorBetweenStations(stationA,stationB,train):null;
     const title=miniTrainTitle(train,segment);
-    const type=String(typeof getTrainTypeAtPosition==='function'?getTrainTypeAtPosition(train,pos):train?.type||'').trim();
+    const type=String(chartTrain?.type||'').trim();
     let badge='';
     try{
       if(type){
-        const label=typeof getTrainTypeDisplayLabel==='function'?getTrainTypeDisplayLabel(train,true,pos):type;
-        const cls=typeof getTrainTypeDisplayClass==='function'?getTrainTypeDisplayClass(train,pos):'';
-        const style=typeof typeBadgeInlineStyle==='function'?typeBadgeInlineStyle(train,pos):'';
+        const label=typeof getTrainTypeDisplayLabel==='function'?getTrainTypeDisplayLabel(chartTrain,true,null):type;
+        const cls=typeof getTrainTypeDisplayClass==='function'?getTrainTypeDisplayClass(chartTrain,null):'';
+        const style=typeof typeBadgeInlineStyle==='function'?typeBadgeInlineStyle(chartTrain,null,sectionColor,stationA):'';
         badge=`<span class="type-badge ${esc(cls)}" style="${esc(style)}">${esc(label||type)}</span>`;
       }
     }catch(e){if(type)badge=`<span class="type-badge">${esc(type)}</span>`;}
