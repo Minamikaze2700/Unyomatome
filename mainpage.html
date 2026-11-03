@@ -7613,14 +7613,20 @@ async function selectRoute(routeValue){
     window.history.replaceState({},'',url.toString());
   }catch(e){}
   closeRegionSheet();
+  // 路線切替の開始をダイヤグラムへ通知し、前路線の時刻エラーを即時に破棄する。
+  window.dispatchEvent(new CustomEvent('unyomatome:route-loading',{detail:{routeName}}));
   try{
     await loadLineTrainData(routeName);
+    window.dispatchEvent(new CustomEvent('unyomatome:route-loaded',{detail:{routeName}}));
     currentTrainNo=null; currentTrainSnapshot=null; currentStationId=null; stationTimetableDirection='up'; isEditMode=false; activeSheetMode='none';
     const sheet=document.getElementById('bottomSheet'),overlay=document.getElementById('overlay');
     if(sheet) sheet.classList.remove('active','editing'); if(overlay) overlay.style.display='none';
     syncCurrentScheduleDay(); refreshAllTrainDataCache(); renderLine();
     if(typeof updateOperationInfoStationOptions==='function') updateOperationInfoStationOptions();
-  }catch(e){ console.error('路線JSON読込失敗',e); alert(`路線データの読み込みに失敗しました。\n${e.message||e}`); }
+  }catch(e){
+    window.dispatchEvent(new CustomEvent('unyomatome:route-load-failed',{detail:{routeName,message:String(e?.message||e||'')}}));
+    console.error('路線JSON読込失敗',e); alert(`路線データの読み込みに失敗しました。\n${e.message||e}`);
+  }
 }
 function syncRegionNavLayout(){
   const nav=document.getElementById('regionNav');
@@ -11036,10 +11042,15 @@ initRegionNavigation();
     return `${day>0?'翌'.repeat(Math.min(day,2)):''}${hour}:${String(minute).padStart(2,'0')}`;
   }
   function miniTrainTitle(train,segment){
+    // 通常の train-card と同じ条件で列車番号の表示可否を判定する。
+    if(!train || train.hideTrainNumber) return '';
     let no='';
-    try{if(typeof trainDisplayNoAtTime==='function')no=String(trainDisplayNoAtTime(train,segment?.minute)||'').trim();}catch(e){}
-    if(!no)no=String(train?.no||train?.noSequence?.[0]||'').trim();
-    return no||String(train?.type||'列車情報');
+    try{
+      if(typeof trainDisplayNoAtTime==='function'){
+        no=String(trainDisplayNoAtTime(train,segment?.minute)||'').trim();
+      }
+    }catch(e){}
+    return no;
   }
   function miniTypeAt(train,segment){
     const pos=segment&&segment.a&&segment.b?(Number(segment.a.index)+Number(segment.b.index))/2:null;
@@ -11073,7 +11084,7 @@ initRegionNavigation();
     let capacity='';try{capacity=typeof prescribedFormationName==='function'?String(prescribedFormationName(train)||''):'';}catch(e){}
     return `<div class="train-card railway-diagram-mini-train-card">
       ${image?`<img src="${esc(image)}" class="train-card-img" alt="車両画像" loading="lazy" onerror="this.onerror=null;this.src='${esc(typeof defaultTrainImage==='function'?defaultTrainImage(train):'')}'">`:''}
-      <div class="train-info-main"><div>${badge}${service}<span class="train-title${type?'':' no-type'}">${esc(dest||'行先不明')}${esc(suffix)}</span><span class="train-number">${esc(title)}</span></div>
+      <div class="train-info-main"><div>${badge}${service}<span class="train-title${type?'':' no-type'}">${esc(dest||'行先不明')}${esc(suffix)}</span>${title?`<span class="train-number">${esc(title)}</span>`:''}</div>
       <div class="formation-id">${formationHtml}</div>${capacity?`<div class="capacity-info">所定:${esc(capacity)}</div>`:''}</div>
     </div>`;
   }
@@ -11285,6 +11296,38 @@ initRegionNavigation();
       updateTransform();
     });
   }
+  function resetDiagramForRouteChange(message='路線データを読み込み中…'){
+    hideTrainInfo();
+    transformGroup.innerHTML='';
+    empty.hidden=false;empty.textContent=message;
+    summary.textContent=message;
+    state.chartMeta=null;state.chartTrains=[];state.chartErrors=[];state.timeErrorCount=0;
+    state.contentWidth=1000;state.contentHeight=700;
+    updateTimeErrorToggle(0);
+  }
+  window.addEventListener('unyomatome:route-loading',()=>{
+    state.routeBranch='main';
+    resetDiagramForRouteChange();
+  });
+  window.addEventListener('unyomatome:route-loaded',()=>{
+    // モーダルが開いている場合は新しいactiveJsonから即座に再描画する。
+    if(overlay.classList.contains('active')){
+      renderDiagram();
+    }else{
+      // モーダルを閉じている間は案内文を表示せず、次回オープン時に描画する。
+      transformGroup.innerHTML='';
+      empty.hidden=true;
+      empty.textContent='';
+      summary.textContent='';
+      state.chartMeta=null;state.chartTrains=[];state.chartErrors=[];state.timeErrorCount=0;
+      state.contentWidth=1000;state.contentHeight=700;
+      updateTimeErrorToggle(0);
+    }
+  });
+  window.addEventListener('unyomatome:route-load-failed',()=>{
+    resetDiagramForRouteChange('路線データを読み込めませんでした');
+  });
+
   function openDiagram(){
     state.bodyOverflow=document.body.style.overflow;document.body.style.overflow='hidden';
     overlay.classList.add('active');overlay.setAttribute('aria-hidden','false');
