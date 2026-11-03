@@ -2799,6 +2799,16 @@ function displayTrainNoAtTime(train,minutes){
 function trainDisplayNoAtTime(train,minutes){
   return displayTrainNoAtTime(train,minutes);
 }
+// train-card と同じ表示条件を共通化する。非表示フラグがある場合や、
+// 現在位置／指定駅で列番を解決できない場合は空文字を返す。
+function trainCardNumberTextAtTime(train,minutes){
+  if(!train || train.hideTrainNumber) return '';
+  return String(trainDisplayNoAtTime(train,minutes)||'').trim();
+}
+function trainCardNumberTextAtStation(train,stationName){
+  if(!train || train.hideTrainNumber) return '';
+  return String(trainDisplayNoAtStation(train,stationName)||'').trim();
+}
 async function loadExternalRouteJsons(routeMeta){
   const urls=[String(routeMeta?.json||'').trim(),...(Array.isArray(routeMeta?.relatedJsons)?routeMeta.relatedJsons:[]).map(x=>String(x||'').trim())].filter(Boolean);
   const unique=[...new Set(urls)];
@@ -3491,6 +3501,7 @@ function findOperationTrainRecord(no,day=currentDay){
     for(const list of Object.values(t?.numbersByLine||{})) if(Array.isArray(list)) list.forEach(add);
     for(const list of Object.values(t?.trainNumbers||{})) if(Array.isArray(list)) list.forEach(add);
     for(const list of Object.values(t?.numberSegments||{})) if(Array.isArray(list)) list.forEach(seg=>add(seg?.no));
+    for(const segment of (Array.isArray(t?.sectionNumberSegments)?t.sectionNumberSegments:[])) add(segment?.number??segment?.no);
     return values;
   };
   const exact=source.find(t=>normalizeTrainNo(t?.no)===key);
@@ -5885,7 +5896,7 @@ function updateSheetContent(){
           <div>
             ${getTrainTypeAtPosition(train,positionForTrain(train,currentMinutes())?.pos)?`<span class="type-badge ${getTrainTypeDisplayClass(train,positionForTrain(train,currentMinutes())?.pos)}" style="${typeBadgeInlineStyle(train,positionForTrain(train,currentMinutes())?.pos)}">${getTrainTypeDisplayLabel(train,true,positionForTrain(train,currentMinutes())?.pos)}</span>`:''}
             <span class="train-title${getTrainTypeAtPosition(train,positionForTrain(train,currentMinutes())?.pos)?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>
-            ${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}
+            ${trainCardNumberTextAtTime(train,currentMinutes())?`<span class="train-number">${trainCardNumberTextAtTime(train,currentMinutes())}</span>`:''}
           </div>
           ${effectiveFormationId && effectiveFormationId!==INITIAL_FORMATION_SELECTION.id
             ? `<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`
@@ -5907,7 +5918,7 @@ function updateSheetContent(){
           <div>
             ${getTrainTypeAtPosition(train,positionForTrain(train,currentMinutes())?.pos)?`<span class="type-badge ${getTrainTypeDisplayClass(train,positionForTrain(train,currentMinutes())?.pos)}" style="${typeBadgeInlineStyle(train,positionForTrain(train,currentMinutes())?.pos)}">${getTrainTypeDisplayLabel(train,true,positionForTrain(train,currentMinutes())?.pos)}</span>`:''}
             <span class="train-title${getTrainTypeAtPosition(train,positionForTrain(train,currentMinutes())?.pos)?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>
-            ${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}
+            ${trainCardNumberTextAtTime(train,currentMinutes())?`<span class="train-number">${trainCardNumberTextAtTime(train,currentMinutes())}</span>`:''}
           </div>
           <div class="input-trigger-btn">編成を入力中</div>
           ${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}
@@ -12011,75 +12022,45 @@ initRegionNavigation();
   // train-card、列車アイコン、停車駅案内、駅時刻表では列車データ自体を分割しない。
   function operationNumberSegments(sourceTrain,hasRealNumber=true){
     const stops=Array.isArray(sourceTrain?.stops)?sourceTrain.stops:[];
-    if(!hasRealNumber||!stops.length) return [];
-    const numberSegments=sourceTrain?.numberSegments&&typeof sourceTrain.numberSegments==='object'
-      ? sourceTrain.numberSegments:{};
-    const edgeCount=Math.max(0,stops.length-1);
-    let routeByEdge=Array.isArray(sourceTrain?.segmentLineNames)&&sourceTrain.segmentLineNames.length===edgeCount
-      ? sourceTrain.segmentLineNames.map(x=>String(x||'')) : [];
-    if(routeByEdge.length!==edgeCount){
-      routeByEdge=[];
-      for(let i=0;i<edgeCount;i++){
-        const a=String(stops[i]?.station||''),b=String(stops[i+1]?.station||'');
-        routeByEdge.push(String(preferredTrainServiceLine(a,b,sourceTrain)?.name||''));
-      }
+    if(!sourceTrain || !stops.length || !hasRealNumber || sourceTrain.hideTrainNumber) return [];
+
+    // numberSegments / sectionNumberSegments を個別に再解釈せず、
+    // train-card と同じ駅別列番解決関数で各停車駅の表示番号を取得する。
+    // これにより福岡市地下鉄の sectionNumberSegments も含め、
+    // 実際に画面へ表示される番号が切り替わる駅で運用行を分割できる。
+    const stationNumbers=stops.map(stop=>
+      trainCardNumberTextAtStation(sourceTrain,String(stop?.station||''))
+    );
+    if(!stationNumbers.some(Boolean)) return [];
+    if(stops.length===1){
+      return stationNumbers[0]?[{no:stationNumbers[0],from:0,to:0}]:[];
     }
-    const routeRuns=new Map();
-    for(let i=0;i<routeByEdge.length;){
-      const lineName=routeByEdge[i];
-      if(!lineName){i++;continue;}
-      let j=i;
-      while(j+1<routeByEdge.length&&routeByEdge[j+1]===lineName) j++;
-      if(!routeRuns.has(lineName)) routeRuns.set(lineName,[]);
-      routeRuns.get(lineName).push({from:i,to:j+1});
-      i=j+1;
+
+    const segments=[];
+    let from=0;
+    let currentNo=stationNumbers[0];
+    for(let i=1;i<stationNumbers.length;i++){
+      const nextNo=stationNumbers[i];
+      if(nextNo===currentNo) continue;
+      // 列番切替駅を旧番号側の終点かつ新番号側の始点として共有する。
+      segments.push({no:currentNo,from,to:i});
+      from=i;
+      currentNo=nextNo;
     }
-    const hasRouteRuns=routeRuns.size>0;
-    const candidates=[];
-    for(const [lineName,list] of Object.entries(numberSegments)){
-      if(!Array.isArray(list)) continue;
-      const runs=routeRuns.get(lineName)||[];
-      for(const segment of list){
-        const no=normalizeTrainNo(segment?.no);
-        const from=Number(segment?.from),to=Number(segment?.to);
-        if(!no||!Number.isFinite(from)||!Number.isFinite(to)||from>to) continue;
-        if(runs.length){
-          // 各路線の列番区間を、その列車が実際に当該路線を走る範囲だけに限定。
-          // これにより別路線の全区間列番が、途中の番号変更を覆い隠さない。
-          for(const run of runs){
-            const clippedFrom=Math.max(0,from,run.from);
-            const clippedTo=Math.min(stops.length-1,to,run.to);
-            if(clippedFrom<=clippedTo) candidates.push({no,from:clippedFrom,to:clippedTo});
-          }
-        }else if(!hasRouteRuns){
-          candidates.push({no,from:Math.max(0,from),to:Math.min(stops.length-1,to)});
-        }
-      }
-    }
-    // 路線名が未定義の旧データは従来どおり番号区間を直接読む。
-    if(!candidates.length){
-      for(const list of Object.values(numberSegments)) if(Array.isArray(list)) for(const segment of list){
-        const no=normalizeTrainNo(segment?.no),from=Number(segment?.from),to=Number(segment?.to);
-        if(no&&Number.isFinite(from)&&Number.isFinite(to)&&from<=to) candidates.push({no,from:Math.max(0,from),to:Math.min(stops.length-1,to)});
-      }
-    }
-    if(!candidates.length){
-      const fallback=normalizeTrainNo(sourceTrain?.noSequence?.[0]||sourceTrain?.no);
-      if(fallback) candidates.push({no:fallback,from:0,to:stops.length-1});
-    }
-    candidates.sort((a,b)=>a.from-b.from||a.to-b.to||a.no.localeCompare(b.no));
-    const unique=[];const seen=new Set();
-    for(const segment of candidates){
-      const key=`${segment.no}|${segment.from}|${segment.to}`;
-      if(seen.has(key)) continue;seen.add(key);unique.push(segment);
-    }
-    const merged=[];
-    for(const segment of unique){
-      const last=merged[merged.length-1];
-      if(last&&last.no===segment.no&&segment.from<=last.to+1){last.to=Math.max(last.to,segment.to);}
-      else merged.push({...segment});
-    }
-    return merged;
+    segments.push({no:currentNo,from,to:stops.length-1});
+    return segments;
+  }
+
+  function operationTrainHasCardNumber(sourceTrain){
+    if(!sourceTrain || sourceTrain.hideTrainNumber) return false;
+    const stops=Array.isArray(sourceTrain.stops)?sourceTrain.stops:[];
+    return stops.some(stop=>!!trainCardNumberTextAtStation(sourceTrain,String(stop?.station||'')));
+  }
+
+  function operationCardNumberForEntry(entry,sourceTrain){
+    if(!sourceTrain || sourceTrain.hideTrainNumber) return '';
+    const start=String(entry?.start||sourceTrain?.stops?.[Number(entry?._fromIndex)||0]?.station||'').trim();
+    return start ? trainCardNumberTextAtStation(sourceTrain,start) : '';
   }
 
   function operationChainForCurrentTrain(train){
@@ -12093,8 +12074,8 @@ initRegionNavigation();
     if(!chain){
       // このJSONに運用連結表がない場合も、実際の列車番号と番号変更区間を表示する。
       // 番号を持たない路線の内部IDは列番として表示しない。
-      const firstNo=normalizeTrainNo(train?.noSequence?.[0]||train?.no||'');
-      const displayNo=isDisplayableOperationTrainNumber(firstNo,train)?firstNo:'';
+      const firstStation=String(train?.stops?.[0]?.station||train?.start||'');
+      const displayNo=trainCardNumberTextAtStation(train,firstStation);
       chain=[{
         no:displayNo,
         type:String(train?.type||''),
@@ -12110,12 +12091,12 @@ initRegionNavigation();
 
     const expanded=[];
     for(const entry of chain){
-      const entryNo=normalizeTrainNo(entry?.no||entry||'');
+      const entryNo=normalizeTrainNo(entry?.no||(typeof entry==='string'?entry:''));
       const sameTrainNumbers=[train?.no,...(Array.isArray(train?.noSequence)?train.noSequence:[])].map(normalizeTrainNo).filter(Boolean);
       const sourceTrain=entry?._sourceTrain || (entryNo ? findOperationTrainRecord(entryNo,day) : null)
         || (train && entryNo && sameTrainNumbers.includes(entryNo) ? train : null)
         || (train && !entryNo ? train : null);
-      const hasRealNumber=isDisplayableOperationTrainNumber(entryNo,sourceTrain);
+      const hasRealNumber=operationTrainHasCardNumber(sourceTrain);
       const stops=Array.isArray(sourceTrain?.stops)?sourceTrain.stops:[];
       // 列番区間を実際の走行路線の範囲へ切り詰めてから、番号変更駅で分割する。
       const mergedSegments=operationNumberSegments(sourceTrain,hasRealNumber);
@@ -12136,7 +12117,7 @@ initRegionNavigation();
           const endTime=String(last?.arrival||last?.time||last?.departure||'');
           if(!start && !dest) continue;
           expanded.push({
-            no:isDisplayableOperationTrainNumber(seg.no,sourceTrain)?seg.no:'',
+            no:String(seg.no||''),
             type:String(entry?.type||sourceTrain?.type||''),
             start,startTime,dest,endTime,
             _sourceTrain:sourceTrain,
@@ -12249,12 +12230,10 @@ initRegionNavigation();
 
   function operationItemHTML(entry,index,count){
     const sourceTrain=entry?._sourceTrain || findOperationTrainRecord(String(entry?.no||''),currentDay);
-    const candidateNo=normalizeTrainNo(entry?.no||'');
-    const hasRealNumber=isDisplayableOperationTrainNumber(candidateNo,sourceTrain);
-    const no=hasRealNumber ? candidateNo : '';
+    const start=String(entry?.start||'').trim();
+    const no=operationCardNumberForEntry(entry,sourceTrain);
     const rawType=String(entry?.type||'').trim();
     const type=rawType ? getShortType(rawType,no,sourceTrain) : '';
-    const start=String(entry?.start||'').trim();
     const shortStart=operationStationLabel(start);
     const startTime=String(entry?.startTime||'');
     const dest=String(entry?.dest||'').trim();
@@ -12306,7 +12285,7 @@ initRegionNavigation();
     const out=[];
     const visitedParents=new Set();
     for(const entry of (Array.isArray(chain)?chain:[])){
-      const entryNo=normalizeTrainNo(entry?.no||entry);
+      const entryNo=normalizeTrainNo(entry?.no||(typeof entry==='string'?entry:''));
       const sourceTrain=entryNo?findOperationTrainRecord(entryNo,day):null;
       if(!sourceTrain){
         if(entry && typeof entry==='object') out.push({...entry,no:entryNo||String(entry?.no||'')});
@@ -12316,7 +12295,7 @@ initRegionNavigation();
       const parentKey=[String(sourceTrain.no||''),String(sourceTrain.startTime||''),String(sourceTrain.endTime||'')].join('|');
       if(visitedParents.has(parentKey)) continue;
       visitedParents.add(parentKey);
-      const hasRealNumber=isDisplayableOperationTrainNumber(entryNo,sourceTrain);
+      const hasRealNumber=operationTrainHasCardNumber(sourceTrain);
       const merged=operationNumberSegments(sourceTrain,hasRealNumber);
       if(stops.length&&merged.length>1){
         for(const seg of merged){
@@ -12338,7 +12317,7 @@ initRegionNavigation();
       }else{
         out.push({
           ...(entry&&typeof entry==='object'?entry:{}),
-          no:isDisplayableOperationTrainNumber(merged[0]?.no||entryNo,sourceTrain)?(merged[0]?.no||entryNo||''):'',
+          no:trainCardNumberTextAtStation(sourceTrain,String(entry?.start||sourceTrain.start||stops[0]?.station||'')),
           type:String(entry?.type||sourceTrain.type||''),
           start:String(entry?.start||sourceTrain.start||stops[0]?.station||''),
           startTime:String(entry?.startTime||sourceTrain.startTime||stops[0]?.departure||stops[0]?.time||stops[0]?.arrival||''),
@@ -12399,7 +12378,7 @@ initRegionNavigation();
       const normalized=normalizeTrainNo(value);
       if(normalized) aliases.add(normalized);
     };
-    const entryNo=String(entry?.no||entry||'').trim();
+    const entryNo=String(entry?.no||(typeof entry==='string'?entry:'')||'').trim();
     add(entryNo);
     const source=entryNo?findOperationTrainRecord(entryNo,day):null;
     for(const field of ['numberSegments','numbersByLine','trainNumbers']){
@@ -12407,6 +12386,7 @@ initRegionNavigation();
         if(Array.isArray(list)) list.forEach(add);
       }
     }
+    for(const segment of (Array.isArray(source?.sectionNumberSegments)?source.sectionNumberSegments:[])) add(segment?.number??segment?.no);
     return aliases;
   }
 
@@ -12432,7 +12412,7 @@ initRegionNavigation();
 
   function renderTrainNumberFormationHistory(train){
     const currentDate=String(operationDateKey(new Date())||operationDateKey()).trim();
-    const trainNo=String(trainDisplayNoAtTime(train,currentMinutes())||train?.no||currentTrainNo||'').trim();
+    const trainNo=String(trainCardNumberTextAtTime(train,currentMinutes())||'').trim();
     const targetNo=normalizeTrainNo(trainNo);
     const targetCanonical=targetNo.replace(/A$/i,'');
     const family=typeof formationFamilyForTrain==='function'?formationFamilyForTrain(train):'';
@@ -12683,12 +12663,12 @@ initRegionNavigation();
 
     const weekdayNames=['日','月','火','水','木','金','土'];
     const renderRun=(entry,day,registerNo='')=>{
-      const entryNo=normalizeTrainNo(entry?.no||entry||registerNo);
-      const sourceTrain=entryNo?findOperationTrainRecord(entryNo,day):null;
+      const entryNo=normalizeTrainNo(entry?.no||registerNo||'');
+      const sourceTrain=entry?._sourceTrain || (entryNo?findOperationTrainRecord(entryNo,day):null);
       if(!entry && !sourceTrain){
         return `<div class="train-history-run train-history-run-message">この日付の時刻表データでは運用を特定できません（登録列車番号：${escapeAttr(registerNo||entryNo)}）</div>`;
       }
-      const displayNo=isDisplayableOperationTrainNumber(entryNo,sourceTrain)?entryNo:'';
+      const displayNo=operationCardNumberForEntry(entry,sourceTrain);
       const rawType=String(entry?.type||sourceTrain?.type||'').trim();
       const typeLabel=rawType?getDetailType(rawType):'';
       const start=String(entry?.start||sourceTrain?.start||sourceTrain?.stops?.[0]?.station||'').trim();
@@ -12902,14 +12882,14 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
 
     const weekdayNames=['日','月','火','水','木','金','土'];
     const renderRun=(entry,day,registerNo='')=>{
-      const entryNo=normalizeTrainNo(entry?.no||entry||registerNo);
-      const sourceTrain=entryNo?findOperationTrainRecord(entryNo,day):null;
+      const entryNo=normalizeTrainNo(entry?.no||registerNo||'');
+      const sourceTrain=entry?._sourceTrain || (entryNo?findOperationTrainRecord(entryNo,day):null);
       if(!entry && !sourceTrain){
         return `<div class="train-history-run train-history-run-message">この日付の時刻表データでは運用を特定できません（登録列車番号：${escapeAttr(registerNo||entryNo)}）</div>`;
       }
-      const displayNo=isDisplayableOperationTrainNumber(entryNo,sourceTrain)?entryNo:'';
+      const displayNo=operationCardNumberForEntry(entry,sourceTrain);
       const rawType=String(entry?.type||sourceTrain?.type||'').trim();
-      const typeLabel=rawType?getOperationalTypeLabel(rawType,entryNo||registerNo,sourceTrain):'';
+      const typeLabel=rawType?getOperationalTypeLabel(rawType,displayNo||entryNo||registerNo,sourceTrain):'';
       const start=String(entry?.start||sourceTrain?.start||sourceTrain?.stops?.[0]?.station||'').trim();
       const badgeStyle=rawType?typeBadgeInlineStyle(sourceTrain||{type:rawType},null,null,start):'';
       const dest=String(entry?.dest||sourceTrain?.dest||sourceTrain?.stops?.[sourceTrain?.stops?.length-1]?.station||'').trim();
@@ -13078,10 +13058,13 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
     const noFormationText=currentAuthUser?'ここから編成を入力':'編成を入力するにはログインしてください';
     const tabColor=primaryTrainInfoColor();
     const operation=operationChainForCurrentTrain(train);
-    const hasOperationNumber=operation.some(entry=>String(entry?.no||'').trim()!=='');
+    const hasOperationNumber=operation.some(entry=>{
+      const source=entry?._sourceTrain || findOperationTrainRecord(String(entry?.no||''),currentDay);
+      return !!operationCardNumberForEntry(entry,source);
+    });
     const hasOperationType=operation.some(entry=>String(entry?.type||'').trim()!=='');
     const historyCurrentDate=String(operationDateKey(new Date())||operationDateKey()).trim();
-    const visibleHistoryTrainNumber=String(trainDisplayNoAtTime(train,currentMinutes())||'').trim();
+    const visibleHistoryTrainNumber=String(trainCardNumberTextAtTime(train,currentMinutes())||'').trim();
     const historyTrainLabel=visibleHistoryTrainNumber||'列車番号';
     const latestHistoricalFormation=String(latestRegisteredFormationForHistory(train,historyCurrentDate)||'').trim();
     const historyFormationValue=String(train.__formationExplicitlyUnselected?'':(latestHistoricalFormation||effectiveFormationIdForTrain(train))).trim();
@@ -13110,7 +13093,7 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
         <div class="train-card">
           <img src="${(train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id)?originalSelected.img:defaultTrainImage(train)}" class="train-card-img">
           <div class="train-info-main">
-            <div>${cardType?`<span class="type-badge ${getTrainTypeDisplayClass(train,cardTypePosition)}" style="${typeBadgeInlineStyle(train,cardTypePosition)}">${getTrainTypeDisplayLabel(train,true,cardTypePosition)}</span>`:''}${nankaiServiceNameHTML(train)}<span class="train-title${cardType?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>
+            <div>${cardType?`<span class="type-badge ${getTrainTypeDisplayClass(train,cardTypePosition)}" style="${typeBadgeInlineStyle(train,cardTypePosition)}">${getTrainTypeDisplayLabel(train,true,cardTypePosition)}</span>`:''}${nankaiServiceNameHTML(train)}<span class="train-title${cardType?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${trainCardNumberTextAtTime(train,currentMinutes())?`<span class="train-number">${trainCardNumberTextAtTime(train,currentMinutes())}</span>`:''}</div>
               <div class="input-trigger-btn">編成を入力中</div>
             ${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}
           </div>
@@ -13131,7 +13114,7 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
     content.innerHTML=`
       <div class="train-card${cardClass}" ${cardClick}>
         <img src="${imgSrc}" class="train-card-img">
-        <div class="train-info-main"><div>${cardType?`<span class="type-badge ${getTrainTypeDisplayClass(train,cardTypePosition)}" style="${typeBadgeInlineStyle(train,cardTypePosition)}">${getTrainTypeDisplayLabel(train,true,cardTypePosition)}</span>`:''}${nankaiServiceNameHTML(train)}<span class="train-title${cardType?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${!train.hideTrainNumber&&trainDisplayNoAtTime(train,currentMinutes())?`<span class="train-number">${trainDisplayNoAtTime(train,currentMinutes())}</span>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id?`<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`:`<div class="input-trigger-btn">${noFormationText}</div>`}${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id&&formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
+        <div class="train-info-main"><div>${cardType?`<span class="type-badge ${getTrainTypeDisplayClass(train,cardTypePosition)}" style="${typeBadgeInlineStyle(train,cardTypePosition)}">${getTrainTypeDisplayLabel(train,true,cardTypePosition)}</span>`:''}${nankaiServiceNameHTML(train)}<span class="train-title${cardType?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${trainCardNumberTextAtTime(train,currentMinutes())?`<span class="train-number">${trainCardNumberTextAtTime(train,currentMinutes())}</span>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id?`<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`:`<div class="input-trigger-btn">${noFormationText}</div>`}${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id&&formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
       </div>
 
       <div class="train-info-tabs" style="--train-info-color:${tabColor}">
