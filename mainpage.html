@@ -10923,7 +10923,7 @@ initRegionNavigation();
     const stops=Array.isArray(train.stops)?train.stops:[];
     const indexOf=name=>stops.findIndex(row=>String(row?.station||'').trim()===String(name||'').trim());
     const ia=indexOf(stationA),ib=indexOf(stationB);
-    if(ia<0||ib<0)return {...train,type:'',sectionTypeSegments:[]};
+    if(ia<0||ib<0)return {...train,type:'',sectionTypeSegments:null};
     const lo=Math.min(ia,ib),hi=Math.max(ia,ib);
     let matched=null;
     for(const segment of train.sectionTypeSegments){
@@ -10932,8 +10932,11 @@ initRegionNavigation();
       const segmentLo=Math.min(from,to),segmentHi=Math.max(from,to);
       if(lo>=segmentLo&&hi<=segmentHi)matched=segment;
     }
-    if(!matched)return {...train,type:'',sectionTypeSegments:[]};
-    return {...train,type:matched.showType===false?'':String(matched.type||'').trim(),sectionTypeSegments:[]};
+    // 駅間ごとの種別を確定した後は sectionTypeSegments を null にする。
+    // 空配列 [] のままだと getTrainTypeAtPosition() が配列形式として扱い、
+    // 確定済みの train.type（快速など）を無視して空文字＝普通扱いにしてしまう。
+    if(!matched)return {...train,type:'',sectionTypeSegments:null};
+    return {...train,type:matched.showType===false?'':String(matched.type||'').trim(),sectionTypeSegments:null};
   }
   function trainColor(train,pos,stationA,stationB){
     try{
