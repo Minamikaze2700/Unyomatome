@@ -3230,13 +3230,6 @@ function formatRailwayDisplayTime(value){
   if(hour>=24 && hour<27) hour-=24;
   return `${String(hour).padStart(2,'0')}:${m[2]}`;
 }
-function fukuokaChikuhiStationSet(json=activeJson){
-  if(String(activeRouteMeta?.formationFamily||'')!=='fukuoka-kuko-hakozaki') return new Set();
-  const lines=Array.isArray(json?.lines)?json.lines:[];
-  const chikuhi=lines.filter(line=>/筑肥線/.test(String(line?.name||'')));
-  return new Set(chikuhi.flatMap(line=>Array.isArray(line?.stations)?line.stations:[])
-    .map(st=>String(st?.name||st?.nameJa||st?.station||'').trim()).filter(Boolean));
-}
 function timetableRowsHTML(stops,trainContext=null){
   // 停車駅案内は現在の路線外の停車駅も含める。時刻未設定の駅は表示しない。
   const visibleStops=(stops||[]).filter(st=>!!String(st?.arrival||st?.departure||st?.time||'').trim());
@@ -3254,10 +3247,9 @@ function timetableRowsHTML(stops,trainContext=null){
     return configured.length ? configured : [fallbackSegmentColor(startIndex,endIndex)];
   };
   const isFukuokaGuide=isFukuokaCompositeRoute(activeRouteMeta);
-  const chikuhiStations=fukuokaChikuhiStationSet();
-  const isChikuhiSegment=(a,b)=>chikuhiStations.has(String(a||''))&&chikuhiStations.has(String(b||''))&&String(a||'')!==String(b||'');
-  // 福岡の筑肥線区間も含め、停車駅案内は全区間を実線表示にする。
-  const isDottedRouteSegment=(a,b,arrivalIndex=-1)=>!isFukuokaGuide && (isChikuhiSegment(a,b)||(arrivalIndex>=0&&rows[arrivalIndex]?.dottedBefore===true));
+  // 筑肥線区間に対する路線固有の破線処理は行わない。
+  // 他路線でJSONに明示された dottedBefore の指定は従来どおり扱う。
+  const isDottedRouteSegment=(a,b,arrivalIndex=-1)=>!isFukuokaGuide && arrivalIndex>=0 && rows[arrivalIndex]?.dottedBefore===true;
   const globalDotted=!isFukuokaGuide && !!activeRouteMeta?.dottedTimetableGuide;
   const lineBg=(colors,dotted=false)=>{
     const list=(Array.isArray(colors)?colors:[]).map(c=>String(c||'').trim()).filter(Boolean);
@@ -7257,9 +7249,9 @@ function timetableRowsHTML(stops,trainContext=null){
   const rows=buildTimetableRows(visibleStops);
   if(!rows.length) return '';
   const colorsForSegment=(aIndex,bIndex)=>timetableSegmentColorList(rows,bIndex,aIndex,trainContext);
-  const chikuhiStations=fukuokaChikuhiStationSet();
-  const isChikuhiSegment=(a,b)=>isFukuoka && !!a && !!b && a!==b && chikuhiStations.has(String(a)) && chikuhiStations.has(String(b));
-  const isDottedRouteSegment=(a,b,arrivalIndex=-1)=>isChikuhiSegment(a,b)||(arrivalIndex>=0&&rows[arrivalIndex]?.dottedBefore===true);
+  // 筑肥線区間に対する路線固有の破線処理は行わない。
+  // 他路線で明示された dottedBefore の指定は従来どおり扱う。
+  const isDottedRouteSegment=(a,b,arrivalIndex=-1)=>!isFukuoka && arrivalIndex>=0 && rows[arrivalIndex]?.dottedBefore===true;
   const dottedMask='repeating-linear-gradient(to bottom,#000 0 7px,transparent 7px 14px)';
   return rows.map((row,index)=>{
     const rawTimes=row.times.length>=2?row.times.slice(0,2):row.times.slice(0,1);
@@ -10745,7 +10737,8 @@ initRegionNavigation();
   function chronologicalTrainStops(train,indexMap){
     const rows=Array.isArray(train?.stops)?train.stops:[];
     const out=[];
-    for(const row of rows){
+    for(let sourceIndex=0;sourceIndex<rows.length;sourceIndex++){
+      const row=rows[sourceIndex];
       const name=String(row?.station||'').trim();const index=indexMap.get(name);
       if(index===undefined)continue;
       const arrivalRaw=String(row?.arrival||row?.time||row?.departure||'').trim();
@@ -10758,35 +10751,63 @@ initRegionNavigation();
       // ここで時刻の逆転を一律+24時間にすると、JSON内の駅順や時刻の不整合が
       // 48時台などの異常な位置に化けるため、逆転補正はせず実時刻で並べ直す。
       if(!Number.isFinite(departure)||departure<arrival)departure=arrival;
-      out.push({station:name,index,arrival,departure});
+      out.push({station:name,index,sourceIndex,arrival,departure});
     }
     // JSONのstops配列が駅順で保存されている場合も、実際の発着時刻順に描画する。
     out.sort((a,b)=>a.arrival-b.arrival||a.departure-b.departure||a.index-b.index);
     return out;
   }
+  function chartStopsForTrain(train,indexMap,circularCount=0){
+    const rows=chronologicalTrainStops(train,indexMap);
+    if(!(circularCount>1)||rows.length<2)return rows;
+    // 環状線上の列車は circular フラグの有無にかかわらず、循環駅順を保って一方向へ展開する。
+    const count=circularCount;
+    let sign=0;
+    for(let i=1;i<rows.length;i++){
+      const forward=(rows[i].index-rows[i-1].index+count)%count;
+      const backward=(rows[i-1].index-rows[i].index+count)%count;
+      if(forward===0&&backward===0)continue;
+      sign=forward<=backward?1:-1;
+      break;
+    }
+    if(!sign)return rows;
+    // 分割駅を先頭に置いた駅リストでは、分割駅始発の逆方向列車だけ末尾側から始める。
+    let unwrapped=rows[0].index+(sign<0&&rows[0].index===0?count:0);
+    let previous=rows[0].index;
+    const result=[{...rows[0],baseIndex:rows[0].index,index:unwrapped}];
+    for(let i=1;i<rows.length;i++){
+      const row=rows[i];
+      const delta=sign>0?(row.index-previous+count)%count:(previous-row.index+count)%count;
+      unwrapped+=sign*delta;
+      result.push({...row,baseIndex:row.index,index:unwrapped});
+      previous=row.index;
+    }
+    return result;
+  }
   function isLocalTrain(train){
     const t=String(train?.type||'').replace(/[　\s]/g,'');
     return !t||/各駅停車|各停|普通/.test(t);
   }
-  function collectIntervalTimes(stations,trains,indexMap){
+  function collectIntervalTimes(stations,trains,indexMap,circularCount=0){
     const intervals=Array.from({length:Math.max(0,stations.length-1)},()=>[]);
     for(const train of trains){
       if(!isLocalTrain(train))continue;
-      const rows=chronologicalTrainStops(train,indexMap);
+      const rows=chartStopsForTrain(train,indexMap,circularCount);
       for(let i=0;i<rows.length-1;i++){
         const a=rows[i],b=rows[i+1];
         if(Math.abs(a.index-b.index)!==1)continue;
         const gap=b.arrival-a.departure;
         if(!(gap>0&&gap<180))continue;
-        intervals[Math.min(a.index,b.index)].push(gap);
+        const intervalIndex=Math.min(a.index,b.index);
+        if(intervalIndex>=0&&intervalIndex<intervals.length)intervals[intervalIndex].push(gap);
       }
     }
     return intervals.map(values=>values.length?Math.min(...values):NaN);
   }
-  function stationYPositions(stations,trains,indexMap){
+  function stationYPositions(stations,trains,indexMap,circularCount=0){
     // 駅間隔は各駅停車の駅間所要時間の最短値だけで決定する。
     // JSON内の距離・キロ程データは一切参照しない。
-    const timeGaps=collectIntervalTimes(stations,trains,indexMap);
+    const timeGaps=collectIntervalTimes(stations,trains,indexMap,circularCount);
     const usableTimes=timeGaps.filter(v=>Number.isFinite(v)&&v>0);
     const avgTime=usableTimes.length?usableTimes.reduce((a,b)=>a+b,0)/usableTimes.length:1;
     const weights=timeGaps.map(v=>Number.isFinite(v)&&v>0?v:avgTime);
@@ -10797,11 +10818,11 @@ initRegionNavigation();
     const y=[0];for(const gap of gaps)y.push(y[y.length-1]+gap);
     return {y,mode:usableTimes.length?'各駅停車の最短所要時間':'均等間隔',gaps};
   }
-  function trainEvents(train,indexMap){
-    const rows=chronologicalTrainStops(train,indexMap);const events=[];
+  function trainEvents(train,indexMap,circularCount=0){
+    const rows=chartStopsForTrain(train,indexMap,circularCount);const events=[];
     for(const row of rows){
-      events.push({index:row.index,minute:row.arrival,station:row.station});
-      if(row.departure>row.arrival+.01)events.push({index:row.index,minute:row.departure,station:row.station});
+      events.push({index:row.index,minute:row.arrival,station:row.station,sourceIndex:row.sourceIndex});
+      if(row.departure>row.arrival+.01)events.push({index:row.index,minute:row.departure,station:row.station,sourceIndex:row.sourceIndex});
     }
     return events.sort((a,b)=>a.minute-b.minute||a.index-b.index);
   }
@@ -10919,22 +10940,38 @@ initRegionNavigation();
     return String(hour);
   }
   function makeChart(){
-    const stations=stationList();
+    const sourceStations=stationList();
     const daySource=currentDay==='休日'?HOLIDAY_TRAINS:TRAINS;
     const all=Array.isArray(daySource)?daySource:[];
     const trains=all.filter(t=>state.direction==='both'||(state.direction==='up'&&String(t?.direction)==='up')||(state.direction==='down'&&String(t?.direction)==='down'));
-    if(!stations.length||!trains.length){return {empty:!stations.length?'駅データがありません。':'この方向の列車データがありません。',trains:[],stations};}
-    const indexMap=new Map(stations.map((name,i)=>[name,i]));
+    if(!sourceStations.length||!trains.length){return {empty:!sourceStations.length?'駅データがありません。':'この方向の列車データがありません。',trains:[],stations:sourceStations};}
+    // 環状線は循環の分割駅を先頭にそろえ、終端に同じ駅を1つ追加して
+    // 環状運転の列車が分割駅をまたいでも、上下どちらも連続した駅順で描けるようにする。
+    const circularRoute=activeJson?.circular===true;
+    const splitStation=String(activeJson?.circularSplitStation||sourceStations[0]||'');
+    let baseStations=sourceStations.slice();
+    if(circularRoute){
+      const splitIndex=baseStations.indexOf(splitStation);
+      if(splitIndex>0)baseStations=baseStations.slice(splitIndex).concat(baseStations.slice(0,splitIndex));
+    }
+    const circularCount=circularRoute?baseStations.length:0;
+    const stations=circularRoute?[...baseStations,baseStations[0]]:baseStations;
+    const indexMap=new Map(baseStations.map((name,i)=>[name,i]));
     // 選択中の経路上で停車駅が1駅しかない列車は、ダイヤ上にスジを描かない。
     // 発着時刻が2つあっても、同一駅だけなら対象外とする。
-    const eventMap=trains.map(train=>({train,events:trainEvents(train,indexMap)}))
-      .filter(item=>new Set(item.events.map(event=>event.index)).size>=2);
+    const eventMap=trains.map(train=>{
+      const events=trainEvents(train,indexMap,circularCount);
+      const chartIndexBySource=new Map();
+      for(const event of events)if(Number.isInteger(event.sourceIndex))chartIndexBySource.set(event.sourceIndex,event.index);
+      return {train,events,chartIndexBySource};
+    }).filter(item=>new Set(item.events.map(event=>event.index)).size>=2);
     if(!eventMap.length)return {empty:'表示できる駅が2駅以上ある列車がありません。',trains,stations,errors:[]};
     const timeErrors=[];
     for(let trainIndex=0;trainIndex<eventMap.length;trainIndex++){
       const item=eventMap[trainIndex];
       for(const error of inspectTrainTimeData(item.train,indexMap)){
-        timeErrors.push({...error,trainIndex,trainNo:String(item.train?.no||item.train?.number||'列車')});
+        const chartIndex=item.chartIndexBySource.get(error.sourceIndex);
+        timeErrors.push({...error,index:Number.isInteger(chartIndex)?chartIndex:error.index,trainIndex,trainNo:String(item.train?.no||item.train?.number||'列車')});
       }
     }
     const allMinutes=eventMap.flatMap(item=>item.events.map(e=>e.minute)).filter(Number.isFinite);
@@ -10951,7 +10988,7 @@ initRegionNavigation();
     // v27で表示していた現在の横幅を100%とする。スライダーで50～300%に調整可能。
     const top=104,left=264,right=48,bottom=62,pxPerMinute=2.25*state.horizontalScale;
     const plotWidth=(maxMinute-minMinute)*pxPerMinute;
-    const spacing=stationYPositions(stations,trains,indexMap);
+    const spacing=stationYPositions(stations,trains,indexMap,circularCount);
     const chartHeight=spacing.y[spacing.y.length-1]||0;
     const contentWidth=left+plotWidth+right,contentHeight=top+chartHeight+bottom;
     const parts=[];
