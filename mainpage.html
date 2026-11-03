@@ -1367,7 +1367,6 @@ const ROUTE_REGISTRY={
     company:'福岡市地下鉄',
     formationFamily:'fukuoka-kuko-hakozaki',
     noTrainNumbers:true,
-    typeColors:{'普通':'#9fa0a0'},
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     access:{public:false,routeAdmins:['fulnishi39']},
@@ -7466,14 +7465,21 @@ function typeColorFromByRoute(train,type,position=null,stationName='',stationDir
 }
 function typeColorForTrain(train,position=null,stationName='',stationDirectionColor=null){
   const sectionTypeSegment=getTrainTypeSegmentAtPosition(train,position);
-  if(Array.isArray(train?.sectionTypeSegments)){
-    if(!sectionTypeSegment) return String(displayedRouteColorForTrainPosition(train,position)||stationDirectionColor||activeRouteColors()[0]||'#666');
-    if(sectionTypeSegment.color) return String(sectionTypeSegment.color);
-  }
   const type=getTrainTypeAtPosition(train,position);
   // JSONの通常の文字列色と、広島地区の typeColors.<種別>.byRoute の両方に対応する。
   const sourceColors=(train?.sourceTypeColors&&typeof train.sourceTypeColors==='object')?train.sourceTypeColors:{};
   const colors={...sourceColors,...(activeJson?.typeColors||{}),...(activeRouteMeta?.typeColors||{})};
+  if(Array.isArray(train?.sectionTypeSegments)){
+    if(sectionTypeSegment?.color) return String(sectionTypeSegment.color);
+    if(!sectionTypeSegment){
+      // 区間別種別の対象外区間でも、JSONに普通・各駅停車の共通色があれば優先する。
+      // 指定がない場合だけ従来どおり、その区間を走る路線の色へフォールバックする。
+      const isOrdinary=!type||type==='普通'||type==='各駅停車';
+      const ordinaryColor=(typeof colors[type]==='string'&&colors[type].trim())?colors[type]:colors['普通'];
+      if(isOrdinary&&typeof ordinaryColor==='string'&&ordinaryColor.trim()) return ordinaryColor.trim();
+      return String(displayedRouteColorForTrainPosition(train,position)||stationDirectionColor||activeRouteColors()[0]||'#666');
+    }
+  }
   if(isShinanoMainRoute()){
     if(type==='快速' && shinanoTrainName(train)) return '#d71920';
     if(type==='普通') return '#1677d2';
@@ -7501,7 +7507,10 @@ function typeColorForTrain(train,position=null,stationName='',stationDirectionCo
   if(type==='回送') return String(colors?.回送||'#fff');
   if(type.includes('快速')) return String(colors?.快速||FAST_TYPE_COLOR||'#f39800');
   const currentRouteColor=displayedRouteColorForTrainPosition(train,position);
-  if(!type || type==='普通' || type==='各駅停車') return String(currentRouteColor||stationDirectionColor||activeRouteColors()[0]||'#666');
+  if(!type || type==='普通' || type==='各駅停車'){
+    const ordinaryColor=(typeof colors[type]==='string'&&colors[type].trim())?colors[type]:colors['普通'];
+    return String((typeof ordinaryColor==='string'&&ordinaryColor.trim()?ordinaryColor:currentRouteColor)||stationDirectionColor||activeRouteColors()[0]||'#666');
+  }
   if(currentRouteColor) return String(currentRouteColor);
   const fallback=String(fallbackTrainServiceColor(train)||activeRouteColors()[0]||'#666');
   return fallback;
@@ -10931,15 +10940,17 @@ initRegionNavigation();
       if(Array.isArray(train?.sectionTypeSegments)){
         const chartTrain=chartTrainForStationPair(train,stationA,stationB);
         const type=String(chartTrain?.type||'').trim();
-        // 普通列車は種別色ではなく、その区間の実際の路線カラーを使用する。
+        // まずJSONの種別色を参照する。特に「普通」は路線カラーへ固定せず、
+        // typeColors に指定があれば筑肥線を含む全区間でその色を使用する。
+        if(typeof typeColorForTrain==='function'){
+          const c=typeColorForTrain(chartTrain,null,stationA||stationB||'',null);
+          if(c&&String(c).trim())return String(c).trim();
+        }
+        // JSONに種別色がない場合に限り、その区間の実際の路線カラーへフォールバック。
         if(!type||type==='普通'||type==='各駅停車'){
           const lineColor=typeof trainServiceColorBetweenStations==='function'
             ?trainServiceColorBetweenStations(stationA,stationB,train):'';
           if(lineColor&&String(lineColor).trim())return String(lineColor).trim();
-        }
-        if(typeof typeColorForTrain==='function'){
-          const c=typeColorForTrain(chartTrain,null,stationA||stationB||'',null);
-          if(c&&String(c).trim())return String(c).trim();
         }
       }else if(typeof typeColorForTrain==='function'){
         const c=typeColorForTrain(train,pos,stationA||stationB||'',null);
