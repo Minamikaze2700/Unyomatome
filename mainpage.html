@@ -8971,6 +8971,19 @@ initRegionNavigation();
   }
   window.linkedTrainNumbersForFormationUI=linkedTrainNumbersForFormationUI;
 
+  // 編成入力の基準列番を先頭にする。
+  // 運用チェーン全体の先頭ではなく、ユーザーが詳細画面を開いて入力した列番から
+  // 編成スロットを割り当てることで、Firebaseへの登録先が別列番へずれるのを防ぐ。
+  function linkedTrainNumbersFromSelectedTrain(train,day=currentDay){
+    const linked=linkedTrainNumbersForFormationUI(train,day);
+    if(linked.length<2) return linked;
+    const selected=normalizeTrainNo(train?.no||'');
+    const index=linked.findIndex(no=>normalizeTrainNo(no)===selected);
+    if(index<=0) return linked;
+    return [...linked.slice(index),...linked.slice(0,index)];
+  }
+  window.linkedTrainNumbersFromSelectedTrain=linkedTrainNumbersFromSelectedTrain;
+
   function formationCountForTrain(train){
     // 東武野田線は1列車につき1編成。連結情報によって入力枠が増えることを防ぐ。
     const routeName=String(train?.routeName||activeRouteName||'').trim();
@@ -8985,9 +8998,9 @@ initRegionNavigation();
     const maxCount=(configuredCount===undefined || configuredCount===null || configuredCount==='')
       ? DEFAULT_FORMATION_COUNT : clampFormationCount(configuredCount);
 
-    // 連結列車は「1列番＝1編成」。ただし路線で指定された最大数を超えない。
-    const linked=linkedTrainNumbersForFormationUI(train);
-    if(linked.length>1) return Math.min(clampFormationCount(linked.length),maxCount);
+    // 運用チェーン上で列番が連結されていても、編成登録先は入力した列番のまま。
+    // 「+」は同一列番に複数編成を登録する区切りなので、チェーン内の列番数で
+    // 入力可能な編成数を決めない。編成数はJSON／路線設定の上限だけで決める。
     return maxCount;
   }
   window.formationCountForTrain=formationCountForTrain;
@@ -9300,8 +9313,9 @@ initRegionNavigation();
     const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction||null)||currentTrainSnapshot;
     if(!train) return;
     const count=formationCountForTrain(train);
-    const linked=linkedTrainNumbersForFormationUI(train);
-    const splitPerLinkedTrain=linked.length>1;
+    // 「+」で複数編成を入力しても、すべて現在選択中の列番に登録する。
+    // 運用チェーンの前後列番へ分配しない。
+    const splitPerLinkedTrain=false;
     const raw=String(input?.value||'').trim();
     if(!raw){ if(err) err.textContent='編成番号を入力してください。'; input?.focus(); return; }
     const pieces=raw.split('+').map(x=>x.trim()).filter(Boolean);
@@ -9381,8 +9395,9 @@ initRegionNavigation();
     if(!train) return;
     const count=formationCountForTrain(train);
     if(slot<0||slot>=count)return;
-    const linked=linkedTrainNumbersForFormationUI(train);
-    const splitPerLinkedTrain=linked.length>1;
+    // 編成スロットも、運用チェーン内の別列番へ割り当てず、現在の列番にまとめる。
+    const linked=[String(train?.no||currentTrainNo||'').trim()];
+    const splitPerLinkedTrain=false;
     const ids=selectedIdsForTrain(train);
     const normalized=(id===INITIAL_FORMATION_SELECTION.id || window.isUnselectedFormationId?.(id))?'':String(normalizeStoredFormationId(id)||'');
 
