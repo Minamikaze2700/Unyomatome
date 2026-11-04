@@ -1545,6 +1545,7 @@ const ROUTE_REGISTRY={
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Echizen_noimage.png',
     maxFormationCoupling:2,
     prescribedFormationRule:'common',
+    defaultFormationName:'えちぜん鉄道車',
     access:{public:false,routeAdmins:[]},
     formationInputExample:'MC6101形 / 6101 / 6101F'
   },
@@ -1563,6 +1564,7 @@ const ROUTE_REGISTRY={
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Echizen_noimage.png',
     maxFormationCoupling:2,
     prescribedFormationRule:'common',
+    defaultFormationName:'えちぜん鉄道車',
     access:{public:false,routeAdmins:[]},
     formationInputExample:'MC6101形 / 6101 / 6101F'
   },
@@ -11007,6 +11009,10 @@ initRegionNavigation();
       const station=String(stop?.station||'').trim();
       const index=indexMap.get(station);
       if(index===undefined)return;
+      // 時刻を持たない通過駅は正常データ。空欄だけを時刻未入力エラーにしない。
+      // ただし通過駅に時刻が明示されている場合は、通常どおり形式・順序を検査する。
+      const hasRawTime=['arrival','departure','time'].some(key=>String(stop?.[key]??'').trim()!=='');
+      if((stop?.pass===true||stop?.isStop===false)&&!hasRawTime)return;
       const arrival=checkedTime(stop?.arrival);
       const departure=checkedTime(stop?.departure);
       const generic=checkedTime(stop?.time);
