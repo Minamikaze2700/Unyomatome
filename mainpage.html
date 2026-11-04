@@ -2675,7 +2675,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
       : String(raw?.id||raw?.uid||`${day}-${direction}-${String(firstTimed.station||'')}-${String(firstTimed.time||'')}`));
   // noTrainTypes=true の路線は、JSON内にtype値が残っていても種別として扱わない。
   // 神戸市営地下鉄と樽見鉄道のような種別表示なしの路線に対応する。
-  const suppressTrainTypes=meta?.noTrainTypes===true || activeJson?.noTrainTypes===true;
+  const suppressTrainTypes=meta?.noTrainTypes===true || raw?.__sourceNoTrainTypes===true;
   const jsonType=suppressTrainTypes?'':String(raw?.type||'').trim();
   const formationFamily=String(meta?.formationFamily||formationStorageContext(meta?.id||activeRouteName).family||'').trim();
   const parsedDefaultCars=Number(raw?.cars);
@@ -2683,7 +2683,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
   return [{
     no:internalNo,
     hasTrainNumber,
-    hideTrainNumber:!hasTrainNumber || ((meta?.noTrainNumbers===true || activeJson?.noTrainNumbers===true) && !hasSectionTrainNumber),
+    hideTrainNumber:!hasTrainNumber || ((meta?.noTrainNumbers===true || raw?.__sourceNoTrainNumbers===true) && !hasSectionTrainNumber),
     noSequence:allNumbers,
     numbersByLine,
     numberSegments,
@@ -2693,7 +2693,8 @@ function normalizeExternalTrain(raw,day,direction,meta){
     expressCategory:String(raw?.expressCategory||'').trim(),
     serviceNumber:raw?.serviceNumber===undefined||raw?.serviceNumber===null?'':String(raw.serviceNumber).trim(),
     lineKind:String(raw?.lineKind||meta?.lineKind||formationFamily),
-    lineName:activeRouteName,
+    lineName:String(meta?.routeName||activeRouteName),
+    routeName:String(meta?.routeName||activeRouteName),
     formationFamily,
     direction:direction==='上り'?'up':'down',
     cars:Number.isFinite(parsedDefaultCars)&&parsedDefaultCars>0 ? parsedDefaultCars : fallbackCars,
@@ -2710,6 +2711,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
     servedLineNames,
     stationGuideStops,
     sourceTypeColors:(raw?.__sourceTypeColors&&typeof raw.__sourceTypeColors==='object')?{...raw.__sourceTypeColors}:{},
+    sourceTypeClassMap:(meta?.typeClassMap&&typeof meta.typeClassMap==='object')?{...meta.typeClassMap}:{},
     sourceJsonUrl:String(raw?.__sourceJsonUrl||''),
     stops,
     rawTrain:raw
@@ -3002,10 +3004,26 @@ async function loadExternalRouteJsons(routeMeta){
   const payloads=await Promise.all(unique.map(sharedFetchJson));
   const primary=payloads[0]?.json||{};
 
+  // 複数JSONを共有区間表示のために読み込む場合も、列車の所属路線は
+  // 読み込み元JSONの路線メタデータで判定する。現在表示中の路線設定を
+  // 関連JSONの列車へ流用しない。
+  const sourceFileName=url=>String(url||'').split(/[?#]/,1)[0].split('/').pop().toLowerCase();
+  for(const payload of payloads){
+    const sourceName=sourceFileName(payload.url);
+    const sourceEntry=Object.entries(ROUTE_REGISTRY).find(([name,meta])=>
+      sourceFileName(meta?.json)===sourceName
+    );
+    const routeName=sourceEntry?.[0]||activeRouteName;
+    const baseMeta=sourceEntry?.[1]||activeRouteMeta;
+    const datedMeta=sourceEntry ? (routeMetaForScheduleDate(baseMeta,selectedDateKey)||baseMeta) : baseMeta;
+    payload.sourceRouteName=routeName;
+    payload.sourceMeta={...datedMeta,routeName};
+  }
+
   // 各JSONごとの種別色を、そこから読み込んだ列車自身に保持させる。
   // 複数JSONを統合する場合も、種別色までprimaryだけに寄せない。
   // lineVisuals.<路線名>.typeColors がある場合は、そのJSON内の路線別設定を優先する。
-  const annotateSourceTypeColors=(rawTrain,json)=>{
+  const annotateSourceTypeColors=(rawTrain,json,sourceMeta,sourceRouteName)=>{
     const rawLineNames=[];
     if(rawTrain?.lineKind) rawLineNames.push(String(rawTrain.lineKind));
     if(rawTrain?.lineName) rawLineNames.push(String(rawTrain.lineName));
@@ -3041,7 +3059,25 @@ async function loadExternalRouteJsons(routeMeta){
         abbreviations:json?.route?.abbreviations
       }
     };
-    return {...rawTrain,__sourceTypeColors:sourceColors,__sourceTypeAliasConfig:sourceTypeAliasConfig,__sourceJsonUrl:String(json?._sourceJsonUrl||'')};
+    return {
+      ...rawTrain,
+      __sourceTypeColors:sourceColors,
+      __sourceTypeAliasConfig:sourceTypeAliasConfig,
+      __sourceJsonUrl:String(json?._sourceJsonUrl||''),
+      __sourceRouteName:String(sourceRouteName||activeRouteName),
+      __sourceMeta:{
+        id:String(sourceMeta?.id||''),
+        routeName:String(sourceRouteName||activeRouteName),
+        jsonLines:Array.isArray(sourceMeta?.jsonLines)?[...sourceMeta.jsonLines]:[],
+        formationFamily:String(sourceMeta?.formationFamily||''),
+        lineKind:String(sourceMeta?.lineKind||''),
+        noTrainTypes:sourceMeta?.noTrainTypes===true,
+        noTrainNumbers:sourceMeta?.noTrainNumbers===true,
+        typeClassMap:sourceMeta?.typeClassMap&&typeof sourceMeta.typeClassMap==='object'?{...sourceMeta.typeClassMap}:{}
+      },
+      __sourceNoTrainTypes:sourceMeta?.noTrainTypes===true || json?.noTrainTypes===true,
+      __sourceNoTrainNumbers:sourceMeta?.noTrainNumbers===true || json?.noTrainNumbers===true
+    };
   };
   for(const payload of payloads){
     try{ if(payload.json) payload.json._sourceJsonUrl=payload.url; }catch(e){}
@@ -3057,7 +3093,7 @@ async function loadExternalRouteJsons(routeMeta){
         }
         for(const direction of ['上り','下り']){
           const list=Array.isArray(dayObj?.[direction])?dayObj[direction]:[];
-          dayObj[direction]=list.map(raw=>annotateSourceTypeColors(raw,payload.json));
+          dayObj[direction]=list.map(raw=>annotateSourceTypeColors(raw,payload.json,payload.sourceMeta,payload.sourceRouteName));
         }
       }
     }
@@ -3068,6 +3104,20 @@ async function loadExternalRouteJsons(routeMeta){
   // 両方のJSONを列車データと線区定義だけ統合する。編成・種別色・運用連結は
   // 現在選択中の路線（primary）をそのまま使用する。
   const merged={...primary,lines:[],trains:{},stationDirections:{},operationChains:primary?.operationChains||{}};
+  // 編成定義も元JSONごとの所属路線を保持して統合する。
+  // これにより横浜線ページ上でも京浜東北線由来の列車には京浜東北線の編成だけを許可できる。
+  merged.formations=[];
+  for(const payload of payloads){
+    const sourceMeta=payload.sourceMeta||activeRouteMeta;
+    const sourceRouteName=String(payload.sourceRouteName||activeRouteName);
+    for(const group of (Array.isArray(payload.json?.formations)?payload.json.formations:[])){
+      merged.formations.push({
+        ...group,
+        family:String(group?.family||group?.formationFamily||sourceMeta?.formationFamily||''),
+        routeNames:Array.isArray(group?.routeNames)?group.routeNames:(Array.isArray(group?.routes)?group.routes:[sourceRouteName])
+      });
+    }
+  }
   // 行先略称はHTMLの路線設定に直書きせず各JSONで管理する。
   // 横浜線ページでは共有区間の京浜東北・根岸線JSONも読み込むため、
   // primary（現在路線）の指定を優先しつつ、関連JSONの略称も統合する。
@@ -3139,6 +3189,14 @@ async function loadLineTrainData(routeName=activeRouteName,timetableDate=selecte
   const built=[];
   // 路線JSONには「平日/土休」の配列形式と「平日/休日→上り/下り」の形式がある。
   // 福岡市地下鉄のように各列車が direction を持つ配列形式もここで共通形式へ変換する。
+  const sourceMetaForTrain=raw=>{
+    const source=raw?.__sourceMeta;
+    if(source&&typeof source==='object'&&source.routeName){
+      const registered=ROUTE_REGISTRY[source.routeName]||{};
+      return {...registered,...source,routeName:String(source.routeName)};
+    }
+    return activeRouteMeta;
+  };
   for(const day of ['平日','土曜','休日']){
     const candidateKeys=day==='休日'?['土休日','土休','休日']:(day==='土曜'?['土曜']:['平日']);
     const sourceDay=candidateKeys.find(k=>Array.isArray(json?.trains?.[k]) || (json?.trains?.[k]&&typeof json.trains[k]==='object'&&(Array.isArray(json.trains[k]?.上り)||Array.isArray(json.trains[k]?.下り))));
@@ -3151,12 +3209,12 @@ async function loadLineTrainData(routeName=activeRouteName,timetableDate=selecte
         const isUpDirection=(normalizedDirection==='上り'||normalizedDirection==='up'||normalizedDirection==='toward_airport'||normalizedDirection==='toward_airport_kaizuka'||normalizedDirection==='toward_kaizuka'||normalizedDirection.startsWith('toward_airport_'));
         let direction=isUpDirection?'上り':'下り';
         const normalizedDay=day;
-        built.push(...normalizeExternalTrain(raw,normalizedDay,direction,activeRouteMeta));
+        built.push(...normalizeExternalTrain(raw,normalizedDay,direction,sourceMetaForTrain(raw)));
       }
     }else{
       for(const direction of ['上り','下り']){
         const rawList=dayData?.[direction]||[];
-        for(const raw of rawList) built.push(...normalizeExternalTrain(raw,day,direction,activeRouteMeta));
+        for(const raw of rawList) built.push(...normalizeExternalTrain(raw,day,direction,sourceMetaForTrain(raw)));
       }
     }
   }
@@ -4735,7 +4793,7 @@ function trainVisualKind(t,position=null){
 function expressClassForTrain(t,position=null){
   const type=getTrainTypeAtPosition(t,position);
   if(type==='回送') return 'deadhead';
-  const mapped=activeRouteMeta?.typeClassMap?.[type];
+  const mapped=train?.sourceTypeClassMap?.[type]||activeRouteMeta?.typeClassMap?.[type];
   if(mapped) return String(mapped);
   return (type.includes('快速')||type.includes('特急'))?'express':'route-normal';
 }
@@ -7120,6 +7178,15 @@ function activeRouteColors(){
 }
 function activeSegmentColors(a,b){
   const aa=String(a||''),bb=String(b||'');
+  // 横浜線ページの東神奈川～大船は京浜東北・根岸線との共用区間。
+  // 列車側の色判定とは独立して、駅間線・駅名の色も京浜東北線の線区色にする。
+  if(String(activeRouteMeta?.id||'')==='yokohama'){
+    const keihinLine=lineDefByName('京浜東北・根岸線');
+    if(keihinLine && lineAdjacent(keihinLine,aa,bb)){
+      const keihinColor=String(keihinLine.color||'').trim();
+      if(keihinColor) return [keihinColor];
+    }
+  }
   if(isFukuokaCompositeRoute(activeRouteMeta) && fukuokaHakozakiBranchOpen){
     const hakoColor=String(lineDefByName('箱崎線')?.color||'#666');
     const branchNames=new Set(fukuokaBranchStationNames(activeJson,activeRouteMeta));
@@ -7474,7 +7541,9 @@ function displayedRouteColorForTrainPosition(train,position=null){
 }
 function typeColorConfigForTrain(train,type){
   const sourceColors=(train?.sourceTypeColors&&typeof train.sourceTypeColors==='object')?train.sourceTypeColors:{};
-  const configured={...sourceColors,...(activeJson?.typeColors||{}),...(activeRouteMeta?.typeColors||{})};
+  // 共有区間で複数JSONを統合した場合、列車の所属元JSONの種別色を最優先する。
+  // 表示中の路線（例：横浜線）の設定は、所属元JSONに色指定がない場合だけ補完に使う。
+  const configured={...(activeRouteMeta?.typeColors||{}),...(activeJson?.typeColors||{}),...sourceColors};
   const category=naganoExpressCategoryFor(train,String(type||''));
   return configured[category||String(type||'').trim()];
 }
@@ -7599,7 +7668,8 @@ function typeColorForTrain(train,position=null,stationName='',stationDirectionCo
   const type=String(getTrainTypeAtPosition(train,position)||'').trim();
   // JSONの種別色設定を優先し、設定がない種別は実際に走行する区間の路線カラーを使う。
   const sourceColors=(train?.sourceTypeColors&&typeof train.sourceTypeColors==='object')?train.sourceTypeColors:{};
-  const colors={...sourceColors,...(activeJson?.typeColors||{}),...(activeRouteMeta?.typeColors||{})};
+  // 種別色は列車の所属元JSONを優先。共有区間を表示する別路線側の設定で上書きしない。
+  const colors={...(activeRouteMeta?.typeColors||{}),...(activeJson?.typeColors||{}),...sourceColors};
   if(sectionTypeSegment?.color) return String(sectionTypeSegment.color).trim();
 
   const routeFallback=()=>{
@@ -11183,7 +11253,10 @@ initRegionNavigation();
     const sourceStations=stationList();
     const daySource=trainsForScheduleDay(currentDay,selectedDateKey);
     const all=Array.isArray(daySource)?daySource:[];
-    const trains=all.filter(t=>state.direction==='both'||(state.direction==='up'&&String(t?.direction)==='up')||(state.direction==='down'&&String(t?.direction)==='down'));
+    // えちぜん鉄道の共通区間用に他路線から取り込んだ列車は、
+    // 運用・列車表示には残し、ダイヤグラムには追加しない（従来の図表表示に戻す）。
+    const diagramSource=all.filter(t=>!t?.__echizenSharedSectionOnly);
+    const trains=diagramSource.filter(t=>state.direction==='both'||(state.direction==='up'&&String(t?.direction)==='up')||(state.direction==='down'&&String(t?.direction)==='down'));
     if(!sourceStations.length||!trains.length){return {empty:!sourceStations.length?'駅データがありません。':'この方向の列車データがありません。',trains:[],stations:sourceStations};}
     // 環状線は循環の分割駅を先頭にそろえ、終端に同じ駅を1つ追加して
     // 環状運転の列車が分割駅をまたいでも、上下どちらも連続した駅順で描けるようにする。
