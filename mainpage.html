@@ -7192,6 +7192,12 @@ function trainServicePairHasRouteColor(a,b,trainContext=null){
 function trainServiceColorAtStation(trainContext,stationName,indexPos=null){
   const rows=Array.isArray(trainContext?.stops)?trainContext.stops:[];
   const station=String(stationName||'');
+  // 堺東は泉北線の列車が通過・直通する場合でも高野線の駅。
+  // 隣接する停車駅や列車の進行方向に左右されず、高野線色を固定する。
+  if(String(activeRouteMeta?.id||'')==='nankai-senboku' && station==='堺東'){
+    const koyaColor=String(lineDefByName('高野線')?.color||'#308646').trim();
+    if(koyaColor) return koyaColor;
+  }
   if(!rows.length) return fallbackTrainServiceColor(trainContext);
 
   let idx=rows.findIndex(x=>String(x?.station||'')===station);
@@ -7282,6 +7288,12 @@ function circularStationLabelDisplayColor(stationName){
 }
 function stationLabelColor(index){
   const i=Math.max(0,Math.min(STATIONS.length-1,Number(index)||0));
+  const stationName=String(STATIONS[i]?.nameJa||'');
+  // 堺東は高野線所属。泉北線ページ上でも駅名表示を高野線色にする。
+  if(String(activeRouteMeta?.id||'')==='nankai-senboku' && stationName==='堺東'){
+    const koyaColor=String(lineDefByName('高野線')?.color||'#308646').trim();
+    if(koyaColor) return koyaColor;
+  }
   const circularColor=circularStationLabelDisplayColor(STATIONS[i]?.nameJa);
   if(circularColor) return circularColor;
   const cur=String(STATIONS[i]?.nameJa||'');
