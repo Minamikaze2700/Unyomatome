@@ -11076,9 +11076,41 @@ initRegionNavigation();
 
     const sourceRows=timedSourceStops(train);
     const first=rows[0],last=rows[rows.length-1];
-    const hasEarlierOutside=sourceRows.some(row=>row.minute<first.arrival-.01&&!indexMap.has(row.station));
-    const hasLaterOutside=sourceRows.some(row=>row.minute>last.departure+.01&&!indexMap.has(row.station));
     const firstIndex=0,lastIndex=stations.length-1;
+
+    // 外挿を適用するのは、列車自身の停車駅配列が「表示区間の入口→出口」を
+    // 連続して通る場合だけ。表示区間の片側にある別路線の列車が、分岐駅など
+    // 1駅だけ共有しているケースには適用しない。
+    // pass=true / 時刻なしの駅も含め、元のstops配列に両端駅が存在することを確認する。
+    const sourceStops=Array.isArray(train?.stops)?train.stops:[];
+    const sourceNames=sourceStops.map(stop=>String(stop?.station||'').trim());
+    const displayStartName=String(stations[firstIndex]||'').trim();
+    const displayEndName=String(stations[lastIndex]||'').trim();
+    const displayStartSourceIndex=sourceNames.indexOf(displayStartName);
+    const displayEndSourceIndex=sourceNames.indexOf(displayEndName);
+    if(!displayStartName||!displayEndName||displayStartSourceIndex<0||displayEndSourceIndex<0)return events;
+    const entrySourceIndex=direction>0?displayStartSourceIndex:displayEndSourceIndex;
+    const exitSourceIndex=direction>0?displayEndSourceIndex:displayStartSourceIndex;
+    if(entrySourceIndex>=exitSourceIndex)return events;
+    // 両端駅だけでなく、表示区間の全駅が列車の元データに進行順で含まれることを確認。
+    // これにより、分岐駅を共有するだけの別路線列車や、途中で分岐する列車を除外する。
+    let sourceCursor=entrySourceIndex;
+    const orderedDisplayStations=direction>0?stations:stations.slice().reverse();
+    for(const stationName of orderedDisplayStations){
+      const found=sourceNames.indexOf(String(stationName||'').trim(),sourceCursor);
+      if(found<0)return events;
+      sourceCursor=found+1;
+    }
+    if(sourceCursor-1!==exitSourceIndex)return events;
+
+    // 表示区間の入口より前／出口より後に、時刻のある別路線駅が実際に存在する場合のみ
+    // その側を外挿する。単なる分岐・接続駅の共有だけでは条件を満たさない。
+    const hasEarlierOutside=sourceRows.some(row=>
+      row.sourceIndex<entrySourceIndex&&row.minute<first.arrival-.01&&!indexMap.has(row.station)
+    );
+    const hasLaterOutside=sourceRows.some(row=>
+      row.sourceIndex>exitSourceIndex&&row.minute>last.departure+.01&&!indexMap.has(row.station)
+    );
     const additions=[];
     const addEdge=(edgeIndex,minute)=>{
       if(!Number.isFinite(minute)||edgeIndex<0||edgeIndex>lastIndex)return;
@@ -11638,7 +11670,7 @@ initRegionNavigation();
       centerMinute=state.chartMeta.minMinute+(oldCenterX-state.chartMeta.left)/state.chartMeta.pxPerMinute;
     }
     const chart=makeChart();
-    if(chart.empty){transformGroup.innerHTML='';empty.hidden=false;empty.textContent=chart.empty;summary.textContent='表示できる列車がありません';state.chartMeta=null;state.chartTrains=[];state.chartErrors=[];state.timeErrorCount=0;updateTimeErrorToggle(0);hideTrainInfo();return;}
+    if(chart.empty){transformGroup.innerHTML='';empty.hidden=true;empty.textContent='';summary.textContent='';state.chartMeta=null;state.chartTrains=[];state.chartErrors=[];state.timeErrorCount=0;updateTimeErrorToggle(0);hideTrainInfo();return;}
     empty.hidden=true;summary.textContent=chart.summary;
     state.timeErrorCount=Array.isArray(chart.errors)?chart.errors.length:0;updateTimeErrorToggle(state.timeErrorCount);
     state.contentWidth=chart.width;state.contentHeight=chart.height;
@@ -11657,11 +11689,12 @@ initRegionNavigation();
       updateTransform();
     });
   }
-  function resetDiagramForRouteChange(message='路線データを読み込み中…'){
+  function resetDiagramForRouteChange(message=''){
     hideTrainInfo();
     transformGroup.innerHTML='';
-    empty.hidden=false;empty.textContent=message;
-    summary.textContent=message;
+    // 駅データ不足・路線読込失敗などの状態メッセージはダイヤグラム上に表示しない。
+    empty.hidden=true;empty.textContent='';
+    summary.textContent='';
     state.chartMeta=null;state.chartTrains=[];state.chartErrors=[];state.timeErrorCount=0;
     state.contentWidth=1000;state.contentHeight=700;
     updateTimeErrorToggle(0);
