@@ -4663,38 +4663,42 @@ function routeColorForStopIndex(rows,index,trainContext=null){
   return color || activeRouteColors()[0] || '#666';
 }
 function routeColorsForStopSegment(aName,bName,trainContext=null){
-  // 表示上の停車駅の間に別線区の駅（例：堺東～深井間の中百舌鳥）が
-  // 省略されている場合は、元のstops配列をたどって線区色の変化を保持する。
-  if(trainServicePairHasRouteColor(aName,bName,trainContext)){
-    return [trainServiceColorBetweenStations(aName,bName,trainContext)];
-  }
-  const source=Array.isArray(trainContext?.stops)?trainContext.stops:[];
-  const ia=source.findIndex(row=>String(row?.station||'').trim()===String(aName||'').trim());
-  const ib=source.findIndex(row=>String(row?.station||'').trim()===String(bName||'').trim());
+  // 停車駅間に通過駅・別線区の駅が省略されていても、全区間の
+  // stationGuideStops を使って駅間ごとの色を順番に取得する。
+  // 先に aName～bName の直接判定をすると、堺東～深井を一括して
+  // 泉北線（または高野線）の単色に誤判定するため、必ず経由駅を展開する。
+  const source=trainServiceRouteRows(trainContext);
+  const a=String(aName||'').trim(), b=String(bName||'').trim();
+  const ia=source.findIndex(row=>String(row?.station||'').trim()===a);
+  const ib=source.findIndex(row=>String(row?.station||'').trim()===b);
   const colors=[];
   if(ia>=0&&ib>=0&&ia!==ib){
     const step=ia<ib?1:-1;
     for(let i=ia;i!==ib;i+=step){
       const next=i+step;
-      if(trainServicePairHasRouteColor(source[i]?.station,source[next]?.station,trainContext)){
-        const color=trainServiceColorBetweenStations(source[i]?.station,source[next]?.station,trainContext);
-        if(color&&colors[colors.length-1]!==color) colors.push(color);
-      }
+      const from=String(source[i]?.station||'').trim();
+      const to=String(source[next]?.station||'').trim();
+      if(!from||!to) continue;
+      const color=trainServiceColorBetweenStations(from,to,trainContext);
+      if(color&&colors[colors.length-1]!==color) colors.push(color);
     }
     if(colors.length) return colors;
   }
-  // 元データ自体にも通過駅が含まれない場合は、表示停車駅の直前／直後に
-  // 実際に線区を特定できる区間があれば、その色を順に引き継ぐ。
+  // 全区間案内に両端がない場合は、駅間自体の線区定義を使用する。
+  if(trainServicePairHasRouteColor(a,b,trainContext)){
+    const color=trainServiceColorBetweenStations(a,b,trainContext);
+    if(color) return [color];
+  }
+  // 元データにも経由駅がない場合の保険。隣接する実線区の色を引き継ぐ。
   const before=ia>0&&ia<source.length
-    ? (trainServicePairHasRouteColor(source[ia-1]?.station,source[ia]?.station,trainContext)
-      ? trainServiceColorBetweenStations(source[ia-1]?.station,source[ia]?.station,trainContext):'') : '';
+    ? trainServiceColorBetweenStations(source[ia-1]?.station,source[ia]?.station,trainContext) : '';
   const after=ib>=0&&ib<source.length-1
-    ? (trainServicePairHasRouteColor(source[ib]?.station,source[ib+1]?.station,trainContext)
-      ? trainServiceColorBetweenStations(source[ib]?.station,source[ib+1]?.station,trainContext):'') : '';
+    ? trainServiceColorBetweenStations(source[ib]?.station,source[ib+1]?.station,trainContext) : '';
   for(const color of [before,after]) if(color&&colors[colors.length-1]!==color) colors.push(color);
   if(colors.length) return colors;
   return [routeColorForTrainFallback(trainContext)];
 }
+
 function routeColorForStopSegment(aName,bName,trainContext=null){
   // 単色を必要とする箇所では、停車駅間の最初に実際に走る線区色を使用。
   return routeColorsForStopSegment(aName,bName,trainContext)[0] || routeColorForTrainFallback(trainContext);
@@ -7238,6 +7242,18 @@ function activeRouteColors(){
 }
 function activeSegmentColors(a,b){
   const aa=String(a||''),bb=String(b||'');
+  // 南海高野線・泉北線の統合ページでは、表示対象が泉北線でも
+  // 駅間そのものが属する線区を全線区定義から判定する。
+  // displayLineNames（泉北線）だけで絞ると、堺東～三国ヶ丘など
+  // 高野線区間まで泉北線色にフォールバックしてしまう。
+  if(String(activeJson?.id||'')==='nankai-koya-senboku'){
+    for(const line of allJsonLines()){
+      if(lineAdjacent(line,aa,bb)){
+        const color=String(line?.color||'').trim();
+        if(color) return [color];
+      }
+    }
+  }
   // 横浜線ページの東神奈川～大船は京浜東北・根岸線との共用区間。
   // 列車側の色判定とは独立して、駅間線・駅名の色も京浜東北線の線区色にする。
   if(String(activeRouteMeta?.id||'')==='yokohama'){
