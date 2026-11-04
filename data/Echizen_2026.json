@@ -51,22 +51,22 @@
             },
             {
               "name": "新福井",
-              "nameEn": "Shin-Fukui",
+              "nameEn": "ShinFukui",
               "stationCode": "E2"
             },
             {
               "name": "福井口",
-              "nameEn": "Fukui-guchi",
+              "nameEn": "Fukui Guchi",
               "stationCode": "E3"
             },
             {
               "name": "越前開発",
-              "nameEn": "Echizen-Kaihatsu",
+              "nameEn": "Echizen Kaihotsu",
               "stationCode": "E4"
             },
             {
               "name": "越前新保",
-              "nameEn": "Echizen-Shinbo",
+              "nameEn": "Echizen Shinbo",
               "stationCode": "E5"
             },
             {
@@ -76,12 +76,12 @@
             },
             {
               "name": "東藤島",
-              "nameEn": "Higashi-Fujishima",
+              "nameEn": "Higashi Fujishima",
               "stationCode": "E7"
             },
             {
               "name": "越前島橋",
-              "nameEn": "Echizen-Shimabashi",
+              "nameEn": "Echizen Shimabashi",
               "stationCode": "E8"
             },
             {
@@ -96,17 +96,17 @@
             },
             {
               "name": "志比堺",
-              "nameEn": "Shihi-sakai",
+              "nameEn": "Shiizakai",
               "stationCode": "E11"
             },
             {
               "name": "永平寺口",
-              "nameEn": "Eiheijiguchi",
+              "nameEn": "Eiheiji Guchi",
               "stationCode": "E12"
             },
             {
               "name": "下志比",
-              "nameEn": "Shimo-Shihi",
+              "nameEn": "Shimoshii",
               "stationCode": "E13"
             },
             {
@@ -116,12 +116,12 @@
             },
             {
               "name": "轟",
-              "nameEn": "Todoroki",
+              "nameEn": "Domeki",
               "stationCode": "E15"
             },
             {
               "name": "越前野中",
-              "nameEn": "Echizen-Nonaka",
+              "nameEn": "Echizen Nonaka",
               "stationCode": "E16"
             },
             {
@@ -131,7 +131,7 @@
             },
             {
               "name": "越前竹原",
-              "nameEn": "Echizen-Takehara",
+              "nameEn": "Echizen Takehara",
               "stationCode": "E18"
             },
             {
@@ -141,12 +141,12 @@
             },
             {
               "name": "保田",
-              "nameEn": "Yasuda",
+              "nameEn": "Hota",
               "stationCode": "E20"
             },
             {
               "name": "発坂",
-              "nameEn": "Hassaka",
+              "nameEn": "Hossaka",
               "stationCode": "E21"
             },
             {
@@ -15497,7 +15497,8 @@
           "勝山永平寺線下り"
         ]
       },
-      "fleetNote": "現役旅客車両を対象。MC6001・MC6101形の改造施工会社は公開資料で確認できないため未確認と明記。MC7000形はJR東海119系5300番台を大阪車輌工業で改造。MC8000形は静岡鉄道1000形を阪神車両メンテナンスで改造。L形は2車体連接の1両編成として登録。時刻表Excelに種別欄がないため、種別は未設定。"
+      "fleetNote": "現役旅客車両を対象。MC6001・MC6101形の改造施工会社は公開資料で確認できないため未確認と明記。MC7000形はJR東海119系5300番台を大阪車輌工業で改造。MC8000形は静岡鉄道1000形を阪神車両メンテナンスで改造。L形は2車体連接の1両編成として登録。時刻表Excelに種別欄がないため、種別は未設定。",
+      "defaultFormationName": "えちぜん鉄道車"
     },
     "三国芦原線": {
       "id": "echizen-mikuni",
@@ -15542,12 +15543,12 @@
             },
             {
               "name": "新福井",
-              "nameEn": "Shin-Fukui",
+              "nameEn": "ShinFukui",
               "stationCode": "E2"
             },
             {
               "name": "福井口",
-              "nameEn": "Fukui-guchi",
+              "nameEn": "Fukui Guchi",
               "stationCode": "E3"
             }
           ]
@@ -15563,17 +15564,17 @@
           "stations": [
             {
               "name": "福井口",
-              "nameEn": "Fukui-guchi",
+              "nameEn": "Fukui Guchi",
               "stationCode": "E3"
             },
             {
               "name": "まつもと町屋",
-              "nameEn": "Matsumoto-machiya",
+              "nameEn": "Matsumoto Machiya",
               "stationCode": "E24"
             },
             {
               "name": "西別院",
-              "nameEn": "Nishi-betsuin",
+              "nameEn": "Nishibetsuin",
               "stationCode": "E25"
             },
             {
@@ -15583,12 +15584,12 @@
             },
             {
               "name": "福大前西福井",
-              "nameEn": "Fukudaimae-Nishi-Fukui",
+              "nameEn": "Fukudaimae Nishifukui",
               "stationCode": "E27"
             },
             {
               "name": "日華化学前",
-              "nameEn": "Nikkagaku-mae",
+              "nameEn": "Nikkakagaku Mae",
               "stationCode": "E28"
             },
             {
@@ -15608,27 +15609,27 @@
             },
             {
               "name": "鷲塚針原",
-              "nameEn": "Washizuka-Haribara",
+              "nameEn": "Washizuka Haribara",
               "stationCode": "E32"
             },
             {
               "name": "太郎丸エンゼルランド",
-              "nameEn": "Taromaru-Angel-Land",
+              "nameEn": "Taromaru Angelland",
               "stationCode": "E33"
             },
             {
               "name": "西春江ハートピア",
-              "nameEn": "Nishi-Harue-Heartpia",
+              "nameEn": "Nishiharue Heartopia",
               "stationCode": "E34"
             },
             {
               "name": "西長田ゆりの里",
-              "nameEn": "Nishi-Nagata-Yurinosato",
+              "nameEn": "Nishinagata Yuri no sato",
               "stationCode": "E35"
             },
             {
               "name": "下兵庫こうふく",
-              "nameEn": "Shimo-Hyogo-Kofuku",
+              "nameEn": "Shimohyogo Kofuku",
               "stationCode": "E36"
             },
             {
@@ -15643,12 +15644,12 @@
             },
             {
               "name": "番田",
-              "nameEn": "Banda",
+              "nameEn": "Banden",
               "stationCode": "E39"
             },
             {
               "name": "あわら湯のまち",
-              "nameEn": "Awara-Yunomachi",
+              "nameEn": "Awara Yunomachi",
               "stationCode": "E40"
             },
             {
@@ -15658,7 +15659,7 @@
             },
             {
               "name": "三国神社",
-              "nameEn": "Mikuni-jinja",
+              "nameEn": "Mikuni Jinja",
               "stationCode": "E42"
             },
             {
@@ -15668,7 +15669,7 @@
             },
             {
               "name": "三国港",
-              "nameEn": "Mikuni-minato",
+              "nameEn": "Mikuni Minato",
               "stationCode": "E44"
             }
           ]
@@ -32406,7 +32407,9 @@
           "三国芦原線下り"
         ]
       },
-      "fleetNote": "現役旅客車両を対象。MC6001・MC6101形の改造施工会社は公開資料で確認できないため未確認と明記。MC7000形はJR東海119系5300番台を大阪車輌工業で改造。MC8000形は静岡鉄道1000形を阪神車両メンテナンスで改造。L形は2車体連接の1両編成として登録。時刻表Excelに種別欄がないため、種別は未設定。"
+      "fleetNote": "現役旅客車両を対象。MC6001・MC6101形の改造施工会社は公開資料で確認できないため未確認と明記。MC7000形はJR東海119系5300番台を大阪車輌工業で改造。MC8000形は静岡鉄道1000形を阪神車両メンテナンスで改造。L形は2車体連接の1両編成として登録。時刻表Excelに種別欄がないため、種別は未設定。",
+      "defaultFormationName": "えちぜん鉄道車"
     }
-  }
+  },
+  "defaultFormationName": "えちぜん鉄道車"
 }
