@@ -2943,6 +2943,49 @@ async function loadExternalRouteJsons(routeMeta){
           // 直通列車の停車駅案内で、共有JSON内の他路線情報を参照できるようにする。
           const selected={...rawJson.routes[key]};
           selected._sharedRoutes=rawJson.routes;
+
+          // えちぜん鉄道は福井～福井口を両路線の共通区間として扱う。
+          // 選択中の路線に、もう一方の路線の列車も共通3駅分だけ追加する。
+          // その先の別路線区間は追加しないため、各ページの表示範囲は維持される。
+          const echizenRoutes=['勝山永平寺線','三国芦原線'];
+          if(echizenRoutes.includes(String(activeRouteName||''))){
+            const otherName=echizenRoutes.find(name=>name!==String(activeRouteName||''));
+            const other=rawJson.routes[otherName];
+            const commonStations=new Set(['福井','新福井','福井口']);
+            if(other && typeof other==='object'){
+              selected.trains={...(selected.trains||{})};
+              for(const day of ['平日','土曜','休日']){
+                const ownDay=selected.trains[day];
+                const otherDay=other.trains?.[day];
+                if(!otherDay || typeof otherDay!=='object') continue;
+                const mergedDay={
+                  ...(ownDay && typeof ownDay==='object' ? ownDay : {}),
+                  上り:[...(Array.isArray(ownDay?.上り)?ownDay.上り:[])],
+                  下り:[...(Array.isArray(ownDay?.下り)?ownDay.下り:[])]
+                };
+                for(const direction of ['上り','下り']){
+                  const source=Array.isArray(otherDay?.[direction])?otherDay[direction]:[];
+                  for(const rawTrain of source){
+                    const originalStops=Array.isArray(rawTrain?.stops)?rawTrain.stops:[];
+                    const sharedStops=originalStops.filter(stop=>commonStations.has(String(stop?.station||'').trim()));
+                    if(sharedStops.length<2) continue;
+                    const copy={
+                      ...rawTrain,
+                      stops:sharedStops.map(stop=>({...stop})),
+                      __echizenSharedSectionOnly:true
+                    };
+                    if(Array.isArray(rawTrain?.stationGuideStops)){
+                      copy.stationGuideStops=rawTrain.stationGuideStops
+                        .filter(stop=>commonStations.has(String(stop?.station||'').trim()))
+                        .map(stop=>({...stop}));
+                    }
+                    mergedDay[direction].push(copy);
+                  }
+                }
+                selected.trains[day]=mergedDay;
+              }
+            }
+          }
           return selected;
         }
       }
@@ -4474,7 +4517,8 @@ function formationDisplayHTML(id){
 }
 
 function prescribedFormationName(t){
-  const meta=ROUTE_REGISTRY[String(t?.routeName||activeRouteName)]||activeRouteMeta||{};
+  const routeKey=String(t?.routeName||activeRouteName||'');
+  const meta=ROUTE_REGISTRY[routeKey]||activeRouteMeta||{};
   if(String(meta?.formationFamily||'')==='mizushima' || String(meta?.prescribedFormationRule||'')==='mizushima'){
     const vehicleClass=String(t?.rawTrain?.class||t?.rawTrain?.vehicleClass||t?.vehicleClass||'').trim().toLowerCase();
     if(vehicleClass==='kiha'){
