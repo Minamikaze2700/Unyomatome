@@ -2976,11 +2976,12 @@ async function loadExternalRouteJsons(routeMeta){
                       stops:sharedStops.map(stop=>({...stop})),
                       __echizenSharedSectionOnly:true
                     };
-                    if(Array.isArray(rawTrain?.stationGuideStops)){
-                      copy.stationGuideStops=rawTrain.stationGuideStops
-                        .filter(stop=>commonStations.has(String(stop?.station||'').trim()))
-                        .map(stop=>({...stop}));
-                    }
+                    // 列車情報の停車駅案内は、共通区間だけでなく元路線の全区間を表示する。
+                    // ダイヤグラム用の stops は共通区間に限定したままにして、
+                    // 停車駅案内専用の stationGuideStops に元の全停車駅を保持する。
+                    const fullGuideStops=Array.isArray(rawTrain?.stationGuideStops)
+                      ? rawTrain.stationGuideStops : originalStops;
+                    copy.stationGuideStops=fullGuideStops.map(stop=>({...stop}));
                     mergedDay[direction].push(copy);
                   }
                 }
