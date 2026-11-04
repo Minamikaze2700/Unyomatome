@@ -5808,11 +5808,15 @@ function stationTimetableHTML(station, selectedDirection='up'){
   // 実際の終着列車ではないため、この駅時刻表の「天王寺止まり」枠には入れない。
   [...getVisibleTrains(), ...stationTimetableExtraTrains].forEach(train=>{
     const isCircular=isCircularTrain(train);
-    const isOrigin=String(train?.start||'')===stationName;
-    const isTerminal=getShortDest(train?.dest||'')===stationName;
-    const allStops=Array.isArray(train?.stops)?train.stops:[];
+    // 始発・終着は表示区間の stops ではなく、停車駅案内の全区間から判定する。
+    // 中百舌鳥などを通過する列車では、最初の時刻付き停車駅を始発と誤認しない。
+    const allStops=Array.isArray(train?.stationGuideStops)&&train.stationGuideStops.length
+      ? train.stationGuideStops : (Array.isArray(train?.stops)?train.stops:[]);
     const timedStops=allStops.filter(stop=>String(stop?.arrival||stop?.departure||stop?.time||'').trim());
+    const actualFirstStop=timedStops[0];
     const actualLastStop=timedStops[timedStops.length-1];
+    const isOrigin=String(actualFirstStop?.station||train?.start||'')===stationName;
+    const isTerminal=getShortDest(actualLastStop?.station||train?.dest||'')===stationName;
     const isActualLastStop=String(actualLastStop?.station||'')===stationName;
     // 終着駅では「到着した列車」を発車時刻表へ載せない。
     // 行先文字列と駅名の表記揺れだけに頼らず、実際の最終停車駅でも判定する。
@@ -5824,7 +5828,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
     if(stationType==='回送') return;
     const stops=allStops.filter(stop=>String(stop?.station||'')===stationName);
     if(!stops.length) return;
-    // 始発駅は最初の停車情報＝発車時刻、終着・途中駅は最後の停車情報を使用。
+    // 始発駅は全区間の最初の停車情報＝発車時刻、終着・途中駅は最後の停車情報を使用。
     const stop=isOrigin ? stops[0] : stops[stops.length-1];
     const time=String(stop?.departure||stop?.time||stop?.arrival||'');
     const m=time.match(/^(\d{1,2}):(\d{2})$/);
@@ -7032,6 +7036,13 @@ function routeLineNamesForColor(trainContext=null){
   for(const name of all) if(!ordered.includes(name)) ordered.push(name);
   return ordered;
 }
+// 停車駅案内に全駅（通過駅を含む）がある場合は、線区色の判定にそちらを使う。
+// stops は表示対象区間だけに切り詰められることがあるため、通過駅を飛ばして
+// 堺東→深井のような別線区またぎの仮想区間を作らない。
+function trainServiceRouteRows(trainContext=null){
+  if(Array.isArray(trainContext?.stationGuideStops)&&trainContext.stationGuideStops.length) return trainContext.stationGuideStops;
+  return Array.isArray(trainContext?.stops)?trainContext.stops:[];
+}
 function lineContainsStops(line,a,b){
   const aa=String(a||''),bb=String(b||'');
   if(!aa||!bb||aa===bb) return false;
@@ -7059,7 +7070,7 @@ function preferredTrainServiceLine(a,b,trainContext=null){
   // 実際の列車が複数線区をまたぐ場合、共有区間だけは「列車の進行方向側に
   // 続いている固有区間」を優先する。これにより呉線→山陽本線の広島～海田市
   // の共有区間は、呉線側／山陽本線側を列車の進行に合わせて正しく判定できる。
-  const rows=Array.isArray(trainContext?.stops)?trainContext.stops:[];
+  const rows=trainServiceRouteRows(trainContext);
   const findPairIndex=()=>{
     for(let i=0;i<rows.length-1;i++){
       const x=String(rows[i]?.station||''),y=String(rows[i+1]?.station||'');
@@ -7124,7 +7135,7 @@ function trainServiceColorBetweenStations(a,b,trainContext=null){
   const aa=String(a||''),bb=String(b||'');
   if(!aa||!bb||aa===bb) return fallbackTrainServiceColor(trainContext);
   // 路線の表示範囲外にある終点は、列車JSONの終点stop.routeColorで区間色を指定できる。
-  const ctxStops=Array.isArray(trainContext?.stops)?trainContext.stops:[];
+  const ctxStops=trainServiceRouteRows(trainContext);
   for(let i=0;i<ctxStops.length-1;i++){
     const x=String(ctxStops[i]?.station||''),y=String(ctxStops[i+1]?.station||'');
     if((x===aa&&y===bb)||(x===bb&&y===aa)){
@@ -7178,7 +7189,7 @@ function trainServiceColorBetweenStations(a,b,trainContext=null){
 function trainServicePairHasRouteColor(a,b,trainContext=null){
   const aa=String(a||''),bb=String(b||'');
   if(!aa||!bb||aa===bb) return false;
-  const rows=Array.isArray(trainContext?.stops)?trainContext.stops:[];
+  const rows=trainServiceRouteRows(trainContext);
   for(let i=0;i<rows.length-1;i++){
     const x=String(rows[i]?.station||''),y=String(rows[i+1]?.station||'');
     if((x===aa&&y===bb)||(x===bb&&y===aa)){
@@ -7190,14 +7201,8 @@ function trainServicePairHasRouteColor(a,b,trainContext=null){
   return false;
 }
 function trainServiceColorAtStation(trainContext,stationName,indexPos=null){
-  const rows=Array.isArray(trainContext?.stops)?trainContext.stops:[];
+  const rows=trainServiceRouteRows(trainContext);
   const station=String(stationName||'');
-  // 堺東は泉北線の列車が通過・直通する場合でも高野線の駅。
-  // 隣接する停車駅や列車の進行方向に左右されず、高野線色を固定する。
-  if(String(activeRouteMeta?.id||'')==='nankai-senboku' && station==='堺東'){
-    const koyaColor=String(lineDefByName('高野線')?.color||'#308646').trim();
-    if(koyaColor) return koyaColor;
-  }
   if(!rows.length) return fallbackTrainServiceColor(trainContext);
 
   let idx=rows.findIndex(x=>String(x?.station||'')===station);
@@ -7288,12 +7293,6 @@ function circularStationLabelDisplayColor(stationName){
 }
 function stationLabelColor(index){
   const i=Math.max(0,Math.min(STATIONS.length-1,Number(index)||0));
-  const stationName=String(STATIONS[i]?.nameJa||'');
-  // 堺東は高野線所属。泉北線ページ上でも駅名表示を高野線色にする。
-  if(String(activeRouteMeta?.id||'')==='nankai-senboku' && stationName==='堺東'){
-    const koyaColor=String(lineDefByName('高野線')?.color||'#308646').trim();
-    if(koyaColor) return koyaColor;
-  }
   const circularColor=circularStationLabelDisplayColor(STATIONS[i]?.nameJa);
   if(circularColor) return circularColor;
   const cur=String(STATIONS[i]?.nameJa||'');
