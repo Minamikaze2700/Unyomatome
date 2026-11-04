@@ -7476,59 +7476,45 @@ function typeColorFromByRoute(train,type,position=null,stationName='',stationDir
 }
 function typeColorForTrain(train,position=null,stationName='',stationDirectionColor=null){
   const sectionTypeSegment=getTrainTypeSegmentAtPosition(train,position);
-  const type=getTrainTypeAtPosition(train,position);
-  // JSONの通常の文字列色と、広島地区の typeColors.<種別>.byRoute の両方に対応する。
+  const type=String(getTrainTypeAtPosition(train,position)||'').trim();
+  // JSONの種別色設定を優先し、設定がない種別は実際に走行する区間の路線カラーを使う。
   const sourceColors=(train?.sourceTypeColors&&typeof train.sourceTypeColors==='object')?train.sourceTypeColors:{};
   const colors={...sourceColors,...(activeJson?.typeColors||{}),...(activeRouteMeta?.typeColors||{})};
-  if(Array.isArray(train?.sectionTypeSegments)){
-    if(sectionTypeSegment?.color) return String(sectionTypeSegment.color);
-    if(!sectionTypeSegment){
-      // 区間別種別の対象外区間でも、JSONに普通・各駅停車の共通色があれば優先する。
-      // 指定がない場合だけ従来どおり、その区間を走る路線の色へフォールバックする。
-      const isOrdinary=!type||type==='普通'||type==='各駅停車';
-      const ordinaryColor=(typeof colors[type]==='string'&&colors[type].trim())?colors[type]:colors['普通'];
-      if(isOrdinary&&typeof ordinaryColor==='string'&&ordinaryColor.trim()) return ordinaryColor.trim();
-      return String(displayedRouteColorForTrainPosition(train,position)||stationDirectionColor||activeRouteColors()[0]||'#666');
-    }
-  }
-  if(isShinanoMainRoute()){
-    if(type==='快速' && shinanoTrainName(train)) return '#d71920';
-    if(type==='普通') return '#1677d2';
-    if(type==='快速') return '#f39800';
-  }
+  if(sectionTypeSegment?.color) return String(sectionTypeSegment.color).trim();
+
+  const routeFallback=()=>{
+    // ダイヤグラムから区間カラーが渡された場合は、その駅間の色を最優先する。
+    const exactSectionColor=String(stationDirectionColor||'').trim();
+    if(exactSectionColor) return exactSectionColor;
+    const stationRouteColor=routeLineColorForTypeBadge(train,position,stationName);
+    if(stationRouteColor) return String(stationRouteColor);
+    const positionRouteColor=displayedRouteColorForTrainPosition(train,position);
+    if(positionRouteColor) return String(positionRouteColor);
+    return String(fallbackTrainServiceColor(train)||activeRouteColors()[0]||'#666');
+  };
+
   const expressCategory=naganoExpressCategoryFor(train,type);
-  if(expressCategory){
-    const expressColor=colors[expressCategory];
-    if(typeof expressColor==='string'&&expressColor.trim()) return expressColor.trim();
-    return expressCategory==='A特急'?'#e91419':'#2e7d32';
+  let configured=expressCategory ? colors[expressCategory] : colors[type];
+  // 「区間快速」などは、個別色がなければ明示設定された「快速」の色を継承する。
+  if((!configured || (typeof configured==='string'&&!configured.trim())) && type.includes('快速')){
+    configured=colors['快速'];
   }
-  const configured=colors[type];
+  // 空欄・普通・各駅停車は、普通色の共通設定があればそれを使う。
+  if((!configured || (typeof configured==='string'&&!configured.trim())) && (!type||type==='普通'||type==='各駅停車')){
+    configured=colors[type]||colors['普通'];
+  }
+
   if(configured && typeof configured==='object' && configured.byRoute && typeof configured.byRoute==='object'){
-    // 「普通／各駅停車」は独自に追加されたtypeColors.byRouteではなく、
-    // 駅ラベル・区間線に使っているJSONの実際の路線色を使用する。
-    if(!type || type==='普通' || type==='各駅停車'){
-      const actualRouteColor=routeLineColorForTypeBadge(train,position,stationName);
-      return String(actualRouteColor||stationDirectionColor||activeRouteColors()[0]||'#666');
-    }
-    const routeColor=typeColorFromByRoute(train,type,position,stationName,stationDirectionColor);
-    if(routeColor) return routeColor;
+    const routeColor=typeColorFromByRoute(train,expressCategory||type,position,stationName,stationDirectionColor);
+    if(routeColor) return String(routeColor);
   }
-  if(Object.prototype.hasOwnProperty.call(sourceColors,type) && typeof sourceColors[type]==='string') return String(sourceColors[type]);
-  if(Object.prototype.hasOwnProperty.call(colors,type) && typeof colors[type]==='string') return String(colors[type]);
-  if(type==='回送') return String(colors?.回送||'#fff');
-  if(type.includes('快速')) return String(colors?.快速||FAST_TYPE_COLOR||'#f39800');
-  const currentRouteColor=displayedRouteColorForTrainPosition(train,position);
-  if(!type || type==='普通' || type==='各駅停車'){
-    const ordinaryColor=(typeof colors[type]==='string'&&colors[type].trim())?colors[type]:colors['普通'];
-    return String((typeof ordinaryColor==='string'&&ordinaryColor.trim()?ordinaryColor:currentRouteColor)||stationDirectionColor||activeRouteColors()[0]||'#666');
-  }
-  if(currentRouteColor) return String(currentRouteColor);
-  const fallback=String(fallbackTrainServiceColor(train)||activeRouteColors()[0]||'#666');
-  return fallback;
+  if(typeof configured==='string' && configured.trim()) return configured.trim();
+
+  // 種別色が未設定なら、快速・回送・特急を含めて種別固有の固定色は付けず路線カラーへ。
+  return routeFallback();
 }
 function typeBadgeAppearance(train,position=null,stationDirectionColor=null,stationName=''){
   const type=getTrainTypeAtPosition(train,position)||'普通';
-  if(type==='回送') return {background:'#fff',color:'#111',border:'1px solid #bbb'};
   const resolvedPosition=position!=null
     ? position
     : (stationName ? null : (train ? positionForTrain(train,currentMinutes())?.pos : null));
@@ -10846,6 +10832,85 @@ initRegionNavigation();
     }
     return events.sort((a,b)=>a.minute-b.minute||a.index-b.index);
   }
+  // 表示区間の外から進入／区間外へ退出する列車について、表示端の駅を
+  // 通過する時刻を、その列車の表示区間内にある他の駅間所要時間の平均傾きから推定する。
+  // 実際の時刻がある駅は変更せず、表示区間の端にだけ補間点を追加する。
+  function timedSourceStops(train){
+    const source=Array.isArray(train?.stops)?train.stops:[];
+    const rows=[];
+    for(let sourceIndex=0;sourceIndex<source.length;sourceIndex++){
+      const stop=source[sourceIndex];
+      const station=String(stop?.station||'').trim();
+      if(!station)continue;
+      const raw=stop?.arrival||stop?.time||stop?.departure||'';
+      let minute=toMinutes(raw);
+      if(!Number.isFinite(minute))minute=toMinutes(stop?.departure||stop?.arrival||'');
+      if(!Number.isFinite(minute))continue;
+      rows.push({station,minute,sourceIndex});
+    }
+    return rows.sort((a,b)=>a.minute-b.minute||a.sourceIndex-b.sourceIndex);
+  }
+  function extendTrainEventsToDisplayEdges(train,events,indexMap,stations,yPositions,circularCount=0){
+    if(circularCount>1||!Array.isArray(events)||events.length<2||!Array.isArray(stations)||stations.length<3||!Array.isArray(yPositions))return events;
+    const rows=chronologicalTrainStops(train,indexMap);
+    if(rows.length<2)return events;
+    let direction=0,consistent=true;
+    for(let i=1;i<rows.length;i++){
+      const delta=rows[i].index-rows[i-1].index;
+      if(!delta)continue;
+      const sign=Math.sign(delta);
+      if(!direction)direction=sign;
+      else if(direction!==sign){consistent=false;break;}
+    }
+    if(!direction||!consistent)return events;
+
+    // ダイヤグラム上の実際の座標（駅Y位置／時刻X位置）で各区間の傾きを求め、
+    // その平均傾きを使って表示端までの時刻を外挿する。
+    const slopes=[];
+    for(let i=0;i<rows.length-1;i++){
+      const a=rows[i],b=rows[i+1];
+      const yA=Number(yPositions[a.index]),yB=Number(yPositions[b.index]);
+      const verticalSpan=Math.abs(yB-yA);
+      const minutes=b.arrival-a.departure;
+      if(verticalSpan>0&&minutes>0&&minutes<180){
+        const slope=verticalSpan/minutes;
+        if(Number.isFinite(slope)&&slope>0)slopes.push(slope);
+      }
+    }
+    if(!slopes.length)return events;
+    const averageSlope=slopes.reduce((sum,value)=>sum+value,0)/slopes.length;
+    if(!Number.isFinite(averageSlope)||averageSlope<=0)return events;
+
+    const sourceRows=timedSourceStops(train);
+    const first=rows[0],last=rows[rows.length-1];
+    const hasEarlierOutside=sourceRows.some(row=>row.minute<first.arrival-.01&&!indexMap.has(row.station));
+    const hasLaterOutside=sourceRows.some(row=>row.minute>last.departure+.01&&!indexMap.has(row.station));
+    const firstIndex=0,lastIndex=stations.length-1;
+    const additions=[];
+    const addEdge=(edgeIndex,minute)=>{
+      if(!Number.isFinite(minute)||edgeIndex<0||edgeIndex>lastIndex)return;
+      if(events.some(event=>event.index===edgeIndex))return;
+      // 表示時間範囲の異常な拡大を避け、実在する列車時刻から3時間を超える推定は採用しない。
+      const anchor=minute<first.arrival?first.arrival:last.departure;
+      if(Math.abs(minute-anchor)>180)return;
+      additions.push({index:edgeIndex,minute,station:String(stations[edgeIndex]||''),sourceIndex:null,extrapolated:true});
+    };
+
+    // 先に表示区間へ入ってくる列車：進行方向に応じた入口側へ延長。
+    if(hasEarlierOutside){
+      const edgeIndex=direction>0?firstIndex:lastIndex;
+      const distance=Math.abs(Number(yPositions[first.index])-Number(yPositions[edgeIndex]));
+      if(distance>0)addEdge(edgeIndex,first.arrival-distance/averageSlope);
+    }
+    // 表示区間を抜けていく列車：進行方向に応じた出口側へ延長。
+    if(hasLaterOutside){
+      const edgeIndex=direction>0?lastIndex:firstIndex;
+      const distance=Math.abs(Number(yPositions[edgeIndex])-Number(yPositions[last.index]));
+      if(distance>0)addEdge(edgeIndex,last.departure+distance/averageSlope);
+    }
+    if(!additions.length)return events;
+    return [...events,...additions].sort((a,b)=>a.minute-b.minute||a.index-b.index);
+  }
   // 時刻データの明白な不整合を検出する。
   // ・時刻の書式／範囲が不正
   // ・同一駅で発車時刻が到着時刻より前
@@ -10951,23 +11016,16 @@ initRegionNavigation();
   }
   function trainColor(train,pos,stationA,stationB){
     try{
+      const exactLineColor=typeof trainServiceColorBetweenStations==='function'
+        ?trainServiceColorBetweenStations(stationA,stationB,train):'';
       if(Array.isArray(train?.sectionTypeSegments)){
         const chartTrain=chartTrainForStationPair(train,stationA,stationB);
-        const type=String(chartTrain?.type||'').trim();
-        // まずJSONの種別色を参照する。特に「普通」は路線カラーへ固定せず、
-        // typeColors に指定があれば筑肥線を含む全区間でその色を使用する。
         if(typeof typeColorForTrain==='function'){
-          const c=typeColorForTrain(chartTrain,null,stationA||stationB||'',null);
+          const c=typeColorForTrain(chartTrain,null,stationA||stationB||'',exactLineColor);
           if(c&&String(c).trim())return String(c).trim();
         }
-        // JSONに種別色がない場合に限り、その区間の実際の路線カラーへフォールバック。
-        if(!type||type==='普通'||type==='各駅停車'){
-          const lineColor=typeof trainServiceColorBetweenStations==='function'
-            ?trainServiceColorBetweenStations(stationA,stationB,train):'';
-          if(lineColor&&String(lineColor).trim())return String(lineColor).trim();
-        }
       }else if(typeof typeColorForTrain==='function'){
-        const c=typeColorForTrain(train,pos,stationA||stationB||'',null);
+        const c=typeColorForTrain(train,pos,stationA||stationB||'',exactLineColor);
         if(c&&String(c).trim())return String(c).trim();
       }
     }catch(e){}
@@ -11015,14 +11073,16 @@ initRegionNavigation();
     const circularCount=circularRoute?baseStations.length:0;
     const stations=circularRoute?[...baseStations,baseStations[0]]:baseStations;
     const indexMap=new Map(baseStations.map((name,i)=>[name,i]));
+    const spacing=stationYPositions(stations,trains,indexMap,circularCount);
     // 選択中の経路上で停車駅が1駅しかない列車は、ダイヤ上にスジを描かない。
     // 発着時刻が2つあっても、同一駅だけなら対象外とする。
     const eventMap=trains.map(train=>{
-      const events=trainEvents(train,indexMap,circularCount);
+      const actualEvents=trainEvents(train,indexMap,circularCount);
+      const events=extendTrainEventsToDisplayEdges(train,actualEvents,indexMap,stations,spacing.y,circularCount);
       const chartIndexBySource=new Map();
-      for(const event of events)if(Number.isInteger(event.sourceIndex))chartIndexBySource.set(event.sourceIndex,event.index);
+      for(const event of actualEvents)if(Number.isInteger(event.sourceIndex))chartIndexBySource.set(event.sourceIndex,event.index);
       return {train,events,chartIndexBySource};
-    }).filter(item=>new Set(item.events.map(event=>event.index)).size>=2);
+    }).filter(item=>new Set(item.events.filter(event=>!event.extrapolated).map(event=>event.index)).size>=2);
     if(!eventMap.length)return {empty:'表示できる駅が2駅以上ある列車がありません。',trains,stations,errors:[]};
     const timeErrors=[];
     for(let trainIndex=0;trainIndex<eventMap.length;trainIndex++){
@@ -11046,7 +11106,6 @@ initRegionNavigation();
     // v27で表示していた現在の横幅を100%とする。スライダーで50～300%に調整可能。
     const top=104,left=264,right=48,bottom=62,pxPerMinute=2.25*state.horizontalScale;
     const plotWidth=(maxMinute-minMinute)*pxPerMinute;
-    const spacing=stationYPositions(stations,trains,indexMap,circularCount);
     const chartHeight=spacing.y[spacing.y.length-1]||0;
     const contentWidth=left+plotWidth+right,contentHeight=top+chartHeight+bottom;
     const parts=[];
