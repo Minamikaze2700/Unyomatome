@@ -7,7 +7,7 @@
   "sourceTimetable": {
     "file": "無題のスプレッドシート.xlsx",
     "sheet": "下り平日",
-    "note": "下り平日の時刻表。路線表示は中百舌鳥～和泉中央に限定。停車駅案内には元表のなんば～中百舌鳥の時刻も併記し、列車位置計算用 stops とは stationGuideStops で分離。"
+    "note": "下り平日の時刻表。路線表示は中百舌鳥～和泉中央に限定。停車駅案内には元表のなんば～中百舌鳥の時刻も併記し、列車位置計算用 stops とは stationGuideStops で分離。 stops内の時刻なし通過駅（中百舌鳥・深井）は pass:true で明示。通過時刻はダイヤグラム側で推定し、元時刻は追加・変更しない。"
   },
   "sourceReferences": [
     "https://nankai-web-lab.blogspot.com/p/nankai-formation.html",
@@ -4224,10 +4224,12 @@
           "endTime": "07:49",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
-              "station": "深井"
+              "station": "深井",
+              "pass": true
             },
             {
               "station": "泉ケ丘",
@@ -4610,7 +4612,8 @@
           "endTime": "08:06",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -5184,10 +5187,12 @@
           "endTime": "08:53",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
-              "station": "深井"
+              "station": "深井",
+              "pass": true
             },
             {
               "station": "泉ケ丘",
@@ -5592,7 +5597,8 @@
           "endTime": "09:10",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -6004,7 +6010,8 @@
           "endTime": "09:57",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -6416,7 +6423,8 @@
           "endTime": "10:40",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -6664,7 +6672,8 @@
           "endTime": "11:01",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -6912,7 +6921,8 @@
           "endTime": "11:25",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -7091,7 +7101,8 @@
           "endTime": "11:50",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -7244,7 +7255,8 @@
           "endTime": "12:05",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -7423,7 +7435,8 @@
           "endTime": "12:20",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -7576,7 +7589,8 @@
           "endTime": "12:35",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -7755,7 +7769,8 @@
           "endTime": "12:50",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -7908,7 +7923,8 @@
           "endTime": "13:05",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -8087,7 +8103,8 @@
           "endTime": "13:21",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -8240,7 +8257,8 @@
           "endTime": "13:35",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -8419,7 +8437,8 @@
           "endTime": "13:50",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -8572,7 +8591,8 @@
           "endTime": "14:05",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -8751,7 +8771,8 @@
           "endTime": "14:20",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -8904,7 +8925,8 @@
           "endTime": "14:35",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -9083,7 +9105,8 @@
           "endTime": "14:50",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -9236,7 +9259,8 @@
           "endTime": "15:05",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -9415,7 +9439,8 @@
           "endTime": "15:20",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -9568,7 +9593,8 @@
           "endTime": "15:35",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -9747,7 +9773,8 @@
           "endTime": "15:50",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -9900,7 +9927,8 @@
           "endTime": "16:05",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -10079,7 +10107,8 @@
           "endTime": "16:20",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
               "station": "深井",
@@ -11458,10 +11487,12 @@
           "endTime": "18:15",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
-              "station": "深井"
+              "station": "深井",
+              "pass": true
             },
             {
               "station": "泉ケ丘",
@@ -12086,10 +12117,12 @@
           "endTime": "19:16",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
-              "station": "深井"
+              "station": "深井",
+              "pass": true
             },
             {
               "station": "泉ケ丘",
@@ -12617,10 +12650,12 @@
           "endTime": "19:51",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
-              "station": "深井"
+              "station": "深井",
+              "pass": true
             },
             {
               "station": "泉ケ丘",
@@ -13381,10 +13416,12 @@
           "endTime": "20:50",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
-              "station": "深井"
+              "station": "深井",
+              "pass": true
             },
             {
               "station": "泉ケ丘",
@@ -13724,10 +13761,12 @@
           "endTime": "21:22",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
-              "station": "深井"
+              "station": "深井",
+              "pass": true
             },
             {
               "station": "泉ケ丘",
@@ -14421,10 +14460,12 @@
           "endTime": "22:14",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
-              "station": "深井"
+              "station": "深井",
+              "pass": true
             },
             {
               "station": "泉ケ丘",
@@ -14859,10 +14900,12 @@
           "endTime": "22:50",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
-              "station": "深井"
+              "station": "深井",
+              "pass": true
             },
             {
               "station": "泉ケ丘",
@@ -15364,10 +15407,12 @@
           "endTime": "23:32",
           "stops": [
             {
-              "station": "中百舌鳥"
+              "station": "中百舌鳥",
+              "pass": true
             },
             {
-              "station": "深井"
+              "station": "深井",
+              "pass": true
             },
             {
               "station": "泉ケ丘",
