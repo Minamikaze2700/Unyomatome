@@ -2609,6 +2609,8 @@ function normalizeExternalTrain(raw,day,direction,meta){
       alightingOnly:st?.alightingOnly===true,
       prescribedFormation:String(st?.prescribedFormation||'').trim()||undefined,
       platform:st?.platform||undefined,
+      // JSONで明示された時刻なし通過駅を保持する。通常の時刻未入力とは区別する。
+      pass:st?.pass===true,
       isStop:hasTime
     };
   }).filter(st=>st.station);
@@ -11187,12 +11189,58 @@ initRegionNavigation();
     const additions=[];
     const addEdge=(edgeIndex,minute)=>{
       if(!Number.isFinite(minute)||edgeIndex<0||edgeIndex>lastIndex)return;
-      if(events.some(event=>event.index===edgeIndex))return;
+      if(events.some(event=>event.index===edgeIndex)||additions.some(event=>event.index===edgeIndex))return;
       // 表示時間範囲の異常な拡大を避け、実在する列車時刻から3時間を超える推定は採用しない。
       const anchor=minute<first.arrival?first.arrival:last.departure;
       if(Math.abs(minute-anchor)>180)return;
-      additions.push({index:edgeIndex,minute,station:String(stations[edgeIndex]||''),sourceIndex:null,extrapolated:true});
+      additions.push({index:edgeIndex,minute,station:String(stations[edgeIndex]||''),sourceIndex:null,extrapolated:true,passThrough:true});
     };
+
+    // JSONで pass:true と明示された無時刻の通過駅は、停車駅としての時刻を捏造せず、
+    // 前後の実時刻と駅間の図上距離からダイヤグラム用の通過時刻だけを推定する。
+    // 表示中の路線の駅順に連続している場合に限り、別路線列車への誤適用を防ぐ。
+    const activeLinePathConnects=(fromIndex,toIndex)=>{
+      if(!Number.isInteger(fromIndex)||!Number.isInteger(toIndex)||fromIndex===toIndex)return false;
+      const step=Math.sign(toIndex-fromIndex);
+      for(let index=fromIndex;index!==toIndex;index+=step){
+        const a=String(stations[index]||'').trim();
+        const b=String(stations[index+step]||'').trim();
+        if(!a||!b||!activeLineDefs.some(line=>lineContainsStops(line,a,b)))return false;
+      }
+      return true;
+    };
+    const explicitPassRows=sourceStops.map((stop,sourceIndex)=>({
+      station:String(stop?.station||'').trim(),sourceIndex,pass:stop?.pass===true,
+      hasTime:!!String(stop?.arrival||stop?.departure||stop?.time||'').trim()
+    })).filter(row=>row.pass&&!row.hasTime&&row.station&&indexMap.has(row.station));
+    for(const passRow of explicitPassRows){
+      const passIndex=indexMap.get(passRow.station);
+      if(passRow.sourceIndex<first.sourceIndex && (first.index-passIndex)*direction>0 && activeLinePathConnects(passIndex,first.index)){
+        const distance=Math.abs(Number(yPositions[first.index])-Number(yPositions[passIndex]));
+        if(distance>0)addEdge(passIndex,first.arrival-distance/averageSlope);
+        continue;
+      }
+      if(passRow.sourceIndex>last.sourceIndex && (passIndex-last.index)*direction>0 && activeLinePathConnects(last.index,passIndex)){
+        const distance=Math.abs(Number(yPositions[passIndex])-Number(yPositions[last.index]));
+        if(distance>0)addEdge(passIndex,last.departure+distance/averageSlope);
+        continue;
+      }
+      if(passRow.sourceIndex>first.sourceIndex&&passRow.sourceIndex<last.sourceIndex){
+        const previous=rows.filter(row=>row.sourceIndex<passRow.sourceIndex).sort((a,b)=>b.sourceIndex-a.sourceIndex)[0];
+        const next=rows.filter(row=>row.sourceIndex>passRow.sourceIndex).sort((a,b)=>a.sourceIndex-b.sourceIndex)[0];
+        if(previous&&next&&(next.index-previous.index)*direction>0&&activeLinePathConnects(previous.index,passIndex)&&activeLinePathConnects(passIndex,next.index)){
+          const yPrevious=Number(yPositions[previous.index]);
+          const yNext=Number(yPositions[next.index]);
+          const yPass=Number(yPositions[passIndex]);
+          const span=Math.abs(yNext-yPrevious);
+          if(span>0){
+            const ratio=Math.max(0,Math.min(1,Math.abs(yPass-yPrevious)/span));
+            const minute=previous.departure+(next.arrival-previous.departure)*ratio;
+            addEdge(passIndex,minute);
+          }
+        }
+      }
+    }
 
     // 先に表示区間へ入ってくる列車：進行方向に応じた入口側へ延長。
     if(hasEarlierOutside){
