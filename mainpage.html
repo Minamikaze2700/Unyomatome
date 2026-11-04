@@ -7318,8 +7318,11 @@ function stationNeighborRouteColors(index){
   if(fukuokaNeighbors) return {prevColor:fukuokaNeighbors.prevColor,nextColor:fukuokaNeighbors.nextColor};
   const prev= i>0 ? STATIONS[i-1]?.nameJa : null;
   const next= i<STATIONS.length-1 ? STATIONS[i+1]?.nameJa : null;
-  let prevColor=prev&&cur ? trainServiceColorBetweenStations(prev,cur,{servedLineNames:getActiveRouteLineNames()}) : null;
-  let nextColor=cur&&next ? trainServiceColorBetweenStations(cur,next,{servedLineNames:getActiveRouteLineNames()}) : null;
+  // 駅情報カードの方向バーは、列車の種別色ではなく駅間の路線色を表示する。
+  // 横浜線ページの東神奈川～大船は activeSegmentColors() 側で
+  // 京浜東北・根岸線の線区色に振り分ける。
+  let prevColor=prev&&cur ? (activeSegmentColors(prev,cur)[0]||null) : null;
+  let nextColor=cur&&next ? (activeSegmentColors(cur,next)[0]||null) : null;
   const fallback=stationLabelColor(i)||activeRouteColors()[0]||'#666';
   if(!prevColor) prevColor=nextColor||fallback;
   if(!nextColor) nextColor=prevColor||fallback;
