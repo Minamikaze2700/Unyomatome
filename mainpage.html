@@ -1530,6 +1530,42 @@ const ROUTE_REGISTRY={
     access:{public:false,routeAdmins:[]},
     formationInputExample:'S101 / S11 / SR1'
   },
+  '勝山永平寺線':{
+    id:'echizen-katsuyama',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/Echizen_2026.json',
+    jsonLines:['勝山永平寺線'],
+    range:'福井～勝山',
+    area:'えちぜん鉄道',
+    storageRoot:'えちぜん鉄道',
+    storageArea:null,
+    company:'えちぜん鉄道',
+    formationFamily:'echizen',
+    formationCountDefault:2,
+    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Echizen_noimage.png',
+    noImage:'https://minamikaze2700.github.io/Unyomatome/images/Echizen_noimage.png',
+    maxFormationCoupling:2,
+    prescribedFormationRule:'common',
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'MC6101形 / 6101 / 6101F'
+  },
+  '三国芦原線':{
+    id:'echizen-mikuni',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/Echizen_2026.json',
+    jsonLines:['勝山永平寺線','三国芦原線'],
+    range:'福井～三国港',
+    area:'えちぜん鉄道',
+    storageRoot:'えちぜん鉄道',
+    storageArea:null,
+    company:'えちぜん鉄道',
+    formationFamily:'echizen',
+    formationCountDefault:2,
+    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Echizen_noimage.png',
+    noImage:'https://minamikaze2700.github.io/Unyomatome/images/Echizen_noimage.png',
+    maxFormationCoupling:2,
+    prescribedFormationRule:'common',
+    access:{public:false,routeAdmins:[]},
+    formationInputExample:'MC6101形 / 6101 / 6101F'
+  },
 };
 
 /* 時刻表ファイルは改正年で管理し、選択日付に有効なファイルを読み込む。 */
@@ -3058,8 +3094,8 @@ async function loadLineTrainData(routeName=activeRouteName,timetableDate=selecte
   const built=[];
   // 路線JSONには「平日/土休」の配列形式と「平日/休日→上り/下り」の形式がある。
   // 福岡市地下鉄のように各列車が direction を持つ配列形式もここで共通形式へ変換する。
-  for(const day of ['平日','休日']){
-    const candidateKeys=day==='休日'?['土休日','土休','休日']:['平日'];
+  for(const day of ['平日','土曜','休日']){
+    const candidateKeys=day==='休日'?['土休日','土休','休日']:(day==='土曜'?['土曜']:['平日']);
     const sourceDay=candidateKeys.find(k=>Array.isArray(json?.trains?.[k]) || (json?.trains?.[k]&&typeof json.trains[k]==='object'&&(Array.isArray(json.trains[k]?.上り)||Array.isArray(json.trains[k]?.下り))));
     if(!sourceDay) continue;
     const dayData=json.trains[sourceDay];
@@ -3069,7 +3105,7 @@ async function loadLineTrainData(routeName=activeRouteName,timetableDate=selecte
         const normalizedDirection=rawDirection.trim().toLowerCase();
         const isUpDirection=(normalizedDirection==='上り'||normalizedDirection==='up'||normalizedDirection==='toward_airport'||normalizedDirection==='toward_airport_kaizuka'||normalizedDirection==='toward_kaizuka'||normalizedDirection.startsWith('toward_airport_'));
         let direction=isUpDirection?'上り':'下り';
-        const normalizedDay=day==='休日'?'休日':'平日';
+        const normalizedDay=day;
         built.push(...normalizeExternalTrain(raw,normalizedDay,direction,activeRouteMeta));
       }
     }else{
@@ -3182,7 +3218,7 @@ function trainCacheKey(day,no,direction=''){
   return `${day}:${String(direction||'')}:${String(no)}`;
 }
 function baseTrainForDay(trainNo,direction=null,day=currentDay){
-  const source=day==='休日' ? HOLIDAY_TRAINS : TRAINS;
+  const source=trainsForScheduleDay(day,selectedDateKey);
   const key=String(trainNo??'');
   const matches=source.filter(t=>String(t.no)===key);
   if(!matches.length) return null;
@@ -3345,7 +3381,7 @@ function stateFingerprint(root=remoteRoot){
 function trainBelongsToFamily(no,family){
   const key=String(no||'');
   if(!key) return false;
-  return [...TRAINS,...HOLIDAY_TRAINS].some(t=>String(t.no||'')===key && formationFamilyForTrain(t)===family);
+  return (ALL_SCHEDULE_TRAINS.length?ALL_SCHEDULE_TRAINS:[...TRAINS,...HOLIDAY_TRAINS]).some(t=>String(t.no||'')===key && formationFamilyForTrain(t)===family);
 }
 function normalizeFormationState(raw,family){
   const out={};
@@ -3372,7 +3408,7 @@ function liveTrainCacheKey(trainNo){ return `${currentDay}:${String(trainNo)}`; 
 function refreshAllTrainDataCache(){
   LIVE_TRAIN_CACHE.clear();
   TRAIN_DATA_CACHE.clear();
-  const sourceTrains = currentDay==='休日' ? HOLIDAY_TRAINS : TRAINS;
+  const sourceTrains = trainsForScheduleDay(currentDay,selectedDateKey);
   for(const t of sourceTrains){
     const key=String(t.no);
     const direction=String(t.direction||'');
@@ -3395,8 +3431,10 @@ function liveTrain(no,direction=null){
   }
   const cached=LIVE_TRAIN_CACHE.get(trainCacheKey(currentDay,key,''));
   if(cached) return cached;
-  if(currentDay==='休日') return baseTrainForDay(key,null,currentDay);
-  return TRAIN_DATA_CACHE.get(trainCacheKey(currentDay,key,''))||baseTrainForDay(key,null,currentDay)||TRAIN_INDEX[key]||null;
+  const base=baseTrainForDay(key,null,currentDay);
+  if(base) return base;
+  if(currentDay==='休日' || String(activeRouteMeta?.id||'').startsWith('echizen-')) return null;
+  return TRAIN_DATA_CACHE.get(trainCacheKey(currentDay,key,''))||TRAIN_INDEX[key]||null;
 }
 function trainForCurrentDay(trainNo,direction=null){return liveTrain(String(trainNo??''),direction)||baseTrainForDay(String(trainNo??''),direction,currentDay);}
 // Firebase更新後、列車情報シートが保持している古いtrain.formationも更新する。
@@ -3426,7 +3464,7 @@ function prefetchTrainImages(){
 }
 
 function warmAllTrainData(){
-  for(const t of [...TRAINS,...HOLIDAY_TRAINS]) TRAIN_DATA_CACHE.set(String(t.no),t);
+  for(const t of trainsForScheduleDay(currentDay,selectedDateKey)) TRAIN_DATA_CACHE.set(String(t.no),t);
   prefetchTrainImages();
 }
 
@@ -3477,12 +3515,11 @@ function formationLinkedTrainNos(day,trainNo,direction=null){
 // 路線間で共有される運用連結は使用しない。
 // // 「どの列車まで同じ運用として登録するか」を完全に統一する。
 function operationTrainSourceForDay(day=currentDay){
-  const source=Array.isArray(ALL_SCHEDULE_TRAINS)&&ALL_SCHEDULE_TRAINS.length
-    ? ALL_SCHEDULE_TRAINS
-    : [...TRAINS,...HOLIDAY_TRAINS];
+  const source=trainsForScheduleDay(day,selectedDateKey);
   return source.filter(t=>{
     const days=t?.days;
-    return !Array.isArray(days)||!days.length||days.includes(day);
+    return !Array.isArray(days)||!days.length||days.includes(day)
+      ||(day==='休日'&&isEchizenSaturdayServiceDate(selectedDateKey)&&days.includes('土曜'));
   });
 }
 function findOperationTrainRecord(no,day=currentDay){
@@ -3526,7 +3563,7 @@ function isDisplayableOperationTrainNumber(value, sourceTrain=null){
 function snapshotForCurrentRegistrations(day, state, dateKey, familyFilter=null){
   const ops=[];
   const chainsForDay=OPERATION_CHAINS[day]||[];
-  const dayIndex=day==='休日' ? HOLIDAY_TRAIN_INDEX : TRAIN_INDEX;
+  const dayIndex=Object.fromEntries(trainsForScheduleDay(day,dateKey).map(t=>[String(t.no),t]));
   for(let i=0;i<chainsForDay.length;i++){
     const chain=chainsForDay[i];
     const shown=chain.map(e=>normalizeTrainNo(e.no)).filter(no=>dayIndex[no]);
@@ -3658,16 +3695,22 @@ function initSharedState(){
 }
 function syncCurrentScheduleDay(){
   // 選択日付を唯一の基準にして、平日／土休日の状態を常に同期する。
-  // currentDay が別処理で古い値になっていても、時刻表が平日固定にならないようにする。
+  // えちぜん鉄道は土曜補完列車があるため、土曜と日祝の切替も別状態として扱う。
   const d=new Date(`${selectedDateKey}T00:00:00`);
   if(!Number.isNaN(d.getTime())){
     const nextDay=getScheduleDayForDate(d);
-    if(nextDay!==currentDay){
+    const nextSaturdayMode=isEchizenSaturdayServiceDate(selectedDateKey);
+    const nextYearEndMode=isEchizenYearEndServiceSuspensionDate(selectedDateKey);
+    if(nextDay!==currentDay || nextSaturdayMode!==!!syncCurrentScheduleDay._lastEchizenSaturdayMode || nextYearEndMode!==!!syncCurrentScheduleDay._lastEchizenYearEndMode){
       currentDay=nextDay;
       TRAIN_RENDER_INDEX_CACHE.clear();
       TERMINAL_NEXT_CACHE.clear();
       TERMINAL_DEPARTURE_CACHE.clear();
       TRAIN_RUNTIME_CACHE.clear();
+      TRAIN_DATA_CACHE.clear();
+      LIVE_TRAIN_CACHE.clear();
+      syncCurrentScheduleDay._lastEchizenSaturdayMode=nextSaturdayMode;
+      syncCurrentScheduleDay._lastEchizenYearEndMode=nextYearEndMode;
     }
   }
   return currentDay;
@@ -3677,9 +3720,7 @@ function getDisplayedTrainSource(){
   // 東神奈川～横浜～大船の共用区間では、両路線の列車を同じ画面に表示する。
   // 現在の路線データだけを表示する。
 //   // STATIONS内に存在する区間だけを描画対象にする。
-  const source=day==='休日'
-    ? HOLIDAY_TRAINS
-    : TRAINS.filter(t=>!Array.isArray(t.days)||!t.days.length||t.days.includes(day));
+  const source=trainsForScheduleDay(day,selectedDateKey);
   if(isFukuokaCompositeRoute(activeRouteMeta) && !fukuokaHakozakiBranchOpen){
     const airportLine=lineDefByName('空港線');
     const airportNames=new Set((airportLine?.stations||[]).map(st=>String(st?.name||'')).filter(Boolean));
@@ -3999,6 +4040,35 @@ function getJapaneseHolidaySet(year){
 function isJapaneseHoliday(dateObj){
   return getJapaneseHolidaySet(dateObj.getFullYear()).has(todayKey(dateObj));
 }
+function isEchizenYearEndServiceSuspensionDate(dateKey=selectedDateKey){
+  if(!String(activeRouteMeta?.id||'').startsWith('echizen-')) return false;
+  const d=new Date(`${String(dateKey||'')}T00:00:00`);
+  if(Number.isNaN(d.getTime())) return false;
+  const month=d.getMonth()+1,day=d.getDate();
+  return (month===12&&day>=29)||(month===1&&day<=3);
+}
+function isEchizenSaturdayServiceDate(dateKey=selectedDateKey){
+  if(!String(activeRouteMeta?.id||'').startsWith('echizen-')) return false;
+  const d=new Date(`${String(dateKey||'')}T00:00:00`);
+  if(Number.isNaN(d.getTime()) || d.getDay()!==6 || isJapaneseHoliday(d)) return false;
+  return !isEchizenYearEndServiceSuspensionDate(dateKey);
+}
+function trainsForScheduleDay(day=currentDay,dateKey=selectedDateKey){
+  const all=Array.isArray(ALL_SCHEDULE_TRAINS)?ALL_SCHEDULE_TRAINS:[];
+  if(day==='休日'){
+    const base=Array.isArray(HOLIDAY_TRAINS)?HOLIDAY_TRAINS:[];
+    if(!isEchizenSaturdayServiceDate(dateKey)) return base;
+    const saturday=all.filter(t=>Array.isArray(t?.days)&&t.days.includes('土曜'));
+    return [...base,...saturday];
+  }
+  if(day==='土曜') return all.filter(t=>Array.isArray(t?.days)&&t.days.includes('土曜'));
+  const weekday=all.length?all.filter(t=>!Array.isArray(t?.days)||!t.days.length||t.days.includes(day)):TRAINS;
+  // Excel備考に明記された12/29～1/3運休列車を、平日であっても除外する。
+  if(day==='平日'&&isEchizenYearEndServiceSuspensionDate(dateKey)){
+    return weekday.filter(t=>!String(t?.serviceNote||'').includes('12/29'));
+  }
+  return weekday;
+}
 function getScheduleDayForDate(dateObj){
   const d=new Date(dateObj);
   const weekend=d.getDay()===0||d.getDay()===6;
@@ -4023,7 +4093,7 @@ function historicalStateForDate(dateKey){
   if(!daySnap && days.length===1) daySnap=days[0];
   if(!daySnap || !Array.isArray(daySnap.operations)) return {};
   const state={};
-  const dayIndex=currentDay==='休日' ? HOLIDAY_TRAIN_INDEX : TRAIN_INDEX;
+  const dayIndex=Object.fromEntries(trainsForScheduleDay(currentDay,dateKey).map(t=>[String(t.no),t]));
   const resolveKey=raw=>{
     const s=String(raw||'');
     if(dayIndex[s]) return s;
@@ -4859,9 +4929,7 @@ function normalizeLineStopTimes(stops){
   return out;
 }
 function getCurrentTrainSource(){
-  return currentDay==='休日'
-    ? HOLIDAY_TRAINS
-    : TRAINS.filter(x=>!Array.isArray(x.days)||!x.days.length||x.days.includes(currentDay));
+  return trainsForScheduleDay(currentDay,selectedDateKey);
 }
 function findTerminalNextTrain(t,lastArr,terminalStation){
   const next=connectionNext(t);
@@ -6654,7 +6722,13 @@ const REGION_DEFINITIONS={
       {name:'東武スカイツリーライン',id:'tobu-skytree'}
     ]
   }],
-  '北陸':[],
+  '北陸':[ {
+    company:'えちぜん鉄道',
+    routes:[
+      {name:'勝山永平寺線',id:'echizen-katsuyama'},
+      {name:'三国芦原線',id:'echizen-mikuni'}
+    ]
+  }],
   '甲信':[{
     company:'長野電鉄',
     routes:[
@@ -7556,7 +7630,7 @@ function defaultTrainImage(train=null){
 /* 現在選択している日付の土休日列車を常に優先する。JSONのキーは土休日/休日どちらでも可。 */
 function sourceTrainsForCurrentDay(){
   syncCurrentScheduleDay();
-  return currentDay==='休日' ? HOLIDAY_TRAINS : TRAINS;
+  return trainsForScheduleDay(currentDay,selectedDateKey);
 }
 function getDisplayedTrainSource(){ return sourceTrainsForCurrentDay(); }
 function getCurrentTrainSource(){ return sourceTrainsForCurrentDay(); }
@@ -8350,7 +8424,7 @@ initRegionNavigation();
   };
   applyRegistrationState=function(){
     const seen=new Set();
-    [...TRAINS,...HOLIDAY_TRAINS].forEach(t=>{
+    (ALL_SCHEDULE_TRAINS.length?ALL_SCHEDULE_TRAINS:[...TRAINS,...HOLIDAY_TRAINS]).forEach(t=>{
       const signature=`${String(t.no||'')}|${String(t.direction||'')}`;
       if(seen.has(signature)) return;
       seen.add(signature);
@@ -11057,7 +11131,7 @@ initRegionNavigation();
   }
   function makeChart(){
     const sourceStations=stationList();
-    const daySource=currentDay==='休日'?HOLIDAY_TRAINS:TRAINS;
+    const daySource=trainsForScheduleDay(currentDay,selectedDateKey);
     const all=Array.isArray(daySource)?daySource:[];
     const trains=all.filter(t=>state.direction==='both'||(state.direction==='up'&&String(t?.direction)==='up')||(state.direction==='down'&&String(t?.direction)==='down'));
     if(!sourceStations.length||!trains.length){return {empty:!sourceStations.length?'駅データがありません。':'この方向の列車データがありません。',trains:[],stations:sourceStations};}
