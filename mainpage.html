@@ -3384,15 +3384,15 @@ function timetableRowsHTML(stops,trainContext=null){
   const rows=buildTimetableRows(visibleStops);
   if(!rows.length) return '';
   const stationColor=index=>routeColorForStopIndex(rows,index,trainContext);
-  const fallbackSegmentColor=(aIndex,bIndex)=>{
-    if(aIndex<0||bIndex<0||aIndex>=rows.length||bIndex>=rows.length) return routeColorForTrainFallback(trainContext);
-    return routeColorForStopSegment(rows[aIndex]?.station,rows[bIndex]?.station,trainContext);
+  const fallbackSegmentColors=(aIndex,bIndex)=>{
+    if(aIndex<0||bIndex<0||aIndex>=rows.length||bIndex>=rows.length) return [routeColorForTrainFallback(trainContext)];
+    return routeColorsForStopSegment(rows[aIndex]?.station,rows[bIndex]?.station,trainContext);
   };
   // segmentColors は「区間の終点駅」に登録する。終点駅の直前の線に適用する。
   const colorsForIncomingSegment=(endIndex,startIndex)=>{
     const configured=Array.isArray(rows[endIndex]?.segmentColors)
       ? rows[endIndex].segmentColors.map(c=>String(c||'').trim()).filter(Boolean) : [];
-    return configured.length ? configured : [fallbackSegmentColor(startIndex,endIndex)];
+    return configured.length ? configured : fallbackSegmentColors(startIndex,endIndex);
   };
   const isFukuokaGuide=isFukuokaCompositeRoute(activeRouteMeta);
   // 筑肥線区間に対する路線固有の破線処理は行わない。
@@ -4659,9 +4659,42 @@ function routeColorForStopIndex(rows,index,trainContext=null){
   const color=trainServiceColorAtStation(trainContext,station);
   return color || activeRouteColors()[0] || '#666';
 }
+function routeColorsForStopSegment(aName,bName,trainContext=null){
+  // 表示上の停車駅の間に別線区の駅（例：堺東～深井間の中百舌鳥）が
+  // 省略されている場合は、元のstops配列をたどって線区色の変化を保持する。
+  if(trainServicePairHasRouteColor(aName,bName,trainContext)){
+    return [trainServiceColorBetweenStations(aName,bName,trainContext)];
+  }
+  const source=Array.isArray(trainContext?.stops)?trainContext.stops:[];
+  const ia=source.findIndex(row=>String(row?.station||'').trim()===String(aName||'').trim());
+  const ib=source.findIndex(row=>String(row?.station||'').trim()===String(bName||'').trim());
+  const colors=[];
+  if(ia>=0&&ib>=0&&ia!==ib){
+    const step=ia<ib?1:-1;
+    for(let i=ia;i!==ib;i+=step){
+      const next=i+step;
+      if(trainServicePairHasRouteColor(source[i]?.station,source[next]?.station,trainContext)){
+        const color=trainServiceColorBetweenStations(source[i]?.station,source[next]?.station,trainContext);
+        if(color&&colors[colors.length-1]!==color) colors.push(color);
+      }
+    }
+    if(colors.length) return colors;
+  }
+  // 元データ自体にも通過駅が含まれない場合は、表示停車駅の直前／直後に
+  // 実際に線区を特定できる区間があれば、その色を順に引き継ぐ。
+  const before=ia>0&&ia<source.length
+    ? (trainServicePairHasRouteColor(source[ia-1]?.station,source[ia]?.station,trainContext)
+      ? trainServiceColorBetweenStations(source[ia-1]?.station,source[ia]?.station,trainContext):'') : '';
+  const after=ib>=0&&ib<source.length-1
+    ? (trainServicePairHasRouteColor(source[ib]?.station,source[ib+1]?.station,trainContext)
+      ? trainServiceColorBetweenStations(source[ib]?.station,source[ib+1]?.station,trainContext):'') : '';
+  for(const color of [before,after]) if(color&&colors[colors.length-1]!==color) colors.push(color);
+  if(colors.length) return colors;
+  return [routeColorForTrainFallback(trainContext)];
+}
 function routeColorForStopSegment(aName,bName,trainContext=null){
-  // 表示上の停車駅を飛ばしていても、列車の実際の路線定義から色を決定する。
-  return trainServiceColorBetweenStations(aName,bName,trainContext) || routeColorForTrainFallback(trainContext);
+  // 単色を必要とする箇所では、停車駅間の最初に実際に走る線区色を使用。
+  return routeColorsForStopSegment(aName,bName,trainContext)[0] || routeColorForTrainFallback(trainContext);
 }
 function routeColorForTrainFallback(trainContext=null){
   return fallbackTrainServiceColor(trainContext);
@@ -7139,6 +7172,20 @@ function trainServiceColorBetweenStations(a,b,trainContext=null){
   if(direct) return direct;
   return fallbackTrainServiceColor(trainContext);
 }
+function trainServicePairHasRouteColor(a,b,trainContext=null){
+  const aa=String(a||''),bb=String(b||'');
+  if(!aa||!bb||aa===bb) return false;
+  const rows=Array.isArray(trainContext?.stops)?trainContext.stops:[];
+  for(let i=0;i<rows.length-1;i++){
+    const x=String(rows[i]?.station||''),y=String(rows[i+1]?.station||'');
+    if((x===aa&&y===bb)||(x===bb&&y===aa)){
+      if(String(rows[i+1]?.routeColor||rows[i]?.routeColor||'').trim()) return true;
+    }
+  }
+  if(trainServiceLineCandidates(aa,bb,trainContext).length) return true;
+  if(jsonSegmentColorForStations(aa,bb,getActiveRouteLineNames())) return true;
+  return false;
+}
 function trainServiceColorAtStation(trainContext,stationName,indexPos=null){
   const rows=Array.isArray(trainContext?.stops)?trainContext.stops:[];
   const station=String(stationName||'');
@@ -7151,21 +7198,20 @@ function trainServiceColorAtStation(trainContext,stationName,indexPos=null){
   }
   if(idx<0) return fallbackTrainServiceColor(trainContext);
 
-  // 駅のドット色は「その駅から列車が進む側」の区間色を優先。
-  // 下りは次区間、上りは前区間。端駅では存在する側を必ず採用する。
+  // 駅のドット色は「その駅から列車が進む側」の区間色を優先する。
+  // ただし停車駅を飛ばした結果、次の時刻付き駅との組合せが別線区に
+  // 存在しない場合は、実際に路線を特定できる直前区間の色を引き継ぐ。
+  // 例：堺東→深井の間で中百舌鳥を通過する区急は、堺東を高野線色にする。
   const dir=String(trainContext?.direction||'').toLowerCase();
-  const next=(idx<rows.length-1)
-    ? trainServiceColorBetweenStations(rows[idx]?.station,rows[idx+1]?.station,trainContext)
-    : null;
-  const prev=(idx>0)
-    ? trainServiceColorBetweenStations(rows[idx-1]?.station,rows[idx]?.station,trainContext)
-    : null;
+  const nextKnown=idx<rows.length-1&&trainServicePairHasRouteColor(rows[idx]?.station,rows[idx+1]?.station,trainContext);
+  const prevKnown=idx>0&&trainServicePairHasRouteColor(rows[idx-1]?.station,rows[idx]?.station,trainContext);
+  const next=nextKnown?trainServiceColorBetweenStations(rows[idx]?.station,rows[idx+1]?.station,trainContext):null;
+  const prev=prevKnown?trainServiceColorBetweenStations(rows[idx-1]?.station,rows[idx]?.station,trainContext):null;
 
   if(dir==='up' && prev) return prev;
   if(dir==='down' && next) return next;
   if(next) return next;
   if(prev) return prev;
-
   return fallbackTrainServiceColor(trainContext);
 }
 function singleColorGradient(color,direction='to right'){
@@ -11078,39 +11124,65 @@ initRegionNavigation();
     const first=rows[0],last=rows[rows.length-1];
     const firstIndex=0,lastIndex=stations.length-1;
 
-    // 外挿を適用するのは、列車自身の停車駅配列が「表示区間の入口→出口」を
-    // 連続して通る場合だけ。表示区間の片側にある別路線の列車が、分岐駅など
-    // 1駅だけ共有しているケースには適用しない。
-    // pass=true / 時刻なしの駅も含め、元のstops配列に両端駅が存在することを確認する。
+    // 通常は表示区間の両端駅が元データに含まれる列車だけを対象にする。
+    // ただし、別線区から表示区間へ直通し、区間入口駅を通過して列車データにも
+    // その駅自体が存在しない場合は、前後の線区定義が連続しているときだけ入口を補う。
     const sourceStops=Array.isArray(train?.stops)?train.stops:[];
     const sourceNames=sourceStops.map(stop=>String(stop?.station||'').trim());
     const displayStartName=String(stations[firstIndex]||'').trim();
     const displayEndName=String(stations[lastIndex]||'').trim();
-    const displayStartSourceIndex=sourceNames.indexOf(displayStartName);
-    const displayEndSourceIndex=sourceNames.indexOf(displayEndName);
-    if(!displayStartName||!displayEndName||displayStartSourceIndex<0||displayEndSourceIndex<0)return events;
-    const entrySourceIndex=direction>0?displayStartSourceIndex:displayEndSourceIndex;
-    const exitSourceIndex=direction>0?displayEndSourceIndex:displayStartSourceIndex;
-    if(entrySourceIndex>=exitSourceIndex)return events;
-    // 両端駅だけでなく、表示区間の全駅が列車の元データに進行順で含まれることを確認。
-    // これにより、分岐駅を共有するだけの別路線列車や、途中で分岐する列車を除外する。
-    let sourceCursor=entrySourceIndex;
+    if(!displayStartName||!displayEndName)return events;
     const orderedDisplayStations=direction>0?stations:stations.slice().reverse();
-    for(const stationName of orderedDisplayStations){
-      const found=sourceNames.indexOf(String(stationName||'').trim(),sourceCursor);
+    const entryName=String(orderedDisplayStations[0]||'').trim();
+    const exitName=String(orderedDisplayStations[orderedDisplayStations.length-1]||'').trim();
+    const entrySourceIndex=sourceNames.indexOf(entryName);
+    const exitSourceIndex=sourceNames.indexOf(exitName);
+    const missingEntry=entrySourceIndex<0;
+    const missingExit=exitSourceIndex<0;
+    if(missingEntry&&missingExit)return events;
+    if(!missingEntry&&!missingExit&&entrySourceIndex>=exitSourceIndex)return events;
+
+    // 元データの停車駅順が表示区間と一致することを確認する。
+    // 表示端の通過駅が配列自体にない場合だけ、その端点を後段の線区接続判定に委ねる。
+    let sourceCursor=0,firstMatched=-1,lastMatched=-1;
+    for(let stationIndex=0;stationIndex<orderedDisplayStations.length;stationIndex++){
+      const stationName=String(orderedDisplayStations[stationIndex]||'').trim();
+      const isMissingEndpoint=(stationIndex===0&&missingEntry)||(stationIndex===orderedDisplayStations.length-1&&missingExit);
+      if(isMissingEndpoint)continue;
+      const found=sourceNames.indexOf(stationName,sourceCursor);
       if(found<0)return events;
+      if(firstMatched<0)firstMatched=found;
+      lastMatched=found;
       sourceCursor=found+1;
     }
-    if(sourceCursor-1!==exitSourceIndex)return events;
+    if(firstMatched<0)return events;
+    if(!missingEntry&&firstMatched!==entrySourceIndex)return events;
+    if(!missingExit&&lastMatched!==exitSourceIndex)return events;
 
-    // 表示区間の入口より前／出口より後に、時刻のある別路線駅が実際に存在する場合のみ
-    // その側を外挿する。単なる分岐・接続駅の共有だけでは条件を満たさない。
-    const hasEarlierOutside=sourceRows.some(row=>
-      row.sourceIndex<entrySourceIndex&&row.minute<first.arrival-.01&&!indexMap.has(row.station)
-    );
-    const hasLaterOutside=sourceRows.some(row=>
-      row.sourceIndex>exitSourceIndex&&row.minute>last.departure+.01&&!indexMap.has(row.station)
-    );
+    const activeLineNames=new Set(getActiveRouteLineNames().map(String));
+    const activeLineDefs=getActiveRouteLineNames().map(lineDefByName).filter(Boolean);
+    const activeLineConnects=(a,b)=>activeLineDefs.some(line=>lineContainsStops(line,a,b));
+    const outsideLineConnects=(a,b)=>trainServiceLineCandidates(a,b,train).some(line=>!activeLineNames.has(String(line?.name||'')));
+    const nearestTimedOutside=(edge,inside,side)=>{
+      const candidates=sourceRows.filter(row=>side==='before'
+        ? row.sourceIndex<inside.sourceIndex&&row.minute<inside.arrival-.01&&!indexMap.has(row.station)
+        : row.sourceIndex>inside.sourceIndex&&row.minute>inside.departure+.01&&!indexMap.has(row.station));
+      candidates.sort((a,b)=>side==='before'?b.minute-a.minute:a.minute-b.minute);
+      const outside=candidates[0];
+      if(!outside)return false;
+      return activeLineConnects(edge,inside.station)&&outsideLineConnects(outside.station,edge);
+    };
+
+    // 表示区間の入口より前／出口より後に、時刻のある別線区駅があり、
+    // 「別線区駅→表示端駅→表示区間内駅」の両方が路線定義でつながる場合だけ補完する。
+    // これにより南海高野線→中百舌鳥→泉北線の直通列車は対象になり、
+    // 表示区間と完全に分岐した別路線の列車には適用されない。
+    const hasEarlierOutside=missingEntry
+      ? nearestTimedOutside(entryName,first,'before')
+      : sourceRows.some(row=>row.sourceIndex<entrySourceIndex&&row.minute<first.arrival-.01&&!indexMap.has(row.station));
+    const hasLaterOutside=missingExit
+      ? nearestTimedOutside(exitName,last,'after')
+      : sourceRows.some(row=>row.sourceIndex>exitSourceIndex&&row.minute>last.departure+.01&&!indexMap.has(row.station));
     const additions=[];
     const addEdge=(edgeIndex,minute)=>{
       if(!Number.isFinite(minute)||edgeIndex<0||edgeIndex>lastIndex)return;
