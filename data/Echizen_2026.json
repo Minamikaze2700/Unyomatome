@@ -165,7 +165,7 @@
       "formations": [
         {
           "type": "MC5001形",
-          "typeImg": "Echizen_MC5001",
+          "typeImg": "Echizen_5001",
           "family": "echizen",
           "routeNames": [
             "勝山永平寺線",
@@ -195,7 +195,7 @@
         },
         {
           "type": "MC6001形",
-          "typeImg": "Echizen_MC6001",
+          "typeImg": "Echizen_6001",
           "family": "echizen",
           "routeNames": [
             "勝山永平寺線",
@@ -483,7 +483,7 @@
         },
         {
           "type": "MC7000形・TC7000形",
-          "typeImg": "Echizen_MC7000",
+          "typeImg": "Echizen_7000",
           "family": "echizen",
           "routeNames": [
             "勝山永平寺線",
@@ -493,7 +493,7 @@
             {
               "id": "7001F",
               "name": "7001F",
-              "img": "Echizen_7001F",
+              "img": "Echizen_7001",
               "cars": 2,
               "carNames": [
                 "7001",
@@ -516,7 +516,7 @@
             {
               "id": "7003F",
               "name": "7003F",
-              "img": "Echizen_7003F",
+              "img": "Echizen_7003",
               "cars": 2,
               "carNames": [
                 "7003",
@@ -539,7 +539,7 @@
             {
               "id": "7005F",
               "name": "7005F",
-              "img": "Echizen_7005F",
+              "img": "Echizen_7005",
               "cars": 2,
               "carNames": [
                 "7005",
@@ -562,7 +562,7 @@
             {
               "id": "7007F",
               "name": "7007F",
-              "img": "Echizen_7007F",
+              "img": "Echizen_7007",
               "cars": 2,
               "carNames": [
                 "7007",
@@ -585,7 +585,7 @@
             {
               "id": "7009F",
               "name": "7009F",
-              "img": "Echizen_7009F",
+              "img": "Echizen_7009",
               "cars": 2,
               "carNames": [
                 "7009",
@@ -608,7 +608,7 @@
             {
               "id": "7011F",
               "name": "7011F",
-              "img": "Echizen_7011F",
+              "img": "Echizen_7011",
               "cars": 2,
               "carNames": [
                 "7011",
@@ -627,78 +627,6 @@
               "rebuildYear": "2014-11-25",
               "rebuildManufacturer": "大阪車輌工業",
               "rebuildDetails": "JR東海119系5300番台を改造、VVVF化、ワンマン化、トイレ撤去"
-            }
-          ]
-        },
-        {
-          "type": "MC8000形（恐竜列車）",
-          "typeImg": "Echizen_MC8000",
-          "family": "echizen",
-          "routeNames": [
-            "勝山永平寺線"
-          ],
-          "items": [
-            {
-              "id": "8001F",
-              "name": "8001F",
-              "img": "Echizen_8001F",
-              "cars": 2,
-              "carNames": [
-                "8001",
-                "8002"
-              ],
-              "routeNames": [
-                "勝山永平寺線"
-              ],
-              "manufacturingYear": "1979年",
-              "manufacturer": "東急車輛製造",
-              "originalVehicleNumbers": [
-                "静岡鉄道 クモハ1010",
-                "静岡鉄道 クハ1510"
-              ],
-              "rebuildYear": "2021～2023年",
-              "rebuildManufacturer": "阪神車両メンテナンス",
-              "rebuildDetails": "2021年譲受後、恐竜列車用に改造。2023年7月15日運行開始"
-            }
-          ]
-        },
-        {
-          "type": "L形",
-          "typeImg": "Echizen_L",
-          "family": "echizen",
-          "routeNames": [
-            "三国芦原線"
-          ],
-          "items": [
-            {
-              "id": "L-01",
-              "name": "L-01",
-              "img": "Echizen_L-01",
-              "cars": 1,
-              "carNames": [
-                "L-01"
-              ],
-              "routeNames": [
-                "三国芦原線"
-              ],
-              "manufacturingYear": "2015年",
-              "manufacturer": "新潟トランシス",
-              "remarks": "2車体連接の1両編成。愛称Ki-bo。2016年3月27日運行開始。"
-            },
-            {
-              "id": "L-02",
-              "name": "L-02",
-              "img": "Echizen_L-02",
-              "cars": 1,
-              "carNames": [
-                "L-02"
-              ],
-              "routeNames": [
-                "三国芦原線"
-              ],
-              "manufacturingYear": "2015年",
-              "manufacturer": "新潟トランシス",
-              "remarks": "2車体連接の1両編成。愛称Ki-bo。2016年3月27日運行開始。"
             }
           ]
         }
