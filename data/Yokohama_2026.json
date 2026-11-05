@@ -139,7 +139,16 @@
         "up": "八王子・大宮方面",
         "down": "大船方面"
       },
-      "numberingImage": "https://minamikaze2700.github.io/Unyomatome/images/Yokohama_numbering.png"
+      "numberingImage": "https://minamikaze2700.github.io/Unyomatome/images/Yokohama_numbering.png",
+      "segmentColorRules": [
+        {
+          "stationRange": [
+            "東神奈川",
+            "大船"
+          ],
+          "color": "#00a7db"
+        }
+      ]
     }
   ],
   "stationDirections": {
