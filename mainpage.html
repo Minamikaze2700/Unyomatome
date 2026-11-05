@@ -101,16 +101,16 @@ button,input,select,textarea{font-family:inherit}
   margin:0;display:flex;align-items:center;justify-content:center;
 }
 
-.station-row.fukuoka-branch-toggle-row{flex-direction:column;gap:8px;}
+.station-row.branch-diagram-toggle-row{flex-direction:column;gap:8px;}
 /* 分岐ボタンは共通の connection-button を使用。
    駅名標・共通操作など重複する部分は mainpage の既存スタイルを優先する。 */
-.station-row.fukuoka-branch-anchor-row,.station-row.tobu-branch-anchor-row{flex-direction:column;gap:0;}
-.station-row.fukuoka-branch-anchor-row .connection-buttons,.station-row.tobu-branch-anchor-row .connection-buttons{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;max-width:860px;z-index:7;}
-.station-row.fukuoka-branch-anchor-row .connection-top,.station-row.tobu-branch-anchor-row .connection-top{margin-bottom:22px;}
-.station-row.tobu-branch-anchor-row .connection-bottom{margin-top:22px;}
-.station-row.fukuoka-branch-anchor-row .connection-button,.station-row.tobu-branch-anchor-row .connection-button{appearance:none;border:2px solid var(--button-color);border-radius:7px;padding:8px 18px;background:#fff;color:var(--button-color);box-shadow:0 2px 7px rgba(0,0,0,.20);font:700 15px/1.2 inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-width:150px;transition:filter .12s,transform .12s,background .12s,color .12s;}
-.station-row.fukuoka-branch-anchor-row .connection-button:hover,.station-row.tobu-branch-anchor-row .connection-button:hover{filter:brightness(.96);transform:translateY(-1px);}
-.station-row.fukuoka-branch-anchor-row .connection-button.active,.station-row.tobu-branch-anchor-row .connection-button.active{background:var(--button-color);color:#fff;}
+.station-row.branch-diagram-anchor-row,.station-row.multi-junction-anchor-row{flex-direction:column;gap:0;}
+.station-row.branch-diagram-anchor-row .connection-buttons,.station-row.multi-junction-anchor-row .connection-buttons{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;max-width:860px;z-index:7;}
+.station-row.branch-diagram-anchor-row .connection-top,.station-row.multi-junction-anchor-row .connection-top{margin-bottom:22px;}
+.station-row.multi-junction-anchor-row .connection-bottom{margin-top:22px;}
+.station-row.branch-diagram-anchor-row .connection-button,.station-row.multi-junction-anchor-row .connection-button{appearance:none;border:2px solid var(--button-color);border-radius:7px;padding:8px 18px;background:#fff;color:var(--button-color);box-shadow:0 2px 7px rgba(0,0,0,.20);font:700 15px/1.2 inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-width:150px;transition:filter .12s,transform .12s,background .12s,color .12s;}
+.station-row.branch-diagram-anchor-row .connection-button:hover,.station-row.multi-junction-anchor-row .connection-button:hover{filter:brightness(.96);transform:translateY(-1px);}
+.station-row.branch-diagram-anchor-row .connection-button.active,.station-row.multi-junction-anchor-row .connection-button.active{background:var(--button-color);color:#fff;}
 .station-badge{
   position:relative;width:384px;min-width:384px;height:auto;aspect-ratio:480 / 90;
   border:4px solid var(--primary);border-radius:40px;
@@ -1002,7 +1002,7 @@ body{padding-bottom:42px !important;}
 }
 </style>
 <style id="fukuoka-chikuhi-station-english-and-solid-guides">
-.station-text.fukuoka-station-text{align-items:flex-start;justify-content:center;flex-direction:column;gap:1px;}
+.station-text.branch-diagram-station-text{align-items:flex-start;justify-content:center;flex-direction:column;gap:1px;}
 .station-text .station-text-ja{display:block;line-height:1.05;}
 .station-text .station-text-en{display:block;font-size:.68em;font-weight:500;line-height:1.05;letter-spacing:.01em;color:#555;}
 </style>
@@ -1163,6 +1163,7 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'JR西日本',
     formationFamily:'hiroshima',
+    legacyStorageKeys:['JR広島'],
     prependStations:[{nameJa:'糸崎',nameEn:'Itozaki'}],
     access:{public:true,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
@@ -1177,6 +1178,7 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'JR西日本',
     formationFamily:'hiroshima',
+    legacyStorageKeys:['JR広島'],
     access:{public:true,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
@@ -1190,6 +1192,7 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'JR西日本',
     formationFamily:'hiroshima',
+    legacyStorageKeys:['JR広島'],
     access:{public:true,routeAdmins:[]},
     formationInputExample:'クモハ226-1 / A01 / S01'
   },
@@ -1210,6 +1213,7 @@ const ROUTE_REGISTRY={
     id:'kobe-seishin-yamate',
     json:KOBE_SEISHIN_YAMATE_DATA_URL,
     jsonLines:['西神・山手線'],
+    segmentColorRules:[{stationRange:['谷上','新神戸'],color:'#8B5A2B'}],
     range:'谷上～西神中央',
     area:'神戸市営',
     storageRoot:'神戸市営',
@@ -1233,6 +1237,7 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'南海電気鉄道',
     formationFamily:'nankai-koya',
+    showTrainServiceName:true,
     formationCountDefault:2,
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/NK_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/NK_noimage.png',
@@ -1265,6 +1270,8 @@ const ROUTE_REGISTRY={
     json:'https://minamikaze2700.github.io/Unyomatome/data/Yokohama_2026.json',
     jsonLines:['横浜線'],
     relatedJsons:['https://minamikaze2700.github.io/Unyomatome/data/KeihinTohoku_2025.json'],
+    sharedStationMerge:{line:'横浜線',sharedLine:'京浜東北・根岸線',junction:'東神奈川'},
+    segmentColorRules:[{stationRange:['東神奈川','大船'],useLine:'京浜東北・根岸線'}],
     range:'八王子～大船',
     area:'JR東日本',
     storageRoot:'横浜線',
@@ -1303,6 +1310,8 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'JR東日本',
     formationFamily:'uchibo',
+    legacyFormationType:'内房線編成',
+    formationImageMap:{...Object.fromEntries(Array.from({length:12},(_,i)=>{const n=String(i+1).padStart(2,'0');return [`R${n}`,`E131_R${n}`]})),...Object.fromEntries(Array.from({length:12},(_,i)=>{const n=String(i+1).padStart(2,'0');return [`F${n}`,`E235_F${n}`]})),...Object.fromEntries(Array.from({length:4},(_,i)=>{const n=String(i+1);return [`J${n}`,`E235_J${n}`]})),C1:'E233_C1',C2:'E233_C2',C3:'E233_C3',C9:'E233_C9',C401:'209_C401',C602:'209_C602'},
     access:{public:false,routeAdmins:[]},
     formationInputExample:'E235系F編成 / E131系2両 / 209系4両'
   },
@@ -1310,6 +1319,11 @@ const ROUTE_REGISTRY={
     id:'osaka-loop',
     json:'https://minamikaze2700.github.io/Unyomatome/data/OsakaLoop_2025.json',
     jsonLines:['大阪環状線'],
+    diagramLayout:'circular',
+    circularBridgeColors:{topLine:'大阪環状線',bottomLine:'大和路線'},
+    operationInfoZones:false,
+    sharedStationTimetableRoutes:[{station:'西九条',route:'ゆめ咲線',departuresOnly:true}],
+    stationLabelColorRules:[{station:'新今宮',line:'大和路線'},{defaultLine:'大阪環状線'}],
     range:'天王寺～天王寺',
     area:'JR西日本',
     storageRoot:'大阪環状線・ゆめ咲線',
@@ -1328,6 +1342,8 @@ const ROUTE_REGISTRY={
     id:'yumesaki',
     json:'https://minamikaze2700.github.io/Unyomatome/data/OsakaLoop_2025.json',
     jsonLines:['ゆめ咲線'],
+    diagramLayout:'linear',
+    operationInfoZones:false,
     range:'西九条～桜島',
     area:'JR西日本',
     storageRoot:'大阪環状線・ゆめ咲線',
@@ -1366,6 +1382,13 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'福岡市地下鉄',
     formationFamily:'fukuoka-kuko-hakozaki',
+    diagramTopology:'branch-toggle',
+    diagramMainLine:'空港線',
+    diagramBranchLine:'箱崎線',
+    sectionNumberDisplayLines:['JR筑肥線'],
+    externalTerminalLines:['JR筑肥線'],
+    formationRouteFilter:'ignore',
+    ignoredRegisteredFormationPatterns:['noimage','^227'],
     noTrainNumbers:true,
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
@@ -1393,6 +1416,8 @@ const ROUTE_REGISTRY={
   },
   '東武野田線':{
     id:'tobu-noda',
+    formationCountDefault:1,
+    blockedFormationIds:['8158'],
     json:'https://minamikaze2700.github.io/Unyomatome/data/TobuNoda_2024.json',
     jsonLines:['東武野田線'],
     range:'大宮～船橋',
@@ -1408,6 +1433,8 @@ const ROUTE_REGISTRY={
   },
   '東武スカイツリーライン':{
     id:'tobu-skytree',
+    embeddedJsonElementId:'tobu-skytree-embedded-json',
+    embeddedJsonExpectedId:'tobu-skytree',
     json:TOBU_SKYTREE_DATA_URL,
     jsonLines:['スカイツリーライン','伊勢崎線','日光線','日比谷線','半蔵門線','田園都市線'],
     range:'館林・南栗橋～浅草',
@@ -1416,6 +1443,7 @@ const ROUTE_REGISTRY={
     storageArea:'__ROOT__',
     company:'東武鉄道',
     formationFamily:'tobu-skytree',
+    diagramTopology:'multi-junction',
     formationCountDefault:2,
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/tschijo.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/tschijo.png',
@@ -1450,6 +1478,8 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'長野電鉄',
     formationFamily:'nagano',
+    lineKind:'nagano',
+    expressCategoryRules:[{typeIncludes:'特急',numberSuffix:'A',category:'A特急'},{typeIncludes:'特急',numberSuffix:'B',category:'B特急'},{typeIncludes:'ゆけむりのんびり',category:'A特急'},{typeIncludes:'ゆけむり',category:'A特急'},{typeIncludes:'スノーモンキー',category:'B特急'}],
     typeShortRules:[
       {containsAll:['ゆけむり','のんびり'],result:'A特'},
       {contains:'特急',trainNoSuffix:'A',result:'A特'},
@@ -1505,6 +1535,7 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'しなの鉄道',
     formationFamily:'shinano',
+    trainTypeDisplay:'service-name',
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Shinano_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Shinano_noimage.png',
     // JSONが旧版・キャッシュ版でも行先略称が必ず効くよう路線側にも保持する。
@@ -1540,6 +1571,9 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'えちぜん鉄道',
     formationFamily:'echizen',
+    sharedRouteTrainMerge:{routes:['勝山永平寺線','三国芦原線'],stations:['福井','新福井','福井口'],days:['平日','土曜','休日']},
+    disableCrossDayTrainFallback:true,
+    calendarRules:{saturdayServiceOnHoliday:true,yearEndSuspension:{from:'12-29',to:'01-03'},excludeServiceNoteContainsOnWeekday:'12/29'},
     formationCountDefault:2,
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Echizen_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Echizen_noimage.png',
@@ -1559,6 +1593,9 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'えちぜん鉄道',
     formationFamily:'echizen',
+    sharedRouteTrainMerge:{routes:['勝山永平寺線','三国芦原線'],stations:['福井','新福井','福井口'],days:['平日','土曜','休日']},
+    disableCrossDayTrainFallback:true,
+    calendarRules:{saturdayServiceOnHoliday:true,yearEndSuspension:{from:'12-29',to:'01-03'},excludeServiceNoteContainsOnWeekday:'12/29'},
     formationCountDefault:2,
     formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Echizen_noimage.png',
     noImage:'https://minamikaze2700.github.io/Unyomatome/images/Echizen_noimage.png',
@@ -1758,8 +1795,8 @@ let activeRouteMeta=null;
 let activeJson=null;
 let activeScheduleSignature='';
 let scheduleReloadSequence=0;
-let fukuokaHakozakiBranchOpen=false;
-let tobuSkytreeBranchesOpen=new Set();
+let branchDiagramOpen=false;
+let multiJunctionBranchesOpen=new Set();
 const LINE_TRAIN_IMG='https://minamikaze2700.github.io/Unyomatome/images/227-0_noimage.png';
 const KEIHIN_TOHOKU_TRAIN_IMG=LINE_TRAIN_IMG;
 const YOKOHAMA_TRAIN_IMG=LINE_TRAIN_IMG;
@@ -1788,21 +1825,15 @@ function activeFormationVisualValue(json=activeJson,meta=activeRouteMeta,key='')
   return String(lineValue??(isImageKey?jsonValue:routeValue??jsonValue)??'').trim();
 }
 function jsonNoImageUrl(json=activeJson){
-  const isFukuoka=String(activeRouteMeta?.formationFamily||'')==='fukuoka-kuko-hakozaki';
   const raw=jsonImageValue(json,activeRouteMeta,'noImage')
     ||jsonImageValue(json,activeRouteMeta,'formationDefaultImage')
     ||String(json?.commonFormationIcon||'').trim()
-    ||(isFukuoka ? String(activeRouteMeta?.noImage||activeRouteMeta?.formationDefaultImage||'Fukuchika_noimage').trim() : '');
-  if(!raw) return isFukuoka ? 'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png' : LINE_TRAIN_IMG;
+    ||String(activeRouteMeta?.noImage||activeRouteMeta?.formationDefaultImage||'').trim();
+  if(!raw) return LINE_TRAIN_IMG;
   if(/^https?:\/\//i.test(raw)) return raw;
   return `https://minamikaze2700.github.io/Unyomatome/images/${raw.replace(/\.png$/i,'')}.png`;
 }
-function fallbackTrainImageUrl(){
-  const family=String(activeRouteMeta?.formationFamily||'');
-  return (family==='fukuoka-kuko-hakozaki'||family==='tobu-skytree')
-    ? jsonNoImageUrl()
-    : LINE_TRAIN_IMG;
-}
+function fallbackTrainImageUrl(){ return jsonNoImageUrl(); }
 function syncInitialFormationImage(){ INITIAL_FORMATION_SELECTION.img=jsonNoImageUrl(); return INITIAL_FORMATION_SELECTION.img; }
 const UNAVAILABLE_FORMATIONS=new Set();
 const OPERATION_CHAINS={平日:[],休日:[]};
@@ -1860,16 +1891,15 @@ function operationChainFirstNo(day,trainNo){
 const operationChainFirstTrainNo=operationChainFirstNo;
 const VEHICLE_TO_FORMATION={};
 let TYPE_SELECTIONS=[];
-function formationFamilyFromType(){return 'keihin';}
-function isFukuokaCompositeRoute(meta=activeRouteMeta){
-  return ['fukuoka-kuko-hakozaki','fukuchika-2'].includes(String(meta?.id||''));
+function formationFamilyFromType(group=null){ return String(group?.family||group?.formationFamily||activeRouteMeta?.formationFamily||'').trim(); }
+function hasBranchToggleDiagram(meta=activeRouteMeta,json=activeJson){
+  return meta?.diagramTopology==='branch-toggle' && json?.diagram?.branchToggle===true;
 }
-function fukuokaDiagramConfig(json=activeJson,meta=activeRouteMeta){
-  if(!isFukuokaCompositeRoute(meta)) return null;
-  const diagram=json?.diagram;
-  return diagram && diagram.branchToggle===true ? diagram : null;
+function branchDiagramConfig(json=activeJson,meta=activeRouteMeta){
+  if(!hasBranchToggleDiagram(meta,json)) return null;
+  return json?.diagram||null;
 }
-function fukuokaStationMaster(json=activeJson){
+function diagramStationMaster(json=activeJson){
   const map=new Map();
   for(const line of (Array.isArray(json?.lines)?json.lines:[])){
     for(const st of (Array.isArray(line?.stations)?line.stations:[])){
@@ -1958,12 +1988,12 @@ function commonBranchSegmentEffect(a,b,json=activeJson,meta=activeRouteMeta){
   const aa=String(a||''),bb=String(b||'');
   const pair=[aa,bb].sort().join('\\u0000');
   // TOBU branch openings are described entirely in diagram config, just like Fukuoka's branch layout.
-  if(isTobuSkytreeRoute(meta)){
+  if(hasMultiJunctionDiagram(meta)){
     const diagram=json?.diagram||{};
     const buttons=Array.isArray(diagram.branchButtons)?diagram.branchButtons:[];
     for(const spec of buttons){
       const key=String(spec?.id||'');
-      if(!key||!tobuSkytreeBranchesOpen.has(key)) continue;
+      if(!key||!multiJunctionBranchesOpen.has(key)) continue;
       const gaps=(Array.isArray(diagram.visualGapSegmentsWhenBranchOpen)?diagram.visualGapSegmentsWhenBranchOpen:[]);
       if(gaps.some(item=>String(item?.branch||'')===key && Array.isArray(item?.pair) && item.pair.length>=2 && item.pair.map(String).sort().join('\\u0000')===pair)) return {kind:'hide'};
       const blends=(Array.isArray(diagram.blendSegmentsWhenBranchOpen)?diagram.blendSegmentsWhenBranchOpen:[]);
@@ -1990,14 +2020,14 @@ function commonBranchSegmentEffect(a,b,json=activeJson,meta=activeRouteMeta){
       }
     }
   }
-  // Fukuoka follows the same common fade-segment renderer; its branch station order is resolved above.
-  if(isFukuokaCompositeRoute(meta) && fukuokaHakozakiBranchOpen){
-    const d=fukuokaDiagramConfig(json,meta);
-    const insertAfter=String(d?.insertAfter||'祇園').trim()||'祇園';
-    const branch=fukuokaBranchStationNames(json,meta);
-    const first=branch[0]||'貝塚';
-    if(aa===insertAfter&&bb===first) return {kind:'fade',color:String(lineDefByName('空港線')?.color||'#666'),direction:'to bottom'};
-    if(aa===first&&bb===insertAfter) return {kind:'fade',color:String(lineDefByName('空港線')?.color||'#666'),direction:'to top'};
+  if(hasBranchToggleDiagram(meta) && branchDiagramOpen){
+    const d=branchDiagramConfig(json,meta);
+    const insertAfter=String(d?.insertAfter||'').trim();
+    const branch=branchDiagramBranchStations(json,meta);
+    const first=branch[0]||'';
+    const mainColor=String(lineDefByName(meta?.diagramMainLine||d?.mainLine)?.color||'#666');
+    if(insertAfter&&first&&aa===insertAfter&&bb===first) return {kind:'fade',color:mainColor,direction:'to bottom'};
+    if(insertAfter&&first&&aa===first&&bb===insertAfter) return {kind:'fade',color:mainColor,direction:'to top'};
   }
   return null;
 }
@@ -2007,43 +2037,34 @@ function commonBranchSegmentEffect(a,b,json=activeJson,meta=activeRouteMeta){
  * 箱崎線は実際の線路定義（中洲川端→呉服町→…→貝塚）とは逆向きに、
  * 路線図では「貝塚」を上、「呉服町」を下へ配置する。
  */
-const FUKUOKA_MAIN_FALLBACK=[
-  '福岡空港','東比恵','博多','祇園','中洲川端',
-  '天神','赤坂','大濠公園','唐人町','西新','藤崎','室見','姪浜'
-];
-const FUKUOKA_HAKO_FALLBACK=[
-  '貝塚','箱崎九大前','箱崎宮前','馬出九大病院前','千代県庁口','呉服町'
-];
-function fukuokaMainStationNames(json=activeJson,meta=activeRouteMeta){
-  const d=fukuokaDiagramConfig(json,meta);
-  const master=fukuokaStationMaster(json);
-  const src=Array.isArray(d?.mainOrder)&&d.mainOrder.length ? d.mainOrder : FUKUOKA_MAIN_FALLBACK;
+function branchDiagramMainStations(json=activeJson,meta=activeRouteMeta){
+  const d=branchDiagramConfig(json,meta);
+  const master=diagramStationMaster(json);
+  const src=Array.isArray(d?.mainOrder)&&d.mainOrder.length ? d.mainOrder : [];
   const names=src.map(x=>String(x||'').trim()).filter(x=>x&&master.has(x));
-  return names.length ? names : FUKUOKA_MAIN_FALLBACK.filter(x=>master.has(x));
+  return names;
 }
-function fukuokaBranchStationNames(json=activeJson,meta=activeRouteMeta){
-  const d=fukuokaDiagramConfig(json,meta);
-  const master=fukuokaStationMaster(json);
-  const junction=String(d?.junctionStation||'中洲川端').trim()||'中洲川端';
-  const path=orderedBranchStationsFromLines(json,['箱崎線'],junction,'before');
+function branchDiagramBranchStations(json=activeJson,meta=activeRouteMeta){
+  const d=branchDiagramConfig(json,meta);
+  const master=diagramStationMaster(json);
+  const junction=String(d?.junctionStation||'').trim();
+  const path=orderedBranchStationsFromLines(json,[String(meta?.diagramBranchLine||'')].filter(Boolean),junction,'before');
   if(path.length) return path.filter(name=>name!==junction&&master.has(name));
-  const configured=Array.isArray(d?.hakosakiInsert)?d.hakosakiInsert:[];
-  const configuredSet=new Set(configured.map(x=>String(x||'').trim()).filter(Boolean));
-  const src=(configured.length ? FUKUOKA_HAKO_FALLBACK.filter(x=>configuredSet.has(x)&&x!==junction) : FUKUOKA_HAKO_FALLBACK);
-  return src.filter(x=>master.has(x)&&x!==junction);
+  const configured=Array.isArray(d?.branchOrder)?d.branchOrder:(Array.isArray(d?.hakosakiInsert)?d.hakosakiInsert:[]);
+  return configured.map(x=>String(x||'').trim()).filter(x=>x&&x!==junction&&master.has(x));
 }
-function fukuokaDisplayedStationNames(json=activeJson,meta=activeRouteMeta){
-  if(!isFukuokaCompositeRoute(meta)) return [];
-  const d=fukuokaDiagramConfig(json,meta);
-  const main=fukuokaMainStationNames(json,meta);
-  if(!fukuokaHakozakiBranchOpen) return main;
+function branchDiagramDisplayedStations(json=activeJson,meta=activeRouteMeta){
+  if(!hasBranchToggleDiagram(meta)) return [];
+  const d=branchDiagramConfig(json,meta);
+  const main=branchDiagramMainStations(json,meta);
+  if(!branchDiagramOpen) return main;
 
   // 分岐先の駅列を、分岐駅の直前へ差し込む。
   // 福岡では中洲川端がその分岐駅なので、
   // 祇園 → 貝塚 → … → 呉服町 → 中洲川端
   // となる。
-  const junction=String(d?.junctionStation||'中洲川端').trim() || '中洲川端';
-  const branch=fukuokaBranchStationNames(json,meta);
+  const junction=String(d?.junctionStation||'').trim();
+  const branch=branchDiagramBranchStations(json,meta);
   const out=[];
   for(const name of main){
     if(name===junction) out.push(...branch);
@@ -2051,36 +2072,36 @@ function fukuokaDisplayedStationNames(json=activeJson,meta=activeRouteMeta){
   }
   return [...new Set(out)];
 }
-function buildFukuokaStationsForRoute(json,meta){
-  const names=fukuokaDisplayedStationNames(json,meta);
+function buildBranchDiagramStations(json,meta){
+  const names=branchDiagramDisplayedStations(json,meta);
   if(!names.length) return null;
-  const master=fukuokaStationMaster(json);
+  const master=diagramStationMaster(json);
   return names.map((name,i)=>({
     id:`st${i+1}`,
     nameJa:name,
     nameEn:String(master.get(name)?.nameEn||'')
   }));
 }
-function fukuokaBranchToggleLabel(){
+function branchDiagramToggleLabel(){
   // ボタンの開閉状態は active クラスで示す。
-  return '▼ 箱崎線';
+  return `▼ ${String(branchDiagramConfig()?.branchLabel||activeRouteMeta?.diagramBranchLine||'分岐線')}`;
 }
-function fukuokaStationOverviewNeighbors(stationName,json=activeJson,meta=activeRouteMeta){
-  if(!isFukuokaCompositeRoute(meta)) return null;
+function branchDiagramStationNeighbors(stationName,json=activeJson,meta=activeRouteMeta){
+  if(!hasBranchToggleDiagram(meta)) return null;
   const name=String(stationName||'').trim();
   if(!name) return null;
-  const diagram=fukuokaDiagramConfig(json,meta);
-  const main=fukuokaMainStationNames(json,meta);
-  const branch=fukuokaBranchStationNames(json,meta); // 路線図上の順：貝塚→…→呉服町
-  const junction=String(diagram?.junctionStation||'中洲川端').trim()||'中洲川端';
+  const diagram=branchDiagramConfig(json,meta);
+  const main=branchDiagramMainStations(json,meta);
+  const branch=branchDiagramBranchStations(json,meta);
+  const junction=String(diagram?.junctionStation||'').trim();
   let prev=null,next=null;
 
-  if(fukuokaHakozakiBranchOpen && name===junction){
+  if(branchDiagramOpen && name===junction){
     // 分岐駅では、路線図上の直前は呉服町、直後は空港線側の天神。
     prev=branch[branch.length-1]||null;
     const i=main.indexOf(junction);
     next=i>=0&&i<main.length-1?main[i+1]:null;
-  }else if(fukuokaHakozakiBranchOpen && branch.includes(name)){
+  }else if(branchDiagramOpen && branch.includes(name)){
     const sequence=[...branch,junction];
     const i=sequence.indexOf(name);
     prev=i>0?sequence[i-1]:null;
@@ -2106,32 +2127,33 @@ function fukuokaStationOverviewNeighbors(stationName,json=activeJson,meta=active
   };
 }
 
-function fukuokaTrainUsesHakozaki(train){
-  const hako=new Set(fukuokaBranchStationNames(activeJson,activeRouteMeta));
+function trainUsesBranchLine(train){
+  const hako=new Set(branchDiagramBranchStations(activeJson,activeRouteMeta));
   return (Array.isArray(train?.stops)?train.stops:[]).some(stop=>hako.has(String(stop?.station||'')));
 }
-function toggleFukuokaHakozakiBranch(){
-  if(!isFukuokaCompositeRoute(activeRouteMeta)) return;
-  fukuokaHakozakiBranchOpen=!fukuokaHakozakiBranchOpen;
+function toggleBranchDiagram(){
+  if(!hasBranchToggleDiagram(activeRouteMeta)) return;
+  branchDiagramOpen=!branchDiagramOpen;
   if(typeof TRAIN_ICON_CACHE!=='undefined') TRAIN_ICON_CACHE.clear();
   if(typeof TRAIN_RUNTIME_CACHE!=='undefined') TRAIN_RUNTIME_CACHE.clear();
   if(typeof TERMINAL_DEPARTURE_CACHE!=='undefined') TERMINAL_DEPARTURE_CACHE.clear();
   if(typeof TERMINAL_NEXT_CACHE!=='undefined') TERMINAL_NEXT_CACHE.clear();
   if(typeof TRAIN_RENDER_INDEX_CACHE!=='undefined') TRAIN_RENDER_INDEX_CACHE.clear();
-  STATIONS=buildFukuokaStationsForRoute(activeJson,activeRouteMeta)||STATIONS;
+  STATIONS=buildBranchDiagramStations(activeJson,activeRouteMeta)||STATIONS;
   renderLine();
 }
-window.toggleFukuokaHakozakiBranch=toggleFukuokaHakozakiBranch;
+window.toggleBranchDiagram=toggleBranchDiagram;
 
 
-function isTobuSkytreeRoute(meta=activeRouteMeta){
-  return String(meta?.id||'')==='tobu-skytree';
+function hasMultiJunctionDiagram(meta=activeRouteMeta,json=activeJson){
+  const diagram=json?.diagram;
+  return meta?.diagramTopology==='multi-junction' && Array.isArray(diagram?.mainOrder) && diagram?.junctions && typeof diagram.junctions==='object';
 }
-function tobuLineStations(json,lineName){
+function diagramLineStations(json,lineName){
   const line=(Array.isArray(json?.lines)?json.lines:[]).find(x=>String(x?.name||'')===String(lineName));
   return Array.isArray(line?.stations)?line.stations:[];
 }
-function tobuStationEntry(json,name,branchKey=null){
+function diagramStationEntry(json,name,branchKey=null){
   const target=String(name||'').trim();
   for(const line of (Array.isArray(json?.lines)?json.lines:[])){
     const st=(Array.isArray(line?.stations)?line.stations:[]).find(x=>String(x?.name||'').trim()===target);
@@ -2139,8 +2161,8 @@ function tobuStationEntry(json,name,branchKey=null){
   }
   return {nameJa:target,nameEn:'',branchKey};
 }
-function buildTobuStationsForRoute(json=activeJson,meta=activeRouteMeta){
-  if(!isTobuSkytreeRoute(meta)) return null;
+function buildMultiJunctionDiagramStations(json=activeJson,meta=activeRouteMeta){
+  if(!hasMultiJunctionDiagram(meta)) return null;
   const diagram=json?.diagram||{};
   const mainNames=Array.isArray(diagram.mainOrder)?diagram.mainOrder.map(x=>String(x||'').trim()).filter(Boolean):[];
   if(!mainNames.length) return null;
@@ -2156,14 +2178,14 @@ function buildTobuStationsForRoute(json=activeJson,meta=activeRouteMeta){
     const lineNames=String(key).split('・').map(x=>x.trim()).filter(Boolean);
     const derived=orderedBranchStationsFromLines(json,lineNames,junction?.anchor,junction?.insert);
     const configured=Array.isArray(junction?.stations)?junction.stations.map(x=>String(x||'').trim()).filter(Boolean):[];
-    // Tobu visual order is explicitly configured in diagram.junctions; preserve it.
+    // Branch visual order is explicitly configured in diagram.junctions; preserve it.
     // The source line's direction is not always the same as the displayed branch order (e.g. 日光線).
     const stations=(configured.length?configured:derived).filter(name=>name!==String(junction?.anchor||''));
     return {id:String(button?.id||key),anchor:String(junction?.anchor||''),insert:String(junction?.insert||'after'),stations,position:String(button?.position||'bottom'),label:String(button?.label||key),line:String(button?.line||lineNames[0]||'')};
   }).filter(x=>x.anchor&&x.stations.length);
   const before=new Map(),after=new Map();
   for(const def of defs){
-    if(!tobuSkytreeBranchesOpen.has(def.id)) continue;
+    if(!multiJunctionBranchesOpen.has(def.id)) continue;
     const map=def.insert==='before'?before:after;
     if(!map.has(def.anchor)) map.set(def.anchor,[]);
     map.get(def.anchor).push(def);
@@ -2183,42 +2205,42 @@ function buildTobuStationsForRoute(json=activeJson,meta=activeRouteMeta){
   }
   return out.length?out:null;
 }
-function tobuBranchButtonSpecForStation(stationName){
-  if(!isTobuSkytreeRoute()) return null;
+function multiJunctionButtonSpecForStation(stationName){
+  if(!hasMultiJunctionDiagram()) return null;
   const buttons=Array.isArray(activeJson?.diagram?.branchButtons)?activeJson.diagram.branchButtons:[];
   const spec=buttons.find(x=>String(x?.anchor||'')===String(stationName||''));
   return spec||null;
 }
-function createTobuBranchButton(spec){
+function createMultiJunctionBranchButton(spec){
   const key=String(spec?.id||'');
   const lineName=String(spec?.line||'');
   return createCommonBranchToggleButton({
     label:String(spec?.label||lineName||'分岐路線'),
     color:lineDefByName(lineName)?.color||'#666',
-    isOpen:tobuSkytreeBranchesOpen.has(key),
+    isOpen:multiJunctionBranchesOpen.has(key),
     position:String(spec?.position||'bottom'),
-    onToggle:()=>toggleTobuSkytreeBranch(key)
+    onToggle:()=>toggleMultiJunctionBranch(key)
   });
 }
-function toggleTobuSkytreeBranch(key){
-  if(!isTobuSkytreeRoute()) return;
+function toggleMultiJunctionBranch(key){
+  if(!hasMultiJunctionDiagram()) return;
   const branch=String(key||'').trim();
   if(!branch) return;
-  if(tobuSkytreeBranchesOpen.has(branch)) tobuSkytreeBranchesOpen.delete(branch);
-  else tobuSkytreeBranchesOpen.add(branch);
+  if(multiJunctionBranchesOpen.has(branch)) multiJunctionBranchesOpen.delete(branch);
+  else multiJunctionBranchesOpen.add(branch);
   if(typeof TRAIN_ICON_CACHE!=='undefined') TRAIN_ICON_CACHE.clear();
   if(typeof TRAIN_RUNTIME_CACHE!=='undefined') TRAIN_RUNTIME_CACHE.clear();
   if(typeof TERMINAL_DEPARTURE_CACHE!=='undefined') TERMINAL_DEPARTURE_CACHE.clear();
   if(typeof TERMINAL_NEXT_CACHE!=='undefined') TERMINAL_NEXT_CACHE.clear();
   if(typeof TRAIN_RENDER_INDEX_CACHE!=='undefined') TRAIN_RENDER_INDEX_CACHE.clear();
-  STATIONS=buildTobuStationsForRoute(activeJson,activeRouteMeta)||STATIONS;
+  STATIONS=buildMultiJunctionDiagramStations(activeJson,activeRouteMeta)||STATIONS;
   renderLine();
 }
-function tobuUndirectedPair(a,b){
+function diagramUndirectedPair(a,b){
   return [String(a||''),String(b||'')].sort().join('\\u0000');
 }
-function tobuStationOverviewNeighbors(stationName,json=activeJson){
-  if(!isTobuSkytreeRoute()) return null;
+function multiJunctionStationNeighbors(stationName,json=activeJson){
+  if(!hasMultiJunctionDiagram()) return null;
   const name=String(stationName||'').trim();
   const main=(Array.isArray(json?.diagram?.mainOrder)?json.diagram.mainOrder:[]).map(x=>String(x||'').trim()).filter(Boolean);
   if(!name||!main.length) return null;
@@ -2231,7 +2253,7 @@ function tobuStationOverviewNeighbors(stationName,json=activeJson){
     const configured=Array.isArray(j?.stations)?j.stations.map(x=>String(x||'').trim()).filter(Boolean):[];
     const stations=configured.length?configured:derived;
     return {id:String(button?.id||key),anchor:String(j?.anchor||''),insert:String(j?.insert||'after'),stations:stations.filter(x=>x&&x!==String(j?.anchor||''))};
-  }).filter(x=>x.anchor&&x.stations.length&&tobuSkytreeBranchesOpen.has(x.id));
+  }).filter(x=>x.anchor&&x.stations.length&&multiJunctionBranchesOpen.has(x.id));
   let prev=null,next=null;
   const activeBranch=defs.find(def=>def.stations.includes(name));
   if(activeBranch){
@@ -2264,8 +2286,8 @@ function tobuStationOverviewNeighbors(stationName,json=activeJson){
   };
   return {prev,next,prevColor:colorFor(prev,name,name),nextColor:colorFor(name,next,name)};
 }
-function tobuHiddenMainSegment(a,b,json=activeJson){
-  if(!isTobuSkytreeRoute()) return false;
+function hiddenMainDiagramSegment(a,b,json=activeJson){
+  if(!hasMultiJunctionDiagram()) return false;
   const diagram=json?.diagram||{};
   const buttons=Array.isArray(diagram.branchButtons)?diagram.branchButtons:[];
   const rules=diagram.hiddenMainSegmentsWhenBranchOpen||{};
@@ -2273,7 +2295,7 @@ function tobuHiddenMainSegment(a,b,json=activeJson){
   const pair=(x,y)=>[String(x||''),String(y||'')].sort().join('\\u0000');
   for(const button of buttons){
     const key=String(button?.id||'');
-    if(!key||!tobuSkytreeBranchesOpen.has(key)) continue;
+    if(!key||!multiJunctionBranchesOpen.has(key)) continue;
     const pairs=Array.isArray(rules[key])?rules[key]:[];
     for(const item of pairs){
       if(!Array.isArray(item)||item.length<2) continue;
@@ -2289,38 +2311,34 @@ function tobuHiddenMainSegment(a,b,json=activeJson){
   }
   return false;
 }
-function tobuVisualGapSegment(a,b){
+function visualGapDiagramSegment(a,b){
   return commonBranchSegmentEffect(a,b)?.kind==='hide';
 }
-function tobuNikkoFadeSegment(a,b){
+function fadeDiagramSegment(a,b){
   return commonBranchSegmentEffect(a,b)?.kind==='fade';
 }
 
 function buildStationsForRoute(json,meta){
-  const tobuStations=buildTobuStationsForRoute(json,meta);
-  if(tobuStations?.length) return tobuStations;
-  const fukuokaStations=buildFukuokaStationsForRoute(json,meta);
-  if(fukuokaStations?.length) return fukuokaStations;
+  const multiJunctionStations=buildMultiJunctionDiagramStations(json,meta);
+  if(multiJunctionStations?.length) return multiJunctionStations;
+  const branchStations=buildBranchDiagramStations(json,meta);
+  if(branchStations?.length) return branchStations;
   const seen=new Set(),list=[];
 
-  // 横浜線は東神奈川～大船が京浜東北・根岸線との共用区間。
-  // Yokohama_2026.json 側の駅定義が東神奈川で途切れている場合でも、
-  // 共有JSONとして読み込んだ京浜東北・根岸線の東神奈川～大船を継ぎ足す。
-  // 横浜線側に既に大船まで登録されている場合も、共用区間を組み直すことで
-  // 駅の重複や並び順の乱れを防ぐ。
+  // 複数線区の共有区間は route registry の sharedStationMerge で定義する。
+  // HTML側は線区名・接続駅を知らず、同じデータ構造で駅列を組み立てる。
   let stationSources=[];
-  if(String(meta?.id||'')==='yokohama'){
-    const yokohamaLine=(json?.lines||[]).find(x=>String(x?.name||'')==='横浜線');
-    const keihinLine=(json?.lines||[]).find(x=>String(x?.name||'')==='京浜東北・根岸線');
-    const yokohamaStations=Array.isArray(yokohamaLine?.stations)?yokohamaLine.stations:[];
-    const keihinStations=Array.isArray(keihinLine?.stations)?keihinLine.stations:[];
-    const yokohamaJunction=yokohamaStations.findIndex(st=>String(st?.name||'').trim()==='東神奈川');
-    const keihinJunction=keihinStations.findIndex(st=>String(st?.name||'').trim()==='東神奈川');
-    if(yokohamaJunction>=0 && keihinJunction>=0){
-      stationSources=[[
-        ...yokohamaStations.slice(0,yokohamaJunction+1),
-        ...keihinStations.slice(keihinJunction+1)
-      ]];
+  const merge=meta?.sharedStationMerge;
+  if(merge && typeof merge==='object'){
+    const mainLine=(json?.lines||[]).find(x=>String(x?.name||'')===String(merge.line||''));
+    const sharedLine=(json?.lines||[]).find(x=>String(x?.name||'')===String(merge.sharedLine||''));
+    const mainStations=Array.isArray(mainLine?.stations)?mainLine.stations:[];
+    const sharedStations=Array.isArray(sharedLine?.stations)?sharedLine.stations:[];
+    const junction=String(merge.junction||'').trim();
+    const mainIndex=mainStations.findIndex(st=>String(st?.name||'').trim()===junction);
+    const sharedIndex=sharedStations.findIndex(st=>String(st?.name||'').trim()===junction);
+    if(mainIndex>=0&&sharedIndex>=0){
+      stationSources=[[...mainStations.slice(0,mainIndex+1),...sharedStations.slice(sharedIndex+1)]];
     }
   }
   if(!stationSources.length){
@@ -2472,10 +2490,9 @@ function buildFormationsForJson(json){
   const baseDeclaredType=String(json?.formationType||'').trim();
   const lineOverridesType=!!String(lineVisual?.formationType||'').trim() && declaredType!==baseDeclaredType;
   const formationSource=lineOverridesType ? [] : rawFormations;
-  // 内房線の旧JSONは formationType を持たず、formations[] に
-  // {formation, cars, image} を直接並べる形式。これをそのまま編成一覧として扱う。
-  const inferredDeclaredType=(String(activeRouteName||'')==='内房線' && rawFormations.length)
-    ? '内房線編成'
+  // 旧形式JSONで formationType がない場合は、路線設定の既定名称を使う。
+  const inferredDeclaredType=(!declaredType && rawFormations.length && activeRouteMeta?.legacyFormationType)
+    ? String(activeRouteMeta.legacyFormationType)
     : declaredType;
   if(inferredDeclaredType){
     const items=[];
@@ -2485,21 +2502,9 @@ function buildFormationsForJson(json){
       const displayId=rawId.replace(/F$/i,'');
       const carsArr=Array.isArray(raw?.cars)?raw.cars.map(x=>String(x||'').trim()).filter(Boolean):[];
       const cars=carsArr.length || Number(raw?.carCount)||2;
-      /* 内房線：編成番号に対応する画像名を最終保証する。
-         JSON側が旧画像名・noimageになっていても、指定された
-         「形式_編成」命名で実画像をsrcへ入れる。
-         noImageはonerror側でのみ使用する。 */
-      const uchiboImageByFormation={
-        ...Object.fromEntries(Array.from({length:12},(_,i)=>{const n=String(i+1).padStart(2,'0');return [`R${n}`,`E131_R${n}`]})),
-        ...Object.fromEntries(Array.from({length:12},(_,i)=>{const n=String(i+1).padStart(2,'0');return [`F${n}`,`E235_F${n}`]})),
-        ...Object.fromEntries(Array.from({length:4},(_,i)=>{const n=String(i+1);return [`J${n}`,`E235_J${n}`]})),
-        C1:'E233_C1',C2:'E233_C2',C3:'E233_C3',C9:'E233_C9',
-        C401:'209_C401',C602:'209_C602'
-      };
+      // 編成番号から画像を補完する規則は route registry の formationImageMap に保持。
       const rawImage=String(raw?.image||raw?.img||'').trim();
-      const forcedImage=(String(activeRouteName||'')==='内房線' && uchiboImageByFormation[displayId])
-        ? uchiboImageByFormation[displayId]
-        : '';
+      const forcedImage=String(activeRouteMeta?.formationImageMap?.[displayId]||'');
       const item={
         id:displayId,
         name:String(raw?.name||`${displayId}編成`),
@@ -2719,15 +2724,15 @@ function normalizeExternalTrain(raw,day,direction,meta){
     rawTrain:raw
   }];
 }
-function fukuokaSectionNumberAtStation(train,stationName){
+function sectionNumberAtStation(train,stationName){
   const station=String(stationName||'').trim();
   if(!station || !Array.isArray(train?.sectionNumberSegments)) return '';
   const stops=Array.isArray(train?.stops)?train.stops:[];
   const targetIndex=stops.findIndex(st=>String(st?.station||'').trim()===station);
   if(targetIndex<0) return '';
   const matches=train.sectionNumberSegments.filter(segment=>{
-    // 福岡市地下鉄側の列番は常に非表示。JR筑肥線区間の番号だけを許可する。
-    if(String(segment?.line||'')!=='JR筑肥線') return false;
+    // 列番の表示可否は列車の区間別設定で判定する。
+    if(!(activeRouteMeta?.sectionNumberDisplayLines||[]).map(String).includes(String(segment?.line||''))) return false;
     const fromIndex=stops.findIndex(st=>String(st?.station||'').trim()===String(segment?.fromStation||'').trim());
     const toIndex=stops.findIndex(st=>String(st?.station||'').trim()===String(segment?.toStation||'').trim());
     if(fromIndex<0 || toIndex<0) return false;
@@ -2735,7 +2740,7 @@ function fukuokaSectionNumberAtStation(train,stationName){
   });
   return String(matches.length?matches[matches.length-1]?.number||'':'');
 }
-function fukuokaSectionNumberAtPosition(train,pos){
+function sectionNumberAtPosition(train,pos){
   const p=Number(pos);
   if(!Number.isFinite(p)) return '';
   const lower=Math.max(0,Math.floor(p));
@@ -2748,7 +2753,7 @@ function fukuokaSectionNumberAtPosition(train,pos){
   const secondIndex=stops.findIndex(st=>String(st?.station||'').trim()===String(second).trim());
   if(firstIndex<0 || secondIndex<0) return '';
   const matches=(Array.isArray(train?.sectionNumberSegments)?train.sectionNumberSegments:[]).filter(segment=>{
-    if(String(segment?.line||'')!=='JR筑肥線') return false;
+    if(!(activeRouteMeta?.sectionNumberDisplayLines||[]).map(String).includes(String(segment?.line||''))) return false;
     const fromIndex=stops.findIndex(st=>String(st?.station||'').trim()===String(segment?.fromStation||'').trim());
     const toIndex=stops.findIndex(st=>String(st?.station||'').trim()===String(segment?.toStation||'').trim());
     if(fromIndex<0 || toIndex<0) return false;
@@ -2759,8 +2764,8 @@ function fukuokaSectionNumberAtPosition(train,pos){
 }
 function trainDisplayNoAtStation(train,stationName){
   if(!train) return '';
-  if(isFukuokaCompositeRoute(activeRouteMeta) && Array.isArray(train.sectionNumberSegments)){
-    return fukuokaSectionNumberAtStation(train,stationName);
+  if(hasBranchToggleDiagram(activeRouteMeta) && Array.isArray(train.sectionNumberSegments)){
+    return sectionNumberAtStation(train,stationName);
   }
   if(train.hideTrainNumber) return '';
   const station=String(stationName||'');
@@ -2813,7 +2818,7 @@ function getTrainTypeSegmentAtPosition(train,pos=null){
 }
 function trainDisplayNoAtPosition(train,pos){
   if(Array.isArray(train?.sectionNumberSegments)){
-    if(isFukuokaCompositeRoute(activeRouteMeta)) return fukuokaSectionNumberAtPosition(train,pos);
+    if(hasBranchToggleDiagram(activeRouteMeta)) return sectionNumberAtPosition(train,pos);
     const section=sectionSegmentAtPosition(train.sectionNumberSegments,pos);
     return String(section?.number||'');
   }
@@ -2857,33 +2862,28 @@ async function loadExternalRouteJsons(routeMeta){
   if(!unique.length) throw new Error('路線JSONの設定がありません');
 
   async function fetchJson(url){
-    // URLの完全一致だけに依存すると、?cache=... などが付いた場合に
-    // 内蔵JSONを認識できないため、路線IDとファイル名の両方で判定する。
-    const isTobuSkytreeJson = String(routeMeta?.id||'') === 'tobu-skytree'
-      || /(?:^|\/)TobuSkytree_2026\.json(?:[?#]|$)/i.test(String(url||''))
-      || String(url||'') === String(TOBU_SKYTREE_DATA_URL||'');
-    const readEmbeddedTobuJson = ()=>{
-      if(!isTobuSkytreeJson) return null;
-      const node=document.getElementById('tobu-skytree-embedded-json');
+    // HTML内に同梱したJSONを使う路線は、route registry の設定で指定する。
+    const embeddedElementId=String(routeMeta?.embeddedJsonElementId||'');
+    const embeddedExpectedId=String(routeMeta?.embeddedJsonExpectedId||'');
+    const readEmbeddedRouteJson=()=>{
+      if(!embeddedElementId) return null;
+      const node=document.getElementById(embeddedElementId);
       if(!node) return null;
       try{
         const embedded=JSON.parse(node.textContent||'null');
         if(!embedded || typeof embedded!=='object' || Array.isArray(embedded)
-          || String(embedded.id||'')!=='tobu-skytree'
-          || !Array.isArray(embedded.lines)
-          || !Array.isArray(embedded.diagram?.mainOrder)
-          || !embedded.trains || typeof embedded.trains!=='object'){
-          throw new Error('内蔵JSONの路線IDまたは必須項目が一致しません');
+          || (embeddedExpectedId && String(embedded.id||'')!==embeddedExpectedId)
+          || !Array.isArray(embedded.lines)){
+          throw new Error('内蔵JSONの識別情報または必須項目が一致しません');
         }
         return embedded;
-      }catch(e){ console.error('東武スカイツリーライン内蔵JSONの解析・検証に失敗しました',e); return null; }
+      }catch(e){ console.error('内蔵路線JSONの解析・検証に失敗しました',e); return null; }
     };
-    // file:// で直接HTMLを開いた場合は外部fetchを一切行わず、
-    // HTML内に同梱したJSONを直ちに使う（ローカルJSONのCORS回避）。
-    if(isTobuSkytreeJson && window.location.protocol==='file:'){
-      const embedded=readEmbeddedTobuJson();
+    // file:// で直接開いた場合は、設定済みの内蔵JSONを優先してCORSを回避する。
+    if(embeddedElementId && window.location.protocol==='file:'){
+      const embedded=readEmbeddedRouteJson();
       if(embedded) return {url,json:embedded};
-      throw new Error('東武スカイツリーラインの内蔵JSONを読み込めません。最新版HTMLをダウンロードし直してください。');
+      throw new Error(`内蔵JSONを読み込めません: ${routeMeta?.name||routeMeta?.id||'route'}`);
     }
     // GitHub Pages上の日本語ファイル名も確実に取得できるよう、
     // リクエスト時だけURLをURIエンコードする。
@@ -2924,7 +2924,7 @@ async function loadExternalRouteJsons(routeMeta){
       }
     }
     // GitHub Pages / Raw GitHubの両方から取得できない場合も、東武の同梱JSONで表示を継続する。
-    const embeddedFallback=readEmbeddedTobuJson();
+    const embeddedFallback=readEmbeddedRouteJson();
     if(embeddedFallback){
       console.warn('東武スカイツリーライン：外部JSONの取得に失敗したため、HTML内蔵JSONで続行します。', lastError);
       return {url,json:embeddedFallback};
@@ -2948,17 +2948,16 @@ async function loadExternalRouteJsons(routeMeta){
           const selected={...rawJson.routes[key]};
           selected._sharedRoutes=rawJson.routes;
 
-          // えちぜん鉄道は福井～福井口を両路線の共通区間として扱う。
-          // 選択中の路線に、もう一方の路線の列車も共通3駅分だけ追加する。
-          // その先の別路線区間は追加しないため、各ページの表示範囲は維持される。
-          const echizenRoutes=['勝山永平寺線','三国芦原線'];
-          if(echizenRoutes.includes(String(activeRouteName||''))){
-            const otherName=echizenRoutes.find(name=>name!==String(activeRouteName||''));
+          // 共有路線の列車を共通区間だけ取り込む汎用処理。
+          // 対象路線・対象駅・対象曜日は route registry の設定で指定する。
+          const mergeRule=routeMeta?.sharedRouteTrainMerge;
+          if(mergeRule && Array.isArray(mergeRule.routes)){
+            const otherName=mergeRule.routes.find(name=>String(name)!==String(activeRouteName||''));
             const other=rawJson.routes[otherName];
-            const commonStations=new Set(['福井','新福井','福井口']);
+            const commonStations=new Set((mergeRule.stations||[]).map(x=>String(x||'').trim()).filter(Boolean));
             if(other && typeof other==='object'){
               selected.trains={...(selected.trains||{})};
-              for(const day of ['平日','土曜','休日']){
+              for(const day of (mergeRule.days||['平日','土曜','休日'])){
                 const ownDay=selected.trains[day];
                 const otherDay=other.trains?.[day];
                 if(!otherDay || typeof otherDay!=='object') continue;
@@ -2973,16 +2972,8 @@ async function loadExternalRouteJsons(routeMeta){
                     const originalStops=Array.isArray(rawTrain?.stops)?rawTrain.stops:[];
                     const sharedStops=originalStops.filter(stop=>commonStations.has(String(stop?.station||'').trim()));
                     if(sharedStops.length<2) continue;
-                    const copy={
-                      ...rawTrain,
-                      stops:sharedStops.map(stop=>({...stop})),
-                      __echizenSharedSectionOnly:true
-                    };
-                    // 列車情報の停車駅案内は、共通区間だけでなく元路線の全区間を表示する。
-                    // ダイヤグラム用の stops は共通区間に限定したままにして、
-                    // 停車駅案内専用の stationGuideStops に元の全停車駅を保持する。
-                    const fullGuideStops=Array.isArray(rawTrain?.stationGuideStops)
-                      ? rawTrain.stationGuideStops : originalStops;
+                    const copy={...rawTrain,stops:sharedStops.map(stop=>({...stop})),__sharedRouteSectionOnly:true};
+                    const fullGuideStops=Array.isArray(rawTrain?.stationGuideStops)?rawTrain.stationGuideStops:originalStops;
                     copy.stationGuideStops=fullGuideStops.map(stop=>({...stop}));
                     mergedDay[direction].push(copy);
                   }
@@ -3171,14 +3162,14 @@ async function loadLineTrainData(routeName=activeRouteName,timetableDate=selecte
   const resolvedRouteMeta=routeMetaForScheduleDate(baseRouteMeta,dateKey);
   if(!resolvedRouteMeta) throw new Error(`選択日 ${dateKey} に対応する時刻表ファイルがありません: ${activeRouteName}`);
   activeRouteMeta=resolvedRouteMeta;
-  fukuokaHakozakiBranchOpen=false;
+  branchDiagramOpen=false;
   let json=null;
   if(!activeRouteMeta.json) throw new Error(`路線JSONの設定がありません: ${activeRouteName}`);
   json=await loadExternalRouteJsons(activeRouteMeta);
-  if(String(activeRouteMeta?.id||'')==='tobu-skytree'){
+  if(activeRouteMeta?.diagramTopology==='multi-junction'){
     const hasDays=json?.trains && ['平日','休日'].every(day=>json.trains[day] && typeof json.trains[day]==='object' && (Array.isArray(json.trains[day]?.上り)||Array.isArray(json.trains[day]?.下り)));
     if(!Array.isArray(json?.lines) || !Array.isArray(json?.diagram?.mainOrder) || !hasDays){
-      throw new Error('東武スカイツリーラインJSONの形式が現行HTMLに対応していません。data/TobuSkytree_2026.jsonを確認してください。');
+      throw new Error(`複数分岐路線のJSON形式が不正です: ${activeRouteName}`);
     }
   }
   if(dateKey!==String(selectedDateKey||'')) return;
@@ -3332,11 +3323,11 @@ function baseTrainForDay(trainNo,direction=null,day=currentDay){
   return matches[0]||null;
 }
 function buildTimetableRows(stops){
-  const isFukuoka=isFukuokaCompositeRoute(activeRouteMeta);
+  const hasExternalTerminalRule=Array.isArray(activeRouteMeta?.externalTerminalLines)&&activeRouteMeta.externalTerminalLines.length>0;
   const scheduled=(stops||[]).filter(st=>{
     if(!st) return false;
     const hasTime=!!String(st.arrival||st.departure||st.time||'').trim();
-    const isExternalTerminal=isFukuoka && (st.terminalOnly===true || String(st.line||'')==='JR筑肥線');
+    const isExternalTerminal=st.terminalOnly===true || (hasExternalTerminalRule && activeRouteMeta.externalTerminalLines.map(String).includes(String(st.line||'')));
     return hasTime || isExternalTerminal;
   });
   const rows=[];
@@ -3397,11 +3388,8 @@ function timetableRowsHTML(stops,trainContext=null){
       ? rows[endIndex].segmentColors.map(c=>String(c||'').trim()).filter(Boolean) : [];
     return configured.length ? configured : fallbackSegmentColors(startIndex,endIndex);
   };
-  const isFukuokaGuide=isFukuokaCompositeRoute(activeRouteMeta);
-  // 筑肥線区間に対する路線固有の破線処理は行わない。
-  // 他路線でJSONに明示された dottedBefore の指定は従来どおり扱う。
-  const isDottedRouteSegment=(a,b,arrivalIndex=-1)=>!isFukuokaGuide && arrivalIndex>=0 && rows[arrivalIndex]?.dottedBefore===true;
-  const globalDotted=!isFukuokaGuide && !!activeRouteMeta?.dottedTimetableGuide;
+  const isDottedRouteSegment=(a,b,arrivalIndex=-1)=>arrivalIndex>=0 && rows[arrivalIndex]?.dottedBefore===true;
+  const globalDotted=!!activeRouteMeta?.dottedTimetableGuide;
   const lineBg=(colors,dotted=false)=>{
     const list=(Array.isArray(colors)?colors:[]).map(c=>String(c||'').trim()).filter(Boolean);
     const safe=list.length?list:['#666'];
@@ -3417,10 +3405,10 @@ function timetableRowsHTML(stops,trainContext=null){
       mask:dotted?'repeating-linear-gradient(to bottom,#000 0 7px,transparent 7px 14px)':'none'
     };
   };
-  const fukuokaMaster=isFukuokaCompositeRoute(activeRouteMeta)?fukuokaStationMaster(activeJson):null;
+  const branchStationMaster=hasBranchToggleDiagram(activeRouteMeta)?diagramStationMaster(activeJson):null;
   return rows.map((row,index)=>{
     const rawTimes=rows[index].times.length>=2?rows[index].times.slice(0,2):rows[index].times.slice(0,1);
-    const stationNameEn=String(fukuokaMaster?.get(row.station)?.nameEn||'').trim();
+    const stationNameEn=String(branchStationMaster?.get(row.station)?.nameEn||'').trim();
     const formattedTimes=rawTimes.map(formatRailwayDisplayTime);
     const times=(formattedTimes.length>=2&&formattedTimes[0]===formattedTimes[1])?[formattedTimes[0]]:formattedTimes;
     const twoLine=times.length>=2;
@@ -3437,7 +3425,7 @@ function timetableRowsHTML(stops,trainContext=null){
     const classes=['timetable-item',globalDotted?'dotted-route-guide':''].filter(Boolean).join(' ');
     const markerClass=row.boardingOnly?' boarding-only':(row.alightingOnly?' alighting-only':'');
     const markerTitle=row.boardingOnly?'乗車専用駅':(row.alightingOnly?'降車専用駅':'');
-    return `<div class="${classes}" style="--route-line-top-bg:${top.images};--route-line-top-size:${top.sizes};--route-line-top-position:${top.positions};--route-line-top-repeat:${top.repeat};--route-line-top-mask:${top.mask};--route-line-bottom-bg:${bottom.images};--route-line-bottom-size:${bottom.sizes};--route-line-bottom-position:${bottom.positions};--route-line-bottom-repeat:${bottom.repeat};--route-line-bottom-mask:${bottom.mask};--station-route-color:${dotColor};--station-route-color-bg:${dotColor}"><div class="time-dot${markerClass}"${markerTitle?` title="${markerTitle}" aria-label="${markerTitle}"`:''}></div><div class="time-text${twoLine?' two-line':''}">${times.map(t=>`<span>${t}</span>`).join('')}</div><div class="station-text${stationNameEn?' fukuoka-station-text':''}"><span class="station-text-ja">${esc(row.station)}</span>${stationNameEn?`<span class="station-text-en">${esc(stationNameEn)}</span>`:''}</div></div>`;
+    return `<div class="${classes}" style="--route-line-top-bg:${top.images};--route-line-top-size:${top.sizes};--route-line-top-position:${top.positions};--route-line-top-repeat:${top.repeat};--route-line-top-mask:${top.mask};--route-line-bottom-bg:${bottom.images};--route-line-bottom-size:${bottom.sizes};--route-line-bottom-position:${bottom.positions};--route-line-bottom-repeat:${bottom.repeat};--route-line-bottom-mask:${bottom.mask};--station-route-color:${dotColor};--station-route-color-bg:${dotColor}"><div class="time-dot${markerClass}"${markerTitle?` title="${markerTitle}" aria-label="${markerTitle}"`:''}></div><div class="time-text${twoLine?' two-line':''}">${times.map(t=>`<span>${t}</span>`).join('')}</div><div class="station-text${stationNameEn?' branch-diagram-station-text':''}"><span class="station-text-ja">${esc(row.station)}</span>${stationNameEn?`<span class="station-text-en">${esc(stationNameEn)}</span>`:''}</div></div>`;
   }).join('');
 }
 let TIMETABLE_HTML_CACHE = new Map();
@@ -3539,7 +3527,7 @@ function liveTrain(no,direction=null){
   if(cached) return cached;
   const base=baseTrainForDay(key,null,currentDay);
   if(base) return base;
-  if(currentDay==='休日' || String(activeRouteMeta?.id||'').startsWith('echizen-')) return null;
+  if(currentDay==='休日' || activeRouteMeta?.disableCrossDayTrainFallback===true) return null;
   return TRAIN_DATA_CACHE.get(trainCacheKey(currentDay,key,''))||TRAIN_INDEX[key]||null;
 }
 function trainForCurrentDay(trainNo,direction=null){return liveTrain(String(trainNo??''),direction)||baseTrainForDay(String(trainNo??''),direction,currentDay);}
@@ -3625,7 +3613,7 @@ function operationTrainSourceForDay(day=currentDay){
   return source.filter(t=>{
     const days=t?.days;
     return !Array.isArray(days)||!days.length||days.includes(day)
-      ||(day==='休日'&&isEchizenSaturdayServiceDate(selectedDateKey)&&days.includes('土曜'));
+      ||(day==='休日'&&isSaturdayServiceDate(selectedDateKey)&&days.includes('土曜'));
   });
 }
 function findOperationTrainRecord(no,day=currentDay){
@@ -3805,9 +3793,9 @@ function syncCurrentScheduleDay(){
   const d=new Date(`${selectedDateKey}T00:00:00`);
   if(!Number.isNaN(d.getTime())){
     const nextDay=getScheduleDayForDate(d);
-    const nextSaturdayMode=isEchizenSaturdayServiceDate(selectedDateKey);
-    const nextYearEndMode=isEchizenYearEndServiceSuspensionDate(selectedDateKey);
-    if(nextDay!==currentDay || nextSaturdayMode!==!!syncCurrentScheduleDay._lastEchizenSaturdayMode || nextYearEndMode!==!!syncCurrentScheduleDay._lastEchizenYearEndMode){
+    const nextSaturdayMode=isSaturdayServiceDate(selectedDateKey);
+    const nextYearEndMode=isYearEndServiceSuspensionDate(selectedDateKey);
+    if(nextDay!==currentDay || nextSaturdayMode!==!!syncCurrentScheduleDay._lastSaturdayServiceMode || nextYearEndMode!==!!syncCurrentScheduleDay._lastYearEndSuspensionMode){
       currentDay=nextDay;
       TRAIN_RENDER_INDEX_CACHE.clear();
       TERMINAL_NEXT_CACHE.clear();
@@ -3815,8 +3803,8 @@ function syncCurrentScheduleDay(){
       TRAIN_RUNTIME_CACHE.clear();
       TRAIN_DATA_CACHE.clear();
       LIVE_TRAIN_CACHE.clear();
-      syncCurrentScheduleDay._lastEchizenSaturdayMode=nextSaturdayMode;
-      syncCurrentScheduleDay._lastEchizenYearEndMode=nextYearEndMode;
+      syncCurrentScheduleDay._lastSaturdayServiceMode=nextSaturdayMode;
+      syncCurrentScheduleDay._lastYearEndSuspensionMode=nextYearEndMode;
     }
   }
   return currentDay;
@@ -3827,13 +3815,10 @@ function getDisplayedTrainSource(){
   // 現在の路線データだけを表示する。
 //   // STATIONS内に存在する区間だけを描画対象にする。
   const source=trainsForScheduleDay(day,selectedDateKey);
-  if(isFukuokaCompositeRoute(activeRouteMeta) && !fukuokaHakozakiBranchOpen){
-    const airportLine=lineDefByName('空港線');
-    const airportNames=new Set((airportLine?.stations||[]).map(st=>String(st?.name||'')).filter(Boolean));
-    return source.filter(t=>{
-      const count=(t?.stops||[]).filter(st=>airportNames.has(String(st?.station||''))).length;
-      return count>=2;
-    });
+  if(hasBranchToggleDiagram(activeRouteMeta) && !branchDiagramOpen){
+    const mainLine=lineDefByName(activeRouteMeta?.diagramMainLine);
+    const mainNames=new Set((mainLine?.stations||[]).map(st=>String(st?.name||'')).filter(Boolean));
+    return source.filter(t=>(t?.stops||[]).filter(st=>mainNames.has(String(st?.station||''))).length>=2);
   }
   return source;
 }
@@ -4020,27 +4005,32 @@ function getDetailType(type){
   if(value==='各停') return '各駅停車';
   return value;
 }
-function naganoExpressCategoryFor(train,typeOverride='',trainNoOverride=''){
+function expressCategoryForTrain(train,typeOverride='',trainNoOverride=''){
   const raw=train?.rawTrain||train||{};
   const type=String(typeOverride||train?.type||raw?.type||'').trim();
-  if(!type.includes('特急')) return '';
-  const isNagano=(activeRouteName==='長野電鉄長野線') || String(train?.lineKind||raw?.lineKind||'')==='nagano';
-  if(!isNagano) return '';
   const saved=String(train?.expressCategory||raw?.expressCategory||'').trim();
-  if(saved==='A特急'||saved==='B特急') return saved;
+  if(saved) return saved;
   const no=String(trainNoOverride||train?.no||raw?.no||'').trim().toUpperCase();
-  if(no.endsWith('A')) return 'A特急';
-  if(no.endsWith('B')) return 'B特急';
-  if(type.includes('ゆけむりのんびり')) return 'A特急';
+  const rules=Array.isArray(activeRouteMeta?.expressCategoryRules)?activeRouteMeta.expressCategoryRules:
+    (Array.isArray(activeJson?.expressCategoryRules)?activeJson.expressCategoryRules:[]);
+  for(const rule of rules){
+    const required=Array.isArray(rule?.typeIncludesAll)?rule.typeIncludesAll.map(String):[];
+    if(rule?.typeIncludes && !type.includes(String(rule.typeIncludes))) continue;
+    if(required.length&&!required.every(value=>type.includes(value))) continue;
+    if(rule?.numberSuffix && !no.endsWith(String(rule.numberSuffix).toUpperCase())) continue;
+    if(rule?.numberPrefix && !no.startsWith(String(rule.numberPrefix).toUpperCase())) continue;
+    const category=String(rule?.category||'').trim();
+    if(category) return category;
+  }
   return '';
 }
 function getOperationalTypeLabel(type,trainNo='',train=null){
   const value=String(type||'').trim();
-  if(isShinanoMainRoute()){
+  if(usesServiceNameTypeDisplay()){
     const source=train||{type:value,no:String(trainNo||'')};
     return getTrainTypeDisplayLabel({...source,type:value});
   }
-  const category=naganoExpressCategoryFor(train||{type:value,no:String(trainNo||''),lineKind:activeRouteName==='長野電鉄長野線'?'nagano':''},value,trainNo);
+  const category=expressCategoryForTrain(train||{type:value,no:String(trainNo||''),lineKind:activeRouteMeta?.lineKind||''},value,trainNo);
   return category||getDetailType(value);
 }
 function displayTrainNo(train){ return (train && !train.hideTrainNumber) ? normalizeTrainNo(train.no) : ''; }
@@ -4146,32 +4136,35 @@ function getJapaneseHolidaySet(year){
 function isJapaneseHoliday(dateObj){
   return getJapaneseHolidaySet(dateObj.getFullYear()).has(todayKey(dateObj));
 }
-function isEchizenYearEndServiceSuspensionDate(dateKey=selectedDateKey){
-  if(!String(activeRouteMeta?.id||'').startsWith('echizen-')) return false;
+function isYearEndServiceSuspensionDate(dateKey=selectedDateKey){
+  const rule=activeRouteMeta?.calendarRules?.yearEndSuspension;
+  if(!rule) return false;
   const d=new Date(`${String(dateKey||'')}T00:00:00`);
   if(Number.isNaN(d.getTime())) return false;
-  const month=d.getMonth()+1,day=d.getDate();
-  return (month===12&&day>=29)||(month===1&&day<=3);
+  const month=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
+  const value=`${month}-${day}`,from=String(rule.from||''),to=String(rule.to||'');
+  return from<=to ? value>=from&&value<=to : value>=from||value<=to;
 }
-function isEchizenSaturdayServiceDate(dateKey=selectedDateKey){
-  if(!String(activeRouteMeta?.id||'').startsWith('echizen-')) return false;
+function isSaturdayServiceDate(dateKey=selectedDateKey){
+  if(!activeRouteMeta?.calendarRules?.saturdayServiceOnHoliday) return false;
   const d=new Date(`${String(dateKey||'')}T00:00:00`);
   if(Number.isNaN(d.getTime()) || d.getDay()!==6 || isJapaneseHoliday(d)) return false;
-  return !isEchizenYearEndServiceSuspensionDate(dateKey);
+  return !isYearEndServiceSuspensionDate(dateKey);
 }
 function trainsForScheduleDay(day=currentDay,dateKey=selectedDateKey){
   const all=Array.isArray(ALL_SCHEDULE_TRAINS)?ALL_SCHEDULE_TRAINS:[];
   if(day==='休日'){
     const base=Array.isArray(HOLIDAY_TRAINS)?HOLIDAY_TRAINS:[];
-    if(!isEchizenSaturdayServiceDate(dateKey)) return base;
+    if(!isSaturdayServiceDate(dateKey)) return base;
     const saturday=all.filter(t=>Array.isArray(t?.days)&&t.days.includes('土曜'));
     return [...base,...saturday];
   }
   if(day==='土曜') return all.filter(t=>Array.isArray(t?.days)&&t.days.includes('土曜'));
   const weekday=all.length?all.filter(t=>!Array.isArray(t?.days)||!t.days.length||t.days.includes(day)):TRAINS;
   // Excel備考に明記された12/29～1/3運休列車を、平日であっても除外する。
-  if(day==='平日'&&isEchizenYearEndServiceSuspensionDate(dateKey)){
-    return weekday.filter(t=>!String(t?.serviceNote||'').includes('12/29'));
+  const noteExclusion=String(activeRouteMeta?.calendarRules?.excludeServiceNoteContainsOnWeekday||'');
+  if(day==='平日'&&isYearEndServiceSuspensionDate(dateKey)&&noteExclusion){
+    return weekday.filter(t=>!String(t?.serviceNote||'').includes(noteExclusion));
   }
   return weekday;
 }
@@ -4393,13 +4386,9 @@ function formationFamily(groupOrItem){
 function allowedFormationFamily(train){
   const explicit=String(train?.formationFamily||'').trim();
   if(explicit) return explicit;
-  const kind=String(train?.lineKind||'').toLowerCase();
-  if(kind==='yokohama') return 'yokohama';
-  if(kind==='keihin') return 'keihin';
-  if(kind==='nambu') return 'nambu';
-  if(kind==='nagano') return 'nagano';
-  if(kind==='kobe') return 'kobe';
-  return storageFamilyForTrain(train);
+  const kind=String(train?.lineKind||'').trim();
+  const configured=activeRouteMeta?.formationFamilyByLineKind?.[kind]||activeJson?.formationFamilyByLineKind?.[kind];
+  return String(configured||storageFamilyForTrain(train)||'').trim();
 }
 function formationDisplayGroups(groups){
   const source=Array.isArray(groups)?groups:[];
@@ -4494,7 +4483,7 @@ function formationDropdownHTML(train){
     }).join('');
     const variantItems=(group?.variants||[]).flatMap(v=>Array.isArray(v?.items)?v.items:[]);
     const items=[...variantItems,...(group?.items||[])]
-      .filter(item=>item?.inputSelectable!==false && !isNoda8158InputBlocked(train,item?.id))
+      .filter(item=>item?.inputSelectable!==false && !isFormationInputBlocked(train,item?.id))
       .map(item=>{
       const disabled=!!item?.disabled||UNAVAILABLE_FORMATIONS.has(String(item?.id));
       return `<div class="option-item ${disabled?'option-disabled':''}" ${disabled?'aria-disabled="true"':`onclick="selectFormation('${escapeJs(item.id)}')"`}><img src="${esc(item?.img||fallbackTrainImageUrl())}" class="option-img" onerror="this.onerror=null;this.src=jsonNoImageUrl()"><span>${esc(item?.name||item?.id)}</span></div>`;
@@ -4507,20 +4496,14 @@ function formationRouteAllowed(target,train){
   const routes=formationRouteNamesFromConfig(target);
   if(!routes.length) return true;
   const route=String(train?.routeName||activeRouteName||'').trim();
-  // 福岡市地下鉄は空港線・箱崎線を1項目に統合しているため、JSON側の
-  // routeNames（空港線/箱崎線/JR筑肥線）を画面の路線項目名と照合しない。
-  if(String(train?.formationFamily||activeRouteMeta?.formationFamily||'')==='fukuoka-kuko-hakozaki'
-      || String(activeRouteMeta?.formationFamily||'')==='fukuoka-kuko-hakozaki') return true;
+  if(activeRouteMeta?.formationRouteFilter==='ignore') return true;
   return !!route && routes.includes(route);
 }
-function isNoda8158InputBlocked(train,id){
+function isFormationInputBlocked(train,id){
   const canonical=String(id??'').trim().replace(/F$/i,'');
-  if(canonical!=='8158') return false;
   const routeName=String(train?.routeName||activeRouteName||'').trim();
-  const routeMeta=(typeof ROUTE_REGISTRY==='object' && ROUTE_REGISTRY && routeName)
-    ? (ROUTE_REGISTRY[routeName]||activeRouteMeta||{}) : (activeRouteMeta||{});
-  const family=String(routeMeta?.formationFamily||activeJson?.formationFamily||train?.formationFamily||'');
-  return family==='noda';
+  const routeMeta=(typeof ROUTE_REGISTRY==='object'&&ROUTE_REGISTRY&&routeName)?(ROUTE_REGISTRY[routeName]||activeRouteMeta||{}):(activeRouteMeta||{});
+  return (Array.isArray(routeMeta?.blockedFormationIds)?routeMeta.blockedFormationIds:[]).map(String).includes(canonical);
 }
 function formationAllowedForTrain(train,id){
   if(!id || id===INITIAL_FORMATION_SELECTION.id) return true;
@@ -4632,11 +4615,10 @@ function defaultTrainImage(train=null){
   return jsonNoImageUrl();
 }
 function imageForTrain(t){
-  // 福岡線では他路線由来の古い登録ID（例: 227_noimage）を編成画像として扱わない。
-  if(String(activeRouteMeta?.formationFamily||'')==='fukuoka-kuko-hakozaki'){
-    const rid=String(registeredFormationForTrain(t)||'').toLowerCase();
-    if(rid.includes('noimage') || rid.startsWith('227')) return defaultTrainImage(t);
-  }
+  // 路線ごとに除外対象として指定された登録IDは、通常の既定画像へ置き換える。
+  const rid=String(registeredFormationForTrain(t)||'');
+  const patterns=Array.isArray(activeRouteMeta?.ignoredRegisteredFormationPatterns)?activeRouteMeta.ignoredRegisteredFormationPatterns:[];
+  if(patterns.some(pattern=>{try{return new RegExp(String(pattern),'i').test(rid);}catch(e){return false;}})) return defaultTrainImage(t);
   // 表示時はFirebaseから同期したregistrationStateを登録情報の基準にする。
   // Firebaseにその列車のキーがある場合は、列車オブジェクト側の古い値へ戻さない。
   const registeredId=registeredFormationForTrain(t);
@@ -4786,13 +4768,13 @@ function initTimeControl(){
 function displayType(type){ return String(type||'普通'); }
 function getDetailDest(dest){ return String(dest||''); }
 function getMainLabelClass(type){ return String(type||'')==='回送' ? 'deadhead' : ''; }
-function isShinanoMainRoute(){ return String(activeRouteName||'')==='しなの鉄道線（篠ノ井～軽井沢）'; }
-function shinanoTrainName(train){
+function usesServiceNameTypeDisplay(){ return activeRouteMeta?.trainTypeDisplay==='service-name'; }
+function serviceDisplayName(train){
   const raw=train?.rawTrain||{};
   return String(train?.trainName||raw?.trainName||'').trim();
 }
-function shinanoServiceTypeLabel(train){
-  const name=shinanoTrainName(train);
+function serviceDisplayTypeLabel(train){
+  const name=serviceDisplayName(train);
   if(!name) return String(train?.type||'').trim();
   const number=String(train?.serviceNumber??train?.rawTrain?.serviceNumber??'').trim();
   const suffix=number ? (/号$/.test(number)?number:`${number}号`) : '号';
@@ -4800,16 +4782,16 @@ function shinanoServiceTypeLabel(train){
 }
 function getTrainTypeDisplayLabel(train, includeShinanoServiceDetails=false, position=null){
   const type=getTrainTypeAtPosition(train,position);
-  if(isShinanoMainRoute()){
+  if(usesServiceNameTypeDisplay()){
     // 列車名・号数の合成表示は train-card のみに限定する。
-    if(includeShinanoServiceDetails && type==='快速' && shinanoTrainName(train)) return shinanoServiceTypeLabel(train);
+    if(includeShinanoServiceDetails && type==='快速' && serviceDisplayName(train)) return serviceDisplayTypeLabel(train);
     if(type==='快速') return '快速';
     if(type==='普通') return '普通';
   }
   return getDetailType(type);
 }
-function nankaiServiceNameHTML(train){
-  if(String(train?.formationFamily||'')!=='nankai-koya') return '';
+function trainServiceNameHTML(train){
+  if(activeRouteMeta?.showTrainServiceName!==true && train?.showTrainServiceName!==true) return '';
   const raw=train?.rawTrain||{};
   const name=String(train?.trainName||raw?.trainName||'').trim();
   const rawNumber=String(train?.serviceNumber??raw?.serviceNumber??'').trim();
@@ -4819,15 +4801,15 @@ function nankaiServiceNameHTML(train){
 }
 function getTrainTypeDisplayClass(train,position=null){
   const type=getTrainTypeAtPosition(train,position);
-  if(isShinanoMainRoute()){
-    if(type==='快速' && shinanoTrainName(train)) return 'shinano-named-service';
+  if(usesServiceNameTypeDisplay()){
+    if(type==='快速' && serviceDisplayName(train)) return 'shinano-named-service';
     if(type==='快速') return 'shinano-rapid';
     if(type==='普通') return 'shinano-local';
   }
   return getExpressClass(train,position);
 }
 function trainVisualKind(t,position=null){
-  if(isShinanoMainRoute()) return getTrainTypeDisplayClass(t,position);
+  if(usesServiceNameTypeDisplay()) return getTrainTypeDisplayClass(t,position);
   return expressClassForTrain(t,position);
 }
 function expressClassForTrain(t,position=null){
@@ -4862,62 +4844,38 @@ function applyStationLabelColors(badge,index){
     en.style.color=stationEnglishTextColor(bg);
   }
 }
-function buildFukuokaScreenRows(){
+function buildBranchDiagramScreenRows(){
   const rows=[];
   const push=(st,routeKey,opt={})=>rows.push({st,routeKey,opt:{...opt}});
-  const main=fukuokaMainStationNames(activeJson,activeRouteMeta).map(name=>{
-    const master=fukuokaStationMaster(activeJson);
-    const m=master.get(name)||{};
-    return [name,String(m.nameEn||'')];
-  });
-  const branch=fukuokaBranchStationNames(activeJson,activeRouteMeta).map(name=>{
-    const master=fukuokaStationMaster(activeJson);
-    const m=master.get(name)||{};
-    return [name,String(m.nameEn||'')];
-  });
-  const junction=String(fukuokaDiagramConfig(activeJson,activeRouteMeta)?.junctionStation||'中洲川端').trim()||'中洲川端';
-  const hakoColor=String(lineDefByName('箱崎線')?.color||'#666');
-  const kukoColor=String(lineDefByName('空港線')?.color||'#666');
-  const branchOpen=fukuokaHakozakiBranchOpen;
-
+  const diagram=branchDiagramConfig(activeJson,activeRouteMeta)||{};
+  const master=diagramStationMaster(activeJson);
+  const main=branchDiagramMainStations(activeJson,activeRouteMeta).map(name=>[name,String(master.get(name)?.nameEn||'')]);
+  const branch=branchDiagramBranchStations(activeJson,activeRouteMeta).map(name=>[name,String(master.get(name)?.nameEn||'')]);
+  const junction=String(diagram.junctionStation||'').trim();
+  const branchLine=String(activeRouteMeta?.diagramBranchLine||diagram.branchLine||'').trim();
+  const mainLine=String(activeRouteMeta?.diagramMainLine||diagram.mainLine||'').trim();
+  const branchColor=String(lineDefByName(branchLine)?.color||'#666');
+  const mainColor=String(lineDefByName(mainLine)?.color||activeRouteColors()[0]||'#666');
+  const branchOpen=branchDiagramOpen;
+  const junctionIndex=main.findIndex(x=>x[0]===junction);
   for(let i=0;i<main.length;i++){
-    const st=main[i],next=main[i+1],prev=main[i-1];
-    const isJunction=st[0]===junction;
-
-    // 分岐駅（中洲川端）の直前へ枝線を挿入し、祇園から貝塚へ接続する。
-    if(isJunction && branchOpen){
-      branch.forEach((x,j)=>push(x,'fukuoka-hakozaki',{
-        lineTop:hakoColor,
-        lineBottom:hakoColor,
-        stationColor:hakoColor,
-        cutAbove:j===0,
-        cutBelow:false
-      }));
+    const st=main[i],next=main[i+1],prev=main[i-1],isJunction=st[0]===junction;
+    if(isJunction&&branchOpen){
+      branch.forEach((x,j)=>push(x,branchLine,{lineTop:branchColor,lineBottom:branchColor,stationColor:branchColor,cutAbove:j===0,cutBelow:false}));
     }
-
     const opt={};
     if(i===0) opt.cutAbove=true;
     if(i===main.length-1) opt.cutBelow=true;
-
-    if(isJunction && branchOpen){
-      // 上半分は箱崎線、下半分は空港線。駅名標は空港線側。
-      opt.lineTop=hakoColor;
-      opt.lineBottom=next?kukoColor:'transparent';
-      opt.stationColor=kukoColor;
+    if(isJunction&&branchOpen){
+      opt.lineTop=branchColor;
+      opt.lineBottom=next?mainColor:'transparent';
+      opt.stationColor=mainColor;
     }else{
-      opt.lineTop=prev ? (branchOpen && prev[0]===junction ? hakoColor : kukoColor) : 'transparent';
-      opt.lineBottom=next ? (next[0]===junction && branchOpen ? hakoColor : kukoColor) : 'transparent';
-      opt.stationColor=next ? (next[0]===junction && branchOpen ? hakoColor : kukoColor) : (prev ? kukoColor : 'transparent');
+      opt.lineTop=prev?(branchOpen&&i===junctionIndex+1?branchColor:mainColor):'transparent';
+      opt.lineBottom=next&&(branchOpen&&i===junctionIndex-1)?branchColor:(next?mainColor:'transparent');
+      opt.stationColor=mainColor;
     }
-
-    // 箱崎線開放時でも、本線側の色と駅名標は空港線側のままにする。
-    if(st[0]=== '祇園' && branchOpen){
-      opt.lineTop=prev ? kukoColor : 'transparent';
-      opt.lineBottom=hakoColor;
-      opt.stationColor=kukoColor;
-    }
-
-    push(st,'fukuoka-kuko',opt);
+    push(st,mainLine,opt);
   }
   return rows;
 }
@@ -4927,15 +4885,9 @@ function mainStationLabelName(name,json=activeJson){
   const aliases=json?.mainStationLabelAliases&&typeof json.mainStationLabelAliases==='object'?json.mainStationLabelAliases:{};
   return Object.prototype.hasOwnProperty.call(aliases,full)?String(aliases[full]):full;
 }
-function renderFukuokaLine(){
-  // 福岡線も本体と同じ駅行・列車アイコン描画を使う。
-  // 専用DOMを組み立てると既存ページとデザインがずれるため、ここでは描画を横取りしない。
-  return false;
-}
-
 function renderLine(){
-  if(renderFukuokaLine()) return;
-  if(activeRouteName==='大阪環状線' && activeJson?.circular===true){
+  const diagram=branchDiagramConfig(activeJson,activeRouteMeta)||{};
+  if(activeRouteMeta?.diagramLayout==='circular' && activeJson?.circular===true){
     const fn=window.__circularRouteHelpers?.renderCircularLine;
     if(typeof fn==='function'){ fn(); }
     return;
@@ -4985,34 +4937,34 @@ function renderLine(){
       ja.style.paddingLeft=ls;
     }
     applyStationLabelColors(badge,index);
-    if(isFukuokaCompositeRoute(activeRouteMeta) && fukuokaHakozakiBranchOpen && st.nameJa===fukuokaBranchStationNames(activeJson,activeRouteMeta)[0]){
-      // 貝塚は箱崎線側の始発駅。福岡空港と同様に端駅扱いにする。
-      row.classList.add('endpoint-start','fukuoka-hakozaki-start');
+    if(hasBranchToggleDiagram(activeRouteMeta) && branchDiagramOpen && st.nameJa===branchDiagramBranchStations(activeJson,activeRouteMeta)[0]){
+      // 分岐線側の先頭駅は端駅として扱う。
+      row.classList.add('endpoint-start','branch-diagram-start');
     }
-    const tobuBranchSpec=tobuBranchButtonSpecForStation(st.nameJa);
-    if(tobuBranchSpec && String(tobuBranchSpec.position||'bottom')==='top'){
-      row.classList.add('tobu-branch-anchor-row');
-      row.appendChild(createTobuBranchButton(tobuBranchSpec));
+    const multiJunctionSpec=multiJunctionButtonSpecForStation(st.nameJa);
+    if(multiJunctionSpec && String(multiJunctionSpec.position||'bottom')==='top'){
+      row.classList.add('multi-junction-anchor-row');
+      row.appendChild(createMultiJunctionBranchButton(multiJunctionSpec));
     }
-    if(isFukuokaCompositeRoute(activeRouteMeta) && st.nameJa===String(fukuokaDiagramConfig(activeJson,activeRouteMeta)?.junctionStation||'中洲川端')){
-      // 分岐駅・中洲川端のすぐ上に分岐ボタンを表示する。
+    if(hasBranchToggleDiagram(activeRouteMeta) && st.nameJa===String(diagram?.junctionStation||'')){
+      // 分岐駅のすぐ上に分岐ボタンを表示する。
       // 駅名標など重複する共通UIは mainpage 側のデザインを優先する。
-      row.classList.add('fukuoka-branch-anchor-row');
+      row.classList.add('branch-diagram-anchor-row');
       row.appendChild(createCommonBranchToggleButton({
-        label:'箱崎線',
-        color:lineDefByName('箱崎線')?.color||'#666',
-        isOpen:fukuokaHakozakiBranchOpen,
+        label:branchDiagramToggleLabel(),
+        color:lineDefByName(activeRouteMeta?.diagramBranchLine||diagram?.branchLine)?.color||'#666',
+        isOpen:branchDiagramOpen,
         position:'top',
-        onToggle:toggleFukuokaHakozakiBranch
+        onToggle:toggleBranchDiagram
       }));
     }
     // 分岐ボタンは駅名標の上または下に配置する。
     row.appendChild(badge);
-    if(tobuBranchSpec && String(tobuBranchSpec.position||'bottom')!=='top'){
-      row.classList.add('tobu-branch-anchor-row');
-      row.appendChild(createTobuBranchButton(tobuBranchSpec));
+    if(multiJunctionSpec && String(multiJunctionSpec.position||'bottom')!=='top'){
+      row.classList.add('multi-junction-anchor-row');
+      row.appendChild(createMultiJunctionBranchButton(multiJunctionSpec));
     }
-    if(st.branchKey) row.classList.add(`tobu-branch-${st.branchKey}`);
+    if(st.branchKey) row.classList.add(`multi-junction-branch-${st.branchKey}`);
     container.appendChild(row);
   });
   renderRailLineSegments();
@@ -5162,12 +5114,12 @@ function positionForTrain(t,minutes){
       const isTerminalNext=(i===stops.length-2);
       const b=isTerminalNext ? Number(next._arrival) : Number(next._arrival)+0.25;
       if(Number.isFinite(a)&&Number.isFinite(b)&&minutes>=a&&(isTerminalNext ? minutes<b : minutes<=b)){
-        if(isFukuokaCompositeRoute(activeRouteMeta) && fukuokaHakozakiBranchOpen && !fukuokaTrainUsesHakozaki(t)
+        if(hasBranchToggleDiagram(activeRouteMeta) && branchDiagramOpen && !trainUsesBranchLine(t)
           && ((String(st.station)==='祇園' && String(next.station)==='中洲川端')
             || (String(st.station)==='中洲川端' && String(next.station)==='祇園'))){
           return null;
         }
-        if(tobuHiddenMainSegment(st.station,next.station)) return null;
+        if(hiddenMainDiagramSegment(st.station,next.station)) return null;
         const ratio=b===a?0:(minutes-a)/(b-a);
         return {pos:currentIndex+(nextIndex-currentIndex)*ratio,side:trainSideForStationPair(st.station,next.station,rawDirection),visualTrain:t,mode:'run'};
       }
@@ -5205,13 +5157,13 @@ function trainLabelText(t,position=null){
   // PC用だけ正式名称へ切り替える処理をなくし、略称設定を両方の表示に反映する。
   const shortDest=isCircular ? '環状' : getShortDest(t?.dest);
   const displayType=getTrainTypeDisplayLabel(displayTrain,false,position);
-  const shortType=isShinanoMainRoute()?displayType:getShortType(type,t?.no,t);
+  const shortType=usesServiceNameTypeDisplay()?displayType:getShortType(type,t?.no,t);
   const fullLabel=type?`${shortType} ${shortDest}`:shortDest;
   const shortLabel=type?`${shortType} ${shortDest}`:shortDest;
   return `<span class="train-label-full">${escapeAttr(fullLabel)}</span><span class="train-label-short">${escapeAttr(shortLabel)}</span>`;
 }
 function isCircularTrain(t){
-  return activeRouteName==='大阪環状線' && activeJson?.circular===true && (t?.circular===true || t?.rawTrain?.circular===true);
+  return activeRouteMeta?.diagramLayout==='circular' && activeJson?.circular===true && (t?.circular===true || t?.rawTrain?.circular===true);
 }
 function getDisplayDestinationForTrain(t){
   return isCircularTrain(t) ? '環状運転' : getDetailDest(t?.dest);
@@ -5277,11 +5229,11 @@ function isShinanoMainLineForTrainSide(){
 function stationVisualYForTrainSide(stationName){
   const target=String(stationName||'').replace(/駅$/,'');
   const rows=Array.from(document.querySelectorAll('.station-row'));
-  // 東武スカイツリーラインはメイン駅名ラベルに略称を使うため、
+  // 複数分岐路線はメイン駅名ラベルに略称を使うため、
   // DOM上の表示文字列（例：とうきょうｽｶｲﾂﾘｰ）で正式駅名を検索すると一致しない。
   // 分岐を開いた後も STATIONS と .station-row は同じ順序なので、
   // 正式駅名の stationIndex を使って対応する行を取得し、座標と配列indexの混在を防ぐ。
-  if(isTobuSkytreeRoute()){
+  if(hasMultiJunctionDiagram()){
     const idx=stationIndex(target);
     const indexedRow=idx>=0?rows[idx]:null;
     if(indexedRow){
@@ -5356,7 +5308,7 @@ function getTerminalDepartureIndex(){
   return index;
 }
 function renderTrainPositions(){
-  if(activeRouteName==='大阪環状線' && activeJson?.circular===true){
+  if(activeRouteMeta?.diagramLayout==='circular' && activeJson?.circular===true){
     const fn=window.__circularRouteHelpers?.renderCircularTrainPositions;
     if(typeof fn==='function'){ fn(); }
     return;
@@ -5651,7 +5603,7 @@ function getStationDirectionLabels(stationName){
   const direct=stationDefs&&typeof stationDefs==='object' ? stationDefs[name] : null;
   if(direct && typeof direct==='object'){
     const up=String(direct.up||''), down=String(direct.down||'');
-    if(activeRouteName==='大阪環状線' && activeJson?.circular===true){
+    if(activeRouteMeta?.diagramLayout==='circular' && activeJson?.circular===true){
       return {
         up:up.startsWith('内回り')?up:`内回り ${up}`,
         down:down.startsWith('外回り')?down:`外回り ${down}`
@@ -5664,7 +5616,7 @@ function getStationDirectionLabels(stationName){
   const route=routeDefs&&typeof routeDefs==='object' ? routeDefs[routeKey] : null;
   if(route && typeof route==='object'){
     const up=String(route.up||''), down=String(route.down||'');
-    if(activeRouteName==='大阪環状線' && activeJson?.circular===true){
+    if(activeRouteMeta?.diagramLayout==='circular' && activeJson?.circular===true){
       return {
         up:up.startsWith('内回り')?up:`内回り ${up}`,
         down:down.startsWith('外回り')?down:`外回り ${down}`
@@ -5678,7 +5630,7 @@ function getStationDirectionLabels(stationName){
     const d=line?.directions;
     if(d && typeof d==='object'){
       const up=String(d.up||''), down=String(d.down||'');
-      if(activeRouteName==='大阪環状線' && activeJson?.circular===true){
+      if(activeRouteMeta?.diagramLayout==='circular' && activeJson?.circular===true){
         return {up:up.startsWith('内回り')?up:`内回り ${up}`,down:down.startsWith('外回り')?down:`外回り ${down}`};
       }
       return {up,down};
@@ -5695,11 +5647,11 @@ function updateStationSheetContent(){
   if(!station || !content) return;
 
   const circularContext=circularStationContext(station.nameJa);
-  const fukuokaNeighbors=fukuokaStationOverviewNeighbors(station.nameJa);
-  const tobuNeighbors=tobuStationOverviewNeighbors(station.nameJa);
-  const specialNeighbors=circularContext||fukuokaNeighbors||tobuNeighbors;
-  const prevName=circularContext?.prev ?? fukuokaNeighbors?.prev ?? tobuNeighbors?.prev ?? null;
-  const nextName=circularContext?.next ?? fukuokaNeighbors?.next ?? tobuNeighbors?.next ?? null;
+  const branchNeighbors=branchDiagramStationNeighbors(station.nameJa);
+  const multiJunctionNeighbors=multiJunctionStationNeighbors(station.nameJa);
+  const specialNeighbors=circularContext||branchNeighbors||multiJunctionNeighbors;
+  const prevName=circularContext?.prev ?? branchNeighbors?.prev ?? multiJunctionNeighbors?.prev ?? null;
+  const nextName=circularContext?.next ?? branchNeighbors?.next ?? multiJunctionNeighbors?.next ?? null;
   const prevStation=specialNeighbors
     ? (prevName ? (STATIONS.find(st=>st.nameJa===prevName)||null) : null)
     : (stationIndexValue>0 ? STATIONS[stationIndexValue-1] : null);
@@ -5718,8 +5670,8 @@ function updateStationSheetContent(){
   const directionLabels=getStationDirectionLabels(station.nameJa);
   const neighborColors=circularContext
     ? {prevColor:circularContext.prevColor,nextColor:circularContext.nextColor}
-    : (fukuokaNeighbors
-        ? {prevColor:fukuokaNeighbors.prevColor,nextColor:fukuokaNeighbors.nextColor}
+    : (branchNeighbors
+        ? {prevColor:branchNeighbors.prevColor,nextColor:branchNeighbors.nextColor}
         : stationNeighborRouteColors(stationIndexValue));
   const stationInfoColor=circularContext ? circularContext.prevColor : (neighborColors.prevColor||activeRouteColors()[0]||'#666');
   // 「上り」「下り」の方面タブは、路線ではなく駅ラベルそのものの色に合わせる。
@@ -5787,20 +5739,22 @@ function stationTimetableHTML(station, selectedDirection='up'){
   const directionData={up:{label:directionLabels.up,entries:[]},down:{label:directionLabels.down,entries:[]}};
   const byTrain=new Map();
 
-  // 西九条は大阪環状線とゆめ咲線の共通駅。大阪環状線を選択している
-  // 場合でも、ゆめ咲線内完結列車（西九条始発→桜島）を駅時刻表へ追加する。
-  // 到着のみの列車（桜島→西九条）は、駅時刻表が発車時刻表のため従来通り除外。
+  // 他路線の列車を共通駅の時刻表へ追加する処理。
+  // 駅名・参照路線・発車列車のみの条件は route registry で指定する。
   const stationTimetableExtraTrains=[];
-  if(activeRouteName==='大阪環状線' && stationName==='西九条'){
+  for(const link of (Array.isArray(activeRouteMeta?.sharedStationTimetableRoutes)?activeRouteMeta.sharedStationTimetableRoutes:[])){
+    if(String(link?.station||'')!==String(stationName||'')) continue;
     const shared=activeJson?._sharedRoutes;
-    const yume=shared&&typeof shared==='object' ? shared['ゆめ咲線'] : null;
+    const routeData=shared&&typeof shared==='object' ? shared[String(link?.route||'')] : null;
+    const routeMeta=ROUTE_REGISTRY[String(link?.route||'')];
+    if(!routeData||!routeMeta) continue;
     const sourceDay=syncCurrentScheduleDay()==='休日' ? '土休日' : '平日';
     for(const direction of ['上り','下り']){
-      const rawList=Array.isArray(yume?.trains?.[sourceDay]?.[direction]) ? yume.trains[sourceDay][direction] : [];
+      const rawList=Array.isArray(routeData?.trains?.[sourceDay]?.[direction]) ? routeData.trains[sourceDay][direction] : [];
       for(const raw of rawList){
-        if(String(raw?.start||'')!=='西九条') continue;
-        if(String(raw?.dest||'')==='西九条') continue;
-        stationTimetableExtraTrains.push(...normalizeExternalTrain(raw, syncCurrentScheduleDay(), direction, ROUTE_REGISTRY['ゆめ咲線']));
+        if(link.departuresOnly && String(raw?.start||'')!==String(stationName||'')) continue;
+        if(link.departuresOnly && String(raw?.dest||'')===String(stationName||'')) continue;
+        stationTimetableExtraTrains.push(...normalizeExternalTrain(raw,syncCurrentScheduleDay(),direction,routeMeta));
       }
     }
   }
@@ -6285,7 +6239,7 @@ let selectionSyncInProgress=false;
 let pendingFormationTimestamps={平日:{},休日:{}};
 async function selectFormation(formId){
   if(!formationInputAllowed()) return;
-  if(isNoda8158InputBlocked(currentTrainSnapshot||liveTrain(currentTrainNo)||null,formId)){
+  if(isFormationInputBlocked(currentTrainSnapshot||liveTrain(currentTrainNo)||null,formId)){
     syncStatus('8158Fは新規登録できません');
     return;
   }
@@ -6651,7 +6605,7 @@ function operationInfoVisibleSegments(){
 }
 
 function renderOperationInfoZones(){
-  if(activeJson?.circular===true || activeRouteName==='ゆめ咲線'){
+  if(activeJson?.circular===true || activeRouteMeta?.operationInfoZones===false){
     const layer0=document.getElementById('operationInfoLayer');
     if(layer0) layer0.innerHTML='';
     const labelLayer0=document.getElementById('operationInfoLabelLayer');
@@ -7121,7 +7075,10 @@ function jsonSegmentColorForStations(a,b,lineNames=getActiveRouteLineNames()){
     if(!line) continue;
     for(const rule of (Array.isArray(line?.segmentColorRules)?line.segmentColorRules:[])){
       const pairs=Array.isArray(rule?.stationPairs)?rule.stationPairs:[];
-      if(pairs.some(pair=>Array.isArray(pair)&&pair.length>=2&&((String(pair[0])===aa&&String(pair[1])===bb)||(String(pair[1])===aa&&String(pair[0])===bb)))){
+      const allPresent=Array.isArray(rule?.whenStationsAllPresent)?rule.whenStationsAllPresent.map(String):[];
+      const matchesPair=pairs.some(pair=>Array.isArray(pair)&&pair.length>=2&&((String(pair[0])===aa&&String(pair[1])===bb)||(String(pair[1])===aa&&String(pair[0])===bb)));
+      const matchesAll=allPresent.length>0&&allPresent.includes(aa)&&allPresent.includes(bb);
+      if(matchesPair||matchesAll){
         const color=String(rule?.color||'').trim();
         if(color) return color;
         const useLine=String(rule?.useLine||'').trim();
@@ -7138,7 +7095,6 @@ function jsonSegmentColorForStations(a,b,lineNames=getActiveRouteLineNames()){
 function trainServiceColorBetweenStations(a,b,trainContext=null){
   const aa=String(a||''),bb=String(b||'');
   if(!aa||!bb||aa===bb) return fallbackTrainServiceColor(trainContext);
-  // 路線の表示範囲外にある終点は、列車JSONの終点stop.routeColorで区間色を指定できる。
   const ctxStops=trainServiceRouteRows(trainContext);
   for(let i=0;i<ctxStops.length-1;i++){
     const x=String(ctxStops[i]?.station||''),y=String(ctxStops[i+1]?.station||'');
@@ -7147,44 +7103,10 @@ function trainServiceColorBetweenStations(a,b,trainContext=null){
       if(endpointColor) return endpointColor;
     }
   }
-
-  // 大阪環状線画面でも、ゆめ咲線区間はゆめ咲線の色を使う。
-  // 西九条～安治川口～ユニバーサルシティ～桜島の停車駅案内が
-  // 大阪環状線の赤に戻ってしまわないよう、共有JSONの線区定義を優先する。
-  const yumesakiLine=lineDefByName('ゆめ咲線');
-  if(yumesakiLine && lineContainsStops(yumesakiLine,aa,bb)){
-    const yumesakiColor=String(yumesakiLine?.color||'').trim();
-    if(yumesakiColor) return yumesakiColor;
-  }
-  // 大阪環状線の停車駅案内では区間ごとの路線色を反映する。
-  // ただし大和路線の色は停車駅案内には持ち込まず、環状線カラーを使う。
-  if(activeJson?.circular===true && activeRouteName==='大阪環状線'){
-    const lines=Array.isArray(activeJson?.lines)?activeJson.lines:[];
-    const yamatoRule=lines.some(line=>Array.isArray(line?.segmentColorRules)&&line.segmentColorRules.some(rule=>{
-      if(String(rule?.useLine||'')!=='大和路線') return false;
-      return (Array.isArray(rule?.stationPairs)&&rule.stationPairs.some(pair=>Array.isArray(pair)&&pair.length>=2&&((String(pair[0])===aa&&String(pair[1])===bb)||(String(pair[1])===aa&&String(pair[0])===bb))))
-        || (Array.isArray(rule?.whenStationsAllPresent)&&rule.whenStationsAllPresent.includes(aa)&&rule.whenStationsAllPresent.includes(bb));
-    }));
-    if(yamatoRule){const loopColor=String(lineDefByName('大阪環状線')?.color||'').trim();if(loopColor)return loopColor;}
-    const jsonSegment=jsonSegmentColorForStations(aa,bb,getActiveRouteLineNames());
-    if(jsonSegment) return jsonSegment;
-    const line=preferredTrainServiceLine(aa,bb,trainContext);
-    const direct=String(line?.color||'').trim();
-    if(direct && direct!==String(lineDefByName('大和路線')?.color||'')) return direct;
-    return fallbackTrainServiceColor(trainContext);
-  }
-  // 日比谷線は北千住から東武線へ直通するため、登録された基本色で全区間を固定しない。
-  // 各区間が属する線区のJSONカラー（例：東武線の青）を優先する。
-  if(String(activeRouteName||'')==='日比谷線'){
-    const allLineNames=allJsonLines().map(line=>String(line?.name||'')).filter(Boolean);
-    const hibiyaSegment=jsonSegmentColorForStations(aa,bb,allLineNames);
-    if(hibiyaSegment) return hibiyaSegment;
-    const serviceLine=preferredTrainServiceLine(aa,bb,trainContext);
-    const serviceColor=String(serviceLine?.color||'').trim();
-    if(serviceColor) return serviceColor;
-  }
-  const jsonSegment=jsonSegmentColorForStations(aa,bb,getActiveRouteLineNames());
-  if(jsonSegment) return jsonSegment;
+  // 全線区の駅隣接関係とJSONの区間色ルールを共通で評価する。
+  const lineNames=allJsonLines().map(line=>String(line?.name||'')).filter(Boolean);
+  const jsonColor=jsonSegmentColorForStations(aa,bb,lineNames);
+  if(jsonColor) return jsonColor;
   const line=preferredTrainServiceLine(aa,bb,trainContext);
   const direct=String(line?.color||'').trim();
   if(direct) return direct;
@@ -7242,40 +7164,12 @@ function activeRouteColors(){
 }
 function activeSegmentColors(a,b){
   const aa=String(a||''),bb=String(b||'');
-  // 南海高野線・泉北線の統合ページでは、表示対象が泉北線でも
-  // 駅間そのものが属する線区を全線区定義から判定する。
-  // displayLineNames（泉北線）だけで絞ると、堺東～三国ヶ丘など
-  // 高野線区間まで泉北線色にフォールバックしてしまう。
-  if(String(activeJson?.id||'')==='nankai-koya-senboku'){
-    for(const line of allJsonLines()){
-      if(lineAdjacent(line,aa,bb)){
-        const color=String(line?.color||'').trim();
-        if(color) return [color];
-      }
-    }
-  }
-  // 横浜線ページの東神奈川～大船は京浜東北・根岸線との共用区間。
-  // 列車側の色判定とは独立して、駅間線・駅名の色も京浜東北線の線区色にする。
-  if(String(activeRouteMeta?.id||'')==='yokohama'){
-    const keihinLine=lineDefByName('京浜東北・根岸線');
-    if(keihinLine && lineAdjacent(keihinLine,aa,bb)){
-      const keihinColor=String(keihinLine.color||'').trim();
-      if(keihinColor) return [keihinColor];
-    }
-  }
-  if(isFukuokaCompositeRoute(activeRouteMeta) && fukuokaHakozakiBranchOpen){
-    const hakoColor=String(lineDefByName('箱崎線')?.color||'#666');
-    const branchNames=new Set(fukuokaBranchStationNames(activeJson,activeRouteMeta));
-    const d=fukuokaDiagramConfig(activeJson,activeRouteMeta);
-    const insertAfter=String(d?.insertAfter||'').trim();
-    if((branchNames.has(aa)&&branchNames.has(bb))
-      || (aa===insertAfter&&branchNames.has(bb))
-      || (bb===insertAfter&&branchNames.has(aa))
-      || ((aa==='呉服町'&&bb==='中洲川端')||(aa==='中洲川端'&&bb==='呉服町'))){
-      return [hakoColor];
-    }
-  }
-  const segmentRules=Array.isArray(activeJson?.segmentColorRules)?[...activeJson.segmentColorRules]:[];
+  // 明示された区間色ルールは、通常の線区隣接判定より優先する。
+  // 路線ごとの例外処理ではなく、JSON / route registry の宣言データで指定する。
+  const segmentRules=[
+    ...(Array.isArray(activeRouteMeta?.segmentColorRules)?activeRouteMeta.segmentColorRules:[]),
+    ...(Array.isArray(activeJson?.segmentColorRules)?activeJson.segmentColorRules:[])
+  ];
   const lineDefs=Array.isArray(activeJson?.lines)?activeJson.lines:[];
   for(const line of lineDefs){
     if(!getActiveRouteLineNames().includes(String(line?.name||''))) continue;
@@ -7283,6 +7177,20 @@ function activeSegmentColors(a,b){
   }
   for(const rule of segmentRules){
     const required=Array.isArray(rule.whenStationsAllPresent)?rule.whenStationsAllPresent.map(String):[];
+    const range=Array.isArray(rule.stationRange)?rule.stationRange.map(String):[];
+    if(range.length>=2){
+      const names=STATIONS.map(st=>String(st?.nameJa||st?.name||''));
+      const ia=names.indexOf(aa), ib=names.indexOf(bb);
+      const ir0=names.indexOf(range[0]), ir1=names.indexOf(range[1]);
+      if(ia>=0&&ib>=0&&ir0>=0&&ir1>=0&&Math.abs(ia-ib)===1
+        && ia>=Math.min(ir0,ir1)&&ia<=Math.max(ir0,ir1)
+        && ib>=Math.min(ir0,ir1)&&ib<=Math.max(ir0,ir1)){
+        const line=lineDefByName(rule.useLine);
+        if(line?.color) return [String(line.color)];
+        const color=String(rule?.color||'').trim();
+        if(color) return [color];
+      }
+    }
     if(required.length && required.includes(aa) && required.includes(bb)){
       const line=lineDefByName(rule.useLine);
       if(line?.color) return [String(line.color)];
@@ -7296,33 +7204,56 @@ function activeSegmentColors(a,b){
       if(color) return [color];
     }
   }
+  // 表示対象線区だけでなく、読み込んだ全線区の隣接関係から区間色を決定する。
+  // 直通・共有区間・複数線区を含む路線でも、路線名による例外分岐を必要としない。
+  for(const line of allJsonLines()){
+    if(lineAdjacent(line,aa,bb)){
+      const color=String(line?.color||'').trim();
+      if(color) return [color];
+    }
+  }
+  if(hasBranchToggleDiagram(activeRouteMeta) && branchDiagramOpen){
+    const hakoColor=String(lineDefByName(activeRouteMeta?.diagramBranchLine)?.color||'#666');
+    const branchNames=new Set(branchDiagramBranchStations(activeJson,activeRouteMeta));
+    const d=branchDiagramConfig(activeJson,activeRouteMeta);
+    const insertAfter=String(d?.insertAfter||'').trim();
+    if((branchNames.has(aa)&&branchNames.has(bb))
+      || (aa===insertAfter&&branchNames.has(bb))
+      || (bb===insertAfter&&branchNames.has(aa))
+      || lineAdjacent(lineDefByName(activeRouteMeta?.diagramBranchLine),aa,bb)){
+      return [hakoColor];
+    }
+  }
   const jsonSegment=jsonSegmentColorForStations(aa,bb,getActiveRouteLineNames());
   if(jsonSegment) return [jsonSegment];
   const line=preferredTrainServiceLine(aa,bb,{servedLineNames:getActiveRouteLineNames()});
   return line?.color?[String(line.color)]:[activeRouteColors()[0]||'#666'];
 }
 function circularStationLabelDisplayColor(stationName){
+  if(activeRouteMeta?.diagramLayout!=='circular') return null;
   const name=String(stationName||'');
-  const loopColor=String(lineDefByName('大阪環状線')?.color||'#666');
-  const yamatoColor=String(lineDefByName('大和路線')?.color||'#666');
-  return activeJson?.circular===true ? (name==='新今宮'?yamatoColor:loopColor) : null;
+  const rules=Array.isArray(activeRouteMeta?.stationLabelColorRules)?activeRouteMeta.stationLabelColorRules:[];
+  const exact=rules.find(rule=>String(rule?.station||'')===name);
+  const rule=exact||rules.find(item=>item?.defaultLine);
+  const lineName=String(rule?.line||rule?.defaultLine||'');
+  return String(lineDefByName(lineName)?.color||rule?.color||'').trim()||null;
 }
 function stationLabelColor(index){
   const i=Math.max(0,Math.min(STATIONS.length-1,Number(index)||0));
   const circularColor=circularStationLabelDisplayColor(STATIONS[i]?.nameJa);
   if(circularColor) return circularColor;
   const cur=String(STATIONS[i]?.nameJa||'');
-  if(isTobuSkytreeRoute()){
-    const neighbors=tobuStationOverviewNeighbors(cur);
+  if(hasMultiJunctionDiagram()){
+    const neighbors=multiJunctionStationNeighbors(cur);
     if(neighbors) return neighbors.nextColor||neighbors.prevColor||activeRouteColors()[0]||'#666';
   }
-  if(isFukuokaCompositeRoute(activeRouteMeta)){
-    const diagram=fukuokaDiagramConfig(activeJson,activeRouteMeta);
-    const branchNames=new Set(fukuokaBranchStationNames(activeJson,activeRouteMeta));
-    const insertAfter=String(diagram?.insertAfter||'祇園').trim()||'祇園';
-    const junction=String(diagram?.junctionStation||'中洲川端').trim()||'中洲川端';
-    if(cur===insertAfter || cur===junction) return String(lineDefByName('空港線')?.color||activeRouteColors()[0]||'#666');
-    if(fukuokaHakozakiBranchOpen && branchNames.has(cur)) return String(lineDefByName('箱崎線')?.color||'#666');
+  if(hasBranchToggleDiagram(activeRouteMeta)){
+    const diagram=branchDiagramConfig(activeJson,activeRouteMeta);
+    const branchNames=new Set(branchDiagramBranchStations(activeJson,activeRouteMeta));
+    const insertAfter=String(diagram?.insertAfter||'').trim();
+    const junction=String(diagram?.junctionStation||'').trim();
+    if(cur===insertAfter || cur===junction) return String(lineDefByName(activeRouteMeta?.diagramMainLine||diagram?.mainLine)?.color||activeRouteColors()[0]||'#666');
+    if(branchDiagramOpen && branchNames.has(cur)) return String(lineDefByName(activeRouteMeta?.diagramBranchLine||diagram?.branchLine)?.color||'#666');
   }
   const prev=i>0?STATIONS[i-1]?.nameJa:null;
   const next=i<STATIONS.length-1?STATIONS[i+1]?.nameJa:null;
@@ -7341,14 +7272,14 @@ function stationDirectionRouteColor(index,direction){
   const dir=String(direction||'').toLowerCase()==='up'?'up':'down';
   const circular=circularStationContext(STATIONS[i]?.nameJa);
   if(circular) return dir==='up' ? circular.prevColor : circular.nextColor;
-  const fukuokaNeighbors=fukuokaStationOverviewNeighbors(STATIONS[i]?.nameJa);
-  if(fukuokaNeighbors) return dir==='up' ? fukuokaNeighbors.prevColor : fukuokaNeighbors.nextColor;
-  const tobuNeighbors=tobuStationOverviewNeighbors(STATIONS[i]?.nameJa);
-  if(tobuNeighbors){
+  const branchNeighbors=branchDiagramStationNeighbors(STATIONS[i]?.nameJa);
+  if(branchNeighbors) return dir==='up' ? branchNeighbors.prevColor : branchNeighbors.nextColor;
+  const multiJunctionNeighbors=multiJunctionStationNeighbors(STATIONS[i]?.nameJa);
+  if(multiJunctionNeighbors){
     // 東武線の上りは路線図上の下方向（館林・南栗橋側から浅草・押上・中目黒側）へ進む。
     // このため、一般路線の画面上下対応とは逆に up=next / down=prev を使用する。
-    const color=dir==='up' ? tobuNeighbors.nextColor : tobuNeighbors.prevColor;
-    return color||tobuNeighbors.nextColor||tobuNeighbors.prevColor||activeRouteColors()[0]||'#666';
+    const color=dir==='up' ? multiJunctionNeighbors.nextColor : multiJunctionNeighbors.prevColor;
+    return color||multiJunctionNeighbors.nextColor||multiJunctionNeighbors.prevColor||activeRouteColors()[0]||'#666';
   }
   const prev=i>0 ? STATIONS[i-1]?.nameJa : null;
   const cur=STATIONS[i]?.nameJa;
@@ -7390,8 +7321,8 @@ function stationNeighborRouteColors(index){
   const cur=STATIONS[i]?.nameJa;
   const circular=circularStationContext(cur);
   if(circular) return {prevColor:circular.prevColor,nextColor:circular.nextColor};
-  const fukuokaNeighbors=fukuokaStationOverviewNeighbors(cur);
-  if(fukuokaNeighbors) return {prevColor:fukuokaNeighbors.prevColor,nextColor:fukuokaNeighbors.nextColor};
+  const branchNeighbors=branchDiagramStationNeighbors(cur);
+  if(branchNeighbors) return {prevColor:branchNeighbors.prevColor,nextColor:branchNeighbors.nextColor};
   const prev= i>0 ? STATIONS[i-1]?.nameJa : null;
   const next= i<STATIONS.length-1 ? STATIONS[i+1]?.nameJa : null;
   // 駅情報カードの方向バーは、列車の種別色ではなく駅間の路線色を表示する。
@@ -7429,7 +7360,7 @@ function renderRailLineSegments(){
     }
     if(branchEffect?.kind==='blend'){
       seg.style.background=branchBlendGradient(branchEffect.fromColor,branchEffect.toColor,branchEffect.direction||'to bottom');
-      seg.classList.add('tobu-branch-blend-segment');
+      seg.classList.add('multi-junction-branch-blend-segment');
       rail.appendChild(seg);
       continue;
     }
@@ -7439,11 +7370,11 @@ function renderRailLineSegments(){
       rail.appendChild(seg);
       continue;
     }
-    if(isFukuokaCompositeRoute(activeRouteMeta) && fukuokaHakozakiBranchOpen){
-      const branch=new Set(fukuokaBranchStationNames(activeJson,activeRouteMeta));
-      const d=fukuokaDiagramConfig(activeJson,activeRouteMeta);
-      const junction=String(d?.junctionStation||'中洲川端').trim()||'中洲川端';
-      const hakoColor=String(lineDefByName('箱崎線')?.color||'#666');
+    if(hasBranchToggleDiagram(activeRouteMeta) && branchDiagramOpen){
+      const branch=new Set(branchDiagramBranchStations(activeJson,activeRouteMeta));
+      const d=branchDiagramConfig(activeJson,activeRouteMeta);
+      const junction=String(d?.junctionStation||'').trim();
+      const hakoColor=String(lineDefByName(activeRouteMeta?.diagramBranchLine)?.color||'#666');
       if((branch.has(a) && branch.has(b)) || (branch.has(a) && b===junction)) color=hakoColor;
     }
     seg.style.background=color;
@@ -7515,19 +7446,17 @@ function stationDotColors(rows,index,trainContext=null){
   return [fallbackTrainServiceColor(trainContext)];
 }
 function timetableRowsHTML(stops,trainContext=null){
-  // 時刻がある停車駅はすべて表示し、筑肥線直通列車では時刻が未設定の終点も駅案内に残す。
-  const isFukuoka=isFukuokaCompositeRoute(activeRouteMeta);
+  // 時刻付き停車駅と、路線設定で表示対象に指定された時刻なし終端駅を表示する。
+  const externalTerminalLines=Array.isArray(activeRouteMeta?.externalTerminalLines)?activeRouteMeta.externalTerminalLines.map(String):[];
   const visibleStops=(stops||[]).filter(st=>{
     const hasTime=!!String(st?.arrival||st?.departure||st?.time||'').trim();
-    const externalTerminal=isFukuoka && (st?.terminalOnly===true || String(st?.line||'')==='JR筑肥線');
+    const externalTerminal=st?.terminalOnly===true || externalTerminalLines.includes(String(st?.line||''));
     return hasTime || externalTerminal;
   });
   const rows=buildTimetableRows(visibleStops);
   if(!rows.length) return '';
   const colorsForSegment=(aIndex,bIndex)=>timetableSegmentColorList(rows,bIndex,aIndex,trainContext);
-  // 筑肥線区間に対する路線固有の破線処理は行わない。
-  // 他路線で明示された dottedBefore の指定は従来どおり扱う。
-  const isDottedRouteSegment=(a,b,arrivalIndex=-1)=>!isFukuoka && arrivalIndex>=0 && rows[arrivalIndex]?.dottedBefore===true;
+  const isDottedRouteSegment=(a,b,arrivalIndex=-1)=>arrivalIndex>=0 && rows[arrivalIndex]?.dottedBefore===true;
   const dottedMask='repeating-linear-gradient(to bottom,#000 0 7px,transparent 7px 14px)';
   return rows.map((row,index)=>{
     const rawTimes=row.times.length>=2?row.times.slice(0,2):row.times.slice(0,1);
@@ -7623,7 +7552,7 @@ function typeColorConfigForTrain(train,type){
   // 共有区間で複数JSONを統合した場合、列車の所属元JSONの種別色を最優先する。
   // 表示中の路線（例：横浜線）の設定は、所属元JSONに色指定がない場合だけ補完に使う。
   const configured={...(activeRouteMeta?.typeColors||{}),...(activeJson?.typeColors||{}),...sourceColors};
-  const category=naganoExpressCategoryFor(train,String(type||''));
+  const category=expressCategoryForTrain(train,String(type||''));
   return configured[category||String(type||'').trim()];
 }
 function routeNameForTrainStation(train,stationName){
@@ -7762,7 +7691,7 @@ function typeColorForTrain(train,position=null,stationName='',stationDirectionCo
     return String(fallbackTrainServiceColor(train)||activeRouteColors()[0]||'#666');
   };
 
-  const expressCategory=naganoExpressCategoryFor(train,type);
+  const expressCategory=expressCategoryForTrain(train,type);
   let configured=expressCategory ? colors[expressCategory] : colors[type];
   // 「区間快速」などは、個別色がなければ明示設定された「快速」の色を継承する。
   if((!configured || (typeof configured==='string'&&!configured.trim())) && type.includes('快速')){
@@ -8044,10 +7973,10 @@ function updateRouteVisuals(){
   const h1Color=jsonBaseColorForActiveRoute();
   const titleColor=h1Color;
   const root=document.documentElement;
-  const isCircularRoute=activeRouteName==='大阪環状線' && activeJson?.circular===true;
+  const isCircularRoute=activeRouteMeta?.diagramLayout==='circular' && activeJson?.circular===true;
   root.classList.toggle('circular-route-active',isCircularRoute);
   document.body?.classList.toggle('circular-route-active',isCircularRoute);
-  document.body?.classList.toggle('yumesaki-route-active',activeRouteName==='ゆめ咲線');
+  document.body?.classList.toggle('yumesaki-route-active',activeRouteMeta?.diagramLayout==='branch' && activeJson?.circular===true);
   root.style.setProperty('--route-primary',primary);
   root.style.setProperty('--primary',primary);
   root.style.setProperty('--primary-dark',shadeColor(primary,-25));
@@ -8280,10 +8209,11 @@ initRegionNavigation();
         const trains=value&&typeof value==='object'&&value.__ROOT__&&typeof value.__ROOT__==='object' ? value.__ROOT__ : value;
         mergeDateTrains(date,trains);
       }
-      // 旧構造 広島地区/JR広島/{日付}/{列車番号} も新しい直下構造へ読み替える。
-      const legacyHiroshima=family==='hiroshima' ? raw?.['JR広島'] : null;
-      if(legacyHiroshima&&typeof legacyHiroshima==='object'){
-        for(const [date,trains] of Object.entries(legacyHiroshima)) mergeDateTrains(date,trains);
+      // route registry で指定された旧サブパスを、現在の保存形式へ読み替える。
+      const legacyKeys=routeMetaForFamily(family)?.legacyStorageKeys||[];
+      for(const legacyKey of legacyKeys){
+        const legacy=raw?.[String(legacyKey)];
+        if(legacy&&typeof legacy==='object') for(const [date,trains] of Object.entries(legacy)) mergeDateTrains(date,trains);
       }
       return out;
     }
@@ -8633,26 +8563,24 @@ initRegionNavigation();
     if(!ref) return false;
     const snap=await ref.once('value');
     let raw=snap.val()||{};
-    // 広島地区の旧パス「広島地区/JR広島/{日付}/{列車番号}」を、
-    // 初回読込時に「広島地区/{日付}/{列車番号}」へ統合する。既存の直下値は優先。
-    if(family==='hiroshima' && raw?.['JR広島'] && typeof raw['JR広島']==='object'){
+    // route registry で指定された旧サブパスを直下へ統合する。
+    const legacyKeys=routeMetaForFamily(family)?.legacyStorageKeys||[];
+    if(legacyKeys.some(key=>raw?.[String(key)]&&typeof raw[String(key)]==='object')){
       const updates={};
-      for(const [date,trains] of Object.entries(raw['JR広島'])){
-        if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date))||!trains||typeof trains!=='object') continue;
-        for(const [no,entry] of Object.entries(trains)){
-          const current=raw?.[date]?.[no];
-          if(current===undefined || current===null) updates[`${date}/${no}`]=entry;
+      for(const legacyKey of legacyKeys){
+        const legacy=raw?.[String(legacyKey)];
+        if(!legacy||typeof legacy!=='object') continue;
+        for(const [date,trains] of Object.entries(legacy)){
+          if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date))||!trains||typeof trains!=='object') continue;
+          for(const [no,entry] of Object.entries(trains)){
+            const current=raw?.[date]?.[no];
+            if(current===undefined||current===null) updates[`${date}/${no}`]=entry;
+          }
         }
+        updates[String(legacyKey)]=null;
       }
-      updates['JR広島']=null;
-      try{
-        await ref.update(updates);
-        const migrated=await ref.once('value');
-        raw=migrated.val()||{};
-      }catch(migrationError){
-        // 書込権限がない場合も、旧構造をローカルへ読み替えて利用は継続する。
-        console.warn('広島地区Firebase旧パスの移行に失敗（旧データを読み替えて利用）',migrationError);
-      }
+      try{ await ref.update(updates); const migrated=await ref.once('value'); raw=migrated.val()||{}; }
+      catch(migrationError){ console.warn('Firebase旧パスの移行に失敗（旧データを読み替えて利用）',migrationError); }
     }
     refreshFormationInputHistoryLatestForFamily(family,raw);
     formationRemoteByFamily[family].areaStateByDate=normalizeStorageRoot(raw,family);
@@ -8971,26 +8899,12 @@ initRegionNavigation();
   }
   window.linkedTrainNumbersForFormationUI=linkedTrainNumbersForFormationUI;
 
-  // 編成入力の基準列番を先頭にする。
-  // 運用チェーン全体の先頭ではなく、ユーザーが詳細画面を開いて入力した列番から
-  // 編成スロットを割り当てることで、Firebaseへの登録先が別列番へずれるのを防ぐ。
-  function linkedTrainNumbersFromSelectedTrain(train,day=currentDay){
-    const linked=linkedTrainNumbersForFormationUI(train,day);
-    if(linked.length<2) return linked;
-    const selected=normalizeTrainNo(train?.no||'');
-    const index=linked.findIndex(no=>normalizeTrainNo(no)===selected);
-    if(index<=0) return linked;
-    return [...linked.slice(index),...linked.slice(0,index)];
-  }
-  window.linkedTrainNumbersFromSelectedTrain=linkedTrainNumbersFromSelectedTrain;
-
   function formationCountForTrain(train){
     // 東武野田線は1列車につき1編成。連結情報によって入力枠が増えることを防ぐ。
     const routeName=String(train?.routeName||activeRouteName||'').trim();
     const routeMeta=(typeof ROUTE_REGISTRY==='object' && ROUTE_REGISTRY && routeName)
       ? (ROUTE_REGISTRY[routeName]||activeRouteMeta||{}) : (activeRouteMeta||{});
     const family=String(routeMeta?.formationFamily||activeJson?.formationFamily||train?.formationFamily||'');
-    if(family==='noda') return 1;
 
     // 最大編成数はJSONの設定を優先し、なければ路線設定・列車設定を参照。
     // いずれにも設定がない路線は既定の1編成とする。
@@ -8998,9 +8912,9 @@ initRegionNavigation();
     const maxCount=(configuredCount===undefined || configuredCount===null || configuredCount==='')
       ? DEFAULT_FORMATION_COUNT : clampFormationCount(configuredCount);
 
-    // 運用チェーン上で列番が連結されていても、編成登録先は入力した列番のまま。
-    // 「+」は同一列番に複数編成を登録する区切りなので、チェーン内の列番数で
-    // 入力可能な編成数を決めない。編成数はJSON／路線設定の上限だけで決める。
+    // 連結列車は「1列番＝1編成」。ただし路線で指定された最大数を超えない。
+    const linked=linkedTrainNumbersForFormationUI(train);
+    if(linked.length>1) return Math.min(clampFormationCount(linked.length),maxCount);
     return maxCount;
   }
   window.formationCountForTrain=formationCountForTrain;
@@ -9114,20 +9028,10 @@ initRegionNavigation();
     return `${slot+1}編成目`;
   }
 
-  function uchiboFormationImageUrl(id){
-    if(String(activeRouteName||'')!=='内房線') return '';
-    const key=String(id||'').replace(/F$/i,'').trim();
-    let imageName='';
-    if(/^F\d{2}$/i.test(key)) imageName=`E235_${key.toUpperCase()}`;
-    else if(/^J\d{2}$/i.test(key)) imageName=`E235_${key.toUpperCase()}`;
-    else if(/^R\d{2}$/i.test(key)) imageName=`E131_${key.toUpperCase()}`;
-    else if(/^C(?:1|2|3|9)$/i.test(key)) imageName=`E233_${key.toUpperCase()}`;
-    else if(key==='C401'||key==='C602') imageName=`209_${key}`;
-    return imageName ? `https://minamikaze2700.github.io/Unyomatome/images/${imageName}.png` : '';
-  }
-
   function formationOptionImage(item){
-    const forced=uchiboFormationImageUrl(item?.id);
+    const key=String(item?.id||'').replace(/F$/i,'').trim();
+    const imageName=String(activeRouteMeta?.formationImageMap?.[key]||'');
+    const forced=imageName ? `https://minamikaze2700.github.io/Unyomatome/images/${imageName}.png` : '';
     return forced || String(item?.img||fallbackTrainImageUrl());
   }
 
@@ -9157,7 +9061,7 @@ initRegionNavigation();
       const variantItems=(group.variants||[]).flatMap(variant=>Array.isArray(variant.items)?variant.items:[]);
       for(const item of [...variantItems,...(group.items||[])]){
         // inputSelectable:false は新規入力の候補からのみ除外し、履歴表示用データは残す。
-        if(item?.inputSelectable===false || isNoda8158InputBlocked(currentTrainSnapshot||{},item?.id)) continue;
+        if(item?.inputSelectable===false || isFormationInputBlocked(currentTrainSnapshot||{},item?.id)) continue;
         const id=String(item.id||'').replace(/F$/i,'');
         if(!id) continue;
         const disabled=!!item.disabled || UNAVAILABLE_FORMATIONS.has(id);
@@ -9313,9 +9217,8 @@ initRegionNavigation();
     const train=liveTrain(currentTrainNo,currentTrainSnapshot?.direction||null)||currentTrainSnapshot;
     if(!train) return;
     const count=formationCountForTrain(train);
-    // 「+」で複数編成を入力しても、すべて現在選択中の列番に登録する。
-    // 運用チェーンの前後列番へ分配しない。
-    const splitPerLinkedTrain=false;
+    const linked=linkedTrainNumbersForFormationUI(train);
+    const splitPerLinkedTrain=linked.length>1;
     const raw=String(input?.value||'').trim();
     if(!raw){ if(err) err.textContent='編成番号を入力してください。'; input?.focus(); return; }
     const pieces=raw.split('+').map(x=>x.trim()).filter(Boolean);
@@ -9329,7 +9232,7 @@ initRegionNavigation();
       if(!r.ok){if(err)err.textContent=r.error;input?.focus();return;}
       const id=normalizeStoredFormationId(r.id);
       if(!id){if(err)err.textContent='編成を特定できません。';input?.focus();return;}
-      if(isNoda8158InputBlocked(train,id)){
+      if(isFormationInputBlocked(train,id)){
         if(err) err.textContent='8158Fは新規登録できません。';
         syncStatus('8158Fは新規登録できません');
         input?.focus();return;
@@ -9385,7 +9288,7 @@ initRegionNavigation();
   };
   async function saveFormationAtSlot(slot,id){
     if(!formationInputAllowed()) return;
-    if(isNoda8158InputBlocked(currentTrainSnapshot||liveTrain(currentTrainNo)||null,id)){
+    if(isFormationInputBlocked(currentTrainSnapshot||liveTrain(currentTrainNo)||null,id)){
       const err=document.getElementById('formationInputError');
       if(err) err.textContent='8158Fは新規登録できません。';
       syncStatus('8158Fは新規登録できません');
@@ -9395,9 +9298,8 @@ initRegionNavigation();
     if(!train) return;
     const count=formationCountForTrain(train);
     if(slot<0||slot>=count)return;
-    // 編成スロットも、運用チェーン内の別列番へ割り当てず、現在の列番にまとめる。
-    const linked=[String(train?.no||currentTrainNo||'').trim()];
-    const splitPerLinkedTrain=false;
+    const linked=linkedTrainNumbersForFormationUI(train);
+    const splitPerLinkedTrain=linked.length>1;
     const ids=selectedIdsForTrain(train);
     const normalized=(id===INITIAL_FORMATION_SELECTION.id || window.isUnselectedFormationId?.(id))?'':String(normalizeStoredFormationId(id)||'');
 
@@ -10066,7 +9968,7 @@ initRegionNavigation();
 
 
 <style id="circular-route-style">
-/* ===== 大阪環状線：環状線専用レイアウト ===== */
+/* ===== JSONで定義された環状線レイアウト ===== */
 .circular-stage{
   --circular-end-padding:220px;
   --circular-top-center:310px;
@@ -10165,9 +10067,9 @@ initRegionNavigation();
       }
     }
     addEdges('left',left); addEdges('right',right);
-    // 上端：大阪⇄天満、下端：新今宮⇄天王寺を横線で接続。
-    info.edges.set(circularPairKey(left[0],right[0]),{bridge:true,sideA:'left',sideB:'right',indexA:0,indexB:0,a:left[0],b:right[0]});
-    info.edges.set(circularPairKey(left[left.length-1],right[right.length-1]),{bridge:true,sideA:'left',sideB:'right',indexA:left.length-1,indexB:right.length-1,a:left[left.length-1],b:right[right.length-1]});
+    // 上端・下端はJSONの左右駅配列の両端を横線で接続。
+    info.edges.set(circularPairKey(left[0],right[0]),{bridge:true,position:'top',sideA:'left',sideB:'right',indexA:0,indexB:0,a:left[0],b:right[0]});
+    info.edges.set(circularPairKey(left[left.length-1],right[right.length-1]),{bridge:true,position:'bottom',sideA:'left',sideB:'right',indexA:left.length-1,indexB:right.length-1,a:left[left.length-1],b:right[right.length-1]});
     CIRCULAR_LAYOUT_CACHE.set(key,info);
     return info;
   }
@@ -10238,7 +10140,7 @@ initRegionNavigation();
     return row;
   }
   function renderCircularLine(){
-    // 環状線専用表示の線色はJSON/路線設定の大阪環状線色を使用。
+    // 環状線表示の線色はJSON/路線設定の線区色を使用。
     if(typeof TRAIN_ICON_CACHE!=='undefined') TRAIN_ICON_CACHE.clear();
     if(typeof TRAIN_LAYOUT_CACHE!=='undefined') TRAIN_LAYOUT_CACHE={container:null,rowCenters:null,rowCount:0};
     const container=document.getElementById('lineContainer'); if(!container) return;
@@ -10250,12 +10152,11 @@ initRegionNavigation();
     container.innerHTML=`<div class="operation-info-layer" id="operationInfoLayer"></div><div class="circular-stage" id="circularStage"><div class="circular-column left" id="circularLeft"></div><div class="circular-column right" id="circularRight"></div><div class="circular-bridge circular-bridge-top"></div><div class="circular-bridge circular-bridge-bottom"></div><div class="rail-line" id="railLine"></div></div><div class="moving-train-layer" id="movingTrainLayer"></div><div class="operation-info-label-layer" id="operationInfoLabelLayer"></div>`;
     const stage=document.getElementById('circularStage');
     stage.style.height=`${stageHeight}px`; stage.style.minHeight=`${stageHeight}px`;
-    // 上端は大阪環状線色、下端（新今宮⇄天王寺）は大和路線色を明示。
-    // routeColor の上書きで大和路線色が赤へ戻ることを防ぐ。
-    const loopLineColor=String(lineDefByName('大阪環状線')?.color||'#666');
-    const yamatoLineColor=String(lineDefByName('大和路線')?.color||'#666');
-    stage.style.setProperty('--circular-top-color',loopLineColor);
-    stage.style.setProperty('--circular-bottom-color',yamatoLineColor);
+    const bridgeColors=activeRouteMeta?.circularBridgeColors||{};
+    const topColor=String(lineDefByName(bridgeColors.topLine)?.color||bridgeColors.topColor||activeRouteColors()[0]||'#666');
+    const bottomColor=String(lineDefByName(bridgeColors.bottomLine)?.color||bridgeColors.bottomColor||activeRouteColors()[0]||'#666');
+    stage.style.setProperty('--circular-top-color',topColor);
+    stage.style.setProperty('--circular-bottom-color',bottomColor);
     const metrics=circularStageMetrics();
     const left=document.getElementById('circularLeft'),right=document.getElementById('circularRight');
     layout.left.forEach((name,i)=>{
@@ -10302,10 +10203,7 @@ initRegionNavigation();
     return preferredSide||'left';
   }
   function isSpecialCircularBridgePair(a,b){
-    const from=circularStationKey(a);
-    const to=circularStationKey(b);
-    return (from==='大阪'&&to==='天満') || (from==='天満'&&to==='大阪')
-      || (from==='新今宮'&&to==='天王寺') || (from==='天王寺'&&to==='新今宮');
+    return circularEdgeForPair(a,b)?.bridge===true;
   }
   function circularLaneSign(side,direction){
     const isInner=String(direction||'')==='up';
@@ -10398,7 +10296,7 @@ initRegionNavigation();
     const stops=normalizeLineStopTimes(t.stops||[]); if(!stops.length) return null;
     const circularOnly=!!isCircularTrain(t);
 
-    // 大阪⇄天満／新今宮⇄天王寺は、見えない走行経路に沿って移動させる。
+    // 左右の端駅を結ぶ橋区間は、見えない走行経路に沿って移動させる。
     // 駅中心から経路の端まで縦方向に進み、橋の部分を横方向に走り、到着駅へ進む。
     // 表示アイコンは従来どおり駅名標の外側に置き、横方向区間では線の向きに応じて重なり回避を行う。
     function bridgeStationSide(name,index){
@@ -10419,11 +10317,9 @@ initRegionNavigation();
       const from=String(stops[i]?.station||'');
       const to=String(stops[i+1]?.station||'');
       if(!isSpecialCircularBridgePair(from,to)) continue;
-      const upperBridge=(from.replace(/駅$/,'')==='大阪'&&to.replace(/駅$/,'')==='天満')
-        || (from.replace(/駅$/,'')==='天満'&&to.replace(/駅$/,'')==='大阪');
-      const lowerBridge=(from.replace(/駅$/,'')==='新今宮'&&to.replace(/駅$/,'')==='天王寺')
-        || (from.replace(/駅$/,'')==='天王寺'&&to.replace(/駅$/,'')==='新今宮');
-      const edge=circularEdgeForPair(from,to) || ((upperBridge||lowerBridge)?{bridge:true}:null);
+      const edge=circularEdgeForPair(from,to);
+      const upperBridge=edge?.position==='top';
+      const lowerBridge=edge?.position==='bottom';
       if(!edge?.bridge) continue;
       const departure=Number(stops[i]._departure);
       const arrivalNext=Number(stops[i+1]._arrival);
@@ -10951,17 +10847,20 @@ initRegionNavigation();
       choices.push({id,label:String(label||'分岐線'),stations:names});
     };
 
-    // 福岡市地下鉄：diagram.branchToggle / hakosakiInsertで定義された箱崎線分岐。
-    if(diagram.branchToggle===true&&Array.isArray(diagram.hakosakiInsert)&&diagram.hakosakiInsert.length){
-      const junction=String(diagram.junctionStation||diagram.hakosakiInsert[diagram.hakosakiInsert.length-1]||'').trim();
-      const branchNames=uniqueStationNames(diagram.hakosakiInsert).filter(name=>name!==junction);
-      const branchLine=allLines.find(line=>{
+    // 単一分岐線の表示設定。駅順・接続駅・線区名はJSONまたはroute registryから取得する。
+    const branchOrder=Array.isArray(diagram.branchOrder)?diagram.branchOrder:(Array.isArray(diagram.hakosakiInsert)?diagram.hakosakiInsert:[]);
+    if(diagram.branchToggle===true&&branchOrder.length){
+      const junction=String(diagram.junctionStation||'').trim();
+      const branchNames=uniqueStationNames(branchOrder).filter(name=>name!==junction);
+      const branchLineName=String(activeRouteMeta?.diagramBranchLine||diagram.branchLine||'');
+      const branchLine=allLines.find(line=>String(line?.name||'')===branchLineName)||allLines.find(line=>{
         const names=stationNames(line);return names.includes(junction)&&branchNames.some(name=>names.includes(name));
       });
-      addChoice(`branch:${String(branchLine?.name||'箱崎線')}`,String(branchLine?.name||'箱崎線'),insertBranchStations(main,branchNames,junction,'before'));
+      const label=String(branchLine?.name||branchLineName||'分岐線');
+      addChoice(`branch:${label}`,label,insertBranchStations(main,branchNames,junction,'before'));
     }
 
-    // 東武スカイツリーライン等：diagram.junctionsとbranchButtonsで定義された分岐。
+    // 複数分岐線もdiagram.junctionsとbranchButtonsで同じ構造で定義する。
     if(diagram.junctions&&typeof diagram.junctions==='object'){
       const buttons=Array.isArray(diagram.branchButtons)?diagram.branchButtons:[];
       for(const [key,junctionDef] of Object.entries(diagram.junctions)){
@@ -11453,7 +11352,7 @@ initRegionNavigation();
     const all=Array.isArray(daySource)?daySource:[];
     // えちぜん鉄道の共通区間用に他路線から取り込んだ列車は、
     // 運用・列車表示には残し、ダイヤグラムには追加しない（従来の図表表示に戻す）。
-    const diagramSource=all.filter(t=>!t?.__echizenSharedSectionOnly);
+    const diagramSource=all.filter(t=>!t?.__sharedRouteSectionOnly);
     const trains=diagramSource.filter(t=>state.direction==='both'||(state.direction==='up'&&String(t?.direction)==='up')||(state.direction==='down'&&String(t?.direction)==='down'));
     if(!sourceStations.length||!trains.length){return {empty:!sourceStations.length?'駅データがありません。':'この方向の列車データがありません。',trains:[],stations:sourceStations};}
     // 環状線は循環の分割駅を先頭にそろえ、終端に同じ駅を1つ追加して
@@ -11631,7 +11530,7 @@ initRegionNavigation();
     if(!image){try{image=typeof defaultTrainImage==='function'?String(defaultTrainImage(train)||''):'';}catch(e){}}
     const dest=String(typeof getDisplayDestinationForTrain==='function'?getDisplayDestinationForTrain(train):(train?.dest||'')).trim();
     let suffix='';try{suffix=typeof destinationGoSuffix==='function'?String(destinationGoSuffix(train)||''):'';}catch(e){}
-    let service='';try{service=typeof nankaiServiceNameHTML==='function'?nankaiServiceNameHTML(train):'';}catch(e){}
+    let service='';try{service=typeof trainServiceNameHTML==='function'?trainServiceNameHTML(train):'';}catch(e){}
     let formationId='';try{formationId=String(typeof effectiveFormationIdForTrain==='function'?effectiveFormationIdForTrain(train):train?.formation||'').trim();}catch(e){}
     let formationHtml='編成未選択';
     if(formationId&&formationId!==String(INITIAL_FORMATION_SELECTION?.id||'')){
@@ -12705,7 +12604,7 @@ initRegionNavigation();
     ].filter(Boolean).join(' ');
     return `<button type="button" class="${rowClass}" data-operation-start="${escapeAttr(startTime)}" data-operation-end="${escapeAttr(endTime)}" ${clickAttr}>
       <span class="train-operation-number">${escapeAttr(no)}</span>
-      <span class="station-timetable-type train-operation-type${rawType?' '+getTrainTypeDisplayClass(sourceTrain):' empty-operation-field'}"${rawType?` style="${typeBadgeStyle}"`:''}><span class="operation-full">${escapeAttr(getOperationalTypeLabel(rawType,no,sourceTrain))}</span><span class="operation-short">${escapeAttr(isShinanoMainRoute()?getOperationalTypeLabel(rawType,no,sourceTrain):type)}</span></span>
+      <span class="station-timetable-type train-operation-type${rawType?' '+getTrainTypeDisplayClass(sourceTrain):' empty-operation-field'}"${rawType?` style="${typeBadgeStyle}"`:''}><span class="operation-full">${escapeAttr(getOperationalTypeLabel(rawType,no,sourceTrain))}</span><span class="operation-short">${escapeAttr(usesServiceNameTypeDisplay()?getOperationalTypeLabel(rawType,no,sourceTrain):type)}</span></span>
       <span class="train-operation-time start-time">${escapeAttr(formatRailwayDisplayTime(startTime))}</span>
       <span class="train-operation-station start-station" title="${escapeAttr(start)}"><span class="operation-full">${escapeAttr(start)}</span><span class="operation-short">${escapeAttr(shortStart)}</span></span>
       <span class="train-operation-arrow" aria-hidden="true">→</span>
@@ -13537,7 +13436,7 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
     const activeForm=currentTrainInfoTab==='formation';
     const activeHistory=currentTrainInfoTab==='history';
     // 直通列車の列車詳細でも、現在表示位置の区間種別を使う。
-    // 福岡市地下鉄区間では「普通」、JR筑肥線区間ではJSONの「普通／快速」を表示する。
+    // 区間ごとの種別表示は列車データと線区設定に従う。
     const cardTypePosition=positionForTrain(train,currentMinutes())?.pos;
     const cardType=getTrainTypeAtPosition(train,cardTypePosition);
 
@@ -13548,7 +13447,7 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
         <div class="train-card">
           <img src="${(train.formation&&train.formation!==INITIAL_FORMATION_SELECTION.id)?originalSelected.img:defaultTrainImage(train)}" class="train-card-img">
           <div class="train-info-main">
-            <div>${cardType?`<span class="type-badge ${getTrainTypeDisplayClass(train,cardTypePosition)}" style="${typeBadgeInlineStyle(train,cardTypePosition)}">${getTrainTypeDisplayLabel(train,true,cardTypePosition)}</span>`:''}${nankaiServiceNameHTML(train)}<span class="train-title${cardType?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${trainCardNumberTextAtTime(train,currentMinutes())?`<span class="train-number">${trainCardNumberTextAtTime(train,currentMinutes())}</span>`:''}</div>
+            <div>${cardType?`<span class="type-badge ${getTrainTypeDisplayClass(train,cardTypePosition)}" style="${typeBadgeInlineStyle(train,cardTypePosition)}">${getTrainTypeDisplayLabel(train,true,cardTypePosition)}</span>`:''}${trainServiceNameHTML(train)}<span class="train-title${cardType?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${trainCardNumberTextAtTime(train,currentMinutes())?`<span class="train-number">${trainCardNumberTextAtTime(train,currentMinutes())}</span>`:''}</div>
               <div class="input-trigger-btn">編成を入力中</div>
             ${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}
           </div>
@@ -13569,7 +13468,7 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
     content.innerHTML=`
       <div class="train-card${cardClass}" ${cardClick}>
         <img src="${imgSrc}" class="train-card-img">
-        <div class="train-info-main"><div>${cardType?`<span class="type-badge ${getTrainTypeDisplayClass(train,cardTypePosition)}" style="${typeBadgeInlineStyle(train,cardTypePosition)}">${getTrainTypeDisplayLabel(train,true,cardTypePosition)}</span>`:''}${nankaiServiceNameHTML(train)}<span class="train-title${cardType?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${trainCardNumberTextAtTime(train,currentMinutes())?`<span class="train-number">${trainCardNumberTextAtTime(train,currentMinutes())}</span>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id?`<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`:`<div class="input-trigger-btn">${noFormationText}</div>`}${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id&&formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
+        <div class="train-info-main"><div>${cardType?`<span class="type-badge ${getTrainTypeDisplayClass(train,cardTypePosition)}" style="${typeBadgeInlineStyle(train,cardTypePosition)}">${getTrainTypeDisplayLabel(train,true,cardTypePosition)}</span>`:''}${trainServiceNameHTML(train)}<span class="train-title${cardType?'':' no-type'}">${getDisplayDestinationForTrain(train)}${destinationGoSuffix(train)}</span>${trainCardNumberTextAtTime(train,currentMinutes())?`<span class="train-number">${trainCardNumberTextAtTime(train,currentMinutes())}</span>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id?`<div class="formation-id">${formationDisplayHTML(effectiveFormationId)}</div>`:`<div class="input-trigger-btn">${noFormationText}</div>`}${prescribedFormationName(train)?`<div class="capacity-info">所定:${prescribedFormationName(train)}</div>`:''}</div>${effectiveFormationId&&effectiveFormationId!==INITIAL_FORMATION_SELECTION.id&&formatFormationUpdatedAt(train.no)?`<div class="formation-updated-at">編成入力：${formatFormationUpdatedAtHtml(train.no)}</div>`:''}
       </div>
 
       <div class="train-info-tabs" style="--train-info-color:${tabColor}">
