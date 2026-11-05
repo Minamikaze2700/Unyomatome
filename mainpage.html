@@ -8826,6 +8826,14 @@ initRegionNavigation();
         const index=Math.max(0,Math.min(numbers.length,Number(info?.entryIndex)||0));
         numbers.splice(index,0,no);
       }
+
+      // 入力画面を開いた列車番号を必ず先頭にする。
+      // 例：運用が A→B→C でも、Bの列車を選択して入力した場合は
+      // Firebaseへの登録順を B→C→A とし、先頭をAへ固定しない。
+      const selectedIndex=numbers.findIndex(value=>normalizeTrainNo(value)===normalized);
+      if(selectedIndex>0){
+        return numbers.slice(selectedIndex).concat(numbers.slice(0,selectedIndex)).slice(0,MAX_FORMATION_SLOTS);
+      }
       return numbers.slice(0,MAX_FORMATION_SLOTS);
     }
     return [no];
