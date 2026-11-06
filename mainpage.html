@@ -4197,8 +4197,8 @@ function formationInputExampleForRoute(routeName=activeRouteName,train=currentTr
   const firstGroup=groups.find(group=>group && (group.selectableType || group.type));
   const typeId=String(firstGroup?.selectableId||firstGroup?.type||'').trim();
   return typeId
-    ? `編成番号：${typeId} ／ 車両番号：JSON未登録`
-    : '編成番号：例を生成できません ／ 車両番号：JSON未登録';
+    ? `${typeId}`
+    : '';
 }
 function formationInputPlaceholderForTrain(train=currentTrainSnapshot){
   const example=formationInputExampleForRoute(train?.routeName||activeRouteName,train);
