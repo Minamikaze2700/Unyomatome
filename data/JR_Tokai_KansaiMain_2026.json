@@ -2,8 +2,8 @@
   "routeName": "関西本線（名古屋～亀山）",
   "formationFamily": "jr-tokai-315",
   "formationCountDefault": 1,
-  "noImage": "315_noimage",
-  "formationDefaultImage": "315_noimage",
+  "noImage": "315-3000_noimage",
+  "formationDefaultImage": "315-3000_noimage",
   "typeColors": {
     "普通": "#666666",
     "区間快速": "#9acd32",
@@ -97,7 +97,7 @@
   "formations": [
     {
       "type": "315系3000番台",
-      "typeImg": "315_noimage",
+      "typeImg": "315_C100",
       "family": "jr-tokai-315",
       "selectableType": false,
       "items": [
