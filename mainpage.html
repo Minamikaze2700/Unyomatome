@@ -4191,7 +4191,7 @@ function formationInputExampleForRoute(routeName=activeRouteName,train=currentTr
     for(const variant of (Array.isArray(group?.variants)?group.variants:[])) addItems(variant?.items);
   }
   const example=candidates[0];
-  if(example) return `編成番号：${example.id} ／ 車両番号：${example.vehicle}`;
+  if(example) return `${example.id} / ${example.vehicle}`;
   // 車両番号情報がない形式だけの路線では、編成番号を自動表示しつつ
   // 車両番号欄は未登録であることを明示し、架空の番号を作らない。
   const firstGroup=groups.find(group=>group && (group.selectableType || group.type));
