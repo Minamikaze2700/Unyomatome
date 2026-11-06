@@ -1,39 +1,11 @@
 {
-  "format": "Unyomatome route data",
-  "version": "2026-11-04",
-  "schemaVersion": 2,
-  "company": "えちぜん鉄道",
-  "formationFamily": "echizen",
-  "formationCountDefault": 2,
-  "formationDefaultImage": "Echizen_noimage",
-  "noImage": "Echizen_noimage",
-  "maxFormationCoupling": 2,
   "routes": {
     "勝山永平寺線": {
-      "id": "echizen-katsuyama",
-      "name": "勝山永平寺線",
-      "title": "えちぜん鉄道 勝山永平寺線",
-      "company": "えちぜん鉄道",
-      "description": "福井～勝山。",
-      "routeColor": "#F28C28",
-      "routeColors": {
-        "勝山永平寺線": "#F28C28",
-        "三国芦原線": "#0072BC"
-      },
       "formationFamily": "echizen",
       "formationCountDefault": 2,
       "formationDefaultName": "えちぜん鉄道車",
       "formationDefaultImage": "Echizen_noimage",
       "noImage": "Echizen_noimage",
-      "maxFormationCoupling": 2,
-      "access": {
-        "public": false,
-        "routeAdmins": []
-      },
-      "range": "福井～勝山",
-      "lineNames": [
-        "勝山永平寺線"
-      ],
       "lines": [
         {
           "name": "勝山永平寺線",
@@ -46,118 +18,95 @@
           "stations": [
             {
               "name": "福井",
-              "nameEn": "Fukui",
-              "stationCode": "E1"
+              "nameEn": "Fukui"
             },
             {
               "name": "新福井",
-              "nameEn": "ShinFukui",
-              "stationCode": "E2"
+              "nameEn": "ShinFukui"
             },
             {
               "name": "福井口",
-              "nameEn": "Fukui Guchi",
-              "stationCode": "E3"
+              "nameEn": "Fukui Guchi"
             },
             {
               "name": "越前開発",
-              "nameEn": "Echizen Kaihotsu",
-              "stationCode": "E4"
+              "nameEn": "Echizen Kaihotsu"
             },
             {
               "name": "越前新保",
-              "nameEn": "Echizen Shinbo",
-              "stationCode": "E5"
+              "nameEn": "Echizen Shinbo"
             },
             {
               "name": "追分口",
-              "nameEn": "Oiwakeguchi",
-              "stationCode": "E6"
+              "nameEn": "Oiwakeguchi"
             },
             {
               "name": "東藤島",
-              "nameEn": "Higashi Fujishima",
-              "stationCode": "E7"
+              "nameEn": "Higashi Fujishima"
             },
             {
               "name": "越前島橋",
-              "nameEn": "Echizen Shimabashi",
-              "stationCode": "E8"
+              "nameEn": "Echizen Shimabashi"
             },
             {
               "name": "観音町",
-              "nameEn": "Kannonmachi",
-              "stationCode": "E9"
+              "nameEn": "Kannonmachi"
             },
             {
               "name": "松岡",
-              "nameEn": "Matsuoka",
-              "stationCode": "E10"
+              "nameEn": "Matsuoka"
             },
             {
               "name": "志比堺",
-              "nameEn": "Shiizakai",
-              "stationCode": "E11"
+              "nameEn": "Shiizakai"
             },
             {
               "name": "永平寺口",
-              "nameEn": "Eiheiji Guchi",
-              "stationCode": "E12"
+              "nameEn": "Eiheiji Guchi"
             },
             {
               "name": "下志比",
-              "nameEn": "Shimoshii",
-              "stationCode": "E13"
+              "nameEn": "Shimoshii"
             },
             {
               "name": "光明寺",
-              "nameEn": "Komyoji",
-              "stationCode": "E14"
+              "nameEn": "Komyoji"
             },
             {
               "name": "轟",
-              "nameEn": "Domeki",
-              "stationCode": "E15"
+              "nameEn": "Domeki"
             },
             {
               "name": "越前野中",
-              "nameEn": "Echizen Nonaka",
-              "stationCode": "E16"
+              "nameEn": "Echizen Nonaka"
             },
             {
               "name": "山王",
-              "nameEn": "Sanno",
-              "stationCode": "E17"
+              "nameEn": "Sanno"
             },
             {
               "name": "越前竹原",
-              "nameEn": "Echizen Takehara",
-              "stationCode": "E18"
+              "nameEn": "Echizen Takehara"
             },
             {
               "name": "小舟渡",
-              "nameEn": "Kobunato",
-              "stationCode": "E19"
+              "nameEn": "Kobunato"
             },
             {
               "name": "保田",
-              "nameEn": "Hota",
-              "stationCode": "E20"
+              "nameEn": "Hota"
             },
             {
               "name": "発坂",
-              "nameEn": "Hossaka",
-              "stationCode": "E21"
+              "nameEn": "Hossaka"
             },
             {
               "name": "比島",
-              "nameEn": "Hishima",
-              "stationCode": "E22"
+              "nameEn": "Hishima"
             },
             {
               "name": "勝山",
-              "nameEn": "Katsuyama",
-              "stationCode": "E23"
+              "nameEn": "Katsuyama"
             }
           ]
         }
@@ -183,13 +132,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1999年",
-              "manufacturer": "武庫川車両工業",
-              "originalVehicle": "京福電鉄 モハ5001形として新製",
-              "rebuildYear": "",
-              "rebuildManufacturer": "",
-              "remarks": "主要機器は豊橋鉄道1900系・阪神5261形から流用"
+              ]
             }
           ]
         },
@@ -213,13 +156,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道 100形103号",
-              "rebuildYear": "2003年",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "片運転台車から両運転台化、直流600V対応"
+              ]
             },
             {
               "id": "6002",
@@ -232,13 +169,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道 100形108号",
-              "rebuildYear": "2003年",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "片運転台車から両運転台化、直流600V対応"
+              ]
             }
           ]
         },
@@ -262,13 +193,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道100形101号",
-              "rebuildYear": "2004年",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6102",
@@ -281,13 +206,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道100形102号",
-              "rebuildYear": "2004年",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6103",
@@ -300,13 +219,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道100形104号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6104",
@@ -319,13 +232,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道300形302号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6105",
@@ -338,13 +245,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道300形301号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6106",
@@ -357,13 +258,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道300形303号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6107",
@@ -376,13 +271,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道100形107号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6108",
@@ -395,13 +284,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道100形109号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6109",
@@ -414,13 +297,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道100形105号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6110",
@@ -433,13 +310,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道100形106号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6111",
@@ -452,13 +323,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道300形304号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6112",
@@ -471,13 +336,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道300形305号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             }
           ]
         },
@@ -502,16 +361,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1982～1983年（個別製造年未確認）",
-              "manufacturer": "日本車輌製造",
-              "originalVehicleNumbers": [
-                "クモハ119-5318",
-                "クハ118-5311"
-              ],
-              "rebuildYear": "2013-02-04",
-              "rebuildManufacturer": "大阪車輌工業",
-              "rebuildDetails": "JR東海119系5300番台を改造、VVVF化、ワンマン化、トイレ撤去"
+              ]
             },
             {
               "id": "7003F",
@@ -525,16 +375,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1982～1983年（個別製造年未確認）",
-              "manufacturer": "日本車輌製造",
-              "originalVehicleNumbers": [
-                "クモハ119-5330",
-                "クハ118-5322"
-              ],
-              "rebuildYear": "2013-02-27",
-              "rebuildManufacturer": "大阪車輌工業",
-              "rebuildDetails": "JR東海119系5300番台を改造、VVVF化、ワンマン化、トイレ撤去"
+              ]
             },
             {
               "id": "7005F",
@@ -548,16 +389,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1982～1983年（個別製造年未確認）",
-              "manufacturer": "日本車輌製造",
-              "originalVehicleNumbers": [
-                "クモハ119-5321",
-                "クハ118-5313"
-              ],
-              "rebuildYear": "2013-03-15",
-              "rebuildManufacturer": "大阪車輌工業",
-              "rebuildDetails": "JR東海119系5300番台を改造、VVVF化、ワンマン化、トイレ撤去"
+              ]
             },
             {
               "id": "7007F",
@@ -571,16 +403,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1982～1983年（個別製造年未確認）",
-              "manufacturer": "日本車輌製造",
-              "originalVehicleNumbers": [
-                "クモハ119-5320",
-                "クハ118-5312"
-              ],
-              "rebuildYear": "2013-12-27",
-              "rebuildManufacturer": "大阪車輌工業",
-              "rebuildDetails": "JR東海119系5300番台を改造、VVVF化、ワンマン化、トイレ撤去"
+              ]
             },
             {
               "id": "7009F",
@@ -594,16 +417,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1983年（第5編成の車両個別資料で確認）",
-              "manufacturer": "日本車輌製造",
-              "originalVehicleNumbers": [
-                "クモハ119-5325",
-                "クハ118-5317"
-              ],
-              "rebuildYear": "2014-02-07",
-              "rebuildManufacturer": "大阪車輌工業",
-              "rebuildDetails": "JR東海119系5300番台を改造、VVVF化、ワンマン化、トイレ撤去"
+              ]
             },
             {
               "id": "7011F",
@@ -617,16 +431,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1982～1983年（個別製造年未確認）",
-              "manufacturer": "日本車輌製造",
-              "originalVehicleNumbers": [
-                "クモハ119-5305",
-                "クハ118-5303"
-              ],
-              "rebuildYear": "2014-11-25",
-              "rebuildManufacturer": "大阪車輌工業",
-              "rebuildDetails": "JR東海119系5300番台を改造、VVVF化、ワンマン化、トイレ撤去"
+              ]
             }
           ]
         }
@@ -638,7 +443,6 @@
               "id": "K-UP-520-平日",
               "no": "520K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -738,18 +542,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-600-平日",
               "no": "600K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -849,18 +648,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-636-平日",
               "no": "636K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -960,18 +754,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-6716-平日",
               "no": "6716K",
               "type": "",
-              "direction": "上り",
               "start": "永平寺口",
               "dest": "福井",
               "stops": [
@@ -1027,18 +816,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "土日祝日(12/29~1/3含む)運休",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-658-平日",
               "no": "658K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -1138,18 +922,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-3716-平日",
               "no": "3716K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -1257,18 +1036,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "日祝日(12/29~1/3含む)運休",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-732-平日",
               "no": "732K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -1368,18 +1142,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-802-平日",
               "no": "802K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -1479,18 +1248,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-6852-平日",
               "no": "6852K",
               "type": "",
-              "direction": "上り",
               "start": "永平寺口",
               "dest": "福井",
               "stops": [
@@ -1546,18 +1310,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "土日祝日(12/29~1/3含む)運休",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-850-平日",
               "no": "850K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -1657,18 +1416,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-918-平日",
               "no": "918K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -1769,18 +1523,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-948-平日",
               "no": "948K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -1880,18 +1629,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1018-平日",
               "no": "1018K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -1992,18 +1736,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1048-平日",
               "no": "1048K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -2103,18 +1842,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1118-平日",
               "no": "1118K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -2215,18 +1949,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1148-平日",
               "no": "1148K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -2326,18 +2055,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1218-平日",
               "no": "1218K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -2438,18 +2162,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1248-平日",
               "no": "1248K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -2549,18 +2268,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1318-平日",
               "no": "1318K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -2661,18 +2375,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1348-平日",
               "no": "1348K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -2772,18 +2481,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1418-平日",
               "no": "1418K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -2884,18 +2588,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1448-平日",
               "no": "1448K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -2995,18 +2694,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1518-平日",
               "no": "1518K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -3107,18 +2801,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1548-平日",
               "no": "1548K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -3218,18 +2907,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1618-平日",
               "no": "1618K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -3329,18 +3013,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1648-平日",
               "no": "1648K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -3440,18 +3119,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1718-平日",
               "no": "1718K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -3551,18 +3225,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1748-平日",
               "no": "1748K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -3662,18 +3331,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1818-平日",
               "no": "1818K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -3773,18 +3437,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1848-平日",
               "no": "1848K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -3884,18 +3543,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1918-平日",
               "no": "1918K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -3995,18 +3649,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1948-平日",
               "no": "1948K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -4106,18 +3755,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-2018-平日",
               "no": "2018K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -4217,18 +3861,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-2048-平日",
               "no": "2048K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -4328,18 +3967,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-2156-平日",
               "no": "2156K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -4439,11 +4073,7 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             }
           ],
@@ -4452,7 +4082,6 @@
               "id": "K-DOWN-629-平日",
               "no": "629K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -4552,18 +4181,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-701-平日",
               "no": "701K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -4663,18 +4287,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-735-平日",
               "no": "735K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -4774,18 +4393,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-6753-平日",
               "no": "6753K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "永平寺口",
               "stops": [
@@ -4841,18 +4455,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "土日祝日(12/29~1/3含む)運休",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-805-平日",
               "no": "805K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -4952,18 +4561,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-827-平日",
               "no": "827K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -5063,18 +4667,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-857-平日",
               "no": "857K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -5175,18 +4774,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-925-平日",
               "no": "925K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -5286,18 +4880,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-955-平日",
               "no": "955K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -5398,18 +4987,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1025-平日",
               "no": "1025K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -5509,18 +5093,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1055-平日",
               "no": "1055K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -5621,18 +5200,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1125-平日",
               "no": "1125K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -5732,18 +5306,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1155-平日",
               "no": "1155K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -5844,18 +5413,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1225-平日",
               "no": "1225K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -5955,18 +5519,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1255-平日",
               "no": "1255K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -6067,18 +5626,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1325-平日",
               "no": "1325K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -6178,18 +5732,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1355-平日",
               "no": "1355K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -6290,18 +5839,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1425-平日",
               "no": "1425K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -6401,18 +5945,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1455-平日",
               "no": "1455K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -6513,18 +6052,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1525-平日",
               "no": "1525K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -6624,18 +6158,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1555-平日",
               "no": "1555K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -6735,18 +6264,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1625-平日",
               "no": "1625K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -6846,18 +6370,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1655-平日",
               "no": "1655K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -6957,18 +6476,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1725-平日",
               "no": "1725K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -7068,18 +6582,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1755-平日",
               "no": "1755K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -7179,18 +6688,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1825-平日",
               "no": "1825K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -7290,18 +6794,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1855-平日",
               "no": "1855K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -7401,18 +6900,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1925-平日",
               "no": "1925K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -7512,18 +7006,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1955-平日",
               "no": "1955K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -7623,18 +7112,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-2025-平日",
               "no": "2025K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -7734,18 +7218,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-2055-平日",
               "no": "2055K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -7845,18 +7324,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-2135-平日",
               "no": "2135K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -7956,18 +7430,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-2225-平日",
               "no": "2225K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -8067,18 +7536,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-2319-平日",
               "no": "2319K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -8178,11 +7642,7 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             }
           ]
@@ -8193,7 +7653,6 @@
               "id": "K-UP-3716-土曜",
               "no": "3716K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -8301,11 +7760,7 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "日祝日(12/29~1/3含む)運休",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             }
           ],
@@ -8317,7 +7772,6 @@
               "id": "K-UP-520-休日",
               "no": "520K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -8417,18 +7871,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-600-休日",
               "no": "600K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -8528,18 +7977,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-636-休日",
               "no": "636K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -8639,18 +8083,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-658-休日",
               "no": "658K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -8750,18 +8189,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-732-休日",
               "no": "732K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -8861,18 +8295,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-802-休日",
               "no": "802K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -8972,18 +8401,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-850-休日",
               "no": "850K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -9083,18 +8507,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-918-休日",
               "no": "918K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -9195,18 +8614,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-948-休日",
               "no": "948K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -9306,18 +8720,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1018-休日",
               "no": "1018K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -9418,18 +8827,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1048-休日",
               "no": "1048K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -9529,18 +8933,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1118-休日",
               "no": "1118K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -9641,18 +9040,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1148-休日",
               "no": "1148K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -9752,18 +9146,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1218-休日",
               "no": "1218K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -9864,18 +9253,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1248-休日",
               "no": "1248K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -9975,18 +9359,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1318-休日",
               "no": "1318K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -10087,18 +9466,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1348-休日",
               "no": "1348K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -10198,18 +9572,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1418-休日",
               "no": "1418K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -10310,18 +9679,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1448-休日",
               "no": "1448K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -10421,18 +9785,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1518-休日",
               "no": "1518K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -10533,18 +9892,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1548-休日",
               "no": "1548K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -10644,18 +9998,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1618-休日",
               "no": "1618K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -10755,18 +10104,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1648-休日",
               "no": "1648K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -10866,18 +10210,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1718-休日",
               "no": "1718K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -10977,18 +10316,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1748-休日",
               "no": "1748K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -11088,18 +10422,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1818-休日",
               "no": "1818K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -11199,18 +10528,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1848-休日",
               "no": "1848K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -11310,18 +10634,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1918-休日",
               "no": "1918K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -11421,18 +10740,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-1948-休日",
               "no": "1948K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -11532,18 +10846,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-2018-休日",
               "no": "2018K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -11643,18 +10952,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-2048-休日",
               "no": "2048K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -11754,18 +11058,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-UP-2156-休日",
               "no": "2156K",
               "type": "",
-              "direction": "上り",
               "start": "勝山",
               "dest": "福井",
               "stops": [
@@ -11865,11 +11164,7 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線上り",
               "prescribedFormation": "えちぜん鉄道車"
             }
           ],
@@ -11878,7 +11173,6 @@
               "id": "K-DOWN-629-休日",
               "no": "629K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -11978,18 +11272,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-701-休日",
               "no": "701K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -12089,18 +11378,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-735-休日",
               "no": "735K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -12200,18 +11484,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-805-休日",
               "no": "805K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -12311,18 +11590,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-827-休日",
               "no": "827K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -12422,18 +11696,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-857-休日",
               "no": "857K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -12534,18 +11803,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-925-休日",
               "no": "925K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -12645,18 +11909,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-955-休日",
               "no": "955K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -12757,18 +12016,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1025-休日",
               "no": "1025K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -12868,18 +12122,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1055-休日",
               "no": "1055K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -12980,18 +12229,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1125-休日",
               "no": "1125K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -13091,18 +12335,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1155-休日",
               "no": "1155K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -13203,18 +12442,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1225-休日",
               "no": "1225K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -13314,18 +12548,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1255-休日",
               "no": "1255K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -13426,18 +12655,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1325-休日",
               "no": "1325K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -13537,18 +12761,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1355-休日",
               "no": "1355K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -13649,18 +12868,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1425-休日",
               "no": "1425K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -13760,18 +12974,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1455-休日",
               "no": "1455K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -13872,18 +13081,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1525-休日",
               "no": "1525K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -13983,18 +13187,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1555-休日",
               "no": "1555K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -14094,18 +13293,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1625-休日",
               "no": "1625K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -14205,18 +13399,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1655-休日",
               "no": "1655K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -14316,18 +13505,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1725-休日",
               "no": "1725K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -14427,18 +13611,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1755-休日",
               "no": "1755K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -14538,18 +13717,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1825-休日",
               "no": "1825K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -14649,18 +13823,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1855-休日",
               "no": "1855K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -14760,18 +13929,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1925-休日",
               "no": "1925K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -14871,18 +14035,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-1955-休日",
               "no": "1955K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -14982,18 +14141,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-2025-休日",
               "no": "2025K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -15093,18 +14247,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-2055-休日",
               "no": "2055K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -15204,18 +14353,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-2135-休日",
               "no": "2135K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -15315,18 +14459,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-2225-休日",
               "no": "2225K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -15426,18 +14565,13 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "K-DOWN-2319-休日",
               "no": "2319K",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "勝山",
               "stops": [
@@ -15537,59 +14671,176 @@
               "servedLineNames": [
                 "勝山永平寺線"
               ],
-              "lines": [
-                "勝山永平寺線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "勝山永平寺線下り",
               "prescribedFormation": "えちぜん鉄道車"
             }
           ]
         }
       },
-      "timetableNote": "添付Excelには種別欄がないため、列車種別は未設定。",
-      "serviceDayNotes": {
-        "土日祝日運休": "平日運転。休日ダイヤから除外。",
-        "日祝日運休": "平日および土曜日（祝日・12月29日～1月3日を除く）運転。"
-      },
-      "sourceTimetable": {
-        "file": "えち鉄　時刻表 (1).xlsx",
-        "validityDate": "不明（添付ファイルに適用開始日の記載なし）",
-        "sheets": [
-          "勝山永平寺線上り",
-          "勝山永平寺線下り"
+      "operationChains": {
+        "平日": [
+          [
+            "K-UP-520-平日",
+            "K-DOWN-629-平日",
+            "K-UP-732-平日",
+            "K-DOWN-827-平日"
+          ],
+          [
+            "K-UP-600-平日",
+            "K-DOWN-701-平日",
+            "K-UP-802-平日",
+            "K-DOWN-857-平日",
+            "K-UP-948-平日",
+            "K-DOWN-1055-平日",
+            "K-UP-1148-平日",
+            "K-DOWN-1255-平日",
+            "K-UP-1348-平日",
+            "K-DOWN-1455-平日",
+            "K-UP-1548-平日",
+            "K-DOWN-1655-平日",
+            "K-UP-1748-平日",
+            "K-DOWN-1855-平日",
+            "K-UP-1948-平日",
+            "K-DOWN-2055-平日",
+            "K-UP-2156-平日",
+            "K-DOWN-2319-平日"
+          ],
+          [
+            "K-UP-636-平日",
+            "K-DOWN-735-平日",
+            "K-UP-850-平日",
+            "K-DOWN-955-平日",
+            "K-UP-1048-平日",
+            "K-DOWN-1155-平日",
+            "K-UP-1248-平日",
+            "K-DOWN-1355-平日",
+            "K-UP-1448-平日",
+            "K-DOWN-1555-平日",
+            "K-UP-1648-平日",
+            "K-DOWN-1755-平日",
+            "K-UP-1848-平日",
+            "K-DOWN-1955-平日",
+            "K-UP-2048-平日"
+          ],
+          [
+            "K-UP-6716-平日",
+            "K-DOWN-6753-平日",
+            "K-UP-6852-平日",
+            "K-DOWN-925-平日",
+            "K-UP-1018-平日",
+            "K-DOWN-1125-平日",
+            "K-UP-1218-平日",
+            "K-DOWN-1325-平日",
+            "K-UP-1418-平日",
+            "K-DOWN-1525-平日",
+            "K-UP-1618-平日",
+            "K-DOWN-1725-平日",
+            "K-UP-1818-平日",
+            "K-DOWN-1925-平日",
+            "K-UP-2018-平日",
+            "K-DOWN-2135-平日"
+          ],
+          [
+            "K-UP-3716-平日",
+            "K-DOWN-805-平日",
+            "K-UP-918-平日",
+            "K-DOWN-1025-平日",
+            "K-UP-1118-平日",
+            "K-DOWN-1225-平日",
+            "K-UP-1318-平日",
+            "K-DOWN-1425-平日",
+            "K-UP-1518-平日",
+            "K-DOWN-1625-平日",
+            "K-UP-1718-平日",
+            "K-DOWN-1825-平日",
+            "K-UP-1918-平日",
+            "K-DOWN-2025-平日"
+          ]
+        ],
+        "休日": [
+          [
+            "K-UP-520-休日",
+            "K-DOWN-629-休日",
+            "K-UP-732-休日",
+            "K-DOWN-827-休日"
+          ],
+          [
+            "K-UP-600-休日",
+            "K-DOWN-701-休日",
+            "K-UP-802-休日",
+            "K-DOWN-857-休日",
+            "K-UP-948-休日",
+            "K-DOWN-1055-休日",
+            "K-UP-1148-休日",
+            "K-DOWN-1255-休日",
+            "K-UP-1348-休日",
+            "K-DOWN-1455-休日",
+            "K-UP-1548-休日",
+            "K-DOWN-1655-休日",
+            "K-UP-1748-休日",
+            "K-DOWN-1855-休日",
+            "K-UP-1948-休日",
+            "K-DOWN-2055-休日",
+            "K-UP-2156-休日",
+            "K-DOWN-2319-休日"
+          ],
+          [
+            "K-UP-636-休日",
+            "K-DOWN-735-休日",
+            "K-UP-850-休日",
+            "K-DOWN-955-休日",
+            "K-UP-1048-休日",
+            "K-DOWN-1155-休日",
+            "K-UP-1248-休日",
+            "K-DOWN-1355-休日",
+            "K-UP-1448-休日",
+            "K-DOWN-1555-休日",
+            "K-UP-1648-休日",
+            "K-DOWN-1755-休日",
+            "K-UP-1848-休日",
+            "K-DOWN-1955-休日",
+            "K-UP-2048-休日"
+          ],
+          [
+            "K-DOWN-925-休日",
+            "K-UP-1018-休日",
+            "K-DOWN-1125-休日",
+            "K-UP-1218-休日",
+            "K-DOWN-1325-休日",
+            "K-UP-1418-休日",
+            "K-DOWN-1525-休日",
+            "K-UP-1618-休日",
+            "K-DOWN-1725-休日",
+            "K-UP-1818-休日",
+            "K-DOWN-1925-休日",
+            "K-UP-2018-休日",
+            "K-DOWN-2135-休日"
+          ],
+          [
+            "K-UP-3716-土曜",
+            "K-DOWN-805-休日",
+            "K-UP-918-休日",
+            "K-DOWN-1025-休日",
+            "K-UP-1118-休日",
+            "K-DOWN-1225-休日",
+            "K-UP-1318-休日",
+            "K-DOWN-1425-休日",
+            "K-UP-1518-休日",
+            "K-DOWN-1625-休日",
+            "K-UP-1718-休日",
+            "K-DOWN-1825-休日",
+            "K-UP-1918-休日",
+            "K-DOWN-2025-休日"
+          ]
         ]
-      },
-      "fleetNote": "現役旅客車両を対象。MC6001・MC6101形の改造施工会社は公開資料で確認できないため未確認と明記。MC7000形はJR東海119系5300番台を大阪車輌工業で改造。MC8000形は静岡鉄道1000形を阪神車両メンテナンスで改造。L形は2車体連接の1両編成として登録。時刻表Excelに種別欄がないため、種別は未設定。",
-      "defaultFormationName": "えちぜん鉄道車",
-      "prescribedFormation": "えちぜん鉄道車"
+      }
     },
     "三国芦原線": {
-      "id": "echizen-mikuni",
-      "name": "三国芦原線",
-      "title": "えちぜん鉄道 三国芦原線",
-      "company": "えちぜん鉄道",
-      "description": "福井～福井口は勝山永平寺線、福井口～三国港は三国芦原線として案内。",
-      "routeColor": "#0072BC",
-      "routeColors": {
-        "勝山永平寺線": "#F28C28",
-        "三国芦原線": "#0072BC"
-      },
       "formationFamily": "echizen",
       "formationCountDefault": 2,
       "formationDefaultName": "えちぜん鉄道車",
       "formationDefaultImage": "Echizen_noimage",
       "noImage": "Echizen_noimage",
-      "maxFormationCoupling": 2,
-      "access": {
-        "public": false,
-        "routeAdmins": []
-      },
-      "range": "福井～三国港",
-      "lineNames": [
-        "勝山永平寺線",
-        "三国芦原線"
-      ],
       "lines": [
         {
           "name": "勝山永平寺線",
@@ -15602,18 +14853,15 @@
           "stations": [
             {
               "name": "福井",
-              "nameEn": "Fukui",
-              "stationCode": "E1"
+              "nameEn": "Fukui"
             },
             {
               "name": "新福井",
-              "nameEn": "ShinFukui",
-              "stationCode": "E2"
+              "nameEn": "ShinFukui"
             },
             {
               "name": "福井口",
-              "nameEn": "Fukui Guchi",
-              "stationCode": "E3"
+              "nameEn": "Fukui Guchi"
             }
           ]
         },
@@ -15628,113 +14876,91 @@
           "stations": [
             {
               "name": "福井口",
-              "nameEn": "Fukui Guchi",
-              "stationCode": "E3"
+              "nameEn": "Fukui Guchi"
             },
             {
               "name": "まつもと町屋",
-              "nameEn": "Matsumoto Machiya",
-              "stationCode": "E24"
+              "nameEn": "Matsumoto Machiya"
             },
             {
               "name": "西別院",
-              "nameEn": "Nishibetsuin",
-              "stationCode": "E25"
+              "nameEn": "Nishibetsuin"
             },
             {
               "name": "田原町",
-              "nameEn": "Tawaramachi",
-              "stationCode": "E26"
+              "nameEn": "Tawaramachi"
             },
             {
               "name": "福大前西福井",
-              "nameEn": "Fukudaimae Nishifukui",
-              "stationCode": "E27"
+              "nameEn": "Fukudaimae Nishifukui"
             },
             {
               "name": "日華化学前",
-              "nameEn": "Nikkakagaku Mae",
-              "stationCode": "E28"
+              "nameEn": "Nikkakagaku Mae"
             },
             {
               "name": "八ツ島",
-              "nameEn": "Yatsushima",
-              "stationCode": "E29"
+              "nameEn": "Yatsushima"
             },
             {
               "name": "新田塚",
-              "nameEn": "Nittazuka",
-              "stationCode": "E30"
+              "nameEn": "Nittazuka"
             },
             {
               "name": "中角",
-              "nameEn": "Nakatsuno",
-              "stationCode": "E31"
+              "nameEn": "Nakatsuno"
             },
             {
               "name": "鷲塚針原",
-              "nameEn": "Washizuka Haribara",
-              "stationCode": "E32"
+              "nameEn": "Washizuka Haribara"
             },
             {
               "name": "太郎丸エンゼルランド",
-              "nameEn": "Taromaru Angelland",
-              "stationCode": "E33"
+              "nameEn": "Taromaru Angelland"
             },
             {
               "name": "西春江ハートピア",
-              "nameEn": "Nishiharue Heartopia",
-              "stationCode": "E34"
+              "nameEn": "Nishiharue Heartopia"
             },
             {
               "name": "西長田ゆりの里",
-              "nameEn": "Nishinagata Yuri no sato",
-              "stationCode": "E35"
+              "nameEn": "Nishinagata Yuri no sato"
             },
             {
               "name": "下兵庫こうふく",
-              "nameEn": "Shimohyogo Kofuku",
-              "stationCode": "E36"
+              "nameEn": "Shimohyogo Kofuku"
             },
             {
               "name": "大関",
-              "nameEn": "Ozeki",
-              "stationCode": "E37"
+              "nameEn": "Ozeki"
             },
             {
               "name": "本荘",
-              "nameEn": "Honjo",
-              "stationCode": "E38"
+              "nameEn": "Honjo"
             },
             {
               "name": "番田",
-              "nameEn": "Banden",
-              "stationCode": "E39"
+              "nameEn": "Banden"
             },
             {
               "name": "あわら湯のまち",
-              "nameEn": "Awara Yunomachi",
-              "stationCode": "E40"
+              "nameEn": "Awara Yunomachi"
             },
             {
               "name": "水居",
-              "nameEn": "Mizui",
-              "stationCode": "E41"
+              "nameEn": "Mizui"
             },
             {
               "name": "三国神社",
-              "nameEn": "Mikuni Jinja",
-              "stationCode": "E42"
+              "nameEn": "Mikuni Jinja"
             },
             {
               "name": "三国",
-              "nameEn": "Mikuni",
-              "stationCode": "E43"
+              "nameEn": "Mikuni"
             },
             {
               "name": "三国港",
-              "nameEn": "Mikuni Minato",
-              "stationCode": "E44"
+              "nameEn": "Mikuni Minato"
             }
           ]
         }
@@ -15760,13 +14986,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1999年",
-              "manufacturer": "武庫川車両工業",
-              "originalVehicle": "京福電鉄 モハ5001形として新製",
-              "rebuildYear": "",
-              "rebuildManufacturer": "",
-              "remarks": "主要機器は豊橋鉄道1900系・阪神5261形から流用"
+              ]
             }
           ]
         },
@@ -15790,13 +15010,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道 100形103号",
-              "rebuildYear": "2003年",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "片運転台車から両運転台化、直流600V対応"
+              ]
             },
             {
               "id": "6002",
@@ -15809,13 +15023,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道 100形108号",
-              "rebuildYear": "2003年",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "片運転台車から両運転台化、直流600V対応"
+              ]
             }
           ]
         },
@@ -15839,13 +15047,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道100形101号",
-              "rebuildYear": "2004年",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6102",
@@ -15858,13 +15060,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道100形102号",
-              "rebuildYear": "2004年",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6103",
@@ -15877,13 +15073,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道100形104号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6104",
@@ -15896,13 +15086,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道300形302号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6105",
@@ -15915,13 +15099,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道300形301号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6106",
@@ -15934,13 +15112,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道300形303号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6107",
@@ -15953,13 +15125,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道100形107号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6108",
@@ -15972,13 +15138,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道100形109号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6109",
@@ -15991,13 +15151,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道100形105号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6110",
@@ -16010,13 +15164,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道100形106号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6111",
@@ -16029,13 +15177,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道300形304号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             },
             {
               "id": "6112",
@@ -16048,13 +15190,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1988年",
-              "manufacturer": "日本車輌製造",
-              "originalVehicle": "愛知環状鉄道300形305号",
-              "rebuildYear": "2004～2006年（個別の導入年は未確認）",
-              "rebuildManufacturer": "未確認（公開資料で施工会社を特定できず）",
-              "rebuildDetails": "両運転台化（100形由来車）、直流600V対応、主電動機をMT54形へ交換"
+              ]
             }
           ]
         },
@@ -16079,16 +15215,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1982～1983年（個別製造年未確認）",
-              "manufacturer": "日本車輌製造",
-              "originalVehicleNumbers": [
-                "クモハ119-5318",
-                "クハ118-5311"
-              ],
-              "rebuildYear": "2013-02-04",
-              "rebuildManufacturer": "大阪車輌工業",
-              "rebuildDetails": "JR東海119系5300番台を改造、VVVF化、ワンマン化、トイレ撤去"
+              ]
             },
             {
               "id": "7003F",
@@ -16102,16 +15229,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1982～1983年（個別製造年未確認）",
-              "manufacturer": "日本車輌製造",
-              "originalVehicleNumbers": [
-                "クモハ119-5330",
-                "クハ118-5322"
-              ],
-              "rebuildYear": "2013-02-27",
-              "rebuildManufacturer": "大阪車輌工業",
-              "rebuildDetails": "JR東海119系5300番台を改造、VVVF化、ワンマン化、トイレ撤去"
+              ]
             },
             {
               "id": "7005F",
@@ -16125,16 +15243,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1982～1983年（個別製造年未確認）",
-              "manufacturer": "日本車輌製造",
-              "originalVehicleNumbers": [
-                "クモハ119-5321",
-                "クハ118-5313"
-              ],
-              "rebuildYear": "2013-03-15",
-              "rebuildManufacturer": "大阪車輌工業",
-              "rebuildDetails": "JR東海119系5300番台を改造、VVVF化、ワンマン化、トイレ撤去"
+              ]
             },
             {
               "id": "7007F",
@@ -16148,16 +15257,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1982～1983年（個別製造年未確認）",
-              "manufacturer": "日本車輌製造",
-              "originalVehicleNumbers": [
-                "クモハ119-5320",
-                "クハ118-5312"
-              ],
-              "rebuildYear": "2013-12-27",
-              "rebuildManufacturer": "大阪車輌工業",
-              "rebuildDetails": "JR東海119系5300番台を改造、VVVF化、ワンマン化、トイレ撤去"
+              ]
             },
             {
               "id": "7009F",
@@ -16171,16 +15271,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1983年（第5編成の車両個別資料で確認）",
-              "manufacturer": "日本車輌製造",
-              "originalVehicleNumbers": [
-                "クモハ119-5325",
-                "クハ118-5317"
-              ],
-              "rebuildYear": "2014-02-07",
-              "rebuildManufacturer": "大阪車輌工業",
-              "rebuildDetails": "JR東海119系5300番台を改造、VVVF化、ワンマン化、トイレ撤去"
+              ]
             },
             {
               "id": "7011F",
@@ -16194,16 +15285,7 @@
               "routeNames": [
                 "勝山永平寺線",
                 "三国芦原線"
-              ],
-              "manufacturingYear": "1982～1983年（個別製造年未確認）",
-              "manufacturer": "日本車輌製造",
-              "originalVehicleNumbers": [
-                "クモハ119-5305",
-                "クハ118-5303"
-              ],
-              "rebuildYear": "2014-11-25",
-              "rebuildManufacturer": "大阪車輌工業",
-              "rebuildDetails": "JR東海119系5300番台を改造、VVVF化、ワンマン化、トイレ撤去"
+              ]
             }
           ]
         },
@@ -16226,16 +15308,7 @@
               ],
               "routeNames": [
                 "勝山永平寺線"
-              ],
-              "manufacturingYear": "1979年",
-              "manufacturer": "東急車輛製造",
-              "originalVehicleNumbers": [
-                "静岡鉄道 クモハ1010",
-                "静岡鉄道 クハ1510"
-              ],
-              "rebuildYear": "2021～2023年",
-              "rebuildManufacturer": "阪神車両メンテナンス",
-              "rebuildDetails": "2021年譲受後、恐竜列車用に改造。2023年7月15日運行開始"
+              ]
             }
           ]
         },
@@ -16257,10 +15330,7 @@
               ],
               "routeNames": [
                 "三国芦原線"
-              ],
-              "manufacturingYear": "2015年",
-              "manufacturer": "新潟トランシス",
-              "remarks": "2車体連接の1両編成。愛称Ki-bo。2016年3月27日運行開始。"
+              ]
             },
             {
               "id": "L-02",
@@ -16272,10 +15342,7 @@
               ],
               "routeNames": [
                 "三国芦原線"
-              ],
-              "manufacturingYear": "2015年",
-              "manufacturer": "新潟トランシス",
-              "remarks": "2車体連接の1両編成。愛称Ki-bo。2016年3月27日運行開始。"
+              ]
             }
           ]
         }
@@ -16287,7 +15354,6 @@
               "id": "M-UP-530-平日",
               "no": "530M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -16392,19 +15458,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-614-平日",
               "no": "614M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -16509,19 +15569,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-644-平日",
               "no": "644M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -16626,19 +15680,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-3710-平日",
               "no": "3710M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -16746,19 +15794,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-6738-平日",
               "no": "6738M",
               "type": "",
-              "direction": "上り",
               "start": "西長田ゆりの里",
               "dest": "福井",
               "stops": [
@@ -16827,19 +15869,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "日祝日(12/29~1/3含む)運休",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-720-平日",
               "no": "720M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -16944,19 +15980,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-748-平日",
               "no": "748M",
               "type": "",
-              "direction": "上り",
               "start": "あわら湯のまち",
               "dest": "福井",
               "stops": [
@@ -17045,19 +16075,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-754-平日",
               "no": "754M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -17162,19 +16186,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-820-平日",
               "no": "820M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -17279,19 +16297,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-6900-平日",
               "no": "6900M",
               "type": "",
-              "direction": "上り",
               "start": "西長田ゆりの里",
               "dest": "福井",
               "stops": [
@@ -17360,19 +16372,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "日祝日(12/29~1/3含む)運休",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-908-平日",
               "no": "908M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -17477,19 +16483,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-938-平日",
               "no": "938M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -17594,19 +16594,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1008-平日",
               "no": "1008M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -17711,19 +16705,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1038-平日",
               "no": "1038M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -17828,19 +16816,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1108-平日",
               "no": "1108M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -17945,19 +16927,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1138-平日",
               "no": "1138M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -18062,19 +17038,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1208-平日",
               "no": "1208M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -18179,19 +17149,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1238-平日",
               "no": "1238M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -18296,19 +17260,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1308-平日",
               "no": "1308M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -18413,19 +17371,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1338-平日",
               "no": "1338M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -18530,19 +17482,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1408-平日",
               "no": "1408M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -18647,19 +17593,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1438-平日",
               "no": "1438M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -18764,19 +17704,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1508-平日",
               "no": "1508M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -18881,19 +17815,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1538-平日",
               "no": "1538M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -18998,19 +17926,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1608-平日",
               "no": "1608M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -19115,19 +18037,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1638-平日",
               "no": "1638M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -19232,19 +18148,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1708-平日",
               "no": "1708M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -19349,19 +18259,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1738-平日",
               "no": "1738M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -19466,19 +18370,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1808-平日",
               "no": "1808M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -19583,19 +18481,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1838-平日",
               "no": "1838M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -19700,19 +18592,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1908-平日",
               "no": "1908M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -19817,19 +18703,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1938-平日",
               "no": "1938M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -19934,19 +18814,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-2008-平日",
               "no": "2008M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -20051,19 +18925,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-2038-平日",
               "no": "2038M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -20168,19 +19036,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-2108-平日",
               "no": "2108M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -20285,19 +19147,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-2208-平日",
               "no": "2208M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -20402,12 +19258,7 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             }
           ],
@@ -20416,7 +19267,6 @@
               "id": "M-DOWN-615-平日",
               "no": "615M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -20521,19 +19371,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-647-平日",
               "no": "647M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -20638,19 +19482,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-6707-平日",
               "no": "6707M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "西長田ゆりの里",
               "stops": [
@@ -20719,19 +19557,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "日祝日(12/29~1/3含む)運休",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-723-平日",
               "no": "723M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -20836,19 +19668,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-749-平日",
               "no": "749M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -20953,19 +19779,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-6811-平日",
               "no": "6811M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "西長田ゆりの里",
               "stops": [
@@ -21034,19 +19854,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "日祝日(12/29~1/3含む)運休",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-839-平日",
               "no": "839M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -21151,19 +19965,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-909-平日",
               "no": "909M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -21268,19 +20076,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-939-平日",
               "no": "939M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -21385,19 +20187,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1009-平日",
               "no": "1009M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -21502,19 +20298,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1039-平日",
               "no": "1039M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -21619,19 +20409,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1109-平日",
               "no": "1109M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -21736,19 +20520,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1139-平日",
               "no": "1139M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -21853,19 +20631,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1209-平日",
               "no": "1209M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -21970,19 +20742,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1239-平日",
               "no": "1239M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -22087,19 +20853,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1309-平日",
               "no": "1309M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -22204,19 +20964,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1339-平日",
               "no": "1339M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -22321,19 +21075,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1409-平日",
               "no": "1409M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -22438,19 +21186,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1439-平日",
               "no": "1439M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -22555,19 +21297,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1509-平日",
               "no": "1509M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -22672,19 +21408,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1539-平日",
               "no": "1539M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -22789,19 +21519,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1609-平日",
               "no": "1609M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -22906,19 +21630,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1639-平日",
               "no": "1639M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -23023,19 +21741,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1709-平日",
               "no": "1709M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -23140,19 +21852,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1739-平日",
               "no": "1739M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -23257,19 +21963,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1809-平日",
               "no": "1809M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -23374,19 +22074,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1839-平日",
               "no": "1839M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -23491,19 +22185,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1909-平日",
               "no": "1909M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -23608,19 +22296,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1939-平日",
               "no": "1939M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -23725,19 +22407,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-2009-平日",
               "no": "2009M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -23842,19 +22518,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-2039-平日",
               "no": "2039M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -23959,19 +22629,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-2109-平日",
               "no": "2109M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -24076,19 +22740,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-2139-平日",
               "no": "2139M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -24193,19 +22851,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-2219-平日",
               "no": "2219M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -24310,19 +22962,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-2323-平日",
               "no": "2323M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -24427,12 +23073,7 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             }
           ]
@@ -24443,7 +23084,6 @@
               "id": "M-UP-6738-土曜",
               "no": "6738M",
               "type": "",
-              "direction": "上り",
               "start": "西長田ゆりの里",
               "dest": "福井",
               "stops": [
@@ -24512,19 +23152,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "日祝日(12/29~1/3含む)運休",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-6900-土曜",
               "no": "6900M",
               "type": "",
-              "direction": "上り",
               "start": "西長田ゆりの里",
               "dest": "福井",
               "stops": [
@@ -24593,12 +23227,7 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "日祝日(12/29~1/3含む)運休",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             }
           ],
@@ -24607,7 +23236,6 @@
               "id": "M-DOWN-6707-土曜",
               "no": "6707M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "西長田ゆりの里",
               "stops": [
@@ -24676,19 +23304,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "日祝日(12/29~1/3含む)運休",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-6811-土曜",
               "no": "6811M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "西長田ゆりの里",
               "stops": [
@@ -24757,12 +23379,7 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "日祝日(12/29~1/3含む)運休",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             }
           ]
@@ -24773,7 +23390,6 @@
               "id": "M-UP-530-休日",
               "no": "530M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -24878,19 +23494,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-614-休日",
               "no": "614M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -24995,19 +23605,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-644-休日",
               "no": "644M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -25112,19 +23716,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-3710-休日",
               "no": "3710M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -25232,19 +23830,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-720-休日",
               "no": "720M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -25349,19 +23941,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-748-休日",
               "no": "748M",
               "type": "",
-              "direction": "上り",
               "start": "あわら湯のまち",
               "dest": "福井",
               "stops": [
@@ -25450,19 +24036,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-754-休日",
               "no": "754M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -25567,19 +24147,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-820-休日",
               "no": "820M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -25684,19 +24258,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-908-休日",
               "no": "908M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -25801,19 +24369,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-938-休日",
               "no": "938M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -25918,19 +24480,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1008-休日",
               "no": "1008M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -26035,19 +24591,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1038-休日",
               "no": "1038M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -26152,19 +24702,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1108-休日",
               "no": "1108M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -26269,19 +24813,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1138-休日",
               "no": "1138M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -26386,19 +24924,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1208-休日",
               "no": "1208M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -26503,19 +25035,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1238-休日",
               "no": "1238M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -26620,19 +25146,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1308-休日",
               "no": "1308M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -26737,19 +25257,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1338-休日",
               "no": "1338M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -26854,19 +25368,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1408-休日",
               "no": "1408M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -26971,19 +25479,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1438-休日",
               "no": "1438M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -27088,19 +25590,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1508-休日",
               "no": "1508M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -27205,19 +25701,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1538-休日",
               "no": "1538M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -27322,19 +25812,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1608-休日",
               "no": "1608M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -27439,19 +25923,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1638-休日",
               "no": "1638M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -27556,19 +26034,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1708-休日",
               "no": "1708M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -27673,19 +26145,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1738-休日",
               "no": "1738M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -27790,19 +26256,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1808-休日",
               "no": "1808M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -27907,19 +26367,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1838-休日",
               "no": "1838M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -28024,19 +26478,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1908-休日",
               "no": "1908M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -28141,19 +26589,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-1938-休日",
               "no": "1938M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -28258,19 +26700,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-2008-休日",
               "no": "2008M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -28375,19 +26811,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-2038-休日",
               "no": "2038M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -28492,19 +26922,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-2108-休日",
               "no": "2108M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -28609,19 +27033,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-UP-2208-休日",
               "no": "2208M",
               "type": "",
-              "direction": "上り",
               "start": "三国港",
               "dest": "福井",
               "stops": [
@@ -28726,12 +27144,7 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線上り",
               "prescribedFormation": "えちぜん鉄道車"
             }
           ],
@@ -28740,7 +27153,6 @@
               "id": "M-DOWN-615-休日",
               "no": "615M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -28845,19 +27257,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-647-休日",
               "no": "647M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -28962,19 +27368,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-723-休日",
               "no": "723M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -29079,19 +27479,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-749-休日",
               "no": "749M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -29196,19 +27590,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-839-休日",
               "no": "839M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -29313,19 +27701,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-909-休日",
               "no": "909M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -29430,19 +27812,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-939-休日",
               "no": "939M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -29547,19 +27923,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1009-休日",
               "no": "1009M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -29664,19 +28034,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1039-休日",
               "no": "1039M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -29781,19 +28145,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1109-休日",
               "no": "1109M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -29898,19 +28256,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1139-休日",
               "no": "1139M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -30015,19 +28367,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1209-休日",
               "no": "1209M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -30132,19 +28478,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1239-休日",
               "no": "1239M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -30249,19 +28589,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1309-休日",
               "no": "1309M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -30366,19 +28700,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1339-休日",
               "no": "1339M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -30483,19 +28811,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1409-休日",
               "no": "1409M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -30600,19 +28922,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1439-休日",
               "no": "1439M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -30717,19 +29033,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1509-休日",
               "no": "1509M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -30834,19 +29144,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1539-休日",
               "no": "1539M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -30951,19 +29255,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1609-休日",
               "no": "1609M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -31068,19 +29366,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1639-休日",
               "no": "1639M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -31185,19 +29477,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1709-休日",
               "no": "1709M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -31302,19 +29588,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1739-休日",
               "no": "1739M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -31419,19 +29699,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1809-休日",
               "no": "1809M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -31536,19 +29810,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1839-休日",
               "no": "1839M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -31653,19 +29921,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1909-休日",
               "no": "1909M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -31770,19 +30032,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-1939-休日",
               "no": "1939M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -31887,19 +30143,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-2009-休日",
               "no": "2009M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -32004,19 +30254,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-2039-休日",
               "no": "2039M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -32121,19 +30365,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-2109-休日",
               "no": "2109M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -32238,19 +30476,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-2139-休日",
               "no": "2139M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -32355,19 +30587,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-2219-休日",
               "no": "2219M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -32472,19 +30698,13 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             },
             {
               "id": "M-DOWN-2323-休日",
               "no": "2323M",
               "type": "",
-              "direction": "下り",
               "start": "福井",
               "dest": "三国港",
               "stops": [
@@ -32589,36 +30809,180 @@
                 "勝山永平寺線",
                 "三国芦原線"
               ],
-              "lines": [
-                "勝山永平寺線",
-                "三国芦原線"
-              ],
               "serviceNote": "",
-              "sourceSheet": "三国芦原線下り",
               "prescribedFormation": "えちぜん鉄道車"
             }
           ]
         }
       },
-      "timetableNote": "添付Excelには種別欄がないため、列車種別は未設定。",
-      "serviceDayNotes": {
-        "土日祝日運休": "平日運転。休日ダイヤから除外。",
-        "日祝日運休": "平日および土曜日（祝日・12月29日～1月3日を除く）運転。"
-      },
-      "sourceTimetable": {
-        "file": "えち鉄　時刻表 (1).xlsx",
-        "validityDate": "不明（添付ファイルに適用開始日の記載なし）",
-        "sheets": [
-          "三国芦原線上り",
-          "三国芦原線下り"
+      "operationChains": {
+        "平日": [
+          [
+            "M-UP-614-平日",
+            "M-DOWN-6707-平日",
+            "M-UP-6738-平日",
+            "M-DOWN-6811-平日",
+            "M-UP-6900-平日",
+            "M-DOWN-939-平日",
+            "M-UP-1038-平日",
+            "M-DOWN-1139-平日",
+            "M-UP-1238-平日",
+            "M-DOWN-1339-平日",
+            "M-UP-1438-平日",
+            "M-DOWN-1539-平日",
+            "M-UP-1638-平日",
+            "M-DOWN-1739-平日",
+            "M-UP-1838-平日",
+            "M-DOWN-1939-平日",
+            "M-UP-2038-平日",
+            "M-DOWN-2139-平日"
+          ],
+          [
+            "M-UP-644-平日",
+            "M-DOWN-749-平日",
+            "M-UP-908-平日",
+            "M-DOWN-1009-平日",
+            "M-UP-1108-平日",
+            "M-DOWN-1209-平日",
+            "M-UP-1308-平日",
+            "M-DOWN-1409-平日",
+            "M-UP-1508-平日",
+            "M-DOWN-1609-平日",
+            "M-UP-1708-平日",
+            "M-DOWN-1809-平日",
+            "M-UP-1908-平日",
+            "M-DOWN-2009-平日",
+            "M-UP-2108-平日",
+            "M-DOWN-2219-平日"
+          ],
+          [
+            "M-UP-748-平日",
+            "M-DOWN-839-平日",
+            "M-UP-938-平日",
+            "M-DOWN-1039-平日",
+            "M-UP-1138-平日",
+            "M-DOWN-1239-平日",
+            "M-UP-1338-平日",
+            "M-DOWN-1439-平日",
+            "M-UP-1538-平日",
+            "M-DOWN-1639-平日",
+            "M-UP-1738-平日",
+            "M-DOWN-1839-平日",
+            "M-UP-1938-平日",
+            "M-DOWN-2039-平日"
+          ],
+          [
+            "M-DOWN-615-平日",
+            "M-UP-3710-平日"
+          ],
+          [
+            "M-DOWN-647-平日",
+            "M-UP-754-平日",
+            "M-DOWN-909-平日",
+            "M-UP-1008-平日",
+            "M-DOWN-1109-平日",
+            "M-UP-1208-平日",
+            "M-DOWN-1309-平日",
+            "M-UP-1408-平日",
+            "M-DOWN-1509-平日",
+            "M-UP-1608-平日",
+            "M-DOWN-1709-平日",
+            "M-UP-1808-平日",
+            "M-DOWN-1909-平日",
+            "M-UP-2008-平日",
+            "M-DOWN-2109-平日",
+            "M-UP-2208-平日",
+            "M-DOWN-2323-平日"
+          ],
+          [
+            "M-DOWN-723-平日",
+            "M-UP-820-平日"
+          ]
+        ],
+        "休日": [
+          [
+            "M-UP-614-休日",
+            "M-DOWN-723-休日",
+            "M-UP-820-休日",
+            "M-DOWN-939-休日",
+            "M-UP-1038-休日",
+            "M-DOWN-1139-休日",
+            "M-UP-1238-休日",
+            "M-DOWN-1339-休日",
+            "M-UP-1438-休日",
+            "M-DOWN-1539-休日",
+            "M-UP-1638-休日",
+            "M-DOWN-1739-休日",
+            "M-UP-1838-休日",
+            "M-DOWN-1939-休日",
+            "M-UP-2038-休日",
+            "M-DOWN-2139-休日"
+          ],
+          [
+            "M-UP-644-休日",
+            "M-DOWN-749-休日",
+            "M-UP-908-休日",
+            "M-DOWN-1009-休日",
+            "M-UP-1108-休日",
+            "M-DOWN-1209-休日",
+            "M-UP-1308-休日",
+            "M-DOWN-1409-休日",
+            "M-UP-1508-休日",
+            "M-DOWN-1609-休日",
+            "M-UP-1708-休日",
+            "M-DOWN-1809-休日",
+            "M-UP-1908-休日",
+            "M-DOWN-2009-休日",
+            "M-UP-2108-休日",
+            "M-DOWN-2219-休日"
+          ],
+          [
+            "M-UP-748-休日",
+            "M-DOWN-839-休日",
+            "M-UP-938-休日",
+            "M-DOWN-1039-休日",
+            "M-UP-1138-休日",
+            "M-DOWN-1239-休日",
+            "M-UP-1338-休日",
+            "M-DOWN-1439-休日",
+            "M-UP-1538-休日",
+            "M-DOWN-1639-休日",
+            "M-UP-1738-休日",
+            "M-DOWN-1839-休日",
+            "M-UP-1938-休日",
+            "M-DOWN-2039-休日"
+          ],
+          [
+            "M-DOWN-615-休日",
+            "M-UP-3710-休日"
+          ],
+          [
+            "M-DOWN-647-休日",
+            "M-UP-754-休日",
+            "M-DOWN-909-休日",
+            "M-UP-1008-休日",
+            "M-DOWN-1109-休日",
+            "M-UP-1208-休日",
+            "M-DOWN-1309-休日",
+            "M-UP-1408-休日",
+            "M-DOWN-1509-休日",
+            "M-UP-1608-休日",
+            "M-DOWN-1709-休日",
+            "M-UP-1808-休日",
+            "M-DOWN-1909-休日",
+            "M-UP-2008-休日",
+            "M-DOWN-2109-休日",
+            "M-UP-2208-休日",
+            "M-DOWN-2323-休日"
+          ],
+          [
+            "M-DOWN-6707-土曜",
+            "M-UP-6738-土曜",
+            "M-DOWN-6811-土曜",
+            "M-UP-6900-土曜"
+          ]
         ]
-      },
-      "fleetNote": "現役旅客車両を対象。MC6001・MC6101形の改造施工会社は公開資料で確認できないため未確認と明記。MC7000形はJR東海119系5300番台を大阪車輌工業で改造。MC8000形は静岡鉄道1000形を阪神車両メンテナンスで改造。L形は2車体連接の1両編成として登録。時刻表Excelに種別欄がないため、種別は未設定。",
-      "defaultFormationName": "えちぜん鉄道車",
-      "prescribedFormation": "えちぜん鉄道車"
+      }
     }
-  },
-  "defaultFormationName": "えちぜん鉄道車",
-  "prescribedFormation": "えちぜん鉄道車",
-  "prescribedFormationNote": "全列車共通：えちぜん鉄道車"
+  }
 }
