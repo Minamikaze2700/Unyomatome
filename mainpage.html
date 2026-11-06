@@ -1416,7 +1416,20 @@ const ROUTE_REGISTRY={
     storageArea:null,
     company:'JR東海',
     prescribedFormationRule:'common',
-    access:{public:true,routeAdmins:['2909D_Railways']},
+    access:{public:false,routeAdmins:['2909D_Railways']},
+  },
+  '御殿場線':{
+    id:'jr-tokai-gotemba',
+    json:'https://minamikaze2700.github.io/Unyomatome/data/JR_Tokai_Gotemba_2026.json',
+    jsonLines:['御殿場線'],
+    range:'沼津～国府津',
+    area:'JR東海',
+    storageRoot:'御殿場線',
+    storageArea:null,
+    company:'JR東海',
+    maxFormationCoupling:2,
+    prescribedFormationRule:'common',
+    access:{public:false,routeAdmins:[]},
   },
   '樽見鉄道樽見線':{
     id:'tarumi-line',
@@ -1550,6 +1563,9 @@ const ROUTE_SCHEDULE_CONFIG={
   ],
   '関西本線（名古屋～亀山）':[
     {from:'2026-03-14',to:'2027-03-13',file:'JR_Tokai_KansaiMain_2026.json'}
+  ],
+  '御殿場線':[
+    {from:'2026-03-14',to:'2027-03-13',file:'JR_Tokai_Gotemba_2026_private_20261107_v1.json'}
   ],
   '樽見鉄道樽見線':[
     {from:'2024-04-08',to:'2027-03-13',file:'Tarumi_2024.json'}
@@ -4192,14 +4208,14 @@ function formationInputExampleForRoute(routeName=activeRouteName,train=currentTr
     for(const variant of (Array.isArray(group?.variants)?group.variants:[])) addItems(variant?.items);
   }
   const example=candidates[0];
-  if(example) return `${example.id} / ${example.vehicle}`;
+  if(example) return `編成番号：${example.id} ／ 車両番号：${example.vehicle}`;
   // 車両番号情報がない形式だけの路線では、編成番号を自動表示しつつ
   // 車両番号欄は未登録であることを明示し、架空の番号を作らない。
   const firstGroup=groups.find(group=>group && (group.selectableType || group.type));
   const typeId=String(firstGroup?.selectableId||firstGroup?.type||'').trim();
   return typeId
-    ? `${typeId}`
-    : '';
+    ? `編成番号：${typeId} ／ 車両番号：JSON未登録`
+    : '編成番号：例を生成できません ／ 車両番号：JSON未登録';
 }
 function formationInputPlaceholderForTrain(train=currentTrainSnapshot){
   const example=formationInputExampleForRoute(train?.routeName||activeRouteName,train);
@@ -6774,7 +6790,8 @@ const REGION_DEFINITIONS={
   '東海':[{
     company:'JR東海',
     routes:[
-      {name:'関西本線（名古屋～亀山）',id:'jr-tokai-kansai'}
+      {name:'関西本線（名古屋～亀山）',id:'jr-tokai-kansai'},
+      {name:'御殿場線',id:'jr-tokai-gotemba'}
     ]
   },{
     company:'樽見鉄道',
