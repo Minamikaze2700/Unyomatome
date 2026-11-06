@@ -1163,11 +1163,9 @@ const ROUTE_REGISTRY={
     storageRoot:'広島地区',
     storageArea:null,
     company:'JR西日本',
-    formationFamily:'hiroshima',
     legacyStorageKeys:['JR広島'],
     prependStations:[{nameJa:'糸崎',nameEn:'Itozaki'}],
     access:{public:true,routeAdmins:[]},
-    formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '可部線':{
     id:'kabe',
@@ -1178,10 +1176,8 @@ const ROUTE_REGISTRY={
     storageRoot:'広島地区',
     storageArea:null,
     company:'JR西日本',
-    formationFamily:'hiroshima',
     legacyStorageKeys:['JR広島'],
     access:{public:true,routeAdmins:[]},
-    formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '呉線':{
     id:'kure',
@@ -1192,10 +1188,8 @@ const ROUTE_REGISTRY={
     storageRoot:'広島地区',
     storageArea:null,
     company:'JR西日本',
-    formationFamily:'hiroshima',
     legacyStorageKeys:['JR広島'],
     access:{public:true,routeAdmins:[]},
-    formationInputExample:'クモハ226-1 / A01 / S01'
   },
   '海岸線':{
     id:'kobe-kaigan',
@@ -1206,9 +1200,7 @@ const ROUTE_REGISTRY={
     storageRoot:'神戸市営',
     storageArea:null,
     company:'神戸市営地下鉄',
-    formationFamily:'kobe',
     access:{public:true,routeAdmins:[]},
-    formationInputExample:'5101 / 5101F / 5000系'
   },
   '西神・山手線':{
     id:'kobe-seishin-yamate',
@@ -1219,13 +1211,8 @@ const ROUTE_REGISTRY={
     storageRoot:'神戸市営',
     storageArea:null,
     company:'神戸市営地下鉄',
-    formationFamily:'kobe',
     formationType:'6000形',
-    formationTypeImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobecity6000.png',
-    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png',
-    noImage:'https://minamikaze2700.github.io/Unyomatome/images/Kobeseishin_noimage.png',
     access:{public:true,routeAdmins:[]},
-    formationInputExample:'6000形'
   },
   '南海泉北線':{
     id:'nankai-senboku',
@@ -1236,14 +1223,8 @@ const ROUTE_REGISTRY={
     storageRoot:'南海高野線',
     storageArea:null,
     company:'南海電気鉄道',
-    formationFamily:'nankai-koya',
     showTrainServiceName:true,
-    formationCountDefault:2,
-    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/NK_noimage.png',
-    noImage:'https://minamikaze2700.github.io/Unyomatome/images/NK_noimage.png',
-    typeColors:{'各停':'#687072','準急':'#1c83cf','区急':'#00a65a'},
     access:{public:false,routeAdmins:[]},
-    formationInputExample:'5501F / 7501F / 8301F'
   },
   '京浜東北・根岸線':{
     id:'keihin-tohoku',
@@ -1255,10 +1236,8 @@ const ROUTE_REGISTRY={
     storageRoot:'京浜東北・根岸線',
     storageArea:null,
     company:'JR東日本',
-    formationFamily:'keihin',
     typeClassMap:{'快速':'keihin-express','普通':'keihin-local','各停':'keihin-local'},
     access:{public:true,routeAdmins:[]},
-    formationInputExample:'E233系1000番台 / 101 / 101F',
     prescribedFormationRule:'jre'
   },
   '横浜線':{
@@ -1272,11 +1251,9 @@ const ROUTE_REGISTRY={
     storageRoot:'横浜線',
     storageArea:null,
     company:'JR東日本',
-    formationFamily:'yokohama',
     typeClassMap:{'快速':'yokohama-express','普通':'yokohama-local','各停':'yokohama-local'},
     // 京浜東北・根岸線との共有区間を表示する際も、同路線の行先略称を適用する。
     access:{public:true,routeAdmins:[]},
-    formationInputExample:'E233系6000番台 / H001 / H001F',
     prescribedFormationRule:'jre'
   },
   '南武線':{
@@ -1288,9 +1265,7 @@ const ROUTE_REGISTRY={
     storageRoot:'JR南武線',
     storageArea:null,
     company:'JR東日本',
-    formationFamily:'nambu',
     access:{public:true,routeAdmins:['syakutaba6174']},
-    formationInputExample:'E233系8000番台 / N1',
     prescribedFormationRule:'common'
   },
   '内房線':{
@@ -1302,11 +1277,7 @@ const ROUTE_REGISTRY={
     storageRoot:'内房線',
     storageArea:null,
     company:'JR東日本',
-    formationFamily:'uchibo',
-    legacyFormationType:'内房線編成',
-    formationImageMap:{...Object.fromEntries(Array.from({length:12},(_,i)=>{const n=String(i+1).padStart(2,'0');return [`R${n}`,`E131_R${n}`]})),...Object.fromEntries(Array.from({length:12},(_,i)=>{const n=String(i+1).padStart(2,'0');return [`F${n}`,`E235_F${n}`]})),...Object.fromEntries(Array.from({length:4},(_,i)=>{const n=String(i+1);return [`J${n}`,`E235_J${n}`]})),C1:'E233_C1',C2:'E233_C2',C3:'E233_C3',C9:'E233_C9',C401:'209_C401',C602:'209_C602'},
     access:{public:false,routeAdmins:[]},
-    formationInputExample:'E235系F編成 / E131系2両 / 209系4両'
   },
   '大阪環状線':{
     id:'osaka-loop',
@@ -1322,14 +1293,8 @@ const ROUTE_REGISTRY={
     storageRoot:'大阪環状線・ゆめ咲線',
     storageArea:'JR西日本',
     company:'JR西日本',
-    formationFamily:'osaka-loop',
-    defaultFormationName:'323系',
-    formationTypeImage:'https://minamikaze2700.github.io/Unyomatome/images/323.png',
-    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
-    noImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
     prescribedFormationRule:'common',
     access:{public:false,routeAdmins:['aceKINKI2525']},
-    formationInputExample:'323系 / LS01'
   },
   'ゆめ咲線':{
     id:'yumesaki',
@@ -1342,14 +1307,8 @@ const ROUTE_REGISTRY={
     storageRoot:'大阪環状線・ゆめ咲線',
     storageArea:'JR西日本',
     company:'JR西日本',
-    formationFamily:'osaka-loop',
-    defaultFormationName:'323系',
-    formationTypeImage:'https://minamikaze2700.github.io/Unyomatome/images/323.png',
-    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
-    noImage:'https://minamikaze2700.github.io/Unyomatome/images/OsakaLoop_noimage.png',
     prescribedFormationRule:'common',
     access:{public:false,routeAdmins:[]},
-    formationInputExample:'323系 / LS01'
   },
   '日比谷線':{
     id:'hibiya',
@@ -1360,9 +1319,7 @@ const ROUTE_REGISTRY={
     storageRoot:'日比谷線',
     storageArea:'__ROOT__',
     company:'東京メトロ',
-    formationFamily:'hibiya',
     access:{public:false,routeAdmins:[]},
-    formationInputExample:'TRTA13000 / TRTA13101 / TB70000 / TB71701 / TB70090 / TB71791',
     prescribedFormationRule:'common'
   },
   '空港線・箱崎線':{
@@ -1374,7 +1331,6 @@ const ROUTE_REGISTRY={
     storageRoot:'福岡市地下鉄 空港線・箱崎線',
     storageArea:null,
     company:'福岡市地下鉄',
-    formationFamily:'fukuoka-kuko-hakozaki',
     diagramTopology:'branch-toggle',
     diagramMainLine:'空港線',
     diagramBranchLine:'箱崎線',
@@ -1383,10 +1339,7 @@ const ROUTE_REGISTRY={
     formationRouteFilter:'ignore',
     ignoredRegisteredFormationPatterns:['noimage','^227'],
     noTrainNumbers:true,
-    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
-    noImage:'https://minamikaze2700.github.io/Unyomatome/images/Fukuchika_noimage.png',
     access:{public:false,routeAdmins:['fulnishi39']},
-    formationInputExample:'04 / K01 / W01',
     prescribedFormationRule:'common'
   },
   '七隈線':{
@@ -1398,18 +1351,12 @@ const ROUTE_REGISTRY={
     storageRoot:'福岡市地下鉄 七隈線',
     storageArea:null,
     company:'福岡市地下鉄',
-    formationFamily:'fukuoka-nanakuma',
     noTrainNumbers:true,
-    defaultFormationName:'4両',
-    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/FukuchikaNanakuma_noimage.png',
-    noImage:'https://minamikaze2700.github.io/Unyomatome/images/FukuchikaNanakuma_noimage.png',
     prescribedFormationRule:'common',
     access:{public:true,routeAdmins:['fulnishi39']},
-    formationInputExample:'3000系 / 3000A系 / 01'
   },
   '東武野田線':{
     id:'tobu-noda',
-    formationCountDefault:1,
     blockedFormationIds:['8158'],
     json:'https://minamikaze2700.github.io/Unyomatome/data/TobuNoda_2024.json',
     jsonLines:['東武野田線'],
@@ -1418,10 +1365,7 @@ const ROUTE_REGISTRY={
     storageRoot:'東武野田線',
     storageArea:'__ROOT__',
     company:'東武鉄道',
-    formationFamily:'noda',
-    typeColors:{'普通':'#666'},
     access:{public:true,routeAdmins:[]},
-    formationInputExample:'81501 / 81501F / 80000系',
     prescribedFormationRule:'common'
   },
   '東武スカイツリーライン':{
@@ -1433,14 +1377,8 @@ const ROUTE_REGISTRY={
     storageRoot:'東武スカイツリーライン',
     storageArea:'__ROOT__',
     company:'東武鉄道',
-    formationFamily:'tobu-skytree',
     diagramTopology:'multi-junction',
-    formationCountDefault:2,
-    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/tschijo.png',
-    noImage:'https://minamikaze2700.github.io/Unyomatome/images/tschijo.png',
-    typeColors:{'普通':'#9fa0a0','区間準急':'#c1ca1f','区間急行':'#e99ebf'},
     access:{public:true,routeAdmins:[]},
-    defaultFormationName:'地上運用'
   },
   '水島臨海鉄道':{
     id:'mizushima-rinkai',
@@ -1451,12 +1389,8 @@ const ROUTE_REGISTRY={
     storageRoot:'水島臨海鉄道',
     storageArea:null,
     company:'水島臨海鉄道',
-    formationFamily:'mizushima',
-    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Mizushima_noimage.png',
-    noImage:'https://minamikaze2700.github.io/Unyomatome/images/Mizushima_noimage.png',
     prescribedFormationRule:'mizushima',
     access:{public:false,routeAdmins:[]},
-    formationInputExample:'301 / 301F / 100 / 100F'
   },
   '長野電鉄長野線':{
     id:'nagano-line',
@@ -1467,18 +1401,9 @@ const ROUTE_REGISTRY={
     storageRoot:'長野電鉄長野線',
     storageArea:null,
     company:'長野電鉄',
-    formationFamily:'nagano',
     lineKind:'nagano',
     expressCategoryRules:[{typeIncludes:'特急',numberSuffix:'A',category:'A特急'},{typeIncludes:'特急',numberSuffix:'B',category:'B特急'},{typeIncludes:'ゆけむりのんびり',category:'A特急'},{typeIncludes:'ゆけむり',category:'A特急'},{typeIncludes:'スノーモンキー',category:'B特急'}],
-    typeShortRules:[
-      {containsAll:['ゆけむり','のんびり'],result:'A特'},
-      {contains:'特急',trainNoSuffix:'A',result:'A特'},
-      {contains:'特急',trainNoSuffix:'B',result:'B特'},
-      {containsAll:['特急','ゆけむり'],result:'A特'},
-      {containsAll:['特急','スノーモンキー'],result:'B特'}
-    ],
     access:{public:true,routeAdmins:[]},
-    formationInputExample:'8500系 / T1',
     prescribedFormationRule:'nagano'
   },
   '関西本線（名古屋～亀山）':{
@@ -1490,13 +1415,8 @@ const ROUTE_REGISTRY={
     storageRoot:'関西本線（名古屋～亀山）',
     storageArea:null,
     company:'JR東海',
-    formationFamily:'jr-tokai-315',
-    typeColors:{'普通':'#666666','区間快速':'#9acd32','快速':'#0072bc'},
-    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/315_noimage.png',
-    noImage:'https://minamikaze2700.github.io/Unyomatome/images/315_noimage.png',
     prescribedFormationRule:'common',
     access:{public:false,routeAdmins:['2909D_Railways']},
-    formationInputExample:'C101 / C126'
   },
   '樽見鉄道樽見線':{
     id:'tarumi-line',
@@ -1507,13 +1427,9 @@ const ROUTE_REGISTRY={
     storageRoot:'樽見鉄道樽見線',
     storageArea:null,
     company:'樽見鉄道',
-    formationFamily:'tarumi',
     noTrainTypes:true,
-    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Tarumi_noimage.png',
-    noImage:'https://minamikaze2700.github.io/Unyomatome/images/Tarumi_noimage.png',
     prescribedFormationRule:'common',
     access:{public:true,routeAdmins:[]},
-    formationInputExample:'315 / 516 / 617 / 701 / 702 / 703'
   },
   'しなの鉄道線（篠ノ井～軽井沢）':{
     id:'shinano-main',
@@ -1524,14 +1440,10 @@ const ROUTE_REGISTRY={
     storageRoot:'しなの鉄道',
     storageArea:null,
     company:'しなの鉄道',
-    formationFamily:'shinano',
     trainTypeDisplay:'service-name',
-    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Shinano_noimage.png',
-    noImage:'https://minamikaze2700.github.io/Unyomatome/images/Shinano_noimage.png',
     // JSONが旧版・キャッシュ版でも行先略称が必ず効くよう路線側にも保持する。
     prescribedFormationRule:'common',
     access:{public:false,routeAdmins:[]},
-    formationInputExample:'S101 / S11 / SR1'
   },
   '北しなの線（豊野～妙高高原）':{
     id:'shinano-kita',
@@ -1542,12 +1454,8 @@ const ROUTE_REGISTRY={
     storageRoot:'しなの鉄道',
     storageArea:null,
     company:'しなの鉄道',
-    formationFamily:'shinano',
-    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Shinano_noimage.png',
-    noImage:'https://minamikaze2700.github.io/Unyomatome/images/Shinano_noimage.png',
     prescribedFormationRule:'common',
     access:{public:false,routeAdmins:[]},
-    formationInputExample:'S101 / S11 / SR1'
   },
   '勝山永平寺線':{
     id:'echizen-katsuyama',
@@ -1558,18 +1466,12 @@ const ROUTE_REGISTRY={
     storageRoot:'えちぜん鉄道',
     storageArea:null,
     company:'えちぜん鉄道',
-    formationFamily:'echizen',
     sharedRouteTrainMerge:{routes:['勝山永平寺線','三国芦原線'],stations:['福井','新福井','福井口'],days:['平日','土曜','休日']},
     disableCrossDayTrainFallback:true,
     calendarRules:{saturdayServiceOnHoliday:true,yearEndSuspension:{from:'12-29',to:'01-03'},excludeServiceNoteContainsOnWeekday:'12/29'},
-    formationCountDefault:2,
-    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Echizen_noimage.png',
-    noImage:'https://minamikaze2700.github.io/Unyomatome/images/Echizen_noimage.png',
     maxFormationCoupling:2,
     prescribedFormationRule:'common',
-    defaultFormationName:'えちぜん鉄道車',
     access:{public:false,routeAdmins:[]},
-    formationInputExample:'MC6101形 / 6101 / 6101F'
   },
   '三国芦原線':{
     id:'echizen-mikuni',
@@ -1580,18 +1482,12 @@ const ROUTE_REGISTRY={
     storageRoot:'えちぜん鉄道',
     storageArea:null,
     company:'えちぜん鉄道',
-    formationFamily:'echizen',
     sharedRouteTrainMerge:{routes:['勝山永平寺線','三国芦原線'],stations:['福井','新福井','福井口'],days:['平日','土曜','休日']},
     disableCrossDayTrainFallback:true,
     calendarRules:{saturdayServiceOnHoliday:true,yearEndSuspension:{from:'12-29',to:'01-03'},excludeServiceNoteContainsOnWeekday:'12/29'},
-    formationCountDefault:2,
-    formationDefaultImage:'https://minamikaze2700.github.io/Unyomatome/images/Echizen_noimage.png',
-    noImage:'https://minamikaze2700.github.io/Unyomatome/images/Echizen_noimage.png',
     maxFormationCoupling:2,
     prescribedFormationRule:'common',
-    defaultFormationName:'えちぜん鉄道車',
     access:{public:false,routeAdmins:[]},
-    formationInputExample:'MC6101形 / 6101 / 6101F'
   },
 };
 
@@ -1770,7 +1666,7 @@ function formationStorageContext(routeOrTrain=activeRouteName){
   const routeName=typeof routeOrTrain==='string' ? routeOrTrain : String(routeOrTrain?.routeName||activeRouteName||'');
   const meta=ROUTE_REGISTRY[routeName]||{};
   const explicitFamily=typeof routeOrTrain==='object' ? String(routeOrTrain?.formationFamily||'').trim() : '';
-  const family=explicitFamily || String(meta?.formationFamily||'').trim();
+  const family=explicitFamily || (routeName===activeRouteName ? String(activeJson?.formationFamily||'').trim() : '');
   const root=String(meta?.storageRoot||'').trim();
   const area=meta?.storageArea===null ? '__ROOT__' : String(meta?.storageArea||'__ROOT__');
   return {family,root,area};
@@ -1805,18 +1701,16 @@ function jsonImageValue(json=activeJson,meta=activeRouteMeta,key=''){
 }
 function activeFormationVisualValue(json=activeJson,meta=activeRouteMeta,key=''){
   const lineVisual=activeLineVisuals(json,meta);
-  const routeValue=meta?.[key];
   const jsonValue=json?.[key];
   const lineValue=lineVisual?.[key];
-  // 画像関連はJSONを唯一の正として扱い、HTML側の固定画像へ戻さない。
-  const isImageKey=['formationTypeImage','formationDefaultImage','noImage'].includes(String(key));
-  return String(lineValue??(isImageKey?jsonValue:routeValue??jsonValue)??'').trim();
+  // 編成画像などの表示情報はJSONだけを参照する。
+  return String(lineValue??jsonValue??'').trim();
 }
 function jsonNoImageUrl(json=activeJson){
   const raw=jsonImageValue(json,activeRouteMeta,'noImage')
     ||jsonImageValue(json,activeRouteMeta,'formationDefaultImage')
     ||String(json?.commonFormationIcon||'').trim()
-    ||String(activeRouteMeta?.noImage||activeRouteMeta?.formationDefaultImage||'').trim();
+    ||'';
   if(!raw) return LINE_TRAIN_IMG;
   if(/^https?:\/\//i.test(raw)) return raw;
   return `https://minamikaze2700.github.io/Unyomatome/images/${raw.replace(/\.png$/i,'')}.png`;
@@ -1880,7 +1774,7 @@ function operationChainFirstNo(day,trainNo){
 const operationChainFirstTrainNo=operationChainFirstNo;
 const VEHICLE_TO_FORMATION={};
 let TYPE_SELECTIONS=[];
-function formationFamilyFromType(group=null){ return String(group?.family||group?.formationFamily||activeRouteMeta?.formationFamily||'').trim(); }
+function formationFamilyFromType(group=null){ return String(group?.family||group?.formationFamily||activeJson?.formationFamily||'').trim(); }
 function hasBranchToggleDiagram(meta=activeRouteMeta,json=activeJson){
   return meta?.diagramTopology==='branch-toggle' && json?.diagram?.branchToggle===true;
 }
@@ -2379,7 +2273,7 @@ function buildFormationsForJson(json){
   const rawFormations=Array.isArray(json?.formations)?json.formations:[];
   const declaredType=activeFormationVisualValue(json,activeRouteMeta,'formationType');
   const declaredTypeImg=makeImg(jsonImageValue(json,activeRouteMeta,'formationTypeImage'),jsonImageValue(json,activeRouteMeta,'formationDefaultImage')||json?.commonFormationIcon);
-  const dataFamily=String(json?.formationFamily||activeRouteMeta?.formationFamily||formationStorageContext(activeRouteName).family||'').trim();
+  const dataFamily=String(json?.formationFamily||'').trim();
 
   // 新形式：形式 → 個体差 → 実編成
   // 例：E235系 → E235系F編成 → F01
@@ -2480,8 +2374,8 @@ function buildFormationsForJson(json){
   const lineOverridesType=!!String(lineVisual?.formationType||'').trim() && declaredType!==baseDeclaredType;
   const formationSource=lineOverridesType ? [] : rawFormations;
   // 旧形式JSONで formationType がない場合は、路線設定の既定名称を使う。
-  const inferredDeclaredType=(!declaredType && rawFormations.length && activeRouteMeta?.legacyFormationType)
-    ? String(activeRouteMeta.legacyFormationType)
+  const inferredDeclaredType=(!declaredType && rawFormations.length && json?.legacyFormationType)
+    ? String(json.legacyFormationType)
     : declaredType;
   if(inferredDeclaredType){
     const items=[];
@@ -2493,7 +2387,7 @@ function buildFormationsForJson(json){
       const cars=carsArr.length || Number(raw?.carCount)||2;
       // 編成番号から画像を補完する規則は route registry の formationImageMap に保持。
       const rawImage=String(raw?.image||raw?.img||'').trim();
-      const forcedImage=String(activeRouteMeta?.formationImageMap?.[displayId]||'');
+      const forcedImage=String(json?.formationImageMap?.[displayId]||'');
       const item={
         id:displayId,
         name:String(raw?.name||`${displayId}編成`),
@@ -2673,7 +2567,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
   // 神戸市営地下鉄と樽見鉄道のような種別表示なしの路線に対応する。
   const suppressTrainTypes=meta?.noTrainTypes===true || raw?.__sourceNoTrainTypes===true;
   const jsonType=suppressTrainTypes?'':String(raw?.type||'').trim();
-  const formationFamily=String(meta?.formationFamily||formationStorageContext(meta?.id||activeRouteName).family||'').trim();
+  const formationFamily=String(raw?.formationFamily||raw?.__sourceMeta?.formationFamily||activeJson?.formationFamily||'').trim();
   const parsedDefaultCars=Number(raw?.cars);
   const fallbackCars=Number(String(raw?.defaultCars||'').match(/\d+/)?.[0]||0);
   return [{
@@ -3023,7 +2917,7 @@ async function loadExternalRouteJsons(routeMeta){
         id:String(sourceMeta?.id||''),
         routeName:String(sourceRouteName||activeRouteName),
         jsonLines:Array.isArray(sourceMeta?.jsonLines)?[...sourceMeta.jsonLines]:[],
-        formationFamily:String(sourceMeta?.formationFamily||''),
+        formationFamily:String(json?.formationFamily||''),
         lineKind:String(sourceMeta?.lineKind||''),
         noTrainTypes:sourceMeta?.noTrainTypes===true,
         noTrainNumbers:sourceMeta?.noTrainNumbers===true,
@@ -3067,7 +2961,7 @@ async function loadExternalRouteJsons(routeMeta){
     for(const group of (Array.isArray(payload.json?.formations)?payload.json.formations:[])){
       merged.formations.push({
         ...group,
-        family:String(group?.family||group?.formationFamily||sourceMeta?.formationFamily||''),
+        family:String(group?.family||group?.formationFamily||payload.json?.formationFamily||''),
         routeNames:Array.isArray(group?.routeNames)?group.routeNames:(Array.isArray(group?.routes)?group.routes:[sourceRouteName])
       });
     }
@@ -3134,6 +3028,11 @@ async function loadLineTrainData(routeName=activeRouteName,timetableDate=selecte
   }
   if(dateKey!==String(selectedDateKey||'')) return;
   activeJson=json;
+  FORMATION_FAMILIES.splice(0,FORMATION_FAMILIES.length,...new Set([String(json?.formationFamily||''),...(Array.isArray(json?.formations)?json.formations.map(g=>String(g?.family||g?.formationFamily||'')):[])].map(v=>String(v||'').trim()).filter(Boolean)));
+  PRIMARY_FORMATION_FAMILY=FORMATION_FAMILIES[0]||'';
+  for(const family of FORMATION_FAMILIES){
+    formationRemoteByFamily[family]??={stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}},formationUpdatedByDate:{},areaStateByDate:{},areaMetaByDate:{}};
+  }
   STATIONS=buildStationsForRoute(json,activeRouteMeta);
   for(const key of Object.keys(VEHICLE_TO_FORMATION)) delete VEHICLE_TO_FORMATION[key];
   FORMATIONS=buildFormationsForJson(json);
@@ -3293,8 +3192,8 @@ let operationHistory=[];
 let currentOperationDate=null;
 let remoteRoot={version:0,operationDate:null,stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}},history:{}};
 // 編成データは路線メタデータで定義した保存先へ、共通処理で保存する。
-const FORMATION_FAMILIES=[...new Set(Object.values(ROUTE_REGISTRY).map(m=>String(m?.formationFamily||'').trim()).filter(Boolean))];
-const PRIMARY_FORMATION_FAMILY=FORMATION_FAMILIES[0]||'';
+const FORMATION_FAMILIES=[];
+let PRIMARY_FORMATION_FAMILY='';
 let formationRemoteByFamily={};
 for(const family of FORMATION_FAMILIES){
   formationRemoteByFamily[family]={stateByDay:{平日:{},休日:{}},formationUpdatedAtByDay:{平日:{},休日:{}},formationUpdatedByDate:{},areaStateByDate:{},areaMetaByDate:{}};
@@ -3998,9 +3897,16 @@ function getDetailType(type){
 function expressCategoryForTrain(train,typeOverride='',trainNoOverride=''){
   const raw=train?.rawTrain||train||{};
   const type=String(typeOverride||train?.type||raw?.type||'').trim();
+  const no=String(trainNoOverride||train?.no||raw?.no||'').trim().toUpperCase();
+  // 長野電鉄のA特急・B特急は列車名ではなく列車番号末尾だけで判定する。
+  // A/B以外（例：末尾がSの臨時列車）は種別略称の対象にしない。
+  if(String(train?.lineKind||raw?.lineKind||activeRouteMeta?.lineKind||'')==='nagano'){
+    if(no.endsWith('A')) return 'A特急';
+    if(no.endsWith('B')) return 'B特急';
+    return '';
+  }
   const saved=String(train?.expressCategory||raw?.expressCategory||'').trim();
   if(saved) return saved;
-  const no=String(trainNoOverride||train?.no||raw?.no||'').trim().toUpperCase();
   const rules=Array.isArray(activeRouteMeta?.expressCategoryRules)?activeRouteMeta.expressCategoryRules:
     (Array.isArray(activeJson?.expressCategoryRules)?activeJson.expressCategoryRules:[]);
   for(const rule of rules){
@@ -4254,16 +4160,53 @@ function initDateControl(){
   if(label) label.textContent=`${currentDay}ダイヤ`;
   input.addEventListener('change',e=>setSelectedDate(e.target.value));
 }
-function formationInputExampleForRoute(routeName=activeRouteName){
-  const meta=ROUTE_REGISTRY[String(routeName||activeRouteName||'')]||activeRouteMeta||{};
-  return String(meta.formationInputExample||'編成番号を入力').trim();
+function formationInputExampleForRoute(routeName=activeRouteName,train=currentTrainSnapshot){
+  // 現在の路線・列車で選択可能な編成定義から例を自動生成する。
+  // 編成番号と、その編成に属する実際の車両番号を必ずセットで表示する。
+  let groups=[];
+  try{
+    groups=typeof formationsForTrain==='function' && train
+      ? formationsForTrain(train)
+      : (Array.isArray(FORMATIONS)?FORMATIONS:[]);
+  }catch(e){
+    groups=Array.isArray(FORMATIONS)?FORMATIONS:[];
+  }
+  const candidates=[];
+  const addItems=(items)=>{
+    for(const item of (Array.isArray(items)?items:[])){
+      if(!item || item.disabled) continue;
+      const id=String(item.id||item.formation||'').trim().replace(/F$/i,'');
+      if(!id || id===INITIAL_FORMATION_SELECTION.id) continue;
+      let cars=Array.isArray(item.carNames)?item.carNames.map(x=>String(x||'').trim()).filter(Boolean):[];
+      if(!cars.length && Array.isArray(item.cars)) cars=item.cars.map(x=>String(x||'').trim()).filter(Boolean);
+      if(!cars.length && activeJson?.vehicleToFormation){
+        cars=Object.entries(activeJson.vehicleToFormation)
+          .filter(([,formation])=>String(formation||'').trim().replace(/F$/i,'')===id)
+          .map(([vehicle])=>String(vehicle||'').trim()).filter(Boolean);
+      }
+      if(cars.length) candidates.push({id,vehicle:cars[0]});
+    }
+  };
+  for(const group of groups){
+    addItems(group?.items);
+    for(const variant of (Array.isArray(group?.variants)?group.variants:[])) addItems(variant?.items);
+  }
+  const example=candidates[0];
+  if(example) return `編成番号：${example.id} ／ 車両番号：${example.vehicle}`;
+  // 車両番号情報がない形式だけの路線では、編成番号を自動表示しつつ
+  // 車両番号欄は未登録であることを明示し、架空の番号を作らない。
+  const firstGroup=groups.find(group=>group && (group.selectableType || group.type));
+  const typeId=String(firstGroup?.selectableId||firstGroup?.type||'').trim();
+  return typeId
+    ? `編成番号：${typeId} ／ 車両番号：JSON未登録`
+    : '編成番号：例を生成できません ／ 車両番号：JSON未登録';
 }
 function formationInputPlaceholderForTrain(train=currentTrainSnapshot){
-  const example=formationInputExampleForRoute(train?.routeName||activeRouteName);
-  const count=typeof formationCountForTrain==='function'?formationCountForTrain(train):Number(activeJson?.formationCountDefault||activeRouteMeta?.formationCountDefault||1);
+  const example=formationInputExampleForRoute(train?.routeName||activeRouteName,train);
+  const count=typeof formationCountForTrain==='function'?formationCountForTrain(train):Number(activeJson?.formationCountDefault||1);
   return count>1
     ? `編成番号を「+」で区切って前寄りから入力（最大${count}編成・例：${example}）`
-    : `車両番号または編成番号（例：${example}）を入力`;
+    : `編成番号または車両番号を入力（例：${example}）`;
 }
 function formationById(id){
   if(!id || id===INITIAL_FORMATION_SELECTION.id) return null;
@@ -4306,7 +4249,7 @@ function formationById(id){
     const img=/^https?:\/\//i.test(rawTypeImage)
       ? rawTypeImage
       : `https://minamikaze2700.github.io/Unyomatome/images/${String(rawTypeImage||'').replace(/\.png$/i,'')}.png`;
-    return {id:declaredType,name:declaredType,img:img||jsonNoImageUrl(activeJson),kind:'type',type:declaredType,generic:true,displayAsFullName:true,family:activeRouteMeta?.formationFamily||''};
+    return {id:declaredType,name:declaredType,img:img||jsonNoImageUrl(activeJson),kind:'type',type:declaredType,generic:true,displayAsFullName:true,family:activeJson?.formationFamily||''};
   }
   return null;
 }
@@ -4372,7 +4315,7 @@ function allowedFormationFamily(train){
   const explicit=String(train?.formationFamily||'').trim();
   if(explicit) return explicit;
   const kind=String(train?.lineKind||'').trim();
-  const configured=activeRouteMeta?.formationFamilyByLineKind?.[kind]||activeJson?.formationFamilyByLineKind?.[kind];
+  const configured=activeJson?.formationFamilyByLineKind?.[kind];
   return String(configured||storageFamilyForTrain(train)||'').trim();
 }
 function formationDisplayGroups(groups){
@@ -4393,7 +4336,7 @@ function formationDisplayGroups(groups){
       group={
         type:baseType,
         typeImg:g?.typeImg||fallbackTrainImageUrl(),
-        family:g?.family||activeRouteMeta?.formationFamily||'',
+        family:g?.family||activeJson?.formationFamily||'',
         selectableType:g?.selectableType!==false,
         showTypeOption:g?.showTypeOption!==false,
         selectableId:baseType,
@@ -4548,7 +4491,7 @@ function formationDisplayHTML(id){
 function prescribedFormationName(t){
   const routeKey=String(t?.routeName||activeRouteName||'');
   const meta=ROUTE_REGISTRY[routeKey]||activeRouteMeta||{};
-  if(String(meta?.formationFamily||'')==='mizushima' || String(meta?.prescribedFormationRule||'')==='mizushima'){
+  if(String(activeJson?.formationFamily||'')==='mizushima' || String(meta?.prescribedFormationRule||'')==='mizushima'){
     const vehicleClass=String(t?.rawTrain?.class||t?.rawTrain?.vehicleClass||t?.vehicleClass||'').trim().toLowerCase();
     if(vehicleClass==='kiha'){
       const dateKey=String(selectedDateKey||operationDateKey());
@@ -4588,9 +4531,9 @@ function prescribedFormationName(t){
     return Number(t?.cars)===8 ? '普通8両' : '普通10両';
   }
   if(rule==='common'){
-    return String(meta?.defaultFormationName||activeJson?.formationDefaultName||'普通共通');
+    return String(activeJson?.formationDefaultName||'普通共通');
   }
-  return String(meta?.defaultFormationName||t?.defaultCars||t?.rawTrain?.defaultCars||activeJson?.formationDefaultName||'普通共通');
+  return String(t?.defaultCars||t?.rawTrain?.defaultCars||activeJson?.formationDefaultName||'普通共通');
 }
 function defaultTrainImage(train=null){
   // 旧東武HTMLの運用系統別デフォルト画像をJSONから引き継ぐ。
@@ -5863,7 +5806,7 @@ function stationTimetableHTML(station, selectedDirection='up'){
             ${stationTimetableFormationHTML(train)}
           </span>
           <span class="station-timetable-time">${escapeAttr(item.time)}</span>
-          ${stationType?`<span class="station-timetable-type ${escapeAttr(getTrainTypeDisplayClass(train,stationPosition))}" style="${typeBadgeInlineStyle(Array.isArray(train?.sectionTypeSegments)?{...train,type:stationType}:train,stationPosition,stationDirectionRouteColor(STATIONS.findIndex(st=>String(st?.nameJa||'')===stationName),key),stationName)}">${escapeAttr(getTrainTypeDisplayLabel(train,false,stationPosition))}</span>`:''}
+          ${stationType?`<span class="station-timetable-type ${escapeAttr(getTrainTypeDisplayClass(train,stationPosition))}" style="${typeBadgeInlineStyle(Array.isArray(train?.sectionTypeSegments)?{...train,type:stationType}:train,stationPosition,stationDirectionRouteColor(STATIONS.findIndex(st=>String(st?.nameJa||'')===stationName),key),stationName)}">${escapeAttr(activeRouteMeta?.lineKind==='nagano' ? getShortType(expressCategoryForTrain(train,stationType,train.no)||stationType,train.no,train) : getTrainTypeDisplayLabel(train,false,stationPosition))}</span>`:''}
           <span class="station-timetable-destination">
             <span class="station-timetable-destination-main"><span class="station-timetable-destination-station">${escapeAttr(getDisplayDestinationForTrain(train))}</span>${destinationGoSuffix(train)?'<span class="station-timetable-destination-go">行</span>':''}</span>
           </span>
@@ -7535,7 +7478,7 @@ function typeColorConfigForTrain(train,type){
   const sourceColors=(train?.sourceTypeColors&&typeof train.sourceTypeColors==='object')?train.sourceTypeColors:{};
   // 共有区間で複数JSONを統合した場合、列車の所属元JSONの種別色を最優先する。
   // 表示中の路線（例：横浜線）の設定は、所属元JSONに色指定がない場合だけ補完に使う。
-  const configured={...(activeRouteMeta?.typeColors||{}),...(activeJson?.typeColors||{}),...sourceColors};
+  const configured={...(activeJson?.typeColors||{}),...sourceColors};
   const category=expressCategoryForTrain(train,String(type||''));
   return configured[category||String(type||'').trim()];
 }
@@ -7661,7 +7604,7 @@ function typeColorForTrain(train,position=null,stationName='',stationDirectionCo
   // JSONの種別色設定を優先し、設定がない種別は実際に走行する区間の路線カラーを使う。
   const sourceColors=(train?.sourceTypeColors&&typeof train.sourceTypeColors==='object')?train.sourceTypeColors:{};
   // 種別色は列車の所属元JSONを優先。共有区間を表示する別路線側の設定で上書きしない。
-  const colors={...(activeRouteMeta?.typeColors||{}),...(activeJson?.typeColors||{}),...sourceColors};
+  const colors={...(activeJson?.typeColors||{}),...sourceColors};
   if(sectionTypeSegment?.color) return String(sectionTypeSegment.color).trim();
 
   const routeFallback=()=>{
@@ -8022,7 +7965,8 @@ initRegionNavigation();
 (function(){
   function routeMetaForFamily(family){
     const key=String(family||'').trim();
-    return Object.values(ROUTE_REGISTRY).find(meta=>String(meta?.formationFamily||'').trim()===key)||null;
+    const jsonFamilies=new Set([String(activeJson?.formationFamily||''),...(Array.isArray(activeJson?.formations)?activeJson.formations.map(g=>String(g?.family||g?.formationFamily||'')):[])].filter(Boolean));
+    return jsonFamilies.has(key)?(activeRouteMeta||null):null;
   }
 
   for(const family of FORMATION_FAMILIES){
@@ -8095,7 +8039,7 @@ initRegionNavigation();
   window.formatStoredMeta=formatStoredMeta;
 
   formationFamilyFromType=function(group){
-    return String(group?.family||group?.formationFamily||activeRouteMeta?.formationFamily||'').trim();
+    return String(group?.family||group?.formationFamily||activeJson?.formationFamily||'').trim();
   };
   formationFamily=function(group){
     return formationFamilyFromType(group);
@@ -8896,11 +8840,11 @@ initRegionNavigation();
     const routeName=String(train?.routeName||activeRouteName||'').trim();
     const routeMeta=(typeof ROUTE_REGISTRY==='object' && ROUTE_REGISTRY && routeName)
       ? (ROUTE_REGISTRY[routeName]||activeRouteMeta||{}) : (activeRouteMeta||{});
-    const family=String(routeMeta?.formationFamily||activeJson?.formationFamily||train?.formationFamily||'');
+    const family=String(activeJson?.formationFamily||train?.formationFamily||'');
 
     // 最大編成数はJSONの設定を優先し、なければ路線設定・列車設定を参照。
     // いずれにも設定がない路線は既定の1編成とする。
-    const configuredCount=activeJson?.formationCountDefault ?? routeMeta?.formationCountDefault ?? train?.formationCount;
+    const configuredCount=activeJson?.formationCountDefault ?? train?.formationCount;
     const maxCount=(configuredCount===undefined || configuredCount===null || configuredCount==='')
       ? DEFAULT_FORMATION_COUNT : clampFormationCount(configuredCount);
 
@@ -9022,7 +8966,7 @@ initRegionNavigation();
 
   function formationOptionImage(item){
     const key=String(item?.id||'').replace(/F$/i,'').trim();
-    const imageName=String(activeRouteMeta?.formationImageMap?.[key]||'');
+    const imageName=String(activeJson?.formationImageMap?.[key]||'');
     const forced=imageName ? `https://minamikaze2700.github.io/Unyomatome/images/${imageName}.png` : '';
     return forced || String(item?.img||fallbackTrainImageUrl());
   }
