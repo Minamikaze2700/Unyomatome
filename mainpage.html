@@ -1133,6 +1133,8 @@ let STATIONS=[];
 let FORMATIONS=[];
 let TRAINS=[];
 let ALL_SCHEDULE_TRAINS=[];
+// 運用連結専用。表示路線に関係なく、共有JSON内の全路線の列車を保持する。
+let OPERATION_TRAIN_SOURCE=[];
 let HOLIDAY_UP_TRAINS=[];
 let HOLIDAY_TRAINS=[];
 let HOLIDAY_TRAIN_INDEX={};
@@ -1861,7 +1863,8 @@ function loadOperationChainsFromJson(json){
             start:String(t.start||t.stops?.[0]?.station||''),
             startTime:String(t.startTime||t.stops?.[0]?.departure||t.stops?.[0]?.time||''),
             dest:String(t.dest||t.stops?.[t.stops.length-1]?.station||''),
-            endTime:String(t.endTime||t.stops?.[t.stops.length-1]?.arrival||t.stops?.[t.stops.length-1]?.time||'')
+            endTime:String(t.endTime||t.stops?.[t.stops.length-1]?.arrival||t.stops?.[t.stops.length-1]?.time||''),
+            routeName:String(t.routeName||'')
           }))
         ).filter(chain=>chain.length)
       : [];
@@ -3171,6 +3174,49 @@ async function loadLineTrainData(routeName=activeRouteName,timetableDate=selecte
   }
   const seen=new Set(); ALL_SCHEDULE_TRAINS=[];
   for(const t of built){const key=`${t.no}|${t.direction}|${(t.days||[]).join(',')}`; if(seen.has(key)) continue; seen.add(key); ALL_SCHEDULE_TRAINS.push(t);}
+
+  // 運用検索用に、共有JSONの他路線からも全区間の列車を正規化して追加する。
+  // 画面用 ALL_SCHEDULE_TRAINS には追加しないため、他路線の列車が時刻表へ混入しない。
+  OPERATION_TRAIN_SOURCE=ALL_SCHEDULE_TRAINS.filter(t=>t?.rawTrain?.__sharedRouteSectionOnly!==true);
+  const sharedRoutes=json?._sharedRoutes;
+  const sharedRouteNames=Array.isArray(activeRouteMeta?.sharedRouteTrainMerge?.routes)
+    ? activeRouteMeta.sharedRouteTrainMerge.routes : [];
+  if(sharedRoutes && typeof sharedRoutes==='object'){
+    for(const sharedName of sharedRouteNames){
+      if(String(sharedName)===String(activeRouteName)) continue;
+      const sharedRoute=sharedRoutes[sharedName];
+      if(!sharedRoute || typeof sharedRoute!=='object') continue;
+      const registeredMeta=ROUTE_REGISTRY[sharedName]||{};
+      const sharedMeta={...registeredMeta,routeName:String(sharedName)};
+      for(const serviceDay of ['平日','土曜','休日']){
+        const candidateKeys=serviceDay==='休日'?['土休日','土休','休日']:[serviceDay];
+        const sourceDay=candidateKeys.find(k=>Array.isArray(sharedRoute?.trains?.[k]) || (sharedRoute?.trains?.[k]&&typeof sharedRoute.trains[k]==='object'&&(Array.isArray(sharedRoute.trains[k]?.上り)||Array.isArray(sharedRoute.trains[k]?.下り))));
+        if(!sourceDay) continue;
+        const dayData=sharedRoute.trains[sourceDay];
+        if(Array.isArray(dayData)){
+          for(const raw of dayData){
+            const rawDirection=String(raw?.direction||'').trim().toLowerCase();
+            const direction=(rawDirection==='上り'||rawDirection==='up'||rawDirection.startsWith('toward_'))?'上り':'下り';
+            OPERATION_TRAIN_SOURCE.push(...normalizeExternalTrain(raw,serviceDay,direction,sharedMeta));
+          }
+        }else{
+          for(const direction of ['上り','下り']){
+            for(const raw of (Array.isArray(dayData?.[direction])?dayData[direction]:[])){
+              OPERATION_TRAIN_SOURCE.push(...normalizeExternalTrain(raw,serviceDay,direction,sharedMeta));
+            }
+          }
+        }
+      }
+    }
+  }
+  const operationSeen=new Set();
+  OPERATION_TRAIN_SOURCE=OPERATION_TRAIN_SOURCE.filter(t=>{
+    const id=String(t?.rawTrain?.id||t?.no||'');
+    const key=`${id}|${t?.direction||''}|${(t?.days||[]).join(',')}`;
+    if(operationSeen.has(key)) return false;
+    operationSeen.add(key); return true;
+  });
+
   TRAINS=ALL_SCHEDULE_TRAINS.filter(t=>t.days.includes('平日'));
   HOLIDAY_TRAINS=ALL_SCHEDULE_TRAINS.filter(t=>t.days.includes('休日'));
   HOLIDAY_UP_TRAINS=HOLIDAY_TRAINS.filter(t=>t.direction==='up');
@@ -3201,7 +3247,7 @@ async function reloadScheduleForSelectedDateIfNeeded(){
     const token=++scheduleReloadSequence;
     activeScheduleSignature='__NO_SCHEDULE__';
     STATIONS=[]; TRAINS=[]; HOLIDAY_TRAINS=[]; HOLIDAY_UP_TRAINS=[];
-    ALL_SCHEDULE_TRAINS=[]; TRAIN_INDEX={}; HOLIDAY_TRAIN_INDEX={};
+    ALL_SCHEDULE_TRAINS=[]; OPERATION_TRAIN_SOURCE=[]; TRAIN_INDEX={}; HOLIDAY_TRAIN_INDEX={};
     if(currentTrainNo){currentTrainNo=null;currentTrainSnapshot=null;}
     const label=document.getElementById('scheduleDayLabel');
     if(label) label.textContent=`${currentDay}ダイヤ・該当期間の時刻表データなし`;
@@ -3542,9 +3588,12 @@ function formationLinkedTrainNos(day,trainNo,direction=null){
   const entryMatches=(entry,no)=>{
     if(normalizeTrainNo(entry.no)!==no) return false;
     if(!requestedDirection) return true;
+    // 別路線の上下方向は現在表示中の路線と一致しないため、方向判定を適用しない。
+    if(entry.routeName && entry.routeName!==activeRouteName) return true;
     if(!entry.start || !entry.dest) return true;
     const idxA=STATIONS.findIndex(s=>s.nameJa===entry.start);
     const idxB=STATIONS.findIndex(s=>s.nameJa===entry.dest);
+    if(idxA<0 || idxB<0) return true;
     const entryDirection=idxA>idxB?'up':'down';
     return entryDirection===requestedDirection;
   };
@@ -3561,12 +3610,11 @@ function formationLinkedTrainNos(day,trainNo,direction=null){
   }
   return result;
 }
-// 運用連結用の列車検索は、表示中の路線データではなく
-// 両路線を統合した ALL_SCHEDULE_TRAINS を基準にする。
-// 路線間で共有される運用連結は使用しない。
-// // 「どの列車まで同じ運用として登録するか」を完全に統一する。
+// 運用連結の検索対象は、表示中の路線に限定せず共有JSON内の全路線とする。
 function operationTrainSourceForDay(day=currentDay){
-  const source=trainsForScheduleDay(day,selectedDateKey);
+  const source=OPERATION_TRAIN_SOURCE.length
+    ? OPERATION_TRAIN_SOURCE
+    : (ALL_SCHEDULE_TRAINS.length?ALL_SCHEDULE_TRAINS:trainsForScheduleDay(day,selectedDateKey));
   return source.filter(t=>{
     const days=t?.days;
     return !Array.isArray(days)||!days.length||days.includes(day)
@@ -3592,6 +3640,9 @@ function findOperationTrainRecord(no,day=currentDay){
     for(const segment of (Array.isArray(t?.sectionNumberSegments)?t.sectionNumberSegments:[])) add(segment?.number??segment?.no);
     return values;
   };
+  // JSONのoperationChainsは列車番号ではなくtrain.idを保持する。
+  const exactId=source.find(t=>String(t?.rawTrain?.id||t?.rawTrain?.uid||t?.id||'').trim()===key);
+  if(exactId) return exactId;
   const exact=source.find(t=>normalizeTrainNo(t?.no)===key);
   if(exact) return exact;
   const exactAlias=source.find(t=>numbersOf(t).includes(key));
