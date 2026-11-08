@@ -1641,8 +1641,19 @@ function seoFullRouteName(routeName){
   if(!route) return 'メインページ';
   const company=String(ROUTE_REGISTRY[route]?.company||'').trim();
   if(!company) return route;
-  if(route.startsWith(company)) return route===company ? `${company}線` : route;
-  return `${company}${route}`;
+
+  // JR線は従来どおり路線名のみ表示する。
+  if(/^JR/.test(company)) return route;
+
+  // 東武線は「東武鉄道＋路線名」の形式に統一する。
+  if(route==='東武野田線') return '東武鉄道アーバンパークライン';
+  if(route==='東武スカイツリーライン') return '東武鉄道スカイツリーライン';
+
+  // 非JR線は「事業者名＋路線名」の形式に統一する。
+  // 路線名に事業者名が含まれている場合は重複させない。
+  if(route===company) return `${company}線`;
+  const linePart=route.startsWith(company) ? route.slice(company.length) : route;
+  return `${company}${linePart}`;
 }
 function updateSeoMetadataFromUrl(){
   const baseUrl='https://minamikaze2700.github.io/Unyomatome/mainpage.html';
@@ -7746,6 +7757,23 @@ function openRegionSheet(region){
   if(header) header.textContent=region;
   if(backBtn) backBtn.classList.remove('visible');
   const defs=REGION_DEFINITIONS[region]||[];
+  // 地域別メニューのボタンでは事業者名を重ねず、路線名だけを表示する。
+  function regionRouteLabel(routeName,companyName){
+    let label=String(routeName||'').trim();
+    const company=String(companyName||'').trim();
+    if(!label) return '';
+    if(company && label.startsWith(company)) label=label.slice(company.length);
+    else if(company.endsWith('鉄道')){
+      const operator=company.slice(0,-2);
+      if(operator && label.startsWith(operator)) label=label.slice(operator.length);
+    }else if(company.endsWith('電鉄')){
+      const operator=company;
+      if(label.startsWith(operator)) label=label.slice(operator.length);
+    }
+    // 東武野田線・東武スカイツリーラインは会社見出し「東武鉄道」に対して
+    // 路線名側の「東武」を除き、野田線・スカイツリーラインとする。
+    return label.trim()||String(routeName||'').trim();
+  }
   const inner=region==='利用規約'
     ? `
 <div class="terms-content">
@@ -7764,7 +7792,7 @@ function openRegionSheet(region){
 <p class="terms-end">以上</p><p class="terms-date">制定日：2026年9月18日</p>
 </div>`
     : (defs.length
-      ? defs.map(c=>`<section class="company-block"><h2 class="company-name">${esc(c.company)}</h2><div class="route-list">${c.routes.map(r=>`<button type="button" class="route-button" data-route-id="${esc(r.id||r.name)}" onclick="selectRoute('${escapeJs(r.id||r.name)}')"><span class="route-label">${esc(r.name)}</span></button>`).join('')}</div></section>`).join('')
+      ? defs.map(c=>`<section class="company-block"><h2 class="company-name">${esc(c.company)}</h2><div class="route-list">${c.routes.map(r=>`<button type="button" class="route-button" data-route-id="${esc(r.id||r.name)}" onclick="selectRoute('${escapeJs(r.id||r.name)}')"><span class="route-label">${esc(regionRouteLabel(r.name,c.company))}</span></button>`).join('')}</div></section>`).join('')
       : `<section class="company-block"><h2 class="company-name">この地域の路線は未登録です。</h2></section>`);
   content.innerHTML=inner;
   overlay.style.display='block';
@@ -8242,7 +8270,7 @@ function updateRouteVisuals(){
   root.style.setProperty('--corporate-title-color',titleColor);
   root.style.setProperty('--control-border-color',makeLightBorder(titleColor));
   const titleText=document.getElementById('titleText');
-  if(titleText) titleText.textContent=activeRouteName||DEFAULT_ROUTE_TITLE;
+  if(titleText) titleText.textContent=activeRouteName ? seoFullRouteName(activeRouteName) : DEFAULT_ROUTE_TITLE;
   updateSeoMetadataFromUrl();
   const title=document.getElementById('title');
   if(title){ title.style.background=h1Color; title.style.borderBottomColor=makeLightBorder(h1Color); }
@@ -14569,7 +14597,10 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
       if(!stops.some(stop=>String(stop?.station||'').trim()===name)) continue;
       const type=String(getTrainTypeAtPosition(train,position>=0?position:null)||'').trim();
       if(!type) continue;
-      const shortName=String(getShortType(type,train?.no,train)||type).trim();
+      // 停車種別一覧は運用表示用の種別名を基準にし、JSONにある時刻表略称を優先する。
+      // 長野電鉄のA特急・B特急も列車番号に応じた区分名を略称検索へ渡す。
+      const timetableType=String(getOperationalTypeLabel(type,train?.no,train)||type).trim();
+      const shortName=String(getShortType(timetableType,train?.no,train)||timetableType||type).trim();
       if(!shortName) continue;
       let appearance={background:'#666',color:'#fff'};
       try{
