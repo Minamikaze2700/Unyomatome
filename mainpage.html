@@ -10960,7 +10960,6 @@ initRegionNavigation();
 .railway-diagram-mini-formation-wrap .train-formation-cars>.train-formation-car-row{grid-template-columns:48px max-content minmax(0,1fr) 88px;gap:4px;padding:3px 4px;font-size:11px}
 .railway-diagram-mini-formation-wrap .train-formation-car-service-tags .car-service-tag{font-size:9px;padding:2px 3px}
 .railway-diagram-mini-empty{padding:14px 8px;text-align:center;color:#666;font-weight:700}
-.railway-diagram-train-hit{stroke:transparent;stroke-width:12;pointer-events:stroke;cursor:pointer}
 .railway-diagram-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;color:#666;font-weight:700}
 @media(max-width:600px){
   #railwayDiagramOpenBtn{right:10px;width:52px;height:52px;border-radius:14px}
@@ -11004,7 +11003,7 @@ initRegionNavigation();
         <button id="railwayDiagramFit" type="button">全体表示</button>
         <label class="railway-diagram-horizontal-control" for="railwayDiagramHorizontalScale">
           <span>横幅</span>
-          <input id="railwayDiagramHorizontalScale" type="range" min="50" max="300" step="10" value="100" aria-label="時刻軸の横幅">
+          <input id="railwayDiagramHorizontalScale" type="range" min="50" max="200" step="1" value="100" aria-label="時刻軸の横幅">
           <output id="railwayDiagramHorizontalValue" for="railwayDiagramHorizontalScale">100%</output>
         </label>
       </div>
@@ -11043,8 +11042,102 @@ initRegionNavigation();
   const timeErrorToggle=document.getElementById('railwayDiagramTimeErrorToggle');
   if(!openBtn||!overlay||!svg||!transformGroup||!viewport) return;
 
-  const state={direction:'both',routeBranch:'main',horizontalScale:1,showTimeErrors:true,timeErrorCount:0,scale:1,tx:0,ty:0,contentWidth:1000,contentHeight:700,viewWidth:1000,viewHeight:700,chartErrors:[],
+  const state={direction:'both',routeBranch:'main',horizontalScale:3,showTimeErrors:true,timeErrorCount:0,scale:1,tx:0,ty:0,contentWidth:1000,contentHeight:700,viewWidth:1000,viewHeight:700,chartErrors:[],
     chartMeta:null,chartTrains:[],pointers:new Map(),drag:null,pinch:null,bodyOverflow:''};
+  // ダイヤグラムの横幅変更・再描画で変化しない計算結果を再利用する。
+  // 列車オブジェクトをWeakMapのキーにするため、路線／日付を切り替えた旧データは自動回収される。
+  let chartCacheSignature='';
+  let chronologicalStopsCache=new WeakMap();
+  let chartStopsCache=new WeakMap();
+  let trainEventsCache=new WeakMap();
+  let extendedEventsCache=new WeakMap();
+  let timeErrorsCache=new WeakMap();
+  let trainColorCache=new WeakMap();
+  const stationSpacingCache=new Map();
+  // 文字は全列車分を常時SVGへ置かず、現在の表示範囲内だけを描画する。
+  // 列車番号はX座標順に保持し、二分探索で可視候補だけを調べる。
+  let chartTextLayer=null;
+  let chartLabelData={times:[],stations:[],trainNumbers:[]};
+  let chartLabelSignature='';
+  let chartLabelUpdateRaf=0;
+  function lowerBoundByX(items,x){
+    let lo=0,hi=items.length;
+    while(lo<hi){const mid=(lo+hi)>>1;if(Number(items[mid]?.x)<x)lo=mid+1;else hi=mid;}
+    return lo;
+  }
+  function updateVisibleChartLabels(){
+    chartLabelUpdateRaf=0;
+    if(!chartTextLayer||!chartTextLayer.isConnected||!(state.scale>0))return;
+    const minX=(-state.tx)/state.scale;
+    const maxX=(state.viewWidth-state.tx)/state.scale;
+    const minY=(-state.ty)/state.scale;
+    const maxY=(state.viewHeight-state.ty)/state.scale;
+    // 文字の幅・縁取り分だけ表示範囲を少し広げ、端で急に欠けるのを防ぐ。
+    const trainStart=lowerBoundByX(chartLabelData.trainNumbers,minX-180);
+    const trainEnd=lowerBoundByX(chartLabelData.trainNumbers,maxX+24);
+    // 列車番号は一定以上ズームした場合だけ表示する。
+    // 画面内にある候補をX座標順に集め、200件を超える場合だけ均等間引きする。
+    // 画面を格子状に分割せず、駅・時間帯の位置関係をそのまま保つ。
+    const visibleTrainNumbers=[];
+    const trainNumberLabelsEnabled=state.scale>=0.65;
+    if(trainNumberLabelsEnabled){
+      const visibleCandidates=[];
+      for(let i=trainStart;i<trainEnd;i++){
+        const item=chartLabelData.trainNumbers[i];
+        if(item.y<minY-28||item.y>maxY+28)continue;
+        const screenX=item.x*state.scale+state.tx;
+        const screenY=item.y*state.scale+state.ty;
+        if(screenX < -20 || screenX > state.viewWidth+20 || screenY < -20 || screenY > state.viewHeight+20)continue;
+        visibleCandidates.push(item);
+      }
+      const maxVisibleTrainNumbers=200;
+      if(visibleCandidates.length<=maxVisibleTrainNumbers){
+        visibleTrainNumbers.push(...visibleCandidates);
+      }else{
+        // 表示候補全体から等間隔で選び、時間帯の一端だけに偏らないようにする。
+        const interval=(visibleCandidates.length-1)/(maxVisibleTrainNumbers-1);
+        for(let i=0;i<maxVisibleTrainNumbers;i++){
+          visibleTrainNumbers.push(visibleCandidates[Math.round(i*interval)]);
+        }
+      }
+    }
+    const visibleTimes=chartLabelData.times.filter(item=>item.x>=minX-44&&item.x<=maxX+44&&item.y>=minY-28&&item.y<=maxY+28);
+    const visibleStations=chartLabelData.stations.filter(item=>item.x>=minX-190&&item.x<=maxX+30&&item.y>=minY-34&&item.y<=maxY+34);
+    const signature=[
+      visibleTimes.map(item=>`t${item.index}`).join(','),
+      visibleStations.map(item=>`s${item.index}`).join(','),
+      `z${trainNumberLabelsEnabled?'on':'off'}`,
+      visibleTrainNumbers.map(item=>`n${item.trainIndex}`).join(',')
+    ].join('|');
+    if(signature===chartLabelSignature)return;
+    chartLabelSignature=signature;
+    const parts=[];
+    for(const item of visibleTimes){
+      parts.push(`<text x="${item.x}" y="${item.y}" text-anchor="middle" font-size="22" font-weight="700" fill="#333">${esc(item.text)}</text>`);
+    }
+    for(const item of visibleStations){
+      parts.push(`<text x="${item.x}" y="${item.y}" text-anchor="end" font-size="23" fill="#888">${esc(item.text)}</text>`);
+    }
+    for(const item of visibleTrainNumbers){
+      parts.push(`<text class="railway-diagram-train-number-label" data-train-index="${item.trainIndex}" x="${item.x}" y="${item.y}" transform="rotate(${item.angleDeg} ${item.x} ${item.y})" fill="${esc(item.color)}" stroke="#fff" stroke-width="1.1" stroke-linejoin="round" paint-order="stroke" font-size="13" font-weight="400" text-anchor="start" dominant-baseline="central">${esc(item.text)}</text>`);
+    }
+    chartTextLayer.innerHTML=parts.join('');
+  }
+  function queueVisibleChartLabelUpdate(){
+    if(chartLabelUpdateRaf||!chartTextLayer)return;
+    chartLabelUpdateRaf=requestAnimationFrame(updateVisibleChartLabels);
+  }
+  function cachedTrainValue(cache,train,key,create){
+    if(!train||typeof train!=='object') return create();
+    let values=cache.get(train);
+    if(!values){values=new Map();cache.set(train,values);}
+    if(values.has(key)) return values.get(key);
+    const value=create();
+    values.set(key,value);
+    // 同じ列車で保持する条件を限定し、長時間の利用でキャッシュが膨らまないようにする。
+    if(values.size>4) values.delete(values.keys().next().value);
+    return value;
+  }
   const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const toMinutes=value=>{
     const raw=String(value??'').trim();if(!raw)return NaN;
@@ -11174,54 +11267,52 @@ initRegionNavigation();
     return uniqueStationNames(source.map(st=>st?.nameJa||st?.name));
   }
   function chronologicalTrainStops(train,indexMap){
-    const rows=Array.isArray(train?.stops)?train.stops:[];
-    const out=[];
-    for(let sourceIndex=0;sourceIndex<rows.length;sourceIndex++){
-      const row=rows[sourceIndex];
-      const name=String(row?.station||'').trim();const index=indexMap.get(name);
-      if(index===undefined)continue;
-      const arrivalRaw=String(row?.arrival||row?.time||row?.departure||'').trim();
-      const departureRaw=String(row?.departure||row?.time||row?.arrival||'').trim();
-      if(!arrivalRaw&&!departureRaw)continue;
-      const arrival=toMinutes(arrivalRaw||departureRaw);
-      if(!Number.isFinite(arrival))continue;
-      let departure=toMinutes(departureRaw||arrivalRaw);
-      // 0:00～2:59はtimeToMinutes側ですでに翌日扱い。
-      // ここで時刻の逆転を一律+24時間にすると、JSON内の駅順や時刻の不整合が
-      // 48時台などの異常な位置に化けるため、逆転補正はせず実時刻で並べ直す。
-      if(!Number.isFinite(departure)||departure<arrival)departure=arrival;
-      out.push({station:name,index,sourceIndex,arrival,departure});
-    }
-    // JSONのstops配列が駅順で保存されている場合も、実際の発着時刻順に描画する。
-    out.sort((a,b)=>a.arrival-b.arrival||a.departure-b.departure||a.index-b.index);
-    return out;
+    return cachedTrainValue(chronologicalStopsCache,train,chartCacheSignature,()=>{
+      const rows=Array.isArray(train?.stops)?train.stops:[];
+      const out=[];
+      for(let sourceIndex=0;sourceIndex<rows.length;sourceIndex++){
+        const row=rows[sourceIndex];
+        const name=String(row?.station||'').trim();const index=indexMap.get(name);
+        if(index===undefined)continue;
+        const arrivalRaw=String(row?.arrival||row?.time||row?.departure||'').trim();
+        const departureRaw=String(row?.departure||row?.time||row?.arrival||'').trim();
+        if(!arrivalRaw&&!departureRaw)continue;
+        const arrival=toMinutes(arrivalRaw||departureRaw);
+        if(!Number.isFinite(arrival))continue;
+        let departure=toMinutes(departureRaw||arrivalRaw);
+        if(!Number.isFinite(departure)||departure<arrival)departure=arrival;
+        out.push({station:name,index,sourceIndex,arrival,departure});
+      }
+      out.sort((a,b)=>a.arrival-b.arrival||a.departure-b.departure||a.index-b.index);
+      return out;
+    });
   }
   function chartStopsForTrain(train,indexMap,circularCount=0){
-    const rows=chronologicalTrainStops(train,indexMap);
-    if(!(circularCount>1)||rows.length<2)return rows;
-    // 環状線上の列車は circular フラグの有無にかかわらず、循環駅順を保って一方向へ展開する。
-    const count=circularCount;
-    let sign=0;
-    for(let i=1;i<rows.length;i++){
-      const forward=(rows[i].index-rows[i-1].index+count)%count;
-      const backward=(rows[i-1].index-rows[i].index+count)%count;
-      if(forward===0&&backward===0)continue;
-      sign=forward<=backward?1:-1;
-      break;
-    }
-    if(!sign)return rows;
-    // 分割駅を先頭に置いた駅リストでは、分割駅始発の逆方向列車だけ末尾側から始める。
-    let unwrapped=rows[0].index+(sign<0&&rows[0].index===0?count:0);
-    let previous=rows[0].index;
-    const result=[{...rows[0],baseIndex:rows[0].index,index:unwrapped}];
-    for(let i=1;i<rows.length;i++){
-      const row=rows[i];
-      const delta=sign>0?(row.index-previous+count)%count:(previous-row.index+count)%count;
-      unwrapped+=sign*delta;
-      result.push({...row,baseIndex:row.index,index:unwrapped});
-      previous=row.index;
-    }
-    return result;
+    return cachedTrainValue(chartStopsCache,train,`${chartCacheSignature}|${circularCount}`,()=>{
+      const rows=chronologicalTrainStops(train,indexMap);
+      if(!(circularCount>1)||rows.length<2)return rows;
+      const count=circularCount;
+      let sign=0;
+      for(let i=1;i<rows.length;i++){
+        const forward=(rows[i].index-rows[i-1].index+count)%count;
+        const backward=(rows[i-1].index-rows[i].index+count)%count;
+        if(forward===0&&backward===0)continue;
+        sign=forward<=backward?1:-1;
+        break;
+      }
+      if(!sign)return rows;
+      let unwrapped=rows[0].index+(sign<0&&rows[0].index===0?count:0);
+      let previous=rows[0].index;
+      const result=[{...rows[0],baseIndex:rows[0].index,index:unwrapped}];
+      for(let i=1;i<rows.length;i++){
+        const row=rows[i];
+        const delta=sign>0?(row.index-previous+count)%count:(previous-row.index+count)%count;
+        unwrapped+=sign*delta;
+        result.push({...row,baseIndex:row.index,index:unwrapped});
+        previous=row.index;
+      }
+      return result;
+    });
   }
   function isLocalTrain(train){
     const t=String(train?.type||'').replace(/[　\s]/g,'');
@@ -11244,26 +11335,31 @@ initRegionNavigation();
     return intervals.map(values=>values.length?Math.min(...values):NaN);
   }
   function stationYPositions(stations,trains,indexMap,circularCount=0){
-    // 駅間隔は各駅停車の駅間所要時間の最短値だけで決定する。
-    // JSON内の距離・キロ程データは一切参照しない。
+    const key=chartCacheSignature;
+    if(stationSpacingCache.has(key)) return stationSpacingCache.get(key);
     const timeGaps=collectIntervalTimes(stations,trains,indexMap,circularCount);
     const usableTimes=timeGaps.filter(v=>Number.isFinite(v)&&v>0);
     const avgTime=usableTimes.length?usableTimes.reduce((a,b)=>a+b,0)/usableTimes.length:1;
     const weights=timeGaps.map(v=>Number.isFinite(v)&&v>0?v:avgTime);
     const positive=weights.filter(v=>Number.isFinite(v)&&v>0);
     const avg=positive.length?positive.reduce((a,b)=>a+b,0)/positive.length:1;
-    // 駅名の引き出し線と斜めの接続線を配置できるよう、駅間の基準幅を確保。
     const gaps=weights.map(v=>Math.max(48,(v/avg)*56));
     const y=[0];for(const gap of gaps)y.push(y[y.length-1]+gap);
-    return {y,mode:usableTimes.length?'各駅停車の最短所要時間':'均等間隔',gaps};
+    const result={y,mode:usableTimes.length?'各駅停車の最短所要時間':'均等間隔',gaps};
+    stationSpacingCache.set(key,result);
+    if(stationSpacingCache.size>6) stationSpacingCache.delete(stationSpacingCache.keys().next().value);
+    return result;
   }
   function trainEvents(train,indexMap,circularCount=0){
-    const rows=chartStopsForTrain(train,indexMap,circularCount);const events=[];
-    for(const row of rows){
-      events.push({index:row.index,minute:row.arrival,station:row.station,sourceIndex:row.sourceIndex});
-      if(row.departure>row.arrival+.01)events.push({index:row.index,minute:row.departure,station:row.station,sourceIndex:row.sourceIndex});
-    }
-    return events.sort((a,b)=>a.minute-b.minute||a.index-b.index);
+    return cachedTrainValue(trainEventsCache,train,`${chartCacheSignature}|${circularCount}`,()=>{
+      const rows=chartStopsForTrain(train,indexMap,circularCount);const events=[];
+      for(const row of rows){
+        events.push({index:row.index,minute:row.arrival,station:row.station,sourceIndex:row.sourceIndex});
+        if(row.departure>row.arrival+.01)events.push({index:row.index,minute:row.departure,station:row.station,sourceIndex:row.sourceIndex});
+      }
+      events.sort((a,b)=>a.minute-b.minute||a.index-b.index);
+      return events;
+    });
   }
   // 表示区間の外から進入／区間外へ退出する列車について、表示端の駅を
   // 通過する時刻を、その列車の表示区間内にある他の駅間所要時間の平均傾きから推定する。
@@ -11285,6 +11381,10 @@ initRegionNavigation();
   }
   function extendTrainEventsToDisplayEdges(train,events,indexMap,stations,yPositions,circularCount=0){
     if(circularCount>1||!Array.isArray(events)||events.length<2||!Array.isArray(stations)||stations.length<3||!Array.isArray(yPositions))return events;
+    const cacheKey=`${chartCacheSignature}|${yPositions.join(',')}|${circularCount}`;
+    return cachedTrainValue(extendedEventsCache,train,cacheKey,()=>extendTrainEventsToDisplayEdgesUncached(train,events,indexMap,stations,yPositions,circularCount));
+  }
+  function extendTrainEventsToDisplayEdgesUncached(train,events,indexMap,stations,yPositions,circularCount=0){
     const rows=chronologicalTrainStops(train,indexMap);
     if(rows.length<2)return events;
     let direction=0,consistent=true;
@@ -11464,6 +11564,9 @@ initRegionNavigation();
     return {present:true,valid:Number.isFinite(valueInMinutes),minute:valueInMinutes,raw};
   }
   function inspectTrainTimeData(train,indexMap){
+    return cachedTrainValue(timeErrorsCache,train,chartCacheSignature,()=>inspectTrainTimeDataUncached(train,indexMap));
+  }
+  function inspectTrainTimeDataUncached(train,indexMap){
     const source=Array.isArray(train?.stops)?train.stops:[];
     const rows=[];
     source.forEach((stop,sourceIndex)=>{
@@ -11556,6 +11659,10 @@ initRegionNavigation();
     return {...train,type:matched.showType===false?'':String(matched.type||'').trim(),sectionTypeSegments:null};
   }
   function trainColor(train,pos,stationA,stationB){
+    const key=`${chartCacheSignature}|${Number.isFinite(Number(pos))?Number(pos).toFixed(4):''}|${String(stationA||'')}|${String(stationB||'')}`;
+    return cachedTrainValue(trainColorCache,train,key,()=>trainColorUncached(train,pos,stationA,stationB));
+  }
+  function trainColorUncached(train,pos,stationA,stationB){
     try{
       const exactLineColor=typeof trainServiceColorBetweenStations==='function'
         ?trainServiceColorBetweenStations(stationA,stationB,train):'';
@@ -11616,17 +11723,21 @@ initRegionNavigation();
     }
     const circularCount=circularRoute?baseStations.length:0;
     const stations=circularRoute?[...baseStations,baseStations[0]]:baseStations;
+    chartCacheSignature=JSON.stringify([activeRouteName,selectedDateKey,currentDay,state.direction,state.routeBranch,stations,circularCount]);
     const indexMap=new Map(baseStations.map((name,i)=>[name,i]));
     const spacing=stationYPositions(stations,trains,indexMap,circularCount);
     // 選択中の経路上で停車駅が1駅しかない列車は、ダイヤ上にスジを描かない。
     // 発着時刻が2つあっても、同一駅だけなら対象外とする。
-    const eventMap=trains.map(train=>{
+    const eventMap=[];
+    for(const train of trains){
       const actualEvents=trainEvents(train,indexMap,circularCount);
       const events=extendTrainEventsToDisplayEdges(train,actualEvents,indexMap,stations,spacing.y,circularCount);
       const chartIndexBySource=new Map();
       for(const event of actualEvents)if(Number.isInteger(event.sourceIndex))chartIndexBySource.set(event.sourceIndex,event.index);
-      return {train,events,chartIndexBySource};
-    }).filter(item=>new Set(item.events.filter(event=>!event.extrapolated).map(event=>event.index)).size>=2);
+      const servedIndexes=new Set();
+      for(const event of events)if(!event.extrapolated)servedIndexes.add(event.index);
+      if(servedIndexes.size>=2)eventMap.push({train,events,chartIndexBySource});
+    }
     if(!eventMap.length)return {empty:'表示できる駅が2駅以上ある列車がありません。',trains,stations,errors:[]};
     const timeErrors=[];
     for(let trainIndex=0;trainIndex<eventMap.length;trainIndex++){
@@ -11636,10 +11747,16 @@ initRegionNavigation();
         timeErrors.push({...error,index:Number.isInteger(chartIndex)?chartIndex:error.index,trainIndex,trainNo:String(item.train?.no||item.train?.number||'列車')});
       }
     }
-    const allMinutes=eventMap.flatMap(item=>item.events.map(e=>e.minute)).filter(Number.isFinite);
-    if(!allMinutes.length)return {empty:'時刻データがありません。',trains,stations};
-    const minValue=allMinutes.reduce((a,b)=>Math.min(a,b),Infinity);
-    const maxValue=allMinutes.reduce((a,b)=>Math.max(a,b),-Infinity);
+    let minValue=Infinity,maxValue=-Infinity;
+    for(const item of eventMap){
+      for(const event of item.events){
+        const minute=Number(event.minute);
+        if(!Number.isFinite(minute))continue;
+        if(minute<minValue)minValue=minute;
+        if(minute>maxValue)maxValue=minute;
+      }
+    }
+    if(!Number.isFinite(minValue)||!Number.isFinite(maxValue))return {empty:'時刻データがありません。',trains,stations};
     // 最初または最後の列車時刻がちょうど毎時00分の場合に限り、
     // その側だけ1時間分の余白を追加する。00分以外では従来の時間軸範囲を維持。
     const minIsOnHour=Math.abs(minValue%60)<0.001;
@@ -11647,18 +11764,20 @@ initRegionNavigation();
     let minMinute=Math.floor(minValue/60)*60-(minIsOnHour?60:0);
     let maxMinute=Math.ceil(maxValue/60)*60+(maxIsOnHour?60:0);
     if(maxMinute<=minMinute)maxMinute=minMinute+120;
-    // v27で表示していた現在の横幅を100%とする。スライダーで50～300%に調整可能。
+    // 時間軸の内部倍率は従来どおり3倍。UIではこの幅を100%として扱う。
     const top=104,left=264,right=48,bottom=62,pxPerMinute=2.25*state.horizontalScale;
     const plotWidth=(maxMinute-minMinute)*pxPerMinute;
     const chartHeight=spacing.y[spacing.y.length-1]||0;
     const contentWidth=left+plotWidth+right,contentHeight=top+chartHeight+bottom;
     const parts=[];
+    const timeLabels=[],stationLabels=[],trainNumberLabels=[];
     parts.push(`<rect x="0" y="0" width="${contentWidth}" height="${contentHeight}" fill="#fff"/>`);
-    // 時刻の縦グリッド。時刻ラベルはダイヤの下端に配置。
+    // 時刻の縦グリッド。文字は後段で画面内に入った目盛りだけ描画。
+    let timeLabelIndex=0;
     for(let t=minMinute;t<=maxMinute;t+=60){
       const x=left+(t-minMinute)*pxPerMinute;
       parts.push(`<line x1="${x}" y1="${top-6}" x2="${x}" y2="${top+chartHeight+12}" stroke="#ddd" stroke-width="1"/>`);
-      parts.push(`<text x="${x}" y="${top+chartHeight+43}" text-anchor="middle" font-size="22" font-weight="700" fill="#333">${timeLabel(t)}</text>`);
+      timeLabels.push({index:timeLabelIndex++,x,y:top+chartHeight+43,text:timeLabel(t)});
     }
     // 駅名ラベルの引き出し線から駅の横方向ガイドまでを、同じ色・太さの
     // 1本の連続した折れ線として描画する（ラベル側の線がダイヤ線の延長に見えるようにする）。
@@ -11667,7 +11786,7 @@ initRegionNavigation();
       const leaderY=y-28;
       const leaderEnd=left-36;
       parts.push(`<path d="M 24 ${leaderY} H ${leaderEnd} L ${left} ${y} H ${left+plotWidth}" fill="none" stroke="#999" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"/>`);
-      parts.push(`<text x="${left-46}" y="${y-36}" text-anchor="end" font-size="23" fill="#888">${esc(stations[i])}</text>`);
+      stationLabels.push({index:i,x:left-46,y:y-36,text:stations[i]});
     }
     // 列車スジ。停車駅では到着・発車時刻の差を横線として描画。
     for(let trainIndex=0;trainIndex<eventMap.length;trainIndex++){
@@ -11679,7 +11798,6 @@ initRegionNavigation();
       if(events.length===1){
         const e=events[0],x=left+(e.minute-minMinute)*pxPerMinute,y=top+spacing.y[e.index];
         const color=opaqueColor(trainColor(train,e.index,e.station,e.station));parts.push(`<circle cx="${x}" cy="${y}" r="2.7" fill="${esc(color)}"/>`);
-        parts.push(`<circle cx="${x}" cy="${y}" r="9" fill="none" class="railway-diagram-train-hit" data-train-index="${trainIndex}"/>`);
       }
       for(let i=0;i<events.length-1;i++){
         const a=events[i],b=events[i+1];
@@ -11688,7 +11806,32 @@ initRegionNavigation();
         const pos=(a.index+b.index)/2;const color=opaqueColor(trainColor(train,pos,a.station,b.station));
         if(![x1,x2,y1,y2].every(Number.isFinite))continue;
         parts.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${esc(color)}" stroke-width="1.35"/>`);
-        parts.push(`<line class="railway-diagram-train-hit" data-train-index="${trainIndex}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`);
+      }
+      // 列車番号は最初の運転区間の始点付近に置き、最初のスジと同じ色・角度で表示する。
+      // 時間軸の進行方向（左→右）に沿わせるため、通常は文字が上下逆さにならない。
+      if(events.length>1){
+        // 始発駅の到着～発車の横線（停車時間）ではなく、最初に駅間を移動する線分を使う。
+        let firstMovingPair=null;
+        for(let eventIndex=0;eventIndex<events.length-1;eventIndex++){
+          if(events[eventIndex].index!==events[eventIndex+1].index){
+            firstMovingPair={a:events[eventIndex],b:events[eventIndex+1]};
+            break;
+          }
+        }
+        if(firstMovingPair){
+          const {a,b}=firstMovingPair;
+          const x1=left+(a.minute-minMinute)*pxPerMinute,x2=left+(b.minute-minMinute)*pxPerMinute;
+          const y1=top+spacing.y[a.index],y2=top+spacing.y[b.index];
+          const dx=x2-x1,dy=y2-y1,length=Math.hypot(dx,dy);
+          if(Number.isFinite(length)&&length>0&&[x1,x2,y1,y2].every(Number.isFinite)){
+            const angle=Math.atan2(dy,dx),angleDeg=angle*180/Math.PI;
+            const along=Math.min(22,Math.max(7,length*.10));
+            const labelX=x1+Math.cos(angle)*along+Math.sin(angle)*9;
+            const labelY=y1+Math.sin(angle)*along-Math.cos(angle)*9;
+            const labelColor=opaqueColor(trainColor(train,(a.index+b.index)/2,a.station,b.station));
+            trainNumberLabels.push({trainIndex,x:labelX,y:labelY,angleDeg,color:labelColor,text:no});
+          }
+        }
       }
       parts.push('</g>');
     }
@@ -11714,7 +11857,10 @@ initRegionNavigation();
     const count=eventMap.length;
     const dateText=String(selectedDateKey||'');
     const branchLabel=String(currentBranchChoice()?.label||'');
+    trainNumberLabels.sort((a,b)=>a.x-b.x);
+    parts.push('<g id="railwayDiagramVisibleTextLayer" pointer-events="none"></g>');
     return {svg:parts.join(''),width:contentWidth,height:contentHeight,trains:eventMap,stations,mode:spacing.mode,top,yPositions:spacing.y,errors:timeErrors,
+      labels:{times:timeLabels,stations:stationLabels,trainNumbers:trainNumberLabels},
       minMinute,left,pxPerMinute,summary:`${routeName}${branchLabel?`　${branchLabel}`:''}${dateText?`　${dateText}`:''}　列車 ${count}本`};
   }
   function minuteLabel(value){
@@ -11904,21 +12050,23 @@ initRegionNavigation();
     showTimeErrorInfo(error,screenPoint);
     return !trainInfoPanel.hidden;
   }
+  let timeErrorMarkerEventsBound=false;
   function bindTimeErrorMarkerEvents(){
-    transformGroup.querySelectorAll('.railway-diagram-time-error-marker').forEach(marker=>{
-      // マーカー上の操作をビューポートのドラッグ・ズーム処理へ流さない。
-      marker.addEventListener('pointerdown',event=>{event.stopPropagation();});
-      marker.addEventListener('click',event=>{
-        event.preventDefault();
-        event.stopPropagation();
-        openTimeErrorMarker(marker);
-      });
-      marker.addEventListener('keydown',event=>{
-        if(event.key!=='Enter'&&event.key!==' ')return;
-        event.preventDefault();
-        event.stopPropagation();
-        openTimeErrorMarker(marker);
-      });
+    if(timeErrorMarkerEventsBound)return;
+    timeErrorMarkerEventsBound=true;
+    // マーカー数にかかわらず、イベントリスナーは親要素に各1つだけ登録する。
+    transformGroup.addEventListener('pointerdown',event=>{
+      if(event.target.closest?.('.railway-diagram-time-error-marker'))event.stopPropagation();
+    });
+    transformGroup.addEventListener('click',event=>{
+      const marker=event.target.closest?.('.railway-diagram-time-error-marker');
+      if(!marker)return;
+      event.preventDefault();event.stopPropagation();openTimeErrorMarker(marker);
+    });
+    transformGroup.addEventListener('keydown',event=>{
+      const marker=event.target.closest?.('.railway-diagram-time-error-marker');
+      if(!marker||(event.key!=='Enter'&&event.key!==' '))return;
+      event.preventDefault();event.stopPropagation();openTimeErrorMarker(marker);
     });
   }
   function showTrainInfo(item,segment,screenPoint){
@@ -11965,13 +12113,32 @@ initRegionNavigation();
     }
     hideTrainInfo();return false;
   }
-  function updateTransform(){transformGroup.setAttribute('transform',`translate(${state.tx} ${state.ty}) scale(${state.scale})`);}
-  function fitDiagram(){
+  function updateTransform(){
+    transformGroup.setAttribute('transform',`translate(${state.tx} ${state.ty}) scale(${state.scale})`);
+    queueVisibleChartLabelUpdate();
+  }
+  function fitDiagram(options={}){
     hideTrainInfo();
     const rect=viewport.getBoundingClientRect();state.viewWidth=Math.max(1,rect.width);state.viewHeight=Math.max(1,rect.height);
     svg.setAttribute('viewBox',`0 0 ${state.viewWidth} ${state.viewHeight}`);
-    const pad=22;const s=Math.min((state.viewWidth-pad*2)/state.contentWidth,(state.viewHeight-pad*2)/state.contentHeight,1.25);
-    state.scale=Math.max(.03,Math.min(5,s));state.tx=(state.viewWidth-state.contentWidth*state.scale)/2;state.ty=(state.viewHeight-state.contentHeight*state.scale)/2;updateTransform();
+    const pad=22;
+    const baseHorizontalScale=Number(options?.baseHorizontalScale);
+    const useWideInitialView=Number.isFinite(baseHorizontalScale)&&baseHorizontalScale>0&&state.chartMeta&&state.horizontalScale>0;
+    // 初期表示・方向切替時は従来の基準幅から倍率を計算し、
+    // UIの100%（従来300%幅）が横にはみ出す分はドラッグ／ズームで確認できるようにする。
+    const fitWidth=useWideInitialView
+      ? state.chartMeta.left+((state.contentWidth-state.chartMeta.left-48)*baseHorizontalScale/state.horizontalScale)+48
+      : state.contentWidth;
+    const s=Math.min((state.viewWidth-pad*2)/fitWidth,(state.viewHeight-pad*2)/state.contentHeight,1.25);
+    state.scale=Math.max(.03,Math.min(5,s));
+    if(useWideInitialView){
+      const plotCenterX=state.chartMeta.left+(state.contentWidth-state.chartMeta.left-48)/2;
+      state.tx=state.viewWidth/2-plotCenterX*state.scale;
+    }else{
+      state.tx=(state.viewWidth-state.contentWidth*state.scale)/2;
+    }
+    state.ty=(state.viewHeight-state.contentHeight*state.scale)/2;
+    updateTransform();
   }
   function renderDiagram(options={}){
     renderBranchSelector();
@@ -11982,17 +12149,26 @@ initRegionNavigation();
       centerMinute=state.chartMeta.minMinute+(oldCenterX-state.chartMeta.left)/state.chartMeta.pxPerMinute;
     }
     const chart=makeChart();
-    if(chart.empty){transformGroup.innerHTML='';empty.hidden=true;empty.textContent='';summary.textContent='';state.chartMeta=null;state.chartTrains=[];state.chartErrors=[];state.timeErrorCount=0;updateTimeErrorToggle(0);hideTrainInfo();return;}
+    if(chart.empty){transformGroup.innerHTML='';chartTextLayer=null;chartLabelData={times:[],stations:[],trainNumbers:[]};chartLabelSignature='';empty.hidden=true;empty.textContent='';summary.textContent='';state.chartMeta=null;state.chartTrains=[];state.chartErrors=[];state.timeErrorCount=0;updateTimeErrorToggle(0);hideTrainInfo();return;}
     empty.hidden=true;summary.textContent=chart.summary;
     state.timeErrorCount=Array.isArray(chart.errors)?chart.errors.length:0;updateTimeErrorToggle(state.timeErrorCount);
     state.contentWidth=chart.width;state.contentHeight=chart.height;
     state.chartMeta={minMinute:chart.minMinute,left:chart.left,pxPerMinute:chart.pxPerMinute,top:chart.top,yPositions:chart.yPositions};
     state.chartTrains=chart.trains||[];state.chartErrors=chart.errors||[];hideTrainInfo();
+    chartLabelData=chart.labels||{times:[],stations:[],trainNumbers:[]};
+    chartLabelSignature='';
+    if(chartLabelUpdateRaf){cancelAnimationFrame(chartLabelUpdateRaf);chartLabelUpdateRaf=0;}
     transformGroup.innerHTML=chart.svg;
+    chartTextLayer=transformGroup.querySelector('#railwayDiagramVisibleTextLayer');
     bindTimeErrorMarkerEvents();
     // 横幅調整時は、画面中央にあった時刻を保ったまま横方向だけを再配置する。
     requestAnimationFrame(()=>{
-      if(!preserveView||!Number.isFinite(centerMinute)){fitDiagram();return;}
+      if(!preserveView||!Number.isFinite(centerMinute)){
+        // 初期表示は従来の100%幅を基準倍率にし、UIの100%（従来300%幅）を見せる。
+        // 全体表示ボタンでは引数なしの fitDiagram() を使い、従来どおり全線を画面内に収める。
+        fitDiagram({baseHorizontalScale:1});
+        return;
+      }
       const rect=viewport.getBoundingClientRect();
       state.viewWidth=Math.max(1,rect.width);state.viewHeight=Math.max(1,rect.height);
       svg.setAttribute('viewBox',`0 0 ${state.viewWidth} ${state.viewHeight}`);
@@ -12003,7 +12179,8 @@ initRegionNavigation();
   }
   function resetDiagramForRouteChange(message=''){
     hideTrainInfo();
-    transformGroup.innerHTML='';
+    transformGroup.innerHTML='';chartTextLayer=null;chartLabelData={times:[],stations:[],trainNumbers:[]};chartLabelSignature='';
+    if(chartLabelUpdateRaf){cancelAnimationFrame(chartLabelUpdateRaf);chartLabelUpdateRaf=0;}
     // 駅データ不足・路線読込失敗などの状態メッセージはダイヤグラム上に表示しない。
     empty.hidden=true;empty.textContent='';
     summary.textContent='';
@@ -12013,6 +12190,9 @@ initRegionNavigation();
   }
   window.addEventListener('unyomatome:route-loading',()=>{
     state.routeBranch='main';
+    chronologicalStopsCache=new WeakMap();chartStopsCache=new WeakMap();trainEventsCache=new WeakMap();
+    extendedEventsCache=new WeakMap();timeErrorsCache=new WeakMap();trainColorCache=new WeakMap();stationSpacingCache.clear();
+    chartCacheSignature='';
     resetDiagramForRouteChange();
   });
   window.addEventListener('unyomatome:route-loaded',()=>{
@@ -12021,7 +12201,8 @@ initRegionNavigation();
       renderDiagram();
     }else{
       // モーダルを閉じている間は案内文を表示せず、次回オープン時に描画する。
-      transformGroup.innerHTML='';
+      transformGroup.innerHTML='';chartTextLayer=null;chartLabelData={times:[],stations:[],trainNumbers:[]};chartLabelSignature='';
+      if(chartLabelUpdateRaf){cancelAnimationFrame(chartLabelUpdateRaf);chartLabelUpdateRaf=0;}
       empty.hidden=true;
       empty.textContent='';
       summary.textContent='';
@@ -12068,12 +12249,13 @@ initRegionNavigation();
   document.getElementById('railwayDiagramZoomOut')?.addEventListener('click',()=>zoomCenter(.8));
   document.getElementById('railwayDiagramFit')?.addEventListener('click',fitDiagram);
   if(horizontalScaleInput&&horizontalScaleValue){
-    horizontalScaleInput.value=String(Math.round(state.horizontalScale*100));
-    horizontalScaleValue.textContent=`${horizontalScaleInput.value}%`;
+    // 表示上の100%を、従来の横幅300%と同じ広さに対応させる。
+    horizontalScaleInput.value='100';
+    horizontalScaleValue.textContent='100%';
     let horizontalRenderFrame=0;
     horizontalScaleInput.addEventListener('input',()=>{
       horizontalScaleValue.textContent=`${horizontalScaleInput.value}%`;
-      state.horizontalScale=Math.max(.5,Math.min(3,Number(horizontalScaleInput.value)/100));
+      state.horizontalScale=Math.max(1.5,Math.min(6,Number(horizontalScaleInput.value)*3/100));
       if(!overlay.classList.contains('active'))return;
       cancelAnimationFrame(horizontalRenderFrame);
       horizontalRenderFrame=requestAnimationFrame(()=>renderDiagram({preserveView:true}));
