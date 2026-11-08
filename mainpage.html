@@ -1201,7 +1201,7 @@ const ROUTE_REGISTRY={
     legacyStorageKeys:['JR広島'],
     access:{public:true,routeAdmins:[]},
   },
-  '海岸線':{
+  '神戸市営地下鉄海岸線':{
     id:'kobe-kaigan',
     json:KOBE_KAIGAN_DATA_URL,
     jsonLines:['海岸線'],
@@ -1212,7 +1212,7 @@ const ROUTE_REGISTRY={
     company:'神戸市営地下鉄',
     access:{public:true,routeAdmins:[]},
   },
-  '西神・山手線':{
+  '神戸市営地下鉄西神・山手線':{
     id:'kobe-seishin-yamate',
     json:KOBE_SEISHIN_YAMATE_DATA_URL,
     jsonLines:['西神・山手線'],
@@ -1224,7 +1224,7 @@ const ROUTE_REGISTRY={
     formationType:'6000形',
     access:{public:true,routeAdmins:[]},
   },
-  '南海泉北線':{
+  '南海電気鉄道泉北線':{
     id:'nankai-senboku',
     json:NANKAI_KOYA_DATA_URL,
     jsonLines:['泉北線'],
@@ -1320,7 +1320,7 @@ const ROUTE_REGISTRY={
     prescribedFormationRule:'common',
     access:{public:false,routeAdmins:[]},
   },
-  '日比谷線':{
+  '東京メトロ日比谷線':{
     id:'hibiya',
     json:'https://minamikaze2700.github.io/Unyomatome/data/TokyoMetro_Hibiya_2024.json',
     jsonLines:['日比谷線'],
@@ -1332,7 +1332,7 @@ const ROUTE_REGISTRY={
     access:{public:false,routeAdmins:[]},
     prescribedFormationRule:'common'
   },
-  '空港線・箱崎線':{
+  '福岡市地下鉄空港線・箱崎線':{
     id:'fukuoka-kuko-hakozaki',
     json:'https://minamikaze2700.github.io/Unyomatome/data/FukuokaCity_KukoHakozaki_2026.json',
     jsonLines:['空港線','箱崎線'],
@@ -1352,7 +1352,7 @@ const ROUTE_REGISTRY={
     access:{public:false,routeAdmins:['fulnishi39']},
     prescribedFormationRule:'common'
   },
-  '七隈線':{
+  '福岡市地下鉄七隈線':{
     id:'fukuoka-nanakuma',
     json:'https://minamikaze2700.github.io/Unyomatome/data/FukuokaCity_Nanakuma_2026.json',
     jsonLines:['七隈線'],
@@ -1365,7 +1365,7 @@ const ROUTE_REGISTRY={
     prescribedFormationRule:'common',
     access:{public:true,routeAdmins:['fulnishi39']},
   },
-  '東武野田線':{
+  '東武鉄道アーバンパークライン':{
     id:'tobu-noda',
     blockedFormationIds:['8158'],
     json:'https://minamikaze2700.github.io/Unyomatome/data/TobuNoda_2024.json',
@@ -1378,7 +1378,7 @@ const ROUTE_REGISTRY={
     access:{public:true,routeAdmins:[]},
     prescribedFormationRule:'common'
   },
-  '東武スカイツリーライン':{
+  '東武鉄道スカイツリーライン':{
     id:'tobu-skytree',
     json:TOBU_SKYTREE_DATA_URL,
     jsonLines:['スカイツリーライン','伊勢崎線','日光線','日比谷線','半蔵門線','田園都市線'],
@@ -1468,7 +1468,7 @@ const ROUTE_REGISTRY={
     prescribedFormationRule:'common',
     access:{public:false,routeAdmins:[]},
   },
-  '北しなの線（豊野～妙高高原）':{
+  'しなの鉄道北しなの線（豊野～妙高高原）':{
     id:'shinano-kita',
     json:'https://minamikaze2700.github.io/Unyomatome/data/Shinano_2026.json',
     jsonLines:['北しなの線'],
@@ -1480,7 +1480,7 @@ const ROUTE_REGISTRY={
     prescribedFormationRule:'common',
     access:{public:false,routeAdmins:[]},
   },
-  '勝山永平寺線':{
+  'えちぜん鉄道勝山永平寺線':{
     id:'echizen-katsuyama',
     json:'https://minamikaze2700.github.io/Unyomatome/data/Echizen_2026.json',
     jsonLines:['勝山永平寺線'],
@@ -1496,7 +1496,7 @@ const ROUTE_REGISTRY={
     prescribedFormationRule:'common',
     access:{public:false,routeAdmins:[]},
   },
-  '三国芦原線':{
+  'えちぜん鉄道三国芦原線':{
     id:'echizen-mikuni',
     json:'https://minamikaze2700.github.io/Unyomatome/data/Echizen_2026.json',
     jsonLines:['勝山永平寺線','三国芦原線'],
@@ -1513,6 +1513,10 @@ const ROUTE_REGISTRY={
     access:{public:false,routeAdmins:[]},
   },
 };
+// 旧名称を参照する既存処理向けの互換エイリアス（登録名一覧には表示しない）。
+const LEGACY_ROUTE_NAME_ALIASES=Object.freeze({"山陽本線（糸崎～岩国）": "山陽本線（糸崎～岩国）", "可部線": "可部線", "呉線": "呉線", "海岸線": "神戸市営地下鉄海岸線", "西神・山手線": "神戸市営地下鉄西神・山手線", "南海泉北線": "南海電気鉄道泉北線", "京浜東北・根岸線": "京浜東北・根岸線", "横浜線": "横浜線", "南武線": "南武線", "内房線": "内房線", "大阪環状線": "大阪環状線", "ゆめ咲線": "ゆめ咲線", "日比谷線": "東京メトロ日比谷線", "空港線・箱崎線": "福岡市地下鉄空港線・箱崎線", "七隈線": "福岡市地下鉄七隈線", "東武野田線": "東武鉄道アーバンパークライン", "東武スカイツリーライン": "東武鉄道スカイツリーライン", "水島臨海鉄道": "水島臨海鉄道", "長野電鉄長野線": "長野電鉄長野線", "関西本線（名古屋～亀山）": "関西本線（名古屋～亀山）", "御殿場線": "御殿場線", "樽見鉄道樽見線": "樽見鉄道樽見線", "しなの鉄道線（篠ノ井～軽井沢）": "しなの鉄道線（篠ノ井～軽井沢）", "北しなの線（豊野～妙高高原）": "しなの鉄道北しなの線（豊野～妙高高原）", "勝山永平寺線": "えちぜん鉄道勝山永平寺線", "三国芦原線": "えちぜん鉄道三国芦原線"});
+for(const [legacyName,registeredName] of Object.entries(LEGACY_ROUTE_NAME_ALIASES)){ if(legacyName!==registeredName && ROUTE_REGISTRY[registeredName]) Object.defineProperty(ROUTE_REGISTRY,legacyName,{configurable:true,enumerable:false,get(){return ROUTE_REGISTRY[registeredName];}}); }
+
 
 /* 時刻表ファイルは改正年で管理し、選択日付に有効なファイルを読み込む。 */
 const ROUTE_SCHEDULE_CONFIG={
@@ -1525,10 +1529,10 @@ const ROUTE_SCHEDULE_CONFIG={
   '呉線':[
     {from:'2026-03-14',to:'2027-03-13',file:'HiroshimaArea_2026.json'}
   ],
-  '海岸線':[
+  '神戸市営地下鉄海岸線':[
     {from:'2026-03-14',to:'2027-03-13',file:'KobeCity_Kaigan_2026.json'}
   ],
-  '西神・山手線':[
+  '神戸市営地下鉄西神・山手線':[
     {from:'2026-03-14',to:'2027-03-13',file:'KobeCity_SeishinYamate_2026.json'}
   ],
   '京浜東北・根岸線':[
@@ -1549,16 +1553,16 @@ const ROUTE_SCHEDULE_CONFIG={
   'ゆめ咲線':[
     {from:'2025-03-15',to:'2027-03-13',file:'OsakaLoop_2025.json'}
   ],
-  '日比谷線':[
+  '東京メトロ日比谷線':[
     {from:'2024-03-16',to:'2027-03-13',file:'TokyoMetro_Hibiya_2024.json'}
   ],
-  '福岡市地下鉄 空港線・箱崎線':[
+  '福岡市地下鉄空港線・箱崎線':[
     {from:'2026-03-14',to:'2027-03-13',file:'FukuokaCity_KukoHakozaki_2026.json'}
   ],
-  '福岡市地下鉄 七隈線':[
+  '福岡市地下鉄七隈線':[
     {from:'2026-04-01',to:'2027-03-13',file:'FukuokaCity_Nanakuma_2026.json'}
   ],
-  '東武野田線':[
+  '東武鉄道アーバンパークライン':[
     {from:'2024-03-16',to:'2026-11-20',file:'TobuNoda_2024.json'},
     {from:'2026-11-21',to:'2027-03-13',file:'TobuNoda_2026.json'}
   ],
@@ -1580,7 +1584,7 @@ const ROUTE_SCHEDULE_CONFIG={
   'しなの鉄道線（篠ノ井～軽井沢）':[
     {from:'2026-03-14',to:'2027-03-13',file:'Shinano_2026.json'}
   ],
-  '北しなの線（豊野～妙高高原）':[
+  'しなの鉄道北しなの線（豊野～妙高高原）':[
     {from:'2026-03-14',to:'2027-03-13',file:'Shinano_2026.json'}
   ]
 };
@@ -1626,7 +1630,7 @@ for(const meta of Object.values(ROUTE_REGISTRY)){
 function routeNameFromId(value){
   const raw=String(value??'').trim();
   if(!raw) return '';
-  if(ROUTE_REGISTRY[raw]) return raw;
+  if(ROUTE_REGISTRY[raw]) return LEGACY_ROUTE_NAME_ALIASES[raw]||raw;
   const entry=Object.entries(ROUTE_REGISTRY).find(([,meta])=>String(meta?.id||'')===raw);
   return entry?entry[0]:'';
 }
@@ -1636,25 +1640,7 @@ function routeIdFromName(routeName){
 
 // 検索エンジン・SNS向けのページ名とメタ情報を、?route= の値から設定する。
 // URLに路線指定がないメインページは、localStorageの選択路線に左右されない。
-function seoFullRouteName(routeName){
-  const route=String(routeName||'').trim();
-  if(!route) return 'メインページ';
-  const company=String(ROUTE_REGISTRY[route]?.company||'').trim();
-  if(!company) return route;
-
-  // JR線は従来どおり路線名のみ表示する。
-  if(/^JR/.test(company)) return route;
-
-  // 東武線は「東武鉄道＋路線名」の形式に統一する。
-  if(route==='東武野田線') return '東武鉄道アーバンパークライン';
-  if(route==='東武スカイツリーライン') return '東武鉄道スカイツリーライン';
-
-  // 非JR線は「事業者名＋路線名」の形式に統一する。
-  // 路線名に事業者名が含まれている場合は重複させない。
-  if(route===company) return `${company}線`;
-  const linePart=route.startsWith(company) ? route.slice(company.length) : route;
-  return `${company}${linePart}`;
-}
+function seoFullRouteName(routeName){ return String(routeName||'').trim() || 'メインページ'; }
 function updateSeoMetadataFromUrl(){
   const baseUrl='https://minamikaze2700.github.io/Unyomatome/mainpage.html';
   let routeName='';
@@ -6789,20 +6775,20 @@ const REGION_DEFINITIONS={
   },{
     company:'東京メトロ',
     routes:[
-      {name:'日比谷線',id:'hibiya'}
+      {name:'東京メトロ日比谷線',id:'hibiya'}
     ]
   },{
     company:'東武鉄道',
     routes:[
-      {name:'東武野田線',id:'tobu-noda'},
-      {name:'東武スカイツリーライン',id:'tobu-skytree'}
+      {name:'東武鉄道アーバンパークライン',id:'tobu-noda'},
+      {name:'東武鉄道スカイツリーライン',id:'tobu-skytree'}
     ]
   }],
   '北陸':[ {
     company:'えちぜん鉄道',
     routes:[
-      {name:'勝山永平寺線',id:'echizen-katsuyama'},
-      {name:'三国芦原線',id:'echizen-mikuni'}
+      {name:'えちぜん鉄道勝山永平寺線',id:'echizen-katsuyama'},
+      {name:'えちぜん鉄道三国芦原線',id:'echizen-mikuni'}
     ]
   }],
   '甲信':[{
@@ -6814,7 +6800,7 @@ const REGION_DEFINITIONS={
     company:'しなの鉄道',
     routes:[
       {name:'しなの鉄道線（篠ノ井～軽井沢）',id:'shinano-main'},
-      {name:'北しなの線（豊野～妙高高原）',id:'shinano-kita'}
+      {name:'しなの鉄道北しなの線（豊野～妙高高原）',id:'shinano-kita'}
     ]
   }],
   '東海':[{
@@ -6838,13 +6824,13 @@ const REGION_DEFINITIONS={
   },{
     company:'神戸市営地下鉄',
     routes:[
-      {name:'海岸線',id:'kobe-kaigan'},
-      {name:'西神・山手線',id:'kobe-seishin-yamate'}
+      {name:'神戸市営地下鉄海岸線',id:'kobe-kaigan'},
+      {name:'神戸市営地下鉄西神・山手線',id:'kobe-seishin-yamate'}
     ]
   },{
     company:'南海電気鉄道',
     routes:[
-      {name:'南海泉北線',id:'nankai-senboku'}
+      {name:'南海電気鉄道泉北線',id:'nankai-senboku'}
     ]
   }],
   '中国':[{
@@ -6864,8 +6850,8 @@ const REGION_DEFINITIONS={
   '九州':[{
     company:'福岡市地下鉄',
     routes:[
-      {name:'福岡市地下鉄 空港線・箱崎線',id:'fukuoka-kuko-hakozaki'},
-      {name:'福岡市地下鉄 七隈線',id:'fukuoka-nanakuma'}
+      {name:'福岡市地下鉄空港線・箱崎線',id:'fukuoka-kuko-hakozaki'},
+      {name:'福岡市地下鉄七隈線',id:'fukuoka-nanakuma'}
     ]
   }],
   '利用規約':[]
@@ -7757,22 +7743,19 @@ function openRegionSheet(region){
   if(header) header.textContent=region;
   if(backBtn) backBtn.classList.remove('visible');
   const defs=REGION_DEFINITIONS[region]||[];
-  // 地域別メニューのボタンでは事業者名を重ねず、路線名だけを表示する。
+  // 地域別メニューは事業者見出しと重複しないよう、路線名のみを表示する。
   function regionRouteLabel(routeName,companyName){
-    let label=String(routeName||'').trim();
+    const route=String(routeName||'').trim();
     const company=String(companyName||'').trim();
-    if(!label) return '';
-    if(company && label.startsWith(company)) label=label.slice(company.length);
-    else if(company.endsWith('鉄道')){
+    if(!route) return '';
+    if(route==='東武鉄道アーバンパークライン') return 'アーバンパークライン';
+    if(route==='東武鉄道スカイツリーライン') return 'スカイツリーライン';
+    if(company && route.startsWith(company)) return route.slice(company.length);
+    if(company.endsWith('鉄道')){
       const operator=company.slice(0,-2);
-      if(operator && label.startsWith(operator)) label=label.slice(operator.length);
-    }else if(company.endsWith('電鉄')){
-      const operator=company;
-      if(label.startsWith(operator)) label=label.slice(operator.length);
+      if(operator && route.startsWith(operator)) return route.slice(operator.length);
     }
-    // 東武野田線・東武スカイツリーラインは会社見出し「東武鉄道」に対して
-    // 路線名側の「東武」を除き、野田線・スカイツリーラインとする。
-    return label.trim()||String(routeName||'').trim();
+    return route;
   }
   const inner=region==='利用規約'
     ? `
@@ -14783,9 +14766,9 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     '京浜東北・根岸線':Object.freeze({
       '東神奈川':['横浜線'],
       '川崎':['南武線'],
-      '大宮':['東武野田線'],
-      '上野':['日比谷線'],
-      '秋葉原':['日比谷線']
+      '大宮':['東武鉄道アーバンパークライン'],
+      '上野':['東京メトロ日比谷線'],
+      '秋葉原':['東京メトロ日比谷線']
     }),
     '横浜線':Object.freeze({
       '東神奈川':['京浜東北・根岸線'],
@@ -14795,19 +14778,19 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     }),
     // 東武鉄道。分岐表示中の駅も対象にする。
     // 北千住には日比谷線を登録しない。
-    '東武野田線':Object.freeze({
+    '東武鉄道アーバンパークライン':Object.freeze({
       '大宮':['京浜東北・根岸線'],
-      '春日部':['東武スカイツリーライン'],
+      '春日部':['東武鉄道スカイツリーライン'],
     }),
-    '東武スカイツリーライン':Object.freeze({
-      '春日部':['東武野田線'],
+    '東武鉄道スカイツリーライン':Object.freeze({
+      '春日部':['東武鉄道アーバンパークライン'],
       '上野':['京浜東北・根岸線'],
       '秋葉原':['京浜東北・根岸線'],
       '長津田':['横浜線'],
       '溝の口':[{route:'南武線',station:'武蔵溝ノ口'}]
     }),
-    '日比谷線':Object.freeze({
-      '北千住':['東武スカイツリーライン'],
+    '東京メトロ日比谷線':Object.freeze({
+      '北千住':['東武鉄道スカイツリーライン'],
       '上野':['京浜東北・根岸線'],
       '秋葉原':['京浜東北・根岸線']
     }),
@@ -14817,17 +14800,17 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     'ゆめ咲線':Object.freeze({
       '西九条':['大阪環状線']
     }),
-    '空港線・箱崎線':Object.freeze({
-      '博多':['七隈線']
+    '福岡市地下鉄空港線・箱崎線':Object.freeze({
+      '博多':['福岡市地下鉄七隈線']
     }),
-    '七隈線':Object.freeze({
-      '博多':['空港線・箱崎線']
+    '福岡市地下鉄七隈線':Object.freeze({
+      '博多':['福岡市地下鉄空港線・箱崎線']
     }),
-    '勝山永平寺線':Object.freeze({
-      '福井口':['三国芦原線']
+    'えちぜん鉄道勝山永平寺線':Object.freeze({
+      '福井口':['えちぜん鉄道三国芦原線']
     }),
-    '三国芦原線':Object.freeze({
-      '福井口':['勝山永平寺線']
+    'えちぜん鉄道三国芦原線':Object.freeze({
+      '福井口':['えちぜん鉄道勝山永平寺線']
     })
   });
 
@@ -14921,19 +14904,34 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     return task;
   }
 
+  function stationTransferDisplayRouteName(routeName){
+    const target=String(routeName||'').trim();
+    if(!target) return '';
+    const currentCompany=String(ROUTE_REGISTRY?.[activeRouteName]?.company||'').trim();
+    const targetCompany=String(ROUTE_REGISTRY?.[target]?.company||'').trim();
+    // 同じ事業者の乗換先は会社名を省略し、路線名だけを表示する。
+    // JR各線は登録名自体が路線名のみなので、そのまま表示される。
+    if(currentCompany && targetCompany && currentCompany===targetCompany && target.startsWith(targetCompany)){
+      const lineName=target.slice(targetCompany.length).trim();
+      if(lineName) return lineName;
+    }
+    return target;
+  }
+
   async function stationTransferMarkup(stationName,routes){
     if(!routes.length) return '';
     const routeColors=await Promise.all(routes.map(item=>transferRouteColorFromJson(item.routeName)));
     // 接続先の駅名が異なる場合は、路線名の後ろに括弧書きで表示する。
     const buttons=routes.map((item,index)=>{
       const routeName=item.routeName;
+      const displayRouteName=stationTransferDisplayRouteName(routeName);
       const targetStation=item.targetStation||stationName;
       const color=routeColors[index]||'#888';
       const routeId=routeIdFromName(routeName)||routeName;
       const stationSuffix=targetStation!==stationName
         ? `<span class="station-transfer-target-station">（${esc(targetStation)}）</span>`
         : '';
-      return `<button type="button" class="station-transfer-button" data-transfer-route="${esc(routeId)}" data-transfer-station="${esc(targetStation)}" style="--transfer-route-color:${esc(color)}"><span class="station-transfer-label-group"><span class="station-transfer-route-name">${esc(routeName)}</span>${stationSuffix}</span></button>`;
+      return `<button type="button" class="station-transfer-button" data-transfer-route="${esc(routeId)}" data-transfer-station="${esc(targetStation)}" style="--transfer-route-color:${esc(color)}"><span class="station-transfer-label-group"><span class="station-transfer-route-name">${esc(displayRouteName)}</span>${stationSuffix}</span></button>`;
     }).join('');
     return `<section class="station-transfer-card" aria-label="乗換可能な路線"><div class="station-transfer-heading">乗換路線</div><div class="station-transfer-list">${buttons}</div></section>`;
   }
