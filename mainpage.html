@@ -6278,6 +6278,15 @@ window.addEventListener('load',async ()=>{
   setNowTime();
   syncCurrentScheduleDay();
   renderLine();
+
+  // URLの ?station=英語駅名 が指定されている場合、初期描画後に駅名標を中央へ移動する。
+  // JSONの nameEn を基本とし、旧日本語URL・駅ナンバリング形式も読み取りに対応する。
+  // URLの station パラメータを唯一の参照元として、指定駅を表示領域の中央へ配置する。
+  // 初回表示と乗換後の路線切替で同じ関数を使用する。
+  if(typeof centerStationFromUrlParameter==='function'){
+    await centerStationFromUrlParameter({logMissing:true});
+  }
+
   setInterval(async ()=>{
     if(isEditMode) return;
     if(followNow){
@@ -7756,66 +7765,284 @@ function closeRegionSheet(){
   document.querySelectorAll('#regionNav button').forEach(b=>b.classList.remove('active'));
   if(activeSheetMode==='region') closeSheet();
 }
-// 乗換ボタンから呼ばれた場合は駅名を引き継ぎ、切替後に同じ駅を画面中央へ移動する。
-function findRenderedStationRowByName(stationName){
-  const target=String(stationName||'').trim();
+// 乗換ボタンから呼ばれた場合は駅名を引き継ぎ、切替後に駅名標そのものを表示領域の中央へ移動する。
+function transferFocusStationKey(value){
+  return String(value??'').normalize('NFKC').replace(/[\s\u3000]+/g,'').trim();
+}
+function transferFocusEnglishKey(value){
+  return String(value??'').normalize('NFKC').trim().toLocaleLowerCase('en')
+    .replace(/[\s_・]+/g,'').replace(/[‐‑‒–—-]/g,'');
+}
+function transferFocusStationRecords(){
+  const records=[];
+  const lines=Array.isArray(activeJson?.lines)?activeJson.lines:[];
+  const allowed=Array.isArray(activeRouteMeta?.jsonLines)?new Set(activeRouteMeta.jsonLines.map(String)):null;
+  for(const line of lines){
+    if(allowed?.size && !allowed.has(String(line?.name||''))) continue;
+    for(const station of (Array.isArray(line?.stations)?line.stations:[])){
+      if(station&&typeof station==='object') records.push(station);
+    }
+  }
+  return records;
+}
+function transferFocusStationNumberValues(stationName){
+  const target=transferFocusStationKey(stationName);
+  if(!target) return [];
+  const values=[];
+  for(const record of transferFocusStationRecords()){
+    if(transferFocusStationKey(record?.name??record?.nameJa??record?.station)!==target) continue;
+    for(const key of ['stationNumber','stationNo','stationCode','numbering','number','code','id']){
+      const value=record?.[key];
+      if(value!==undefined&&value!==null&&String(value).trim()) values.push(String(value).trim());
+    }
+  }
+  return [...new Set(values)];
+}
+function transferFocusUrlValueForJapaneseName(stationName){
+  const target=transferFocusStationKey(stationName);
+  if(!target) return '';
+  const station=Array.isArray(STATIONS)?STATIONS.find(item=>transferFocusStationKey(item?.nameJa)===target):null;
+  const english=String(station?.nameEn||'').trim();
+  if(english) return english;
+  // nameEn がないデータでは、JSONに駅ナンバリング等があれば識別子として利用する。
+  const numbers=transferFocusStationNumberValues(stationName);
+  return numbers[0]||String(station?.nameJa||stationName||'').trim();
+}
+function transferFocusResolveUrlStation(value){
+  const raw=String(value??'').trim();
+  if(!raw) return '';
+  const jaKey=transferFocusStationKey(raw);
+  const enKey=transferFocusEnglishKey(raw);
+  const stations=Array.isArray(STATIONS)?STATIONS:[];
+  // 旧URLとの互換性のため、日本語名も引き続き受け付ける。
+  let station=stations.find(item=>transferFocusStationKey(item?.nameJa)===jaKey);
+  if(station) return String(station.nameJa||'');
+  // 新URLはJSONの nameEn を使用する。空白・ハイフン・大小文字の差は吸収。
+  station=stations.find(item=>transferFocusEnglishKey(item?.nameEn)===enKey && enKey);
+  if(station) return String(station.nameJa||'');
+  // 駅ナンバリング／駅コードを持つJSONにも対応する。
+  for(const record of transferFocusStationRecords()){
+    const name=String(record?.name??record?.nameJa??record?.station??'').trim();
+    if(!name) continue;
+    const codes=['stationNumber','stationNo','stationCode','numbering','number','code','id']
+      .map(key=>record?.[key]).filter(value=>value!==undefined&&value!==null&&String(value).trim()).map(String);
+    if(codes.some(code=>transferFocusEnglishKey(code)===enKey)){
+      const match=stations.find(item=>transferFocusStationKey(item?.nameJa)===transferFocusStationKey(name));
+      if(match) return String(match.nameJa||'');
+    }
+  }
+  return '';
+}
+function findRenderedStationElementByName(stationName){
+  const target=transferFocusStationKey(stationName);
   if(!target) return null;
-  const rows=Array.from(document.querySelectorAll('#lineContainer .station-row'));
+  const line=document.getElementById('lineContainer');
+  if(!line) return null;
+  const rows=Array.from(line.querySelectorAll('.station-row'));
   if(!rows.length) return null;
-  // 環状路線ではrow.dataset.stationIdを持つため、そちらを優先する。
+
+  // 円環路線など、駅IDが行に付与されている場合はIDで対応付ける。
   for(const row of rows){
     const id=String(row.dataset?.stationId||'');
     if(!id) continue;
-    const station=STATIONS.find(item=>String(item.id)===id);
-    if(station && String(station.nameJa||'').trim()===target) return row;
+    const station=Array.isArray(STATIONS)?STATIONS.find(item=>String(item.id)===id):null;
+    if(station && transferFocusStationKey(station.nameJa)===target){
+      return row.querySelector(':scope > .station-badge')||row;
+    }
   }
-  // 通常路線・分岐路線はSTATIONSと.station-rowが同じ順序で生成される。
-  for(let i=0;i<rows.length;i++){
-    const station=STATIONS[i];
-    if(station && String(station.nameJa||'').trim()===target) return rows[i];
+
+  // 通常路線・分岐路線は STATIONS と station-row が同じ順序で描画される。
+  if(Array.isArray(STATIONS)){
+    const index=STATIONS.findIndex(station=>transferFocusStationKey(station?.nameJa)===target);
+    if(index>=0 && rows[index]) return rows[index].querySelector(':scope > .station-badge')||rows[index];
+  }
+
+  // 表示名がJSONの別名に置き換わる場合のフォールバック。
+  for(const row of rows){
+    const badge=row.querySelector(':scope > .station-badge');
+    const label=badge?.querySelector('.station-name-ja');
+    if(label && transferFocusStationKey(label.textContent)===target) return badge;
   }
   return null;
 }
-function centerStationAfterRouteChange(stationName){
+function transferFocusViewportCenter(){
+  const title=document.getElementById('title');
+  const controls=document.querySelector('.control-bar');
+  const nav=document.getElementById('regionNav');
+  const titleBottom=title?.getBoundingClientRect().bottom||0;
+  const controlsBottom=controls?.getBoundingClientRect().bottom||0;
+  const navRect=nav?.getBoundingClientRect();
+  const topBoundary=Math.max(0,titleBottom,controlsBottom);
+  const bottomBoundary=navRect && navRect.height>0 && navRect.top<window.innerHeight
+    ? navRect.top : window.innerHeight;
+  return topBoundary+Math.max(1,bottomBoundary-topBoundary)/2;
+}
+function transferFocusScrollRoot(){
+  return document.scrollingElement||document.documentElement||document.body;
+}
+function transferFocusCanvasScaleY(){
+  const canvas=document.getElementById('viewportCanvas');
+  if(!canvas) return 1;
+  const rect=canvas.getBoundingClientRect();
+  const height=Number(canvas.offsetHeight)||0;
+  const scale=height>0?rect.height/height:1;
+  return Number.isFinite(scale)&&scale>0?scale:1;
+}
+function transferFocusWaitFrame(){
+  return new Promise(resolve=>requestAnimationFrame(()=>resolve()));
+}
+async function centerStationFromUrlParameter(options={}){
+  let stationParam='';
+  try{
+    stationParam=String(new URLSearchParams(window.location.search||'').get('station')||'').trim();
+  }catch(error){}
+  if(!stationParam) return false;
+  const stationName=transferFocusResolveUrlStation(stationParam);
+  if(!stationName){
+    if(options?.logMissing===true) console.info(`URLで指定された駅「${stationParam}」は表示中の路線に見つかりませんでした。`);
+    return false;
+  }
+  const centered=await centerStationAfterRouteChange(stationName);
+  if(!centered && options?.logMissing===true){
+    console.info(`URLで指定された駅「${stationParam}」は表示中の路線に見つかりませんでした。`);
+  }
+  return centered;
+}
+
+async function centerStationAfterRouteChange(stationName){
   const target=String(stationName||'').trim();
-  if(!target) return;
-  let attempts=0;
-  const align=()=>{
-    attempts++;
-    const row=findRenderedStationRowByName(target);
-    if(!row){
-      if(attempts<8) requestAnimationFrame(align);
-      return;
+  if(!target) return false;
+
+  // renderLine() の直後は行の再生成・zoom後のレイアウト更新が残ることがあるため、
+  // 駅名標が実際にDOMへ現れるまで最大2秒待つ。
+  await transferFocusWaitFrame();
+  await transferFocusWaitFrame();
+  let stationElement=null;
+  for(let attempt=0;attempt<40;attempt++){
+    stationElement=findRenderedStationElementByName(target);
+    if(stationElement?.isConnected) break;
+    stationElement=null;
+    await new Promise(resolve=>setTimeout(resolve,50));
+  }
+  if(!stationElement) return false;
+
+  const root=transferFocusScrollRoot();
+  if(!root) return false;
+  const canvas=document.getElementById('viewportCanvas');
+  const line=document.getElementById('lineContainer');
+  if(!canvas||!line) return false;
+
+  // 先頭駅・終端駅も中央へ移動できるよう、必要になった分だけ上下に余白を追加する。
+  // 既存の余白は再利用し、乗換のたびに増殖しない。
+  let topSpacer=document.getElementById('routeTransferFocusTopSpacer');
+  if(!topSpacer){
+    topSpacer=document.createElement('div');
+    topSpacer.id='routeTransferFocusTopSpacer';
+    topSpacer.setAttribute('aria-hidden','true');
+    topSpacer.style.cssText='height:0;min-height:0;pointer-events:none;flex:none;overflow:hidden;';
+    canvas.insertBefore(topSpacer,line);
+  }
+  let bottomSpacer=document.getElementById('routeTransferFocusBottomSpacer');
+  if(!bottomSpacer){
+    bottomSpacer=document.createElement('div');
+    bottomSpacer.id='routeTransferFocusBottomSpacer';
+    bottomSpacer.setAttribute('aria-hidden','true');
+    bottomSpacer.style.cssText='height:0;min-height:0;pointer-events:none;flex:none;overflow:hidden;';
+    canvas.appendChild(bottomSpacer);
+  }
+
+  // スペーサー追加時のブラウザーによるスクロールアンカー補正を抑え、
+  // 毎回実測した座標から目的のscrollTopを計算する。
+  root.style.overflowAnchor='none';
+  let targetScroll=Number(root.scrollTop)||0;
+  for(let pass=0;pass<4;pass++){
+    await transferFocusWaitFrame();
+    const rect=stationElement.getBoundingClientRect();
+    const center=rect.top+rect.height/2;
+    const viewportCenter=transferFocusViewportCenter();
+    const current=Number(root.scrollTop)||0;
+    const delta=center-viewportCenter;
+    const maxScroll=Math.max(0,(Number(root.scrollHeight)||0)-(Number(root.clientHeight)||window.innerHeight));
+    targetScroll=current+delta;
+    const scale=transferFocusCanvasScaleY();
+
+    if(targetScroll<0){
+      const currentHeight=parseFloat(topSpacer.style.height)||0;
+      topSpacer.style.height=`${currentHeight+Math.ceil((-targetScroll+4)/scale)}px`;
+      continue;
     }
-    const rect=row.getBoundingClientRect();
-    const title=document.getElementById('title');
-    const controls=document.querySelector('.control-bar');
-    const nav=document.getElementById('regionNav');
-    const titleBottom=title?.getBoundingClientRect().bottom||0;
-    const controlsBottom=controls?.getBoundingClientRect().bottom||0;
-    const navRect=nav?.getBoundingClientRect();
-    const topBoundary=Math.max(0,titleBottom,controlsBottom);
-    const bottomBoundary=navRect && navRect.height>0 && navRect.top<window.innerHeight
-      ? navRect.top : window.innerHeight;
-    const usableHeight=Math.max(1,bottomBoundary-topBoundary);
-    const viewportCenter=topBoundary+usableHeight/2;
-    const stationCenter=rect.top+rect.height/2;
-    const difference=stationCenter-viewportCenter;
-    if(Math.abs(difference)>2){
-      window.scrollBy({top:difference,behavior:'smooth'});
+    if(targetScroll>maxScroll){
+      const currentHeight=parseFloat(bottomSpacer.style.height)||0;
+      bottomSpacer.style.height=`${currentHeight+Math.ceil((targetScroll-maxScroll+4)/scale)}px`;
+      continue;
     }
-  };
-  // 描画直後はレイアウトが確定していない場合があるため、2フレーム待ってから位置合わせ。
-  requestAnimationFrame(()=>requestAnimationFrame(align));
+    break;
+  }
+
+  await transferFocusWaitFrame();
+  const rect=stationElement.getBoundingClientRect();
+  const delta=(rect.top+rect.height/2)-transferFocusViewportCenter();
+  const current=Number(root.scrollTop)||0;
+  const maxScroll=Math.max(0,(Number(root.scrollHeight)||0)-(Number(root.clientHeight)||window.innerHeight));
+  targetScroll=Math.max(0,Math.min(maxScroll,current+delta));
+
+  // 指定駅への移動は短いアニメーションで行う。
+  // ネイティブsmoothの速度はブラウザー依存なので、requestAnimationFrameで約240msに統一する。
+  const scrollQuickly=(top,duration=240)=>new Promise(resolve=>{
+    const from=Number(root.scrollTop)||0;
+    const to=Number(top)||0;
+    const distance=to-from;
+    if(Math.abs(distance)<1){root.scrollTop=to;resolve();return;}
+    const previousBehavior=root.style.getPropertyValue('scroll-behavior');
+    const previousPriority=root.style.getPropertyPriority('scroll-behavior');
+    root.style.setProperty('scroll-behavior','auto','important');
+    let startTime=null;
+    const step=timestamp=>{
+      if(startTime===null) startTime=timestamp;
+      const progress=Math.min(1,(timestamp-startTime)/Math.max(1,duration));
+      // easeOutCubic: 動き始めは速く、終点で自然に減速。
+      const eased=1-Math.pow(1-progress,3);
+      root.scrollTop=from+distance*eased;
+      if(progress<1){
+        requestAnimationFrame(step);
+      }else{
+        root.scrollTop=to;
+        if(previousBehavior) root.style.setProperty('scroll-behavior',previousBehavior,previousPriority);
+        else root.style.removeProperty('scroll-behavior');
+        resolve();
+      }
+    };
+    requestAnimationFrame(step);
+  });
+  await scrollQuickly(targetScroll,240);
+
+  // 移動後にレイアウト確定で生じた数pxの差も、同じ短い動きで補正する。
+  await transferFocusWaitFrame();
+  const finalRect=stationElement.getBoundingClientRect();
+  const finalDelta=(finalRect.top+finalRect.height/2)-transferFocusViewportCenter();
+  if(Math.abs(finalDelta)>2){
+    const now=Number(root.scrollTop)||0;
+    const max=Math.max(0,(Number(root.scrollHeight)||0)-(Number(root.clientHeight)||window.innerHeight));
+    const corrected=Math.max(0,Math.min(max,now+finalDelta));
+    await scrollQuickly(corrected,160);
+  }
+  return true;
 }
 async function selectRoute(routeValue, focusStationName=''){
   const routeName=routeNameFromId(routeValue);
   if(!routeName) return;
   const stationToCenter=String(focusStationName||'').trim();
+  // 前回の乗換で追加した上下余白はいったん解除し、今回の路線に必要な分だけ再設定する。
+  document.getElementById('routeTransferFocusTopSpacer')?.style.setProperty('height','0px');
+  document.getElementById('routeTransferFocusBottomSpacer')?.style.setProperty('height','0px');
   try{ localStorage.setItem(LAST_ROUTE_STORAGE_KEY,routeName); }catch(e){}
   try{
     const url=new URL(window.location.href);
     url.searchParams.set('route',routeIdFromName(routeName)||routeName);
+    // 乗換による駅引き継ぎがある場合だけ station を設定。URLにはJSONの nameEn を使用。
+    // 通常の路線切替では古い駅指定を残さない。
+    if(stationToCenter) url.searchParams.set('station',transferFocusUrlValueForJapaneseName(stationToCenter));
+    else url.searchParams.delete('station');
     window.history.replaceState({},'',url.toString());
   }catch(e){}
   closeRegionSheet();
@@ -7829,7 +8056,8 @@ async function selectRoute(routeValue, focusStationName=''){
     if(sheet) sheet.classList.remove('active','editing'); if(overlay) overlay.style.display='none';
     syncCurrentScheduleDay(); refreshAllTrainDataCache(); renderLine();
     if(typeof updateOperationInfoStationOptions==='function') updateOperationInfoStationOptions();
-    if(stationToCenter) centerStationAfterRouteChange(stationToCenter);
+    // 乗換先でも、遷移先URLの station パラメータを読み取る初期表示と同じ処理を使う。
+    await centerStationFromUrlParameter();
   }catch(e){
     window.dispatchEvent(new CustomEvent('unyomatome:route-load-failed',{detail:{routeName,message:String(e?.message||e||'')}}));
     console.error('路線JSON読込失敗',e); alert(`路線データの読み込みに失敗しました。\n${e.message||e}`);
@@ -9919,9 +10147,10 @@ initRegionNavigation();
 
   const originalSelectRoute=window.selectRoute;
   if(originalSelectRoute){
-    window.selectRoute=async function(routeName){
+    window.selectRoute=async function(routeName,focusStationName=''){
       if(!canViewRoute(routeName)) return;
-      return originalSelectRoute(routeName);
+      // 乗換ボタンから渡された駅名を元の路線切替処理まで引き継ぐ。
+      return originalSelectRoute(routeName,focusStationName);
     };
   }
 
