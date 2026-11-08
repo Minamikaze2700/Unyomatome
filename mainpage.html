@@ -14536,7 +14536,7 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     overflow:visible;
     color:var(--direction-route-color,#666);
     pointer-events:none;
-    filter:drop-shadow(0 1px 1px rgba(0,0,0,.25));
+    filter:none;
   }
   .train-icon .train-visual-content > .train-direction-indicator.up{
     left:50%;top:-22px;right:auto;bottom:auto;
@@ -14668,18 +14668,9 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
   }
 
   function trainDirectionArrowDirection(train,info,side,isCircular){
-    const dx=Number(info?.tangentX),dy=Number(info?.tangentY);
-    if(Number.isFinite(dx)&&Number.isFinite(dy)&&(Math.abs(dx)+Math.abs(dy))>.2){
-      if(Math.abs(dx)>Math.abs(dy)) return dx>=0?'right':'left';
-      return dy>=0?'down':'up';
-    }
-    const direction=String(train?.direction||'').toLowerCase();
-    if(isCircular){
-      // 環状線は左右の縦線で同じ進行方向でも上下が逆になる。
-      if(side==='right') return direction==='up'?'down':'up';
-      return direction==='up'?'up':'down';
-    }
-    return direction==='up'?'up':'down';
+    // 列車アイコンの左右位置で向きを統一する。
+    // 左側の列車は上向き、右側の列車は下向き。
+    return side==='left'?'up':'down';
   }
 
   function trainDirectionArrowColor(train,info){
@@ -14723,8 +14714,7 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
       const path=document.createElementNS('http://www.w3.org/2000/svg','path');
       path.setAttribute('d','M7 1.15 Q7.85 1.15 8.35 2.05 L13 10.15 Q14.2 12.2 11.85 12.2 H2.15 Q-.2 12.2 .9 10.15 L5.65 2.05 Q6.15 1.15 7 1.15 Z');
       path.setAttribute('fill','currentColor');
-      path.setAttribute('stroke','#fff');
-      path.setAttribute('stroke-width','.5');
+      path.setAttribute('stroke','none');
       path.setAttribute('stroke-linejoin','round');
       arrow.appendChild(path);
     }
