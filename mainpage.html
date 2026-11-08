@@ -5359,7 +5359,7 @@ function renderTrainPositions(){
       const t=item.t;
       let entry=TRAIN_ICON_CACHE.get(item.signature);
       let el=entry?.el;
-      if(entry) entry.currentTrain=t;
+      if(entry){ entry.currentTrain=t; entry.currentPositionInfo={pos:item.pos}; }
       const currentType=getTrainTypeAtPosition(t,item.pos);
       const typeAwareTrain=Array.isArray(t?.sectionTypeSegments)?{...t,type:currentType}:t;
       const cls=trainVisualKind(t,item.pos);
@@ -5388,7 +5388,7 @@ function renderTrainPositions(){
 
       const tForLayout=t;
       if(contentChanged){
-        el.innerHTML=`${displayNo?`<span class="train-no">${displayNo}</span>`:''}<img src="${imageUrl}" alt="${displayNo}">${formationParts.length?`<span class="train-no train-formation">${formationParts.map(x=>`<span>${String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`).join('')}</span>`:''}<span class="train-label ${cls} ${currentLabelClass}" style="${typeBadgeInlineStyle(typeAwareTrain,item.pos)}">${labelText}</span>`;
+        el.innerHTML=`<span class="train-visual-content">${displayNo?`<span class="train-no">${displayNo}</span>`:''}<span class="train-image-wrap"><img src="${imageUrl}" alt="${displayNo}"></span>${formationParts.length?`<span class="train-no train-formation">${formationParts.map(x=>`<span>${String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`).join('')}</span>`:''}<span class="train-label ${cls} ${currentLabelClass}" style="${typeBadgeInlineStyle(typeAwareTrain,item.pos)}">${labelText}</span></span>`;
         entry.contentKey=contentKey;
         entry.layoutHeight=0;
         entry.ready=false;
@@ -5397,6 +5397,9 @@ function renderTrainPositions(){
       el.className=`train-icon ${side}`;
       const currentTrainTypeColor=typeColorForTrain(t,item.pos);
       el.style.setProperty('--train-type-color',currentTrainTypeColor);
+      // 新規作成直後も現在位置を渡し、初回表示から走行区間の色を反映する。
+      entry.currentPositionInfo={pos:item.pos};
+      window.setTrainDirectionIndicator(el,t,entry.currentPositionInfo,side,false);
       // 普通列車の背景色は「現在いる区間」の色に追従させる。
       // innerHTML再生成の有無に関係なく毎フレーム更新することで、
       // 山陽本線の緑→赤の境界通過時などに以前の色が残らないようにする。
@@ -7014,12 +7017,26 @@ function jsonSegmentColorForStations(a,b,lineNames=getActiveRouteLineNames()){
   for(const lineName of (Array.isArray(lineNames)?lineNames:[])){
     const line=lineDefByName(lineName);
     if(!line) continue;
+    const lineStations=(Array.isArray(line?.stations)?line.stations:[])
+      .map(st=>String(typeof st==='string'?st:(st?.name||st?.nameJa||st?.station||'')));
     for(const rule of (Array.isArray(line?.segmentColorRules)?line.segmentColorRules:[])){
       const pairs=Array.isArray(rule?.stationPairs)?rule.stationPairs:[];
       const allPresent=Array.isArray(rule?.whenStationsAllPresent)?rule.whenStationsAllPresent.map(String):[];
+      const range=Array.isArray(rule?.stationRange)?rule.stationRange.map(String):[];
       const matchesPair=pairs.some(pair=>Array.isArray(pair)&&pair.length>=2&&((String(pair[0])===aa&&String(pair[1])===bb)||(String(pair[1])===aa&&String(pair[0])===bb)));
       const matchesAll=allPresent.length>0&&allPresent.includes(aa)&&allPresent.includes(bb);
-      if(matchesPair||matchesAll){
+      // stationRange は「線区定義内の連続する駅間」に適用する。
+      // 現在表示中のSTATIONSではなく、そのルールを持つJSON自身の駅順で判定し、
+      // 東神奈川～大船のような支線・直通区間でも共通色判定から漏れないようにする。
+      let matchesRange=false;
+      if(range.length>=2&&lineStations.length>=2){
+        const ia=lineStations.indexOf(aa),ib=lineStations.indexOf(bb);
+        const ir0=lineStations.indexOf(range[0]),ir1=lineStations.indexOf(range[1]);
+        matchesRange=ia>=0&&ib>=0&&ir0>=0&&ir1>=0&&Math.abs(ia-ib)===1
+          &&ia>=Math.min(ir0,ir1)&&ia<=Math.max(ir0,ir1)
+          &&ib>=Math.min(ir0,ir1)&&ib<=Math.max(ir0,ir1);
+      }
+      if(matchesPair||matchesAll||matchesRange){
         const color=String(rule?.color||'').trim();
         if(color) return color;
         const useLine=String(rule?.useLine||'').trim();
@@ -7739,9 +7756,62 @@ function closeRegionSheet(){
   document.querySelectorAll('#regionNav button').forEach(b=>b.classList.remove('active'));
   if(activeSheetMode==='region') closeSheet();
 }
-async function selectRoute(routeValue){
+// 乗換ボタンから呼ばれた場合は駅名を引き継ぎ、切替後に同じ駅を画面中央へ移動する。
+function findRenderedStationRowByName(stationName){
+  const target=String(stationName||'').trim();
+  if(!target) return null;
+  const rows=Array.from(document.querySelectorAll('#lineContainer .station-row'));
+  if(!rows.length) return null;
+  // 環状路線ではrow.dataset.stationIdを持つため、そちらを優先する。
+  for(const row of rows){
+    const id=String(row.dataset?.stationId||'');
+    if(!id) continue;
+    const station=STATIONS.find(item=>String(item.id)===id);
+    if(station && String(station.nameJa||'').trim()===target) return row;
+  }
+  // 通常路線・分岐路線はSTATIONSと.station-rowが同じ順序で生成される。
+  for(let i=0;i<rows.length;i++){
+    const station=STATIONS[i];
+    if(station && String(station.nameJa||'').trim()===target) return rows[i];
+  }
+  return null;
+}
+function centerStationAfterRouteChange(stationName){
+  const target=String(stationName||'').trim();
+  if(!target) return;
+  let attempts=0;
+  const align=()=>{
+    attempts++;
+    const row=findRenderedStationRowByName(target);
+    if(!row){
+      if(attempts<8) requestAnimationFrame(align);
+      return;
+    }
+    const rect=row.getBoundingClientRect();
+    const title=document.getElementById('title');
+    const controls=document.querySelector('.control-bar');
+    const nav=document.getElementById('regionNav');
+    const titleBottom=title?.getBoundingClientRect().bottom||0;
+    const controlsBottom=controls?.getBoundingClientRect().bottom||0;
+    const navRect=nav?.getBoundingClientRect();
+    const topBoundary=Math.max(0,titleBottom,controlsBottom);
+    const bottomBoundary=navRect && navRect.height>0 && navRect.top<window.innerHeight
+      ? navRect.top : window.innerHeight;
+    const usableHeight=Math.max(1,bottomBoundary-topBoundary);
+    const viewportCenter=topBoundary+usableHeight/2;
+    const stationCenter=rect.top+rect.height/2;
+    const difference=stationCenter-viewportCenter;
+    if(Math.abs(difference)>2){
+      window.scrollBy({top:difference,behavior:'smooth'});
+    }
+  };
+  // 描画直後はレイアウトが確定していない場合があるため、2フレーム待ってから位置合わせ。
+  requestAnimationFrame(()=>requestAnimationFrame(align));
+}
+async function selectRoute(routeValue, focusStationName=''){
   const routeName=routeNameFromId(routeValue);
   if(!routeName) return;
+  const stationToCenter=String(focusStationName||'').trim();
   try{ localStorage.setItem(LAST_ROUTE_STORAGE_KEY,routeName); }catch(e){}
   try{
     const url=new URL(window.location.href);
@@ -7759,6 +7829,7 @@ async function selectRoute(routeValue){
     if(sheet) sheet.classList.remove('active','editing'); if(overlay) overlay.style.display='none';
     syncCurrentScheduleDay(); refreshAllTrainDataCache(); renderLine();
     if(typeof updateOperationInfoStationOptions==='function') updateOperationInfoStationOptions();
+    if(stationToCenter) centerStationAfterRouteChange(stationToCenter);
   }catch(e){
     window.dispatchEvent(new CustomEvent('unyomatome:route-load-failed',{detail:{routeName,message:String(e?.message||e||'')}}));
     console.error('路線JSON読込失敗',e); alert(`路線データの読み込みに失敗しました。\n${e.message||e}`);
@@ -10469,7 +10540,7 @@ initRegionNavigation();
         while(used.some(u=>u.group===laneGroup&&Math.abs(u.pos-item.collisionPos)<0.24&&u.lane===lane)) lane++;
         used.push({pos:item.collisionPos,lane,group:laneGroup});
         const t=item.t; let entry=TRAIN_ICON_CACHE.get(item.signature); let el=entry?.el;
-        if(entry) entry.currentTrain=t;
+        if(entry){ entry.currentTrain=t; entry.currentPositionInfo=item.info||{pos:item.pos}; }
         const cls=trainVisualKind(t); const formationId=effectiveFormationIdForTrain(t);
         const formationParts=formationId&&formationId!==INITIAL_FORMATION_SELECTION.id?formationDisplayParts(formationId):[];
         const imageUrl=imageForTrain(t); const displayNo=circularDisplayTrainNo(t); const labelText=trainLabelText(t);
@@ -10482,10 +10553,11 @@ initRegionNavigation();
           TRAIN_ICON_CACHE.set(item.signature,entry);
         }
         if(contentChanged){
-          el.innerHTML=`${displayNo?`<span class="train-no">${esc(displayNo)}</span>`:''}<img src="${esc(imageUrl)}" alt="${esc(displayNo)}">${formationParts.length?`<span class="train-no train-formation">${formationParts.map(x=>`<span>${esc(x)}</span>`).join('')}</span>`:''}<span class="train-label ${cls} ${getMainLabelClass(t.type)}" style="${typeBadgeInlineStyle(t,item.pos)}">${labelText}</span>`;
+          el.innerHTML=`<span class="train-visual-content">${displayNo?`<span class="train-no">${esc(displayNo)}</span>`:''}<span class="train-image-wrap"><img src="${esc(imageUrl)}" alt="${esc(displayNo)}"></span>${formationParts.length?`<span class="train-no train-formation">${formationParts.map(x=>`<span>${esc(x)}</span>`).join('')}</span>`:''}<span class="train-label ${cls} ${getMainLabelClass(t.type)}" style="${typeBadgeInlineStyle(t,item.pos)}">${labelText}</span></span>`;
           entry.contentKey=contentKey;entry.layoutHeight=0;entry.ready=false;
         }
         const color=typeColorForTrain(t,item.pos);el.style.setProperty('--train-type-color',color);
+        window.setTrainDirectionIndicator(el,t,item.info||entry.currentPositionInfo,side,true);
         // 横方向の橋区間では1秒ごとの時刻更新間を補間し、停止→到着の一括移動に見えないようにする。
         el.style.transition=item.info?.mode==='special-bridge-run'
           ? 'left .95s linear, top .95s linear, transform .15s'
@@ -13855,5 +13927,539 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     .train-operation-row.next-operation{box-shadow:none!important;}
   `;
   document.head.appendChild(style);
+})();
+</script>
+
+
+<!-- 駅の停車種別・乗換路線・列車進行方向の追加 -->
+<style id="station-stop-transfer-direction-enhancements">
+  /* 停車種別は駅名標の枠外上部に配置する。
+     left/top/width は実際の駅名標の位置とサイズからJSで求め、
+     分岐ボタンの有無で駅名標が上下移動しても追従させる。 */
+  .station-row > .station-stop-types{
+    position:absolute !important;
+    top:var(--station-stop-types-top,0px) !important;
+    left:var(--station-stop-types-left,0px) !important;
+    right:auto !important;
+    bottom:auto !important;
+    width:var(--station-stop-types-width,186px) !important;
+    max-width:var(--station-stop-types-width,186px) !important;
+    display:flex !important;
+    flex-wrap:wrap !important;
+    justify-content:flex-end !important;
+    align-content:flex-end !important;
+    align-items:flex-end !important;
+    gap:1px 2px !important;
+    max-height:48px !important;
+    overflow:hidden !important;
+    z-index:5 !important;
+    pointer-events:none !important;
+    text-align:right !important;
+  }
+  .station-stop-type{
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:flex-end !important;
+    box-sizing:border-box !important;
+    max-width:100% !important;
+    padding:1px 4px !important;
+    border-radius:4px !important;
+    font:800 9.5px/1.12 Helvetica,"Helvetica Neue","Noto Sans JP",Arial,sans-serif !important;
+    white-space:normal !important;
+    overflow-wrap:anywhere !important;
+    word-break:normal !important;
+    text-align:right !important;
+    box-shadow:0 1px 2px rgba(0,0,0,.12);
+  }
+
+  /* 乗換路線欄は2行程度で収まるコンパクトなチップ表示。 */
+  #sheetContent .station-transfer-card{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:5px 9px;
+    margin:0 0 10px;
+    padding:7px 9px;
+    border:1px solid #dedede;
+    border-radius:8px;
+    background:#fff;
+  }
+  #sheetContent .station-transfer-heading{
+    flex:0 0 auto;
+    color:#555;
+    font-size:.82rem;
+    line-height:1.2;
+    font-weight:800;
+    white-space:nowrap;
+  }
+  #sheetContent .station-transfer-loading{font-size:.8rem;color:#777;line-height:1.2;}
+  #sheetContent .station-transfer-list{
+    flex:1 1 220px;
+    min-width:0;
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:5px;
+  }
+  #sheetContent .station-transfer-button{
+    appearance:none;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:29px;
+    max-width:100%;
+    padding:4px 9px;
+    border:1px solid var(--transfer-route-color,#aaa);
+    border-radius:3px;
+    background:#fff;
+    color:#222;
+    font:700 .84rem/1.2 inherit;
+    text-align:center;
+    overflow-wrap:anywhere;
+    cursor:pointer;
+  }
+  #sheetContent .station-transfer-button::before{
+    content:"";
+    width:8px;height:8px;flex:0 0 8px;
+    margin-right:6px;border-radius:0;
+    background:var(--transfer-route-color,#888);
+  }
+  #sheetContent .station-transfer-button:hover,
+  #sheetContent .station-transfer-button:focus-visible{
+    background:#f3f3f3;
+    outline:2px solid color-mix(in srgb,var(--transfer-route-color,#888) 35%,transparent);
+    outline-offset:1px;
+  }
+
+  /* 列車の番号・画像・編成・行先を一つの表示塊にし、矢印も同じ塊の子として重ねる。 */
+  .train-icon .train-visual-content{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+  }
+  .train-icon .train-no:not(.train-formation){margin-bottom:-1px;}
+  .train-icon .train-formation{margin-top:-1px;}
+  .train-icon .train-label{margin-top:0 !important;}
+  .train-icon .train-image-wrap{
+    position:relative;
+    display:block;
+    width:60px;
+    max-width:60px;
+    flex:0 0 auto;
+    line-height:0;
+  }
+  .train-icon .train-image-wrap > img{
+    width:60px;
+    height:auto;
+    object-fit:contain;
+    display:block;
+  }
+  .train-icon .train-visual-content > .train-direction-indicator{
+    position:absolute;
+    display:block;
+    width:15px;
+    height:14px;
+    overflow:visible;
+    color:var(--direction-route-color,#666);
+    pointer-events:none;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,.25));
+  }
+  .train-icon .train-visual-content > .train-direction-indicator.up{
+    left:50%;top:-22px;right:auto;bottom:auto;
+    transform:translateX(-50%) rotate(0deg);
+  }
+  .train-icon .train-visual-content > .train-direction-indicator.down{
+    left:50%;top:auto;right:auto;bottom:-22px;
+    transform:translateX(-50%) rotate(180deg);
+  }
+  .train-icon .train-visual-content > .train-direction-indicator.left{
+    left:-20px;top:50%;right:auto;bottom:auto;
+    transform:translateY(-50%) rotate(-90deg);
+  }
+  .train-icon .train-visual-content > .train-direction-indicator.right{
+    left:auto;top:50%;right:-20px;bottom:auto;
+    transform:translateY(-50%) rotate(90deg);
+  }
+  @media(max-width:520px){
+    #sheetContent .station-transfer-card{gap:4px 7px;padding:6px 7px;margin-bottom:8px;}
+    #sheetContent .station-transfer-heading{font-size:.76rem;}
+    #sheetContent .station-transfer-list{flex-basis:180px;gap:4px;}
+    #sheetContent .station-transfer-button{min-height:27px;padding:3px 7px;font-size:.78rem;}
+    .station-stop-type{font-size:9px !important;padding:1px 3px !important;}
+  }
+</style>
+<script id="station-stop-transfer-direction-script">
+(function(){
+  'use strict';
+
+  function stationStopTypeItems(stationName){
+    const name=String(stationName||'').trim();
+    if(!name || typeof getVisibleTrains!=='function') return [];
+    const position=typeof stationIndex==='function'?stationIndex(name):-1;
+    const items=[];
+    const seen=new Set();
+    let trains=[];
+    try{ trains=getVisibleTrains()||[]; }catch(e){ trains=[]; }
+    for(const train of trains){
+      const stops=Array.isArray(train?.stops)?train.stops:[];
+      if(!stops.some(stop=>String(stop?.station||'').trim()===name)) continue;
+      const type=String(getTrainTypeAtPosition(train,position>=0?position:null)||'').trim();
+      if(!type) continue;
+      const shortName=String(getShortType(type,train?.no,train)||type).trim();
+      if(!shortName) continue;
+      let appearance={background:'#666',color:'#fff'};
+      try{
+        appearance=typeBadgeAppearance(train,position>=0?position:null,null,name)||appearance;
+      }catch(e){}
+      const background=String(appearance.background||'#666').trim();
+      const foreground=String(appearance.color||stationEnglishTextColor(background)||'#fff').trim();
+      const key=`${shortName}\u0000${background.toLowerCase()}`;
+      if(seen.has(key)) continue;
+      seen.add(key);
+      items.push({name:shortName,background,foreground});
+    }
+    return items;
+  }
+
+  function stationStopTypeMarkup(stationName){
+    const items=stationStopTypeItems(stationName);
+    if(!items.length) return '';
+    return `<div class="station-stop-types" aria-label="停車する種別">${items.map(item=>
+      `<span class="station-stop-type" style="background:${esc(item.background)};color:${esc(item.foreground)}">${esc(item.name)}</span>`
+    ).join('')}</div>`;
+  }
+
+  function positionStationStopTypeLayer(row,badge,layer){
+    if(!row||!badge||!layer) return;
+    // getBoundingClientRect の表示倍率を戻して row 内のCSS座標へ変換する。
+    // スマホ版の960px基準zoomや分岐駅の縦配置変更にも追従できる。
+    const rowRect=row.getBoundingClientRect();
+    const badgeRect=badge.getBoundingClientRect();
+    const scaleX=row.offsetWidth>0?rowRect.width/row.offsetWidth:1;
+    const scaleY=row.offsetHeight>0?rowRect.height/row.offsetHeight:1;
+    const safeScaleX=Number.isFinite(scaleX)&&scaleX>0?scaleX:1;
+    const safeScaleY=Number.isFinite(scaleY)&&scaleY>0?scaleY:1;
+    const badgeLeft=(badgeRect.left-rowRect.left)/safeScaleX;
+    const badgeTop=(badgeRect.top-rowRect.top)/safeScaleY;
+    const badgeWidth=badgeRect.width/safeScaleX;
+    const rail=document.getElementById('railLine');
+    const railWidth=rail ? (parseFloat(getComputedStyle(rail).width)||12) : 12;
+    // 駅名標の幅から中央の線幅を引いた片側分を、中央線の外側に確保する。
+    const availableWidth=Math.max(0,(badgeWidth-railWidth)/2);
+    // CSS側の !important と競合しないよう、位置はカスタムプロパティ経由で渡す。
+    // 通常駅・分岐駅とも、駅名標の実座標を station-row 基準へ変換して配置する。
+    layer.style.setProperty('--station-stop-types-left',`${badgeLeft+badgeWidth/2+railWidth/2}px`);
+    layer.style.setProperty('--station-stop-types-top',`${badgeTop-layer.offsetHeight-2}px`);
+    layer.style.right='auto';
+    layer.style.bottom='auto';
+    layer.style.setProperty('--station-stop-types-width',`${availableWidth}px`);
+    layer.style.width=`${availableWidth}px`;
+    layer.style.maxWidth=`${availableWidth}px`;
+  }
+
+  function refreshStationStopTypeLabels(){
+    const rows=Array.from(document.querySelectorAll('#lineContainer .station-row'));
+    if(!rows.length) return;
+    for(let i=0;i<rows.length;i++){
+      const row=rows[i];
+      const badge=row.querySelector(':scope > .station-badge');
+      if(!badge) continue;
+      // 旧版で駅名標の内側に残った要素があれば必ず除去する。
+      badge.querySelector(':scope > .station-stop-types')?.remove();
+      const id=String(row.dataset?.stationId||'');
+      const station=(id?STATIONS.find(st=>String(st.id)===id):null)||STATIONS[i];
+      if(!station) continue;
+      let layer=row.querySelector(':scope > .station-stop-types');
+      const markup=stationStopTypeMarkup(station.nameJa);
+      if(!markup){
+        if(layer) layer.remove();
+        row.classList.remove('has-stop-types');
+        continue;
+      }
+      row.classList.add('has-stop-types');
+      const temp=document.createElement('div');
+      temp.innerHTML=markup;
+      const next=temp.firstElementChild;
+      if(!next) continue;
+      if(layer) layer.replaceWith(next);
+      else row.appendChild(next);
+      // 分岐駅ではボタンが駅名標より上に入るため、行の中央基準ではなく
+      // 駅名標そのものの実座標を基準に種別一覧を配置する。
+      positionStationStopTypeLayer(row,badge,next);
+    }
+  }
+
+  function trainDirectionArrowDirection(train,info,side,isCircular){
+    const dx=Number(info?.tangentX),dy=Number(info?.tangentY);
+    if(Number.isFinite(dx)&&Number.isFinite(dy)&&(Math.abs(dx)+Math.abs(dy))>.2){
+      if(Math.abs(dx)>Math.abs(dy)) return dx>=0?'right':'left';
+      return dy>=0?'down':'up';
+    }
+    const direction=String(train?.direction||'').toLowerCase();
+    if(isCircular){
+      // 環状線は左右の縦線で同じ進行方向でも上下が逆になる。
+      if(side==='right') return direction==='up'?'down':'up';
+      return direction==='up'?'up':'down';
+    }
+    return direction==='up'?'up':'down';
+  }
+
+  function trainDirectionArrowColor(train,info){
+    const position=Number.isFinite(Number(info?.pos))?Number(info.pos):null;
+    let color='';
+    try{ color=String(displayedRouteColorForTrainPosition(train,position)||'').trim(); }catch(e){}
+    if(!color){
+      try{ color=String(routeColorForTrainFallback(train)||'').trim(); }catch(e){}
+    }
+    return color||String(activeRouteColors?.()[0]||'#666');
+  }
+
+  function setTrainDirectionIndicator(element,train,info,side,isCircular){
+    if(!element) return;
+    const image=element.querySelector('img');
+    if(!image) return;
+    let wrap=image.parentElement;
+    if(!wrap?.classList?.contains('train-image-wrap')){
+      wrap=document.createElement('span');
+      wrap.className='train-image-wrap';
+      image.parentNode.insertBefore(wrap,image);
+      wrap.appendChild(image);
+    }
+    // 列車番号・画像・編成・行先ラベルを含む表示塊の中に矢印を置く。
+    // 独立したz-indexを持たせず、他列車と重なったときも列車単位で前後関係を保つ。
+    let visual=element.querySelector(':scope > .train-visual-content');
+    if(!visual){
+      visual=document.createElement('span');
+      visual.className='train-visual-content';
+      const children=Array.from(element.children).filter(child=>!child.classList?.contains('train-direction-indicator'));
+      children.forEach(child=>visual.appendChild(child));
+      element.insertBefore(visual,element.firstChild);
+    }
+    let arrow=element.querySelector('.train-direction-indicator');
+    if(!arrow){
+      arrow=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      arrow.setAttribute('viewBox','0 0 14 13');
+      arrow.setAttribute('aria-hidden','true');
+      arrow.setAttribute('focusable','false');
+      arrow.classList.add('train-direction-indicator');
+      const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d','M7 1.15 Q7.85 1.15 8.35 2.05 L13 10.15 Q14.2 12.2 11.85 12.2 H2.15 Q-.2 12.2 .9 10.15 L5.65 2.05 Q6.15 1.15 7 1.15 Z');
+      path.setAttribute('fill','currentColor');
+      path.setAttribute('stroke','#fff');
+      path.setAttribute('stroke-width','.5');
+      path.setAttribute('stroke-linejoin','round');
+      arrow.appendChild(path);
+    }
+    if(arrow.parentElement!==visual) visual.appendChild(arrow);
+    const direction=trainDirectionArrowDirection(train,info,side,isCircular);
+    arrow.setAttribute('class',`train-direction-indicator ${direction}`);
+    arrow.style.color=trainDirectionArrowColor(train,info);
+  }
+
+  // renderTrainPositions（通常路線）と円環路線の描画処理は、このIIFEの外側にある。
+  // 外側からも同じ更新処理を呼べるよう、window上へ公開する。
+  window.setTrainDirectionIndicator=setTrainDirectionIndicator;
+
+  // 乗換路線はHTML側で駅名と接続先を明示する。
+  // 同名駅の誤判定を避け、路線JSONを開かずに表示できるようにする。
+  // 追加・変更するときは「表示元路線 → 駅名 → 接続先路線」を編集する。
+  const STATION_TRANSFER_MAP=Object.freeze({
+    '山陽本線（糸崎～岩国）':Object.freeze({
+      '広島':['可部線','呉線'],
+      '横川':['可部線'],
+      '海田市':['呉線'],
+      '三原':['呉線']
+    }),
+    '可部線':Object.freeze({
+      '広島':['山陽本線（糸崎～岩国）'],
+      '横川':['山陽本線（糸崎～岩国）']
+    }),
+    '呉線':Object.freeze({
+      '広島':['山陽本線（糸崎～岩国）'],
+      '海田市':['山陽本線（糸崎～岩国）'],
+      '三原':['山陽本線（糸崎～岩国）']
+    }),
+    '海岸線':Object.freeze({
+      '新長田':['西神・山手線']
+    }),
+    '西神・山手線':Object.freeze({
+      '新長田':['海岸線']
+    }),
+    '京浜東北・根岸線':Object.freeze({
+      '東神奈川':['横浜線'],
+      '川崎':['南武線'],
+      '大宮':['東武野田線']
+    }),
+    '横浜線':Object.freeze({
+      '東神奈川':['京浜東北・根岸線']
+    }),
+    '南武線':Object.freeze({
+      '川崎':['京浜東北・根岸線']
+    }),
+    '東武野田線':Object.freeze({
+      '大宮':['京浜東北・根岸線'],
+      '春日部':['東武スカイツリーライン']
+    }),
+    '東武スカイツリーライン':Object.freeze({
+      '春日部':['東武野田線']
+    })
+  });
+
+  function stationTransferRoutesFor(stationName){
+    const station=String(stationName||'').trim();
+    const sourceRoute=String(activeRouteName||'');
+    if(!station||!sourceRoute) return [];
+    const configured=STATION_TRANSFER_MAP[sourceRoute]?.[station];
+    if(!Array.isArray(configured)) return [];
+    return [...new Set(configured.map(value=>String(value||'').trim()).filter(Boolean))]
+      .filter(routeName=>routeName!==sourceRoute && ROUTE_REGISTRY?.[routeName]?.access?.public===true)
+      .sort((a,b)=>a.localeCompare(b,'ja'));
+  }
+
+  // 乗換先の路線カラーは、接続先路線自身のJSONから取得する。
+  // 駅名と接続先の対応はSTATION_TRANSFER_MAPで固定し、JSON内の駅名総当たりは行わない。
+  const TRANSFER_ROUTE_COLOR_CACHE=new Map();
+
+  function transferRouteLineColorFromJson(json,routeName,meta){
+    const wanted=[
+      ...(Array.isArray(meta?.jsonLines)?meta.jsonLines:[]),
+      String(routeName||'')
+    ].map(value=>String(value||'').trim()).filter(Boolean);
+    const containers=[];
+    if(json&&typeof json==='object'){
+      if(json.routes&&typeof json.routes==='object'&&!Array.isArray(json.routes)){
+        for(const key of [String(routeName||''),...wanted]){
+          const route=json.routes[key];
+          if(route&&typeof route==='object') containers.push(route);
+        }
+      }
+      containers.push(json);
+    }
+    for(const container of containers){
+      const lines=[];
+      if(Array.isArray(container?.lines)) lines.push(...container.lines);
+      if(Array.isArray(container?.route?.lines)) lines.push(...container.route.lines);
+      for(const name of wanted){
+        const line=lines.find(item=>String(item?.name||'').trim()===name);
+        const color=String(line?.color||'').trim();
+        if(color) return color;
+      }
+      // 単一路線JSONで路線名が省略されている形式のみ、唯一の線区色を採用する。
+      if(lines.length===1){
+        const color=String(lines[0]?.color||'').trim();
+        if(color) return color;
+      }
+    }
+    return '';
+  }
+
+  function transferRouteColorFromJson(routeName){
+    const route=String(routeName||'').trim();
+    if(!route) return Promise.resolve('#888');
+    const baseMeta=ROUTE_REGISTRY?.[route];
+    if(!baseMeta) return Promise.resolve('#888');
+    const dateKey=String(selectedDateKey||'');
+    const cacheKey=`${route}|${dateKey}`;
+    if(TRANSFER_ROUTE_COLOR_CACHE.has(cacheKey)) return TRANSFER_ROUTE_COLOR_CACHE.get(cacheKey);
+
+    const task=(async()=>{
+      const meta=(typeof routeMetaForScheduleDate==='function'
+        ? (routeMetaForScheduleDate(baseMeta,dateKey)||baseMeta)
+        : baseMeta);
+      const urls=[String(meta?.json||baseMeta?.json||'').trim(),
+        ...(Array.isArray(meta?.relatedJsons)?meta.relatedJsons:[])
+      ].map(value=>String(value||'').trim()).filter(Boolean);
+      for(const url of [...new Set(urls)]){
+        try{
+          const requestUrl=/^https?:\/\//i.test(url)?encodeURI(url):url;
+          const response=await fetch(requestUrl,{cache:'force-cache'});
+          if(!response.ok) continue;
+          const json=await response.json();
+          const color=transferRouteLineColorFromJson(json,route,meta);
+          if(color) return color;
+        }catch(error){
+          // 接続先の関連JSONが取得できなくても、ほかのJSONを続けて確認する。
+        }
+      }
+      return '#888';
+    })();
+    TRANSFER_ROUTE_COLOR_CACHE.set(cacheKey,task);
+    return task;
+  }
+
+  async function stationTransferMarkup(stationName,routes){
+    if(!routes.length) return '';
+    const routeColors=await Promise.all(routes.map(routeName=>transferRouteColorFromJson(routeName)));
+    const buttons=routes.map((routeName,index)=>{
+      const color=routeColors[index]||'#888';
+      const routeId=routeIdFromName(routeName)||routeName;
+      return `<button type="button" class="station-transfer-button" data-transfer-route="${esc(routeId)}" style="--transfer-route-color:${esc(color)}">${esc(routeName)}</button>`;
+    }).join('');
+    return `<section class="station-transfer-card" aria-label="乗換可能な路線"><div class="station-transfer-heading">乗換路線</div><div class="station-transfer-list">${buttons}</div></section>`;
+  }
+
+  async function refreshStationTransferCard(){
+    const content=document.getElementById('sheetContent');
+    const overview=content?.querySelector('.station-overview-card.station-info-card');
+    const timetable=content?.querySelector('.timetable-list.station-placeholder');
+    if(!content||!overview||!timetable) return;
+    content.querySelector('.station-transfer-card')?.remove();
+    const station=STATIONS.find(item=>String(item.id)===String(currentStationId));
+    if(!station) return;
+    const stationId=String(currentStationId);
+    const routes=stationTransferRoutesFor(station.nameJa);
+    if(!routes.length) return;
+
+    const holder=document.createElement('div');
+    holder.innerHTML='<section class="station-transfer-card" aria-label="乗換可能な路線"><div class="station-transfer-heading">乗換路線</div><div class="station-transfer-list"><span class="station-transfer-loading">路線カラーを読み込み中</span></div></section>';
+    const card=holder.firstElementChild;
+    overview.insertAdjacentElement('afterend',card);
+
+    const markup=await stationTransferMarkup(station.nameJa,routes);
+    // 非同期取得中に別駅へ移動・再描画された場合、古い結果で画面を上書きしない。
+    if(String(currentStationId)!==stationId || !card.isConnected) return;
+    if(!markup){card.remove();return;}
+    const replacement=document.createElement('div');
+    replacement.innerHTML=markup;
+    const next=replacement.firstElementChild;
+    if(!next) {card.remove();return;}
+    card.replaceWith(next);
+    const transferStationName=String(station.nameJa||'').trim();
+    next.querySelectorAll('[data-transfer-route]').forEach(button=>{
+      button.addEventListener('click',()=>{
+        const route=String(button.getAttribute('data-transfer-route')||'');
+        if(route && typeof selectRoute==='function') selectRoute(route,transferStationName);
+      });
+    });
+  }
+
+  // 元の描画・更新処理は維持し、表示後に補助UIだけを追加する。
+  const baseRenderLine=window.renderLine;
+  if(typeof baseRenderLine==='function'){
+    window.renderLine=function(...args){
+      const result=baseRenderLine.apply(this,args);
+      refreshStationStopTypeLabels();
+      return result;
+    };
+  }
+  const baseUpdateStationSheetContent=window.updateStationSheetContent;
+  if(typeof baseUpdateStationSheetContent==='function'){
+    window.updateStationSheetContent=function(...args){
+      const result=baseUpdateStationSheetContent.apply(this,args);
+      refreshStationTransferCard();
+      return result;
+    };
+  }
+
+  // ルート初期化前に描画関数が呼ばれる環境にも対応し、ロード後に一度再確認する。
+  window.addEventListener('load',()=>{
+    refreshStationStopTypeLabels();
+    refreshStationTransferCard();
+  },{once:true});
+  window.addEventListener('resize',()=>{
+    requestAnimationFrame(refreshStationStopTypeLabels);
+  },{passive:true});
 })();
 </script>
