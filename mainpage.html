@@ -1023,6 +1023,36 @@ body{padding-bottom:42px !important;}
 .fourth-direction-author-icon{display:inline-block;width:13px;height:13px;object-fit:contain;vertical-align:-2px;margin-right:3px;border-radius:2px;}
 .fourth-direction-author-name{vertical-align:middle;}
 </style>
+<style id="announcement-private-ui-style">
+.site-menu-announcement-row{display:flex;align-items:center;gap:8px;margin-top:8px}
+.site-menu-announcement-row .site-menu-item{flex:1}
+.announcement-unread-count{display:inline-flex;min-width:23px;height:23px;align-items:center;justify-content:center;padding:0 7px;border-radius:999px;background:#d32f2f;color:#fff;font-size:12px;font-weight:900;line-height:1;vertical-align:middle}
+.announcement-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:1700;display:none}
+.announcement-backdrop.active{display:block}
+.announcement-panel{position:fixed;left:50%;top:64px;transform:translateX(-50%);width:min(720px,calc(100vw - 24px));max-height:calc(100dvh - 82px);overflow:hidden;background:#f3f3f3;border-radius:15px;box-shadow:0 10px 38px rgba(0,0,0,.32);z-index:1701;display:none}
+.announcement-panel.active{display:flex;flex-direction:column}
+.announcement-panel-header{flex:0 0 auto;display:flex;align-items:center;gap:10px;min-height:52px;padding:10px 14px;background:#808080;color:#fff;font-weight:900}
+.announcement-panel-header-title{flex:1;min-width:0;text-align:center}
+.announcement-panel-header button{border:0;background:transparent;color:inherit;padding:4px 7px;font-size:19px;font-weight:800;cursor:pointer}
+.announcement-panel-content{padding:12px;overflow:auto;overscroll-behavior:contain;min-height:100px}
+.announcement-list{display:flex;flex-direction:column;gap:9px}
+.announcement-item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;width:100%;padding:13px 12px;border:1px solid #d5d5d5;border-radius:10px;background:#fff;text-align:left;color:#222;cursor:pointer}
+.announcement-item.unread{border-color:#888;background:#fff}
+.announcement-item-status{font-size:11px;font-weight:900;white-space:nowrap;padding:4px 7px;border-radius:6px;background:#e6e6e6;color:#666}
+.announcement-item.unread .announcement-item-status{background:#d32f2f;color:#fff}
+.announcement-item-main{display:flex;flex-direction:column;gap:5px;min-width:0}
+.announcement-item-title{font-size:15px;font-weight:900;line-height:1.35;overflow-wrap:anywhere}
+.announcement-item-meta{display:flex;flex-wrap:wrap;gap:7px;color:#777;font-size:11px;line-height:1.3}
+.announcement-item-arrow{color:#888;font-size:20px;font-weight:900}
+.announcement-empty,.announcement-message{padding:28px 14px;text-align:center;color:#666;font-size:14px;line-height:1.6}
+.announcement-login-button{display:block;margin:14px auto 0;padding:10px 24px;border:0;border-radius:9px;background:#808080;color:#fff;font-weight:900;cursor:pointer}
+.announcement-detail{background:#fff;border:1px solid #ddd;border-radius:11px;padding:16px;min-height:160px}
+.announcement-detail-title{font-size:19px;line-height:1.4;font-weight:900;overflow-wrap:anywhere;margin-bottom:8px}
+.announcement-detail-meta{font-size:12px;color:#777;line-height:1.5;margin-bottom:15px}
+.announcement-detail-body{font-size:15px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;color:#222}
+.announcement-detail-status{margin-top:18px;padding-top:10px;border-top:1px solid #eee;text-align:right;color:#888;font-size:12px;font-weight:700}
+@media(max-width:700px){.announcement-panel{top:58px;width:calc(100vw - 16px);max-height:calc(100dvh - 70px)}.announcement-panel-content{padding:9px}.announcement-item{padding:11px 9px;gap:7px}.announcement-item-title{font-size:14px}.announcement-detail{padding:13px}.announcement-detail-body{font-size:14px}}
+</style>
 </head>
 <body>
 
@@ -1067,6 +1097,10 @@ body{padding-bottom:42px !important;}
   <div class="site-menu-header"><span>メニュー</span><button type="button" onclick="closeSiteMenu()" aria-label="閉じる">✖</button></div>
   <div class="site-menu-body">
     <button id="siteAccountBtn" class="site-menu-item primary" type="button" onclick="openAccountFromMenu()">ログイン</button>
+    <div class="site-menu-announcement-row">
+      <button id="siteAnnouncementsBtn" class="site-menu-item" type="button" onclick="openAnnouncementsFromMenu()">お知らせ</button>
+      <span id="announcementUnreadCount" class="announcement-unread-count" hidden aria-label="未読件数">0</span>
+    </div>
   </div>
 </div>
 
@@ -1098,6 +1132,26 @@ body{padding-bottom:42px !important;}
     </div>
   </div>
 </div>
+
+<div class="announcement-backdrop" id="announcementBackdrop" onclick="closeAnnouncementsFromBackdrop(event)"></div>
+<section class="announcement-panel" id="announcementPanel" role="dialog" aria-modal="true" aria-label="お知らせ">
+  <div class="announcement-panel-header">
+    <button id="announcementBackButton" type="button" onclick="showAnnouncementList()" hidden>‹ 一覧</button>
+    <span class="announcement-panel-header-title" id="announcementPanelTitle">お知らせ</span>
+    <button type="button" onclick="closeAnnouncements()" aria-label="閉じる">✕</button>
+  </div>
+  <div class="announcement-panel-content">
+    <div id="announcementListView"><div id="announcementList" class="announcement-list"><div class="announcement-message">お知らせを読み込んでいます。</div></div></div>
+    <div id="announcementDetailView" hidden>
+      <article class="announcement-detail">
+        <h2 id="announcementDetailTitle" class="announcement-detail-title"></h2>
+        <div id="announcementDetailMeta" class="announcement-detail-meta"></div>
+        <div id="announcementDetailBody" class="announcement-detail-body"></div>
+        <div id="announcementDetailStatus" class="announcement-detail-status">既読</div>
+      </article>
+    </div>
+  </div>
+</section>
 
 <div class="operation-info-backdrop" id="operationInfoBackdrop" onclick="closeOperationInfo()"></div>
 <div class="operation-info-panel" id="operationInfoPanel" role="dialog" aria-modal="true" aria-label="運行情報">
@@ -12498,6 +12552,201 @@ initRegionNavigation();
 })();
 </script>
 
+<script id="private-announcements-feature">
+(function(){
+  'use strict';
+  const ROOT='運用/お知らせ';
+  const READ_ROOT='運用/お知らせ既読';
+  let signedInUser=null;
+  let announcements=[];
+  let readMap={};
+  let currentNotice=null;
+  let busy=false;
+  let attachedAuth=null;
+
+  const $=id=>document.getElementById(id);
+  const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  function database(){
+    try{
+      if(typeof firebaseDatabase==='function') return firebaseDatabase();
+      if(typeof firebaseDb!=='undefined' && firebaseDb) return firebaseDb;
+      if(window.firebase?.database){
+        const app=(typeof firebaseApp!=='undefined'&&firebaseApp)?firebaseApp:firebase.apps.find(a=>a.name==='unyomatomeMainpage');
+        return app?firebase.database(app):firebase.database();
+      }
+    }catch(e){console.warn('お知らせFirebase取得失敗',e);}
+    return null;
+  }
+  function currentUser(){
+    try{
+      if(signedInUser) return signedInUser;
+      if(typeof currentAuthUser!=='undefined'&&currentAuthUser) return currentAuthUser;
+      const dbApp=(typeof firebaseApp!=='undefined'&&firebaseApp)?firebaseApp:firebase.apps.find(a=>a.name==='unyomatomeMainpage');
+      return dbApp&&firebase.auth?firebase.auth(dbApp).currentUser:null;
+    }catch(e){return null;}
+  }
+  function menuBadge(count){
+    const el=$('announcementUnreadCount');
+    if(!el)return;
+    const n=Math.max(0,Number(count)||0);
+    el.textContent=n>99?'99+':String(n);
+    el.hidden=n===0;
+    el.setAttribute('aria-label',`未読${n}件`);
+  }
+  function showListMessage(message,login=false){
+    const list=$('announcementList');
+    if(!list)return;
+    list.innerHTML=`<div class="announcement-message">${escapeHtml(message)}</div>${login?'<button class="announcement-login-button" type="button" id="announcementLoginButton">ログインする</button>':''}`;
+    $('announcementLoginButton')?.addEventListener('click',()=>{closeAnnouncements();window.openAuthPanel?.();});
+  }
+  function dateLabel(value){
+    const d=new Date(Number(value)||0);
+    if(!Number.isFinite(d.getTime())||!Number(value))return '日時不明';
+    return new Intl.DateTimeFormat('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).format(d);
+  }
+  function normalizeNotice(scope,id,value){
+    if(!value||typeof value!=='object')return null;
+    const title=String(value.title||'').trim();
+    const body=String(value.body||'').trim();
+    if(!title||!body)return null;
+    return {
+      id:String(id), key:`${scope==='all'?'all':'user'}_${String(id)}`,
+      scope, title, body, createdAt:Number(value.createdAt)||0,
+      senderName:String(value.senderName||'運用まとめ管理者'),
+      targetId:String(value.targetId||''), targetType:String(value.targetType||scope)
+    };
+  }
+  async function fetchAnnouncements(uid){
+    const db=database();
+    if(!db)throw new Error('Firebaseに接続できません。');
+    const [allSnap,personalSnap,readSnap]=await Promise.all([
+      db.ref(`${ROOT}/全員`).once('value'),
+      db.ref(`${ROOT}/個別/${uid}`).once('value'),
+      db.ref(`${READ_ROOT}/${uid}`).once('value')
+    ]);
+    const next=[];
+    Object.entries(allSnap.val()||{}).forEach(([id,value])=>{const n=normalizeNotice('all',id,value);if(n)next.push(n);});
+    Object.entries(personalSnap.val()||{}).forEach(([id,value])=>{const n=normalizeNotice('user',id,value);if(n)next.push(n);});
+    announcements=next.sort((a,b)=>(b.createdAt-a.createdAt)||b.id.localeCompare(a.id));
+    readMap=readSnap.val()||{};
+    menuBadge(announcements.filter(n=>!readMap[n.key]).length);
+  }
+  function renderList(){
+    const list=$('announcementList');
+    if(!list)return;
+    list.replaceChildren();
+    if(!announcements.length){showListMessage('現在、お知らせはありません。');return;}
+    announcements.forEach(notice=>{
+      const isRead=!!readMap[notice.key];
+      const button=document.createElement('button');
+      button.type='button';
+      button.className=`announcement-item${isRead?'':' unread'}`;
+      const status=document.createElement('span');
+      status.className='announcement-item-status';
+      status.textContent=isRead?'既読':'未読';
+      const main=document.createElement('span');
+      main.className='announcement-item-main';
+      const title=document.createElement('span');
+      title.className='announcement-item-title';
+      title.textContent=notice.title;
+      const meta=document.createElement('span');
+      meta.className='announcement-item-meta';
+      const date=document.createElement('span');date.textContent=dateLabel(notice.createdAt);
+      const scope=document.createElement('span');scope.textContent=notice.scope==='all'?'全員向け':'個別のお知らせ';
+      meta.append(date,scope);
+      main.append(title,meta);
+      const arrow=document.createElement('span');arrow.className='announcement-item-arrow';arrow.textContent='›';
+      button.append(status,main,arrow);
+      button.addEventListener('click',()=>openAnnouncementDetail(notice));
+      list.append(button);
+    });
+  }
+  async function openAnnouncementDetail(notice){
+    currentNotice=notice;
+    $('announcementListView').hidden=true;
+    $('announcementDetailView').hidden=false;
+    $('announcementBackButton').hidden=false;
+    $('announcementPanelTitle').textContent='お知らせ';
+    $('announcementDetailTitle').textContent=notice.title;
+    $('announcementDetailMeta').textContent=`${dateLabel(notice.createdAt)}　／　${notice.scope==='all'?'全員向け':'個別のお知らせ'}　／　${notice.senderName}`;
+    $('announcementDetailBody').textContent=notice.body;
+    $('announcementDetailStatus').textContent=readMap[notice.key]?'既読':'既読にしました';
+    if(!readMap[notice.key]){
+      const user=currentUser(),db=database();
+      if(user&&db){
+        try{
+          const readAt=Date.now();
+          await db.ref(`${READ_ROOT}/${user.uid}/${notice.key}`).set(readAt);
+          readMap[notice.key]=readAt;
+          $('announcementDetailStatus').textContent='既読';
+          menuBadge(announcements.filter(n=>!readMap[n.key]).length);
+          // 一覧に戻ったときに既読表示を反映。
+        }catch(e){
+          console.error('お知らせ既読保存失敗',e);
+          $('announcementDetailStatus').textContent='既読状態を保存できませんでした。';
+        }
+      }
+    }
+  }
+  function showAnnouncementList(){
+    currentNotice=null;
+    $('announcementListView').hidden=false;
+    $('announcementDetailView').hidden=true;
+    $('announcementBackButton').hidden=true;
+    $('announcementPanelTitle').textContent='お知らせ';
+    renderList();
+  }
+  async function openAnnouncementsFromMenu(){
+    window.closeSiteMenu?.();
+    $('announcementBackdrop')?.classList.add('active');
+    $('announcementPanel')?.classList.add('active');
+    showAnnouncementList();
+    const user=currentUser();
+    if(!user){showListMessage('お知らせを閲覧するにはログインが必要です。',true);menuBadge(0);return;}
+    showListMessage('お知らせを読み込んでいます。');
+    try{await fetchAnnouncements(user.uid);renderList();}
+    catch(e){console.error('お知らせ読込失敗',e);showListMessage('お知らせを読み込めませんでした。Firebaseの閲覧ルールを確認してください。');}
+  }
+  function closeAnnouncements(){
+    $('announcementBackdrop')?.classList.remove('active');
+    $('announcementPanel')?.classList.remove('active');
+    currentNotice=null;
+  }
+  function closeAnnouncementsFromBackdrop(event){if(event?.target?.id==='announcementBackdrop')closeAnnouncements();}
+  async function refreshBadge(user){
+    if(!user){menuBadge(0);return;}
+    try{await fetchAnnouncements(user.uid);}
+    catch(e){console.warn('お知らせ未読数の取得失敗',e);menuBadge(0);}
+  }
+  function attachAuth(app){
+    if(!app||!window.firebase?.auth)return;
+    try{
+      const auth=firebase.auth(app);
+      if(attachedAuth===auth)return;
+      attachedAuth=auth;
+      auth.onAuthStateChanged(user=>{
+        signedInUser=user||null;
+        if(user) refreshBadge(user);
+        else {announcements=[];readMap={};menuBadge(0);if($('announcementPanel')?.classList.contains('active'))showListMessage('お知らせを閲覧するにはログインが必要です。',true);}
+      });
+    }catch(e){console.warn('お知らせ認証監視の設定失敗',e);}
+  }
+  const previousInit=window.initFirebaseAuth;
+  if(typeof previousInit==='function'){
+    window.initFirebaseAuth=function(app){
+      const result=previousInit.apply(this,arguments);
+      attachAuth(app);
+      return result;
+    };
+  }
+  try{if(typeof firebaseApp!=='undefined'&&firebaseApp)attachAuth(firebaseApp);}catch(e){}
+  window.addEventListener('load',()=>{try{if(typeof firebaseApp!=='undefined'&&firebaseApp)attachAuth(firebaseApp);}catch(e){}},{once:true});
+  window.openAnnouncementsFromMenu=openAnnouncementsFromMenu;
+  window.closeAnnouncements=closeAnnouncements;
+  window.closeAnnouncementsFromBackdrop=closeAnnouncementsFromBackdrop;
+  window.showAnnouncementList=showAnnouncementList;
+})();
+</script>
 </body>
 </html>
 
