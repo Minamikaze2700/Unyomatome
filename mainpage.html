@@ -1018,6 +1018,11 @@ body{padding-bottom:42px !important;}
 .station-text .station-text-ja{display:block;line-height:1.05;}
 .station-text .station-text-en{display:block;font-size:.68em;font-weight:500;line-height:1.05;letter-spacing:.01em;color:#555;}
 </style>
+
+<style id="fourth-direction-author-favicon-style">
+.fourth-direction-author-icon{display:inline-block;width:13px;height:13px;object-fit:contain;vertical-align:-2px;margin-right:3px;border-radius:2px;}
+.fourth-direction-author-name{vertical-align:middle;}
+</style>
 </head>
 <body>
 
@@ -8495,6 +8500,19 @@ initRegionNavigation();
     if(!Number.isNaN(d.getTime())) return {time:String(d.getHours()*60+d.getMinutes()),stamp:'',author};
     return {time:'',stamp:'',author:''};
   }
+  const FOURTH_DIRECTION_AUTHOR_MARKER='⟦4th⟧';
+  const FOURTH_DIRECTION_FAVICON="data:image/png;base64,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";
+  window.renderFormationAuthorHTML=function(raw,withAt=false){
+    const value=String(raw??'').trim();
+    const escapeHTML=text=>String(text??'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    if(value.startsWith(FOURTH_DIRECTION_AUTHOR_MARKER)){
+      const name=value.slice(FOURTH_DIRECTION_AUTHOR_MARKER.length).trim();
+      const icon=`<img class="fourth-direction-author-icon" src="${FOURTH_DIRECTION_FAVICON}" alt="4thDirection" title="4thDirection">`;
+      return `${withAt?'@':''}${icon}${name?`<span class="fourth-direction-author-name">${escapeHTML(name)}</span>`:''}`;
+    }
+    return escapeHTML(withAt?`@${value}`:value);
+  };
+
   function formatStoredMeta(raw){
     const meta=parseStoredMeta(raw);
     if(!meta.time) return '';
@@ -10318,7 +10336,7 @@ initRegionNavigation();
     const at=text.indexOf(' @');
     const time=at>=0?text.slice(0,at):text;
     const author=at>=0?text.slice(at+1).replace(/^@+/, '').trim():'';
-    return `<span class="formation-updated-time">${escapeAttr(time)}</span>${author?`<br class="formation-updated-author-break"><span class="formation-updated-author">${escapeAttr('@'+author)}</span>`:''}${roleTag(showCode)}`;
+    return `<span class="formation-updated-time">${escapeAttr(time)}</span>${author?`<br class="formation-updated-author-break"><span class="formation-updated-author">${window.renderFormationAuthorHTML(author,true)}</span>`:''}${roleTag(showCode)}`;
   };
 
   async function loadAccessProfile(user){
@@ -12776,7 +12794,7 @@ initRegionNavigation();
       return `<div class="formation-input-history-item" data-history-key="${escapeAttr(post._recordId||post.key)}" data-history-duplicates="${group.posts.length}">
         <img class="formation-input-history-image" src="${escapeAttr(image)}" alt="${escapeAttr(names.join('・'))}" onerror="this.onerror=null;this.src=jsonNoImageUrl()">
         <div class="formation-input-history-formation" title="${escapeAttr(names.join(' + '))}">${escapeAttr(names.join(' + '))}</div>
-        <div class="formation-input-history-meta"><span class="formation-input-history-datetime">${escapeAttr(datetime)}</span><span class="formation-input-history-author">${escapeAttr(author)}</span>${historyInputMetaHTML}</div>
+        <div class="formation-input-history-meta"><span class="formation-input-history-datetime">${escapeAttr(datetime)}</span><span class="formation-input-history-author">${window.renderFormationAuthorHTML(author)}</span>${historyInputMetaHTML}</div>
         ${deleteButton}
       </div>`;
     }).join('');
@@ -13440,7 +13458,7 @@ initRegionNavigation();
         <div class="train-number-history-date">${escapeAttr(dateLabel)}</div>
         <img class="formation-input-history-image" src="${escapeAttr(image)}" alt="${escapeAttr(names.join('・'))}" onerror="this.onerror=null;this.src=jsonNoImageUrl()">
         <div class="formation-input-history-formation" title="${escapeAttr(names.join(' + '))}">${escapeAttr(names.join(' + '))}</div>
-        <div class="formation-input-history-meta"><span class="formation-input-history-datetime">${escapeAttr(datetime)}</span><span class="formation-input-history-author">${escapeAttr(author)}</span></div>
+        <div class="formation-input-history-meta"><span class="formation-input-history-datetime">${escapeAttr(datetime)}</span><span class="formation-input-history-author">${window.renderFormationAuthorHTML(author)}</span></div>
       </div>`;
     }).join('');
     return `<div class="station-timetable-frame train-history-frame"><div class="train-history-wrap"><div class="formation-input-history-list train-number-history-list">${rows||'<div class="formation-input-history-empty">'+emptyText+'</div>'}</div></div></div>`;
