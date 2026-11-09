@@ -212,9 +212,10 @@ button,input,select,textarea{font-family:inherit}
 .station-timetable-title{
   font-family:inherit;font-size:1.35rem;font-weight:700;text-align:left;padding:8px 0 10px;
 }
-.station-timetable-direction-tabs{display:flex;gap:8px;margin:0 0 12px;justify-content:flex-start;}
+.station-timetable-direction-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 12px;justify-content:stretch;}
+.station-timetable-direction-tabs.single-direction{grid-template-columns:minmax(0,1fr);}
 .station-timetable-direction-tab{
-  flex:0 0 50%;
+  width:100%;min-width:0;
   border:2px solid var(--station-direction-color,var(--primary));
   border-radius:6px;
   background:#fff;
@@ -1983,7 +1984,23 @@ function branchFadeGradient(color,direction='to bottom'){
 function branchBlendGradient(fromColor,toColor,direction='to bottom'){
   const from=String(fromColor||'#666').trim();
   const to=String(toColor||'#666').trim();
-  // 駅間の前半は分岐元、後半は分岐先。中間の区間で色を連続的に補間する。
+  // 京急のように分岐線・本線が同じ路線色の場合、同色同士の補間は単色になり
+  // グラデーションが見えなくなる。中間だけ同じ色を少し白方向へ寄せて、
+  // 色を変えずに分岐線から本線へつながるグラデーションを視認できるようにする。
+  if(from.toLowerCase()===to.toLowerCase()){
+    const hex=from.match(/^#?([0-9a-f]{6})$/i);
+    let middle;
+    if(hex){
+      const value=parseInt(hex[1],16);
+      const mix=channel=>Math.round(channel+(255-channel)*0.42);
+      const r=mix((value>>16)&255),g=mix((value>>8)&255),b=mix(value&255);
+      middle='#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+    }else{
+      middle=`color-mix(in srgb,${from} 58%,#fff 42%)`;
+    }
+    return `linear-gradient(${direction},${from} 0%,${from} 28%,${middle} 50%,${to} 72%,${to} 100%)`;
+  }
+  // 異なる路線色は、駅間の前半を分岐線、後半を本線として連続的に補間する。
   return `linear-gradient(${direction},${from} 0%,${from} 28%,${to} 72%,${to} 100%)`;
 }
 function commonBranchSegmentEffect(a,b,json=activeJson,meta=activeRouteMeta){
@@ -5832,7 +5849,7 @@ function updateStationSheetContent(){
     </div>
     <div class="timetable-list station-placeholder">
       <div class="station-timetable-title">時刻表</div>
-      <div class="station-timetable-direction-tabs">
+      <div class="station-timetable-direction-tabs ${availableDirections.length===1?'single-direction':''}">
         ${directionLabels.up?`<button class="station-timetable-direction-tab ${effectiveTimetableDirection==='up'?'active':''}" style="${directionTabStyle}" type="button" onclick="setStationTimetableDirection('up')">${directionLabels.up}</button>`:''}
         ${directionLabels.down?`<button class="station-timetable-direction-tab ${effectiveTimetableDirection==='down'?'active':''}" style="${directionTabStyle}" type="button" onclick="setStationTimetableDirection('down')">${directionLabels.down}</button>`:''}
       </div>
