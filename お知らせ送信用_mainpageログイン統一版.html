@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>運用まとめ｜お知らせ送信</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:24px;background:#f3f3f3;color:#222;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif}
+main{width:min(700px,100%);margin:0 auto;background:#fff;border:1px solid #ddd;border-radius:16px;box-shadow:0 8px 28px #00000014;overflow:hidden}
+header{padding:18px 22px;background:#777;color:#fff}h1{margin:0;font-size:20px}header p{margin:5px 0 0;font-size:12px;opacity:.9}
+section{padding:20px 22px}.hidden{display:none!important}.field{display:flex;flex-direction:column;gap:6px;margin:13px 0;font-weight:750;font-size:14px}
+input,textarea,select{width:100%;border:1px solid #bbb;border-radius:8px;padding:11px 12px;font:inherit;background:#fff;color:#222}textarea{min-height:180px;resize:vertical;line-height:1.65}
+button{border:0;border-radius:9px;padding:11px 16px;font:800 14px inherit;cursor:pointer}.primary{background:#777;color:#fff}.secondary{background:#eee;color:#333}.danger{background:#b3261e;color:#fff}.link-button{display:block;margin:12px auto 0;padding:6px 10px;background:transparent;color:#555;text-decoration:underline;font-weight:700}.action-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:9px;padding:11px 16px;font-weight:800;font-size:14px;flex:1;min-width:140px}.buttons button:disabled{opacity:.55;cursor:wait}
+.buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.buttons button{flex:1;min-width:140px}.notice{padding:11px 13px;border-radius:8px;background:#f0f0f0;color:#555;font-size:13px;line-height:1.6;margin:12px 0}.status{min-height:25px;font-size:13px;line-height:1.6;color:#555;white-space:pre-wrap}.status.error{color:#b3261e}.status.ok{color:#187a3c}
+.userbox{padding:12px;background:#f6f6f6;border-radius:9px;font-size:13px;line-height:1.7;overflow-wrap:anywhere}.uid{font-family:ui-monospace,monospace;font-size:12px;user-select:all;overflow-wrap:anywhere}
+.radio-row{display:flex;gap:16px;flex-wrap:wrap;margin:8px 0}.radio-row label{display:flex;align-items:center;gap:7px;font-weight:700}.radio-row input{width:auto}
+@media(max-width:560px){body{padding:10px}header,section{padding:16px}.buttons{flex-direction:column}.buttons button{width:100%}}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+</head>
+<body>
+<main>
+<header><h1>運用まとめ｜お知らせ送信</h1><p>mainpageと同じFirebaseアカウント・ログイン状態を使用します</p></header>
+<section id="loginSection">
+  <div class="notice">運用まとめのログインと共通です。Googleアカウント、またはメールアドレスでログインしてください。新規登録・パスワード再設定もmainpageと同じFirebase Authenticationを利用します。送信できるのはユーザーIDが <b>Minamikaze</b> の管理人アカウントのみです。</div>
+  <button class="primary" id="googleLogin" type="button" style="width:100%;margin-bottom:14px">Googleでログイン</button>
+  <label class="field">メールアドレス<input id="email" type="email" autocomplete="email" inputmode="email" placeholder="name@example.com"></label>
+  <label class="field">パスワード<input id="password" type="password" autocomplete="current-password" minlength="6" placeholder="6文字以上"></label>
+  <div class="buttons"><button class="primary" id="emailLogin" type="button">メールアドレスでログイン</button><button class="secondary" id="emailCreate" type="button">新規登録</button></div>
+  <button class="link-button" id="passwordReset" type="button">パスワードを忘れた場合</button>
+  <div class="status" id="loginStatus" aria-live="polite"></div>
+</section>
+<section id="accessDeniedSection" class="hidden">
+  <div class="notice" id="accessDeniedMessage"></div>
+  <div class="buttons"><a class="secondary action-link" href="https://minamikaze2700.github.io/Unyomatome/mainpage.html" target="_blank" rel="noopener noreferrer">運用まとめを開く</a><button class="secondary" id="deniedLogout" type="button">ログアウト</button></div>
+</section>
+<section id="adminSection" class="hidden">
+  <div class="userbox" id="adminInfo"></div>
+  <div class="notice">Firebase Realtime Database のセキュリティルールにも管理人UIDを登録してください。下のUIDをルール設定ファイルの <code>ADMIN_UID_REPLACE_ME</code> と置き換えます。</div>
+  <div class="buttons"><button class="secondary" id="copyUid">管理人UIDをコピー</button><button class="secondary" id="logout">ログアウト</button></div>
+  <label class="field">配信先</label>
+  <div class="radio-row">
+    <label><input type="radio" name="audience" value="all" checked> 全員</label>
+    <label><input type="radio" name="audience" value="user"> 特定のID</label>
+  </div>
+  <label class="field" id="targetField">宛先ユーザーID<input id="targetId" maxlength="30" autocomplete="off" placeholder="例：User123"></label>
+  <label class="field">タイトル<input id="noticeTitle" maxlength="100" placeholder="お知らせのタイトル"></label>
+  <label class="field">本文<textarea id="noticeBody" maxlength="5000" placeholder="お知らせ本文（改行可）"></textarea></label>
+  <div class="buttons"><button class="primary" id="sendNotice">お知らせを送信</button><button class="secondary" id="clearForm">入力をクリア</button></div>
+  <div class="status" id="sendStatus" aria-live="polite"></div>
+</section>
+</main>
+<script>
+'use strict';
+const FIREBASE_CONFIG={
+  apiKey:"AIzaSyDjbevyf9NXeBXCi-wrtkvOq_5LWGOPgVI",
+  authDomain:"unyomatome-5782e.firebaseapp.com",
+  databaseURL:"https://unyomatome-5782e-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"unyomatome-5782e",
+  storageBucket:"unyomatome-5782e.firebasestorage.app",
+  messagingSenderId:"574667463811",
+  appId:"1:574667463811:web:e4ac5d526c83c416444fb6",
+  measurementId:"G-CB29XT8ZT9"
+};
+const ADMIN_ID='Minamikaze';
+const PROFILE_ROOT='運用/ユーザー';
+const ID_INDEX_ROOT='運用/ユーザーIDIndex';
+const ALL_NOTICE_ROOT='運用/お知らせ/全員';
+const PERSONAL_NOTICE_ROOT='運用/お知らせ/個別';
+const MAINPAGE_APP_NAME='unyomatomeMainpage';
+let app=null,auth=null,db=null,currentUser=null,currentProfile=null;
+const $=id=>document.getElementById(id);
+function setStatus(id,msg,kind=''){const el=$(id);if(!el)return;el.textContent=msg;el.className=`status ${kind}`.trim();}
+function safeUserKey(value){const bytes=new TextEncoder().encode(String(value||''));let bin='';for(const b of bytes)bin+=String.fromCharCode(b);return 'k_'+btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function setAudienceUI(){const mode=document.querySelector('input[name="audience"]:checked')?.value||'all';$('targetField').classList.toggle('hidden',mode!=='user');}
+function showAccessDenied(message){$('loginSection').classList.add('hidden');$('adminSection').classList.add('hidden');$('accessDeniedSection').classList.remove('hidden');$('accessDeniedMessage').textContent=message;}
+async function showUser(user){
+  currentUser=user||null;currentProfile=null;
+  $('adminSection').classList.add('hidden');$('accessDeniedSection').classList.add('hidden');
+  $('loginSection').classList.toggle('hidden',!!user);
+  if(!user)return;
+  try{
+    const snap=await db.ref(PROFILE_ROOT).child(user.uid).once('value');
+    const value=snap.val()||{};
+    currentProfile={name:String(value.n??value.name??user.displayName??'').trim(),id:String(value.i??value.id??'').trim()};
+    if(!currentProfile.id||!currentProfile.name){
+      showAccessDenied('このアカウントにはmainpageのユーザー情報（登録名・ID）が設定されていません。運用まとめのmainpageを開き、ユーザー情報を登録してから再度このページを開いてください。');
+      return;
+    }
+    if(currentProfile.id!==ADMIN_ID){
+      showAccessDenied(`ログイン中：${currentProfile.name}（${currentProfile.id}）\nこのアカウントにはお知らせ送信権限がありません。管理人ID「${ADMIN_ID}」のアカウントでログインしてください。`);
+      return;
+    }
+    $('adminInfo').innerHTML=`ログイン中：<b>${escapeHtml(currentProfile.name)}</b>（${escapeHtml(currentProfile.id)}）<br>Firebase UID：<span class="uid" id="adminUidText">${escapeHtml(user.uid)}</span>`;
+    $('adminSection').classList.remove('hidden');setStatus('loginStatus','');
+  }catch(e){
+    console.error(e);
+    showAccessDenied('ユーザー情報を取得できませんでした。mainpageと同じアカウントでログインしているか、Firebaseの「運用/ユーザー」読み取りルールを確認してください。');
+  }
+}
+function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function emailAuthValues(){
+  const email=$('email').value.trim(),password=$('password').value;
+  if(!email){setStatus('loginStatus','メールアドレスを入力してください。','error');return null;}
+  if(!password){setStatus('loginStatus','パスワードを入力してください。','error');return null;}
+  if(password.length<6){setStatus('loginStatus','パスワードは6文字以上で入力してください。','error');return null;}
+  return {email,password};
+}
+async function signInGoogle(){
+  setStatus('loginStatus','');
+  if(!['http:','https:'].includes(String(location.protocol))){setStatus('loginStatus','GoogleログインはWeb公開したページ（http/https）で利用できます。','error');return;}
+  try{localStorage.setItem('__firebase_auth_check','1');localStorage.removeItem('__firebase_auth_check');}
+  catch(e){setStatus('loginStatus','ブラウザのWebストレージが無効です。Cookie・サイトデータを許可してください。','error');return;}
+  try{await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());}
+  catch(e){console.error(e);setStatus('loginStatus',`ログインできませんでした：${e.message||e}`,'error');}
+}
+async function signInEmail(){const values=emailAuthValues();if(!values)return;setStatus('loginStatus','');try{await auth.signInWithEmailAndPassword(values.email,values.password);}catch(e){console.error(e);setStatus('loginStatus',`ログインできませんでした：${e.message||e}`,'error');}}
+async function createEmailAccount(){const values=emailAuthValues();if(!values)return;setStatus('loginStatus','');try{await auth.createUserWithEmailAndPassword(values.email,values.password);}catch(e){console.error(e);setStatus('loginStatus',`新規登録できませんでした：${e.message||e}`,'error');}}
+async function sendPasswordReset(){const email=$('email').value.trim();if(!email){setStatus('loginStatus','パスワード再設定メールを送るメールアドレスを入力してください。','error');return;}try{await auth.sendPasswordResetEmail(email);setStatus('loginStatus','パスワード再設定メールを送信しました。受信トレイをご確認ください。','ok');}catch(e){console.error(e);setStatus('loginStatus',`再設定メールを送信できませんでした：${e.message||e}`,'error');}}
+async function sendNotice(){
+  const button=$('sendNotice');if(button.disabled)return;
+  const title=$('noticeTitle').value.trim(),body=$('noticeBody').value.trim();
+  const audience=document.querySelector('input[name="audience"]:checked')?.value||'all';
+  const targetId=$('targetId').value.trim();
+  if(!currentUser||currentProfile?.id!==ADMIN_ID){setStatus('sendStatus','管理人としてログインしてください。','error');return;}
+  if(!title||!body){setStatus('sendStatus','タイトルと本文を入力してください。','error');return;}
+  if(title.length>100||body.length>5000){setStatus('sendStatus','文字数の上限を超えています。','error');return;}
+  if(audience==='user'&&!targetId){setStatus('sendStatus','宛先ユーザーIDを入力してください。','error');return;}
+  button.disabled=true;setStatus('sendStatus','送信しています…');
+  try{
+    let targetUid='';
+    if(audience==='user'){
+      const idSnap=await db.ref(ID_INDEX_ROOT).child(safeUserKey(targetId)).once('value');
+      targetUid=String(idSnap.val()||'');
+      if(!targetUid){setStatus('sendStatus','指定したIDのユーザーが見つかりません。','error');return;}
+      // IDIndexの対応UIDを送信先として使用。宛先プロフィール自体は読み取りません。
+    }
+    const record={title,body,targetType:audience,targetId:audience==='user'?targetId:'',senderName:currentProfile.name,senderId:currentProfile.id,createdAt:Date.now()};
+    const destination=audience==='all'?db.ref(ALL_NOTICE_ROOT):db.ref(PERSONAL_NOTICE_ROOT).child(targetUid);
+    const newRef=destination.push();
+    await newRef.set(record);
+    setStatus('sendStatus',`送信しました。\nお知らせID：${newRef.key}\n配信先：${audience==='all'?'全員':targetId}`,'ok');
+    $('noticeTitle').value='';$('noticeBody').value='';
+  }catch(e){console.error('お知らせ送信失敗',e);setStatus('sendStatus',`送信できませんでした：${e.message||e}\nFirebaseのルール設定を確認してください。`,'error');}
+  finally{button.disabled=false;}
+}
+try{
+  // mainpageと同じFirebaseアプリ名を再利用することで、ログイン状態を共通化する。
+  // 別名のFirebaseアプリを作るとAuthenticationの保存領域が分かれ、再ログインが必要になる。
+  app=firebase.apps.find(instance=>instance.name===MAINPAGE_APP_NAME)||firebase.initializeApp(FIREBASE_CONFIG,MAINPAGE_APP_NAME);
+  auth=firebase.auth(app);db=firebase.database(app);
+  auth.onAuthStateChanged(showUser);
+}catch(e){console.error(e);setStatus('loginStatus','Firebaseを初期化できませんでした。mainpageと同じFirebase設定を確認してください。','error');}
+$('googleLogin').addEventListener('click',signInGoogle);
+$('emailLogin').addEventListener('click',signInEmail);
+$('emailCreate').addEventListener('click',createEmailAccount);
+$('passwordReset').addEventListener('click',sendPasswordReset);
+$('sendNotice').addEventListener('click',sendNotice);
+$('clearForm').addEventListener('click',()=>{$('targetId').value='';$('noticeTitle').value='';$('noticeBody').value='';setStatus('sendStatus','');});
+$('logout').addEventListener('click',()=>auth.signOut());
+$('deniedLogout').addEventListener('click',()=>auth.signOut());
+$('copyUid').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(currentUser?.uid||'');setStatus('sendStatus','管理人UIDをコピーしました。','ok');}catch(e){setStatus('sendStatus',`UID：${currentUser?.uid||''}`);}});
+document.querySelectorAll('input[name="audience"]').forEach(el=>el.addEventListener('change',setAudienceUI));
+setAudienceUI();
+</script>
+</body>
+</html>
