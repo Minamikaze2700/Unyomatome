@@ -123,6 +123,8 @@ button,input,select,textarea{font-family:inherit}
   font-size:45px;line-height:1;font-weight:500;
   letter-spacing:0;padding-left:0;
 }
+.station-name-ja-text{display:inline;white-space:nowrap;line-height:1;}
+.station-name-ja-reduced{display:inline-block;font-size:80%;line-height:1;vertical-align:bottom;}
 .station-name-en{
   font-family:inherit;
   height:33.3333%;display:flex;align-items:center;justify-content:center;
@@ -1526,7 +1528,7 @@ const ROUTE_REGISTRY={
     maxFormationCoupling:2,
     prescribedFormationRule:'common',
     disableCrossDayTrainFallback:true,
-    access:{public:false,routeAdmins:[]},
+    access:{public:true,routeAdmins:[]},
   },
   '京急大師線':{
     id:'keikyu-daishi',
@@ -1539,7 +1541,7 @@ const ROUTE_REGISTRY={
     formationFamily:'keikyu',
     prescribedFormationRule:'common',
     disableCrossDayTrainFallback:true,
-    access:{public:false,routeAdmins:[]},
+    access:{public:true,routeAdmins:[]},
   },
 };
 // 旧名称を参照する既存処理向けの互換エイリアス（登録名一覧には表示しない）。
@@ -1843,7 +1845,7 @@ function diagramStationMaster(json=activeJson){
     for(const st of (Array.isArray(line?.stations)?line.stations:[])){
       const name=String(st?.name||'').trim();
       if(!name || map.has(name)) continue;
-      map.set(name,{nameJa:name,nameEn:String(st?.nameEn||'')});
+      map.set(name,{nameJa:name,nameEn:String(st?.nameEn||''),labelSmallPrefix:String(st?.labelSmallPrefix||'')});
     }
   }
   return map;
@@ -2017,7 +2019,8 @@ function buildBranchDiagramStations(json,meta){
   return names.map((name,i)=>({
     id:`st${i+1}`,
     nameJa:name,
-    nameEn:String(master.get(name)?.nameEn||'')
+    nameEn:String(master.get(name)?.nameEn||''),
+    labelSmallPrefix:String(master.get(name)?.labelSmallPrefix||'')
   }));
 }
 function branchDiagramToggleLabel(){
@@ -2095,7 +2098,7 @@ function diagramStationEntry(json,name,branchKey=null){
   const target=String(name||'').trim();
   for(const line of (Array.isArray(json?.lines)?json.lines:[])){
     const st=(Array.isArray(line?.stations)?line.stations:[]).find(x=>String(x?.name||'').trim()===target);
-    if(st) return {nameJa:target,nameEn:String(st?.nameEn||''),branchKey};
+    if(st) return {nameJa:target,nameEn:String(st?.nameEn||''),labelSmallPrefix:String(st?.labelSmallPrefix||''),branchKey};
   }
   return {nameJa:target,nameEn:'',branchKey};
 }
@@ -2107,7 +2110,7 @@ function buildMultiJunctionDiagramStations(json=activeJson,meta=activeRouteMeta)
   const master=new Map();
   for(const line of (Array.isArray(json?.lines)?json.lines:[])) for(const st of (Array.isArray(line?.stations)?line.stations:[])){
     const name=String(st?.name||'').trim();
-    if(name&&!master.has(name)) master.set(name,{nameJa:name,nameEn:String(st?.nameEn||'')});
+    if(name&&!master.has(name)) master.set(name,{nameJa:name,nameEn:String(st?.nameEn||''),labelSmallPrefix:String(st?.labelSmallPrefix||'')});
   }
   const buttons=Array.isArray(diagram.branchButtons)?diagram.branchButtons:[];
   const junctions=diagram.junctions&&typeof diagram.junctions==='object'?Object.entries(diagram.junctions):[];
@@ -2289,7 +2292,7 @@ function buildStationsForRoute(json,meta){
     for(const st of stations){
       const name=String(st?.name||'').trim();
       if(!name||seen.has(name)) continue;
-      seen.add(name); list.push({id:`st${list.length+1}`,nameJa:name,nameEn:String(st?.nameEn||'')});
+      seen.add(name); list.push({id:`st${list.length+1}`,nameJa:name,nameEn:String(st?.nameEn||''),labelSmallPrefix:String(st?.labelSmallPrefix||'')});
     }
   }
   const prepend=Array.isArray(meta?.prependStations)?meta.prependStations:[];
@@ -3006,7 +3009,7 @@ async function loadExternalRouteJsons(routeMeta){
   // 京浜東北・根岸線／横浜線は、共有区間（東神奈川～大船）を相互表示するため、
   // 両方のJSONを列車データと線区定義だけ統合する。編成・種別色・運用連結は
   // 現在選択中の路線（primary）をそのまま使用する。
-  const merged={...primary,lines:[],trains:{},stationDirections:{},operationChains:primary?.operationChains||{}};
+  const merged={...primary,lines:[],trains:{},operationChains:primary?.operationChains||{}};
   // 編成定義も元JSONごとの所属路線を保持して統合する。
   // これにより横浜線ページ上でも京浜東北線由来の列車には京浜東北線の編成だけを許可できる。
   merged.formations=[];
@@ -3039,9 +3042,6 @@ async function loadExternalRouteJsons(routeMeta){
       if(!key || seenLines.has(key)) continue;
       seenLines.add(key);
       merged.lines.push(line);
-    }
-    for(const [k,v] of Object.entries(json?.stationDirections||{})){
-      if(!Object.prototype.hasOwnProperty.call(merged.stationDirections,k)) merged.stationDirections[k]=v;
     }
   }
   for(const day of ['平日','休日','土休日']){
@@ -4868,6 +4868,14 @@ function mainStationLabelName(name,json=activeJson){
   const aliases=json?.mainStationLabelAliases&&typeof json.mainStationLabelAliases==='object'?json.mainStationLabelAliases:{};
   return Object.prototype.hasOwnProperty.call(aliases,full)?String(aliases[full]):full;
 }
+function mainStationLabelMarkup(station,json=activeJson){
+  const full=mainStationLabelName(station?.nameJa,json);
+  const reduced=String(station?.labelSmallPrefix||'').trim();
+  if(reduced && full.startsWith(reduced)){
+    return `<span class="station-name-ja-text"><span class="station-name-ja-reduced">${esc(reduced)}</span><span>${esc(full.slice(reduced.length))}</span></span>`;
+  }
+  return `<span class="station-name-ja-text">${esc(full)}</span>`;
+}
 function renderLine(){
   const diagram=branchDiagramConfig(activeJson,activeRouteMeta)||{};
   if(activeRouteMeta?.diagramLayout==='circular' && activeJson?.circular===true){
@@ -4888,7 +4896,7 @@ function renderLine(){
     const badge=document.createElement('div');
     badge.className='station-badge';
     badge.innerHTML=`
-      <div class="station-name-ja">${esc(mainStationLabelName(st.nameJa))}</div>
+      <div class="station-name-ja">${mainStationLabelMarkup(st)}</div>
       <div class="station-name-en">${st.nameEn}</div>
     `;
     badge.setAttribute('role','button');
@@ -5583,47 +5591,117 @@ function openStationSheet(stationId){
   overlay.style.display='block';
   sheet.classList.add('active');
 }
-function getStationDirectionLabels(stationName){
-  const name=String(stationName||'');
-  const stationDefs=activeJson?.stationDirections;
-  const direct=stationDefs&&typeof stationDefs==='object' ? stationDefs[name] : null;
-  if(direct && typeof direct==='object'){
-    const up=String(direct.up||''), down=String(direct.down||'');
-    if(activeRouteMeta?.diagramLayout==='circular' && activeJson?.circular===true){
-      return {
-        up:up.startsWith('内回り')?up:`内回り ${up}`,
-        down:down.startsWith('外回り')?down:`外回り ${down}`
-      };
-    }
-    return {up,down};
-  }
-  const routeKey=String(activeRouteName||'');
-  const routeDefs=activeJson?.routeDirections;
-  const route=routeDefs&&typeof routeDefs==='object' ? routeDefs[routeKey] : null;
-  if(route && typeof route==='object'){
-    const up=String(route.up||''), down=String(route.down||'');
-    if(activeRouteMeta?.diagramLayout==='circular' && activeJson?.circular===true){
-      return {
-        up:up.startsWith('内回り')?up:`内回り ${up}`,
-        down:down.startsWith('外回り')?down:`外回り ${down}`
-      };
-    }
-    return {up,down};
-  }
-  const lineNames=getActiveRouteLineNames();
-  for(const lineName of lineNames){
-    const line=lineDefByName(lineName);
-    const d=line?.directions;
-    if(d && typeof d==='object'){
-      const up=String(d.up||''), down=String(d.down||'');
-      if(activeRouteMeta?.diagramLayout==='circular' && activeJson?.circular===true){
-        return {up:up.startsWith('内回り')?up:`内回り ${up}`,down:down.startsWith('外回り')?down:`外回り ${down}`};
+function autoStationDirectionEndpoints(stationName,json=activeJson){
+  const target=String(stationName||'').trim();
+  if(!target) return {up:'',down:''};
+  const up=[],down=[];
+  const add=(list,value)=>{
+    const v=String(value||'').trim();
+    if(v && v!==target && !list.includes(v)) list.push(v);
+  };
+  const diagram=json?.diagram||{};
+  const main=(Array.isArray(diagram.mainOrder)?diagram.mainOrder:[]).map(x=>String(x||'').trim()).filter(Boolean);
+  const junctions=diagram.junctions&&typeof diagram.junctions==='object'?Object.entries(diagram.junctions):[];
+  const buttons=Array.isArray(diagram.branchButtons)?diagram.branchButtons:[];
+  if(main.length>=2 && junctions.length){
+    const mi=main.indexOf(target);
+    if(mi>=0){
+      if(mi>0) add(up,main[0]);
+      if(mi<main.length-1) add(down,main[main.length-1]);
+      // At a junction, the branch terminal belongs on the side where that branch leaves the main route.
+      for(const [key,j] of junctions){
+        if(String(j?.anchor||'')!==target) continue;
+        const button=buttons.find(x=>String(x?.anchor||'')===target);
+        const configured=Array.isArray(j?.stations)?j.stations.map(x=>String(x||'').trim()).filter(Boolean):[];
+        const lineNames=String(key).split('・').map(x=>x.trim()).filter(Boolean);
+        let stations=configured;
+        if(!stations.length){
+          const line=(json?.lines||[]).find(x=>lineNames.includes(String(x?.name||'')));
+          stations=(line?.stations||[]).map(x=>String(typeof x==='string'?x:(x?.name||''))).filter(Boolean);
+          const ai=stations.indexOf(target); if(ai>=0) stations=stations.slice(ai+1);
+        }
+        const terminal=stations[stations.length-1];
+        const insert=String(j?.insert||'after');
+        if(insert==='before') add(up,terminal); else add(down,terminal);
       }
-      return {up,down};
+      // Shared routes in the same operator are additional branches even when they have their own page (e.g. 京急大師線 at 京急川崎).
+      const sharedRoutes=json?._sharedRoutes&&typeof json._sharedRoutes==='object'?json._sharedRoutes:{};
+      const operator=String(json?.operator||'').trim();
+      for(const [sharedRouteName,sharedRoute] of Object.entries(sharedRoutes)){
+        if(!sharedRoute||typeof sharedRoute!=='object') continue;
+        if(operator && String(sharedRoute.operator||'').trim()!==operator) continue;
+        for(const line of (Array.isArray(sharedRoute.lines)?sharedRoute.lines:[])){
+          const stations=(Array.isArray(line?.stations)?line.stations:[]).map(st=>String(typeof st==='string'?st:(st?.name??st?.nameJa??'')).trim()).filter(Boolean);
+          const i=stations.indexOf(target);
+          if(i===0) add(down,stations[stations.length-1]);
+          else if(i===stations.length-1) add(up,stations[0]);
+          else if(i>0){ add(up,stations[0]); add(down,stations[stations.length-1]); }
+        }
+      }
+    }else{
+      // Stations on a branch use the branch's own section endpoints (junction and terminal).
+      for(const [key,j] of junctions){
+        const configured=Array.isArray(j?.stations)?j.stations.map(x=>String(x||'').trim()).filter(Boolean):[];
+        const lineNames=String(key).split('・').map(x=>x.trim()).filter(Boolean);
+        let stations=configured;
+        if(!stations.length){
+          const line=(json?.lines||[]).find(x=>lineNames.includes(String(x?.name||'')));
+          const all=(line?.stations||[]).map(x=>String(typeof x==='string'?x:(x?.name||''))).filter(Boolean);
+          const ai=all.indexOf(String(j?.anchor||''));
+          stations=ai>=0?all.slice(ai+1):all;
+        }
+        if(!stations.includes(target)) continue;
+        const sequence=String(j?.insert||'after')==='before'
+          ? [...stations,String(j?.anchor||'')]
+          : [String(j?.anchor||''),...stations];
+        add(up,sequence[0]);
+        add(down,sequence[sequence.length-1]);
+        break;
+      }
     }
   }
-  // デフォルト方面はJSONの定義を使用し、未定義の場合は空欄。
-  return {up:'',down:''};
+  // Fallback for ordinary single-line routes and shared-station routes (e.g. 京急大師線 / 京急川崎).
+  if(!up.length && !down.length){
+    const requestedNames=Array.isArray(activeRouteMeta?.jsonLines)?activeRouteMeta.jsonLines.map(String):[];
+    const requestedSet=new Set(requestedNames.filter(Boolean));
+    const ownLineDefs=(Array.isArray(json?.lines)?json.lines:[])
+      .filter(line=>!requestedSet.size||requestedSet.has(String(line?.name||'')));
+    const ownStationNames=new Set(ownLineDefs.flatMap(line=>(Array.isArray(line?.stations)?line.stations:[])
+      .map(st=>String(typeof st==='string'?st:(st?.name??st?.nameJa??'')).trim()).filter(Boolean)));
+    const lineDefs=[...ownLineDefs];
+    const sharedRoutes=json?._sharedRoutes&&typeof json._sharedRoutes==='object'?json._sharedRoutes:{};
+    const operator=String(json?.operator||'').trim();
+    for(const [sharedRouteName,sharedRoute] of Object.entries(sharedRoutes)){
+      if(!sharedRoute||typeof sharedRoute!=='object'||sharedRouteName===String(activeRouteName||'')) continue;
+      if(operator && String(sharedRoute.operator||'').trim()!==operator) continue;
+      for(const line of (Array.isArray(sharedRoute.lines)?sharedRoute.lines:[])){
+        const stations=Array.isArray(line?.stations)?line.stations:[];
+        if(stations.some(st=>ownStationNames.has(String(typeof st==='string'?st:(st?.name??st?.nameJa??'')).trim()))) lineDefs.push(line);
+      }
+    }
+    const lines=lineDefs.map(line=>({stations:(Array.isArray(line?.stations)?line.stations:[])
+      .map(st=>String(typeof st==='string'?st:(st?.name??st?.nameJa??'')).trim()).filter(Boolean)})).filter(x=>x.stations.length>=2);
+    const matches=lines.filter(line=>line.stations.includes(target));
+    for(const line of matches){
+      const i=line.stations.indexOf(target);
+      if(i===0) add(down,line.stations[line.stations.length-1]);
+      else if(i===line.stations.length-1) add(up,line.stations[0]);
+      else { add(up,line.stations[0]); add(down,line.stations[line.stations.length-1]); }
+    }
+  }
+  const format=list=>list.length?`${list.join('・')}方面`:'';
+  return {up:format(up),down:format(down)};
+}
+function getStationDirectionLabels(stationName){
+  const generated=autoStationDirectionEndpoints(stationName,activeJson);
+  // 環状線は端点を持たないため、方向名だけを自動付与する。
+  if(activeRouteMeta?.diagramLayout==='circular' && activeJson?.circular===true){
+    return {
+      up:`内回り${generated.up?` ${generated.up}`:''}`,
+      down:`外回り${generated.down?` ${generated.down}`:''}`
+    };
+  }
+  return generated;
 }
 
 function updateStationSheetContent(){
@@ -5654,6 +5732,10 @@ function updateStationSheetContent(){
   const nextJa=nextStation?.nameJa||'';
   const nextEn=nextStation?.nameEn||'';
   const directionLabels=getStationDirectionLabels(station.nameJa);
+  // 始発・終着駅など、方面が成立しない側のタブは表示しない。
+  // 片側だけの場合は、その方向を時刻表の初期表示にも使用する。
+  const availableDirections=['up','down'].filter(direction=>String(directionLabels[direction]||'').trim());
+  const effectiveTimetableDirection=availableDirections.length===1?availableDirections[0]:stationTimetableDirection;
   const neighborColors=circularContext
     ? {prevColor:circularContext.prevColor,nextColor:circularContext.nextColor}
     : (branchNeighbors
@@ -5688,10 +5770,10 @@ function updateStationSheetContent(){
     <div class="timetable-list station-placeholder">
       <div class="station-timetable-title">時刻表</div>
       <div class="station-timetable-direction-tabs">
-        <button class="station-timetable-direction-tab ${stationTimetableDirection==='up'?'active':''}" style="${directionTabStyle}" type="button" onclick="setStationTimetableDirection('up')">${directionLabels.up}</button>
-        <button class="station-timetable-direction-tab ${stationTimetableDirection==='down'?'active':''}" style="${directionTabStyle}" type="button" onclick="setStationTimetableDirection('down')">${directionLabels.down}</button>
+        ${directionLabels.up?`<button class="station-timetable-direction-tab ${effectiveTimetableDirection==='up'?'active':''}" style="${directionTabStyle}" type="button" onclick="setStationTimetableDirection('up')">${directionLabels.up}</button>`:''}
+        ${directionLabels.down?`<button class="station-timetable-direction-tab ${effectiveTimetableDirection==='down'?'active':''}" style="${directionTabStyle}" type="button" onclick="setStationTimetableDirection('down')">${directionLabels.down}</button>`:''}
       </div>
-      ${stationTimetableHTML(station, stationTimetableDirection)}
+      ${stationTimetableHTML(station, effectiveTimetableDirection)}
     </div>
   `;
   scrollStationTimetableToNext();
@@ -14798,17 +14880,31 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     }),
     // JR東日本。別線区の駅名が異なる接続は station に接続先駅名を指定する。
     '京浜東北・根岸線':Object.freeze({
-      '東神奈川':['横浜線'],
-      '川崎':['南武線'],
+      '品川':[{route:'京急本線・空港線・逗子線・久里浜線',station:'品川'}],
+      '東神奈川':['横浜線',{route:'京急本線・空港線・逗子線・久里浜線',station:'京急東神奈川'}],
+      '川崎':['南武線',{route:'京急本線・空港線・逗子線・久里浜線',station:'京急川崎'},{route:'京急大師線',station:'京急川崎'}],
+      '新子安':[{route:'京急本線・空港線・逗子線・久里浜線',station:'京急新子安'}],
+      '横浜':[{route:'京急本線・空港線・逗子線・久里浜線',station:'横浜'},'横浜線'],
       '大宮':['東武鉄道アーバンパークライン'],
       '上野':['東京メトロ日比谷線'],
       '秋葉原':['東京メトロ日比谷線']
     }),
     '横浜線':Object.freeze({
-      '東神奈川':['京浜東北・根岸線'],
+      '東神奈川':['京浜東北・根岸線',{route:'京急本線・空港線・逗子線・久里浜線',station:'京急東神奈川'}],
+      '横浜':[{route:'京急本線・空港線・逗子線・久里浜線',station:'横浜'}]
     }),
     '南武線':Object.freeze({
-      '川崎':['京浜東北・根岸線'],
+      '川崎':['京浜東北・根岸線',{route:'京急本線・空港線・逗子線・久里浜線',station:'京急川崎'},{route:'京急大師線',station:'京急川崎'}]
+    }),
+    '京急本線・空港線・逗子線・久里浜線':Object.freeze({
+      '品川':['京浜東北・根岸線'],
+      '京急川崎':[{route:'南武線',station:'川崎'},'京急大師線'],
+      '京急新子安':[{route:'京浜東北・根岸線',station:'新子安'}],
+      '京急東神奈川':[{route:'京浜東北・根岸線',station:'東神奈川'},{route:'横浜線',station:'東神奈川'}],
+      '横浜':['京浜東北・根岸線','横浜線']
+    }),
+    '京急大師線':Object.freeze({
+      '京急川崎':[{route:'南武線',station:'川崎'},'京急本線・空港線・逗子線・久里浜線']
     }),
     // 東武鉄道。分岐表示中の駅も対象にする。
     // 北千住には日比谷線を登録しない。
