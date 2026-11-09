@@ -1054,6 +1054,120 @@ body{padding-bottom:42px !important;}
 .announcement-detail-status{margin-top:18px;padding-top:10px;border-top:1px solid #eee;text-align:right;color:#888;font-size:12px;font-weight:700}
 @media(max-width:700px){.announcement-panel{top:58px;width:calc(100vw - 16px);max-height:calc(100dvh - 70px)}.announcement-panel-content{padding:9px}.announcement-item{padding:11px 9px;gap:7px}.announcement-item-title{font-size:14px}.announcement-detail{padding:13px}.announcement-detail-body{font-size:14px}}
 </style>
+
+<style id="fleet-operation-panel-styles">
+#fleetOperationOpenBtn{
+  position:fixed;right:16px;
+  bottom:calc(var(--region-nav-height,42px) + 14px + 58px + 9px);
+  z-index:50020;width:58px;height:58px;display:none;flex-direction:column;
+  align-items:center;justify-content:center;gap:2px;padding:4px;
+  border:1px solid rgba(0,0,0,.12);border-radius:16px;background:#fff;color:#333;
+  box-shadow:0 3px 12px rgba(0,0,0,.24);cursor:pointer;touch-action:manipulation;
+}
+#fleetOperationOpenBtn:hover{filter:brightness(.96);transform:translateY(-1px)}
+#fleetOperationOpenBtn:active{transform:scale(.96)}
+#fleetOperationOpenBtn .fleet-open-icon{font-size:24px;line-height:1}
+#fleetOperationOpenBtn .fleet-open-label{font-size:11px;line-height:1.1;font-weight:900;white-space:nowrap}
+#fleetOperationOverlay{
+  position:fixed;top:58px;right:0;bottom:0;left:0;z-index:50030;
+  display:none;flex-direction:column;min-width:0;min-height:0;overflow:hidden;
+  background:#f3f3f3;color:#222;overscroll-behavior:contain;
+}
+#fleetOperationOverlay.active{display:flex}
+.fleet-panel-topbar{
+  flex:0 0 auto;display:flex;align-items:stretch;gap:7px;padding:8px 10px;
+  background:#fff;border-bottom:1px solid #ccc;box-shadow:0 1px 4px rgba(0,0,0,.08);
+}
+.fleet-panel-main-tab{
+  flex:1 1 0;min-width:0;border:2px solid var(--primary,#808080);border-radius:8px;
+  padding:9px 8px;background:#fff;color:var(--primary,#555);font:800 15px/1.2 sans-serif;cursor:pointer;
+}
+.fleet-panel-main-tab.active{background:var(--primary,#808080);color:#fff}
+.fleet-panel-close{
+  flex:0 0 42px;width:42px;border:0;border-radius:8px;background:#eee;color:#333;
+  font-size:24px;font-weight:800;line-height:1;cursor:pointer;
+}
+.fleet-panel-content{flex:1 1 auto;min-height:0;min-width:0;overflow:auto;padding:10px 12px 24px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.fleet-formation-filter{
+  position:sticky;top:-10px;z-index:5;display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;
+  margin:-10px -12px 10px;padding:9px 10px;background:rgba(243,243,243,.97);
+  border-bottom:1px solid #d5d5d5;scrollbar-width:thin;
+}
+.fleet-formation-filter button{
+  flex:0 0 auto;border:1px solid #aaa;border-radius:999px;padding:7px 13px;
+  background:#fff;color:#333;font-size:13px;font-weight:800;white-space:nowrap;cursor:pointer;
+}
+.fleet-formation-filter button.active{background:var(--primary,#808080);border-color:var(--primary,#808080);color:#fff}
+.fleet-formation-list{display:flex;flex-direction:row;flex-wrap:nowrap;align-items:stretch;gap:12px;min-width:0;overflow-x:auto;overflow-y:hidden;padding:0 2px 10px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.fleet-formation-unit{flex:0 0 clamp(370px,44vw,620px);width:clamp(370px,44vw,620px);max-width:88vw;min-width:0;display:flex;flex-direction:column;align-self:stretch;scroll-snap-align:start;border:1px solid #c9c9c9;border-radius:11px;background:#fff;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.fleet-formation-unit-head{display:flex;align-items:center;gap:11px;min-width:0;padding:9px 12px;background:#fff;border-bottom:1px solid #ddd}
+.fleet-formation-unit-head img{display:block;flex:0 0 74px;width:74px;height:49px;object-fit:contain}
+.fleet-formation-unit-title{display:flex;flex-direction:column;gap:3px;min-width:0}
+.fleet-formation-unit-title strong{font-size:17px;line-height:1.25;overflow-wrap:anywhere}
+.fleet-formation-unit-title span{font-size:12px;color:#666;font-weight:700;line-height:1.25}
+.fleet-formation-unit-detail{min-width:0;padding:8px;background:#fff}
+.fleet-formation-unit-detail .train-formation-details{gap:0}
+.fleet-formation-unit-detail .train-formation-card{border-width:0;border-radius:0;box-shadow:none}
+.fleet-formation-unit-detail .train-formation-card-title{display:none}
+.fleet-formation-unit-detail .train-formation-detail-row{grid-template-columns:110px minmax(0,1fr);font-size:14px;padding:6px 8px}
+.fleet-formation-unit-detail .train-formation-cars>.train-formation-car-row{grid-template-columns:58px max-content minmax(0,1fr) 108px;gap:6px;padding:4px 6px;font-size:13px}
+.fleet-formation-empty,.fleet-operation-empty{padding:32px 14px;text-align:center;color:#666;font-weight:800;line-height:1.6}
+.fleet-operation-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 10px;padding:10px 11px;border:1px solid #ddd;border-radius:10px;background:#fff}
+.fleet-operation-toolbar label{font-weight:800;font-size:13px;color:#555}
+.fleet-operation-date{min-width:155px;border:2px solid var(--primary,#888);border-radius:999px;background:#fff;color:#333;padding:7px 12px;font:700 14px/1.2 sans-serif}
+.fleet-operation-date-note{font-size:12px;color:#777;font-weight:700}
+.fleet-operation-list{display:flex;flex-direction:row;flex-wrap:nowrap;align-items:stretch;gap:7px;min-width:0;overflow-x:auto;overflow-y:hidden;padding:0 2px 9px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.fleet-operation-row{
+  display:flex;flex:0 0 clamp(176px,18vw,224px);width:clamp(176px,18vw,224px);min-width:0;flex-direction:column;gap:6px;align-items:stretch;
+  padding:6px;border:1px solid #d4d4d4;border-radius:9px;background:#fff;scroll-snap-align:start;
+}
+.fleet-operation-left{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:6px;min-width:0;text-align:left}
+.fleet-operation-left img{display:block;flex:0 0 58px;width:58px;height:38px;object-fit:contain}
+.fleet-operation-formation{max-width:100%;font-size:11px;line-height:1.2;font-weight:900;overflow-wrap:anywhere}
+.fleet-operation-unassigned{color:#888;font-size:10px;font-weight:800}
+.fleet-operation-left-no{display:none!important}
+.fleet-operation-cards{display:flex;flex-direction:column;align-content:stretch;align-items:stretch;flex-wrap:nowrap;gap:4px;min-width:0}
+.fleet-operation-card{
+  flex:0 0 auto;width:100%;min-width:0;max-width:100%;display:flex;flex-direction:column;gap:3px;
+  padding:5px 6px;border-radius:7px;box-shadow:0 1px 2px rgba(0,0,0,.10);border:1px solid transparent;
+}
+.fleet-operation-card-head{display:flex;align-items:center;gap:5px;min-width:0;flex-wrap:nowrap}
+.fleet-operation-number{font-size:12px;font-weight:900;line-height:1.15;white-space:nowrap}
+.fleet-operation-type{font-size:10px;font-weight:900;line-height:1.15;white-space:nowrap}
+.fleet-operation-route{font-size:10.5px;line-height:1.3;font-weight:800;overflow-wrap:anywhere}
+.fleet-operation-route-time{font-variant-numeric:tabular-nums;font-weight:900;white-space:nowrap}
+.fleet-operation-arrow{display:inline-block;margin:0 2px;font-weight:900}
+.fleet-operation-no-run{align-self:center;color:#777;font-size:12px;font-weight:700}
+@media(max-width:700px){
+  #fleetOperationOpenBtn{right:10px;width:52px;height:52px;bottom:calc(var(--region-nav-height,42px) + 14px + 52px + 8px);border-radius:14px}
+  #fleetOperationOverlay{top:58px}
+  .fleet-panel-topbar{gap:5px;padding:7px}
+  .fleet-panel-main-tab{font-size:14px;padding:9px 5px}
+  .fleet-panel-content{padding:8px 8px 20px}
+  .fleet-formation-filter{top:-8px;margin:-8px -8px 8px;padding:8px}
+  .fleet-formation-list{gap:8px;padding-bottom:8px}
+  .fleet-formation-unit{flex-basis:88vw;width:88vw;max-width:88vw}
+  .fleet-formation-unit-head{gap:8px;padding:7px 9px}
+  .fleet-formation-unit-head img{flex-basis:61px;width:61px;height:42px}
+  .fleet-formation-unit-title strong{font-size:15px}
+  .fleet-formation-unit-detail{padding:4px}
+  .fleet-formation-unit-detail .train-formation-detail-row{grid-template-columns:76px minmax(0,1fr);gap:5px;padding:5px 6px;font-size:12px}
+  .fleet-formation-unit-detail .train-formation-cars>.train-formation-car-row{grid-template-columns:44px minmax(70px,max-content) minmax(0,1fr);gap:4px;padding:3px 4px;font-size:11px}
+  .fleet-formation-unit-detail .train-formation-car-service-tags{grid-column:2 / 4;justify-content:flex-start}
+  .fleet-formation-unit-detail .train-formation-car-feature-viewport{min-width:0}
+  .fleet-formation-unit-detail .train-formation-car-feature-group .permission-tag{font-size:10px}
+  .fleet-operation-toolbar{padding:8px;gap:7px;margin-bottom:8px}
+  .fleet-operation-date{min-width:145px;font-size:13px}
+  .fleet-operation-list{gap:5px;padding-bottom:7px}
+  .fleet-operation-row{flex-basis:168px;width:168px;gap:5px;padding:5px}
+  .fleet-operation-left img{flex-basis:50px;width:50px;height:33px}
+  .fleet-operation-formation{font-size:10px}
+  .fleet-operation-card{flex-basis:auto;min-width:0;width:100%;padding:4px 5px}
+  .fleet-operation-number{font-size:11px}
+  .fleet-operation-route{font-size:10px}
+}
+</style>
+
 </head>
 <body>
 
@@ -2036,6 +2150,55 @@ function commonBranchSegmentEffect(a,b,json=activeJson,meta=activeRouteMeta){
         const color=String(lineDefByName(item?.useLine)?.color||item?.color||'#666');
         if(aa===from&&bb===to) return {kind:'fade',from,to,color,direction:forwardGradient};
         if(aa===to&&bb===from) return {kind:'fade',from,to,color,direction:reverseGradient};
+      }
+      // 境界グラデーションは明示ペアだけに依存させず、分岐定義からも自動検出する。
+      // 分岐駅・分岐駅列・本線の次駅を使うため、京急のような同色複数分岐でも
+      // JSONの blendSegmentsWhenBranchOpen が未更新／駅名変更された場合に抜けない。
+      const junctionEntries=Object.entries(diagram.junctions&&typeof diagram.junctions==='object'?diagram.junctions:{});
+      for(const [junctionKey,junction] of junctionEntries){
+        const anchor=String(junction?.anchor||'').trim();
+        if(!anchor) continue;
+        const junctionButton=buttons.find(x=>String(x?.anchor||'')===anchor)||{};
+        const junctionId=String(junctionButton?.id||junctionKey);
+        if(junctionId!==key || !multiJunctionBranchesOpen.has(junctionId)) continue;
+        const insert=String(junction?.insert||'after').toLowerCase()==='before'?'before':'after';
+        const lineNames=String(junctionKey).split('・').map(x=>x.trim()).filter(Boolean);
+        const configured=Array.isArray(junction?.stations)?junction.stations.map(x=>String(x||'').trim()).filter(Boolean):[];
+        const branchStations=configured.length?configured:orderedBranchStationsFromLines(json,lineNames,anchor,insert);
+        if(!branchStations.length) continue;
+        const localLines=Array.isArray(json?.lines)?json.lines:[];
+        const localLineByName=name=>localLines.find(line=>String(line?.name||'')===String(name||''))||null;
+        const adjacentColor=(x,y)=>{
+          if(!x||!y) return '';
+          for(const line of localLines){
+            const stations=Array.isArray(line?.stations)?line.stations:[];
+            for(let i=0;i<stations.length-1;i++){
+              const p=String(stations[i]?.name||''),q=String(stations[i+1]?.name||'');
+              if((p===x&&q===y)||(p===y&&q===x)) return String(line?.color||'');
+            }
+          }
+          return '';
+        };
+        const branchLine=lineNames.map(localLineByName).find(Boolean)||null;
+        const branchColor=String(branchLine?.color||lineDefByName(lineNames[0])?.color||'#666');
+        const mainOrder=(Array.isArray(diagram.mainOrder)?diagram.mainOrder:[]).map(x=>String(x||'').trim());
+        const anchorIndex=mainOrder.indexOf(anchor);
+        if(anchorIndex<0) continue;
+        if(insert==='after'){
+          const branchEnd=branchStations[branchStations.length-1];
+          const nextMain=mainOrder[anchorIndex+1]||'';
+          if(!branchEnd||!nextMain) continue;
+          const mainColor=adjacentColor(anchor,nextMain)||String(lineDefByName(lineNames[0])?.color||branchColor);
+          if(aa===branchEnd&&bb===nextMain) return {kind:'blend',from:aa,to:bb,fromColor:branchColor,toColor:mainColor,direction:'to bottom'};
+          if(aa===nextMain&&bb===branchEnd) return {kind:'blend',from:bb,to:aa,fromColor:branchColor,toColor:mainColor,direction:'to top'};
+        }else{
+          const prevMain=mainOrder[anchorIndex-1]||'';
+          const branchStart=branchStations[0];
+          if(!prevMain||!branchStart) continue;
+          const mainColor=adjacentColor(prevMain,anchor)||String(lineDefByName(lineNames[0])?.color||branchColor);
+          if(aa===prevMain&&bb===branchStart) return {kind:'blend',from:aa,to:bb,fromColor:mainColor,toColor:branchColor,direction:'to bottom'};
+          if(aa===branchStart&&bb===prevMain) return {kind:'blend',from:bb,to:aa,fromColor:mainColor,toColor:branchColor,direction:'to top'};
+        }
       }
     }
   }
@@ -11228,6 +11391,86 @@ initRegionNavigation();
 }
 </style>
 
+<style id="fleet-panel-axis-layout">
+/* 編成一覧：編成を縦に積み、各編成の詳細も項目ごとに縦方向へ */
+#fleetOperationPanelContent .fleet-formation-list{
+  display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;
+  overflow-x:hidden;overflow-y:visible;gap:10px;padding:0 2px 10px;
+}
+#fleetOperationPanelContent .fleet-formation-unit{
+  flex:0 0 auto;width:100%;max-width:none;min-width:0;scroll-snap-align:none;
+}
+#fleetOperationPanelContent .fleet-formation-unit-detail{padding:7px 10px}
+#fleetOperationPanelContent .fleet-formation-unit-detail .train-formation-detail-row{
+  display:flex;flex-direction:column;grid-template-columns:none;align-items:stretch;gap:4px;
+  padding:7px 8px;font-size:14px;
+}
+#fleetOperationPanelContent .fleet-formation-unit-detail .train-formation-detail-row>span:first-child{
+  display:block;font-weight:800;color:#555;
+}
+#fleetOperationPanelContent .fleet-formation-unit-detail .train-formation-detail-row strong{display:block;width:100%;}
+#fleetOperationPanelContent .fleet-formation-unit-detail .train-formation-cars>.train-formation-car-row{
+  display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:7px 8px;
+}
+#fleetOperationPanelContent .fleet-formation-unit-detail .train-formation-car-number{font-weight:800}
+#fleetOperationPanelContent .fleet-formation-unit-detail .train-formation-car-feature-viewport,
+#fleetOperationPanelContent .fleet-formation-unit-detail .train-formation-car-service-tags{
+  width:100%;min-width:0;justify-content:flex-start;white-space:normal;
+}
+#fleetOperationPanelContent .fleet-formation-unit-detail .train-formation-car-feature-track{
+  width:auto;max-width:100%;flex-wrap:wrap;transform:none!important;
+}
+#fleetOperationPanelContent .fleet-formation-unit-detail .train-formation-car-feature-group{
+  display:flex;flex-wrap:wrap;width:auto;max-width:100%;padding-right:0;
+}
+/* 運用一覧：列車を縦方向に並べ、各列車の運用カードを横方向に並べる */
+#fleetOperationPanelContent .fleet-operation-list{
+  display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;
+  overflow-x:hidden;overflow-y:visible;gap:6px;padding:0 2px 10px;
+}
+#fleetOperationPanelContent .fleet-operation-row{
+  display:grid;grid-template-columns:minmax(112px,16%) minmax(0,1fr);
+  flex:0 0 auto;width:100%;min-width:0;flex-direction:row;align-items:center;gap:10px;
+  padding:7px 9px;scroll-snap-align:none;
+}
+#fleetOperationPanelContent .fleet-operation-left{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  min-width:0;text-align:center;
+}
+#fleetOperationPanelContent .fleet-operation-left img{flex:0 0 auto;width:76px;height:48px;max-width:100%;}
+#fleetOperationPanelContent .fleet-operation-formation{font-size:12px;text-align:center;}
+#fleetOperationPanelContent .fleet-operation-cards{
+  display:flex;flex-direction:row;flex-wrap:wrap;align-items:stretch;align-content:flex-start;
+  gap:6px;min-width:0;
+}
+#fleetOperationPanelContent .fleet-operation-card{
+  flex:0 1 230px;width:auto;max-width:100%;min-width:175px;min-height:0;padding:6px 8px;
+}
+@media(max-width:700px){
+  #fleetOperationPanelContent .fleet-formation-unit{width:100%;max-width:none;}
+  #fleetOperationPanelContent .fleet-formation-unit-detail .train-formation-detail-row{font-size:12px;padding:6px;}
+  #fleetOperationPanelContent .fleet-formation-unit-detail .train-formation-cars>.train-formation-car-row{font-size:11px;}
+  #fleetOperationPanelContent .fleet-operation-row{grid-template-columns:76px minmax(0,1fr);gap:6px;padding:6px;}
+  #fleetOperationPanelContent .fleet-operation-left img{width:62px;height:40px;}
+  #fleetOperationPanelContent .fleet-operation-formation{font-size:10px;}
+  #fleetOperationPanelContent .fleet-operation-cards{gap:5px;}
+  #fleetOperationPanelContent .fleet-operation-card{flex:1 1 175px;min-width:0;width:auto;padding:5px 6px;}
+}
+</style>
+
+
+<button id="fleetOperationOpenBtn" type="button" aria-label="列車情報・運用情報" title="列車情報・運用情報を表示">
+  <span class="fleet-open-icon" aria-hidden="true">▤</span><span class="fleet-open-label">情報</span>
+</button>
+<div id="fleetOperationOverlay" aria-hidden="true">
+  <div class="fleet-panel-topbar">
+    <button type="button" class="fleet-panel-main-tab active" data-fleet-main-tab="train" aria-pressed="true">列車情報</button>
+    <button type="button" class="fleet-panel-main-tab" data-fleet-main-tab="operation" aria-pressed="false">運用情報</button>
+    <button type="button" class="fleet-panel-close" id="fleetOperationCloseBtn" aria-label="閉じる">×</button>
+  </div>
+  <div id="fleetOperationPanelContent" class="fleet-panel-content"></div>
+</div>
+
 <button id="railwayDiagramOpenBtn" type="button" aria-label="ダイヤグラムを表示" title="ダイヤグラムを表示">
   <svg viewBox="0 0 48 48" aria-hidden="true">
     <path class="diagram-icon-red" d="M14 43 L34 5" />
@@ -12768,6 +13011,307 @@ initRegionNavigation();
   window.showAnnouncementList=showAnnouncementList;
 })();
 </script>
+
+<script id="fleet-operation-panel-module">
+(function(){
+  'use strict';
+  const openButton=document.getElementById('fleetOperationOpenBtn');
+  const overlay=document.getElementById('fleetOperationOverlay');
+  const closeButton=document.getElementById('fleetOperationCloseBtn');
+  const content=document.getElementById('fleetOperationPanelContent');
+  if(!openButton||!overlay||!closeButton||!content) return;
+
+  let activeTab='train';
+  let activeType='*';
+  let previousHtmlOverflow='';
+  let previousBodyOverflow='';
+  let renderToken=0;
+
+  const escValue=value=>typeof esc==='function'?esc(value):String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const normalizeId=value=>String(value??'').trim().replace(/F$/i,'');
+  const currentSelectedDate=()=>{try{return String(selectedDateKey||'');}catch(e){return String(window.selectedDateKey||'');}};
+  const currentScheduleDay=()=>{try{return String(currentDay||'');}catch(e){return String(window.currentDay||'');}};
+  const currentRouteName=()=>{try{return String(activeRouteName||'');}catch(e){return String(window.activeRouteName||'');}};
+  const formationRemoteData=()=>{try{return formationRemoteByFamily||{};}catch(e){return window.formationRemoteByFamily||{};}};
+  const allScheduleTrainData=()=>{try{return Array.isArray(ALL_SCHEDULE_TRAINS)?ALL_SCHEDULE_TRAINS:[];}catch(e){return Array.isArray(window.ALL_SCHEDULE_TRAINS)?window.ALL_SCHEDULE_TRAINS:[];}};
+
+  function openPanel(){
+    previousHtmlOverflow=document.documentElement.style.overflow;
+    previousBodyOverflow=document.body.style.overflow;
+    document.documentElement.style.overflow='hidden';
+    document.body.style.overflow='hidden';
+    overlay.classList.add('active');
+    overlay.setAttribute('aria-hidden','false');
+    openButton.setAttribute('aria-expanded','true');
+    const dateInput=document.getElementById('fleetOperationDate');
+    if(dateInput) dateInput.value=currentSelectedDate();
+    render();
+  }
+  function closePanel(){
+    overlay.classList.remove('active');
+    overlay.setAttribute('aria-hidden','true');
+    openButton.setAttribute('aria-expanded','false');
+    document.documentElement.style.overflow=previousHtmlOverflow;
+    document.body.style.overflow=previousBodyOverflow;
+  }
+  function mainTabMarkup(){
+    return Array.from(overlay.querySelectorAll('[data-fleet-main-tab]'));
+  }
+  function setActiveTab(tab){
+    activeTab=tab==='operation'?'operation':'train';
+    mainTabMarkup().forEach(button=>{
+      const active=button.dataset.fleetMainTab===activeTab;
+      button.classList.toggle('active',active);
+      button.setAttribute('aria-pressed',active?'true':'false');
+    });
+    activeType='*';
+    render();
+  }
+
+  function allFormationItems(){
+    const groups=typeof formationDisplayGroups==='function'
+      ? formationDisplayGroups(Array.isArray(window.FORMATIONS)?window.FORMATIONS:FORMATIONS)
+      : (Array.isArray(window.FORMATIONS)?window.FORMATIONS:FORMATIONS||[]);
+    const items=[];
+    const seen=new Set();
+    const add=(raw,group,variant)=>{
+      if(!raw||typeof raw!=='object') return;
+      const id=normalizeId(raw.id||raw.formation||raw.name);
+      if(!id||seen.has(id)) return;
+      seen.add(id);
+      let resolved=null;
+      try{resolved=typeof formationById==='function'?formationById(id):null;}catch(e){}
+      const name=String(resolved?.name||raw.name||id).trim();
+      const type=String(group?.type||raw.type||raw.formationType||'その他').trim()||'その他';
+      const img=String(resolved?.img||raw.img||raw.image||group?.typeImg||'').trim();
+      items.push({id,name,type,img,variant:String(variant?.name||'').trim(),raw});
+    };
+    for(const group of (Array.isArray(groups)?groups:[])){
+      for(const variant of (Array.isArray(group?.variants)?group.variants:[])){
+        for(const item of (Array.isArray(variant?.items)?variant.items:[])) add(item,group,variant);
+      }
+      for(const item of (Array.isArray(group?.items)?group.items:[])) add(item,group,null);
+      // 旧JSONの編成がフラット形式の場合はgroup.itemsへ正規化済みだが、
+      // 念のため直接定義も拾う。
+      if(!Array.isArray(group?.items)&&!Array.isArray(group?.variants)&&(group?.formation||group?.id)) add(group,group,null);
+    }
+    return items;
+  }
+
+  function renderFormationTab(){
+    const token=++renderToken;
+    const items=allFormationItems();
+    const types=[...new Set(items.map(item=>item.type))];
+    if(activeType!=='*'&&!types.includes(activeType)) activeType='*';
+    const filters=[{label:'全形式',value:'*'},...types.map(type=>({label:type,value:type}))];
+    const shown=activeType==='*'?items:items.filter(item=>item.type===activeType);
+    const rows=shown.map(item=>{
+      let detail='';
+      try{
+        detail=typeof window.__renderFormationInfoForDiagram==='function'
+          ? window.__renderFormationInfoForDiagram({no:'',formation:item.id,routeName:currentRouteName(),direction:'',stops:[],__showAllServiceFeatures:true})
+          : '<div class="fleet-formation-empty">編成詳細を読み込めません。</div>';
+      }catch(error){
+        console.warn('編成詳細の描画に失敗しました',item.id,error);
+        detail='<div class="fleet-formation-empty">編成詳細を表示できません。</div>';
+      }
+      const image=item.img||((typeof jsonNoImageUrl==='function')?jsonNoImageUrl():'');
+      const subtitle=item.variant&&item.variant!==item.type?`${item.type}・${item.variant}`:item.type;
+      return `<article class="fleet-formation-unit" data-formation-id="${escValue(item.id)}">
+        <div class="fleet-formation-unit-head"><img src="${escValue(image)}" alt="${escValue(item.name)}" loading="lazy" onerror="this.onerror=null;this.src=(typeof jsonNoImageUrl==='function'?jsonNoImageUrl():'')"><div class="fleet-formation-unit-title"><strong>${escValue(item.name)}</strong><span>${escValue(subtitle)}</span></div></div>
+        <div class="fleet-formation-unit-detail">${detail||'<div class="fleet-formation-empty">車両情報は登録されていません。</div>'}</div>
+      </article>`;
+    }).join('');
+    content.innerHTML=`<div class="fleet-formation-filter" role="group" aria-label="形式の絞り込み">${filters.map(filter=>`<button type="button" data-fleet-type="${escValue(filter.value)}" class="${activeType===filter.value?'active':''}" aria-pressed="${activeType===filter.value?'true':'false'}">${escValue(filter.label)}</button>`).join('')}</div><div class="fleet-formation-list">${rows||'<div class="fleet-formation-empty">この路線に登録されている編成情報はありません。</div>'}</div>`;
+    content.querySelectorAll('[data-fleet-type]').forEach(button=>button.addEventListener('click',()=>{
+      activeType=String(button.dataset.fleetType||'*');
+      renderFormationTab();
+    }));
+    if(token===renderToken && typeof window.__initCarFeatureMarqueesForDiagram==='function'){
+      window.__initCarFeatureMarqueesForDiagram(content);
+    }
+  }
+
+  function getOwnFormation(train){
+    const no=String(train?.no||'').trim();
+    if(!no) return '';
+    let value='';
+    try{
+      if(typeof window.ownRegisteredFormationForTrainNo==='function') value=String(window.ownRegisteredFormationForTrainNo(train,no)||'').trim();
+    }catch(e){console.warn('編成登録情報の取得に失敗しました',no,e);}
+    if(!value){
+      try{
+        const family=typeof formationFamilyForTrain==='function'?formationFamilyForTrain(train):String(train?.formationFamily||'');
+        const context=typeof formationStorageContext==='function'?formationStorageContext(train):{};
+        const area=context?.area===null?'__ROOT__':String(context?.area||'__ROOT__');
+        const date=currentSelectedDate();
+        const stored=formationRemoteData()?.[family]?.areaStateByDate?.[date]?.[area]||{};
+        const direct=stored[no]||Object.entries(stored).find(([savedNo])=>typeof normalizeTrainNo==='function'?normalizeTrainNo(savedNo)===normalizeTrainNo(no):String(savedNo)===no)?.[1];
+        value=String(direct?.f||'').trim();
+      }catch(e){}
+    }
+    if(!value||value==='__INITIAL__'||(typeof window.isUnselectedFormationId==='function'&&window.isUnselectedFormationId(value))) return '';
+    return value;
+  }
+
+  function trainImageFor(train,formation){
+    const first=String(formation||'').split('+').map(x=>x.trim()).filter(Boolean)[0];
+    try{
+      const obj=first&&typeof selectionDisplayObject==='function'?selectionDisplayObject(first):null;
+      if(obj?.img) return obj.img;
+      if(typeof imageForTrain==='function') return imageForTrain(train);
+      if(typeof defaultTrainImage==='function') return defaultTrainImage(train);
+    }catch(e){}
+    return typeof jsonNoImageUrl==='function'?jsonNoImageUrl():'';
+  }
+
+  function serviceMinutes(value){
+    const raw=String(value||'').trim();
+    if(!raw) return Number.POSITIVE_INFINITY;
+    try{const n=timeToMinutes(raw);return Number.isFinite(n)?n:Number.POSITIVE_INFINITY;}catch(e){return Number.POSITIVE_INFINITY;}
+  }
+
+  function sourceTrainsForSelectedDay(){
+    try{
+      if(typeof trainsForScheduleDay==='function') return trainsForScheduleDay(currentScheduleDay()||'平日',currentSelectedDate());
+    }catch(e){console.warn('日付別列車データの取得に失敗しました',e);}
+    return allScheduleTrainData();
+  }
+
+  function operationItemsForTrain(train){
+    try{
+      if(typeof window.__operationChainForFleetPanel==='function'){
+        const result=window.__operationChainForFleetPanel(train);
+        return Array.isArray(result)?result:[];
+      }
+    }catch(error){console.warn('運用情報の組み立てに失敗しました',train?.no,error);}
+    const stops=Array.isArray(train?.stops)?train.stops:[];
+    return [{no:String(train?.no||''),type:String(train?.type||''),start:String(train?.start||stops[0]?.station||''),startTime:String(train?.startTime||stops[0]?.departure||stops[0]?.time||''),dest:String(train?.dest||stops[stops.length-1]?.station||''),endTime:String(train?.endTime||stops[stops.length-1]?.arrival||stops[stops.length-1]?.time||''),_sourceTrain:train}];
+  }
+
+  function operationCardHTML(entry,train){
+    const source=entry?._sourceTrain||train;
+    const start=String(entry?.start||'').trim();
+    const dest=String(entry?.dest||'').trim();
+    const rawType=String(entry?.type||source?.type||'普通').trim()||'普通';
+    let number=String(entry?.no||'').trim();
+    if(!number&&!source?.hideTrainNumber) number=String(source?.no||train?.no||'').trim();
+    if(source?.hideTrainNumber||source?.hasTrainNumber===false) number='';
+    let typeLabel=rawType;
+    try{if(typeof getOperationalTypeLabel==='function') typeLabel=getOperationalTypeLabel(rawType,number,source)||rawType;}catch(e){}
+    let appearance={background:'#666',color:'#fff',border:'1px solid transparent'};
+    try{
+      const colorTrain=source?{...source,type:rawType}: {no:number,type:rawType};
+      if(typeof typeBadgeAppearance==='function') appearance=typeBadgeAppearance(colorTrain,null,null,start);
+    }catch(e){}
+    const startTime=String(entry?.startTime||'').trim();
+    const endTime=String(entry?.endTime||'').trim();
+    const format=value=>typeof formatRailwayDisplayTime==='function'?formatRailwayDisplayTime(value):String(value||'');
+    return `<article class="fleet-operation-card" style="background:${escValue(appearance.background)};color:${escValue(appearance.color)};border:${escValue(appearance.border)}">
+      <div class="fleet-operation-card-head">${number?`<strong class="fleet-operation-number">${escValue(number)}</strong>`:''}<span class="fleet-operation-type">${escValue(typeLabel)}</span></div>
+      <div class="fleet-operation-route"><span class="fleet-operation-route-time">${escValue(format(startTime))}</span> ${escValue(start||'始発駅不明')}<span class="fleet-operation-arrow">→</span><span class="fleet-operation-route-time">${escValue(format(endTime))}</span> ${escValue(dest||'終着駅不明')}</div>
+    </article>`;
+  }
+
+  function renderOperationTab(){
+    const date=currentSelectedDate();
+    const mainDate=date||((typeof operationDateKey==='function')?operationDateKey():'');
+    const trains=sourceTrainsForSelectedDay();
+    const seen=new Set();
+    const records=[];
+    trains.forEach((train,index)=>{
+      if(!train) return;
+      const no=String(train.no||'').trim();
+      if(!no) return;
+      const key=[no,String(train.direction||''),String(train.routeName||''),String(train.startTime||'')].join('|');
+      if(seen.has(key)) return;
+      seen.add(key);
+      const formation=getOwnFormation(train);
+      const ops=operationItemsForTrain(train);
+      const dep=String(train.startTime||train.stops?.[0]?.departure||train.stops?.[0]?.time||'');
+      records.push({train,index,formation,ops,dep,assigned:!!formation});
+    });
+    // 編成登録済み列車は、編成入力候補の基礎となる時刻表データの並び順を維持する。
+    // 未登録列車はその後ろに始発時刻順でまとめる。
+    records.sort((a,b)=>{
+      if(a.assigned!==b.assigned) return a.assigned?-1:1;
+      if(a.assigned) return a.index-b.index;
+      const timeDiff=serviceMinutes(a.dep)-serviceMinutes(b.dep);
+      if(Number.isFinite(timeDiff)&&timeDiff!==0) return timeDiff;
+      const noA=String(a.train.no||''),noB=String(b.train.no||'');
+      return noA.localeCompare(noB,'ja',{numeric:true})||a.index-b.index;
+    });
+    const rows=records.map(record=>{
+      const train=record.train;
+      const formation=record.formation;
+      const image=trainImageFor(train,formation);
+      let formationLabel='編成未登録';
+      if(formation){
+        try{formationLabel=typeof formationDisplayHTML==='function'?formationDisplayHTML(formation):formation.split('+').map(x=>selectionDisplayObject(x)?.name||x).join(' ＋ ');}catch(e){formationLabel=formation;}
+      }
+      const opCards=(record.ops||[]).map(entry=>operationCardHTML(entry,train)).join('');
+      const fallback=opCards||'<div class="fleet-operation-no-run">運用情報なし</div>';
+      return `<section class="fleet-operation-row ${record.assigned?'has-formation':'no-formation'}">
+        <div class="fleet-operation-left"><img src="${escValue(image)}" alt="${escValue(formationLabel)}" loading="lazy" onerror="this.onerror=null;this.src=(typeof jsonNoImageUrl==='function'?jsonNoImageUrl():'')"><div class="fleet-operation-formation">${escValue(formationLabel.replace(/<[^>]*>/g,''))}${!record.assigned?'<br><span class="fleet-operation-unassigned">編成未入力</span>':''}</div></div>
+        <div class="fleet-operation-cards">${fallback}</div>
+      </section>`;
+    }).join('');
+
+    content.innerHTML=`<div class="fleet-operation-toolbar"><label for="fleetOperationDate">表示日</label><input class="fleet-operation-date" id="fleetOperationDate" type="date" value="${escValue(mainDate)}"><span class="fleet-operation-date-note">${escValue(currentScheduleDay())}ダイヤ・編成登録済み列車を先に表示</span></div><div class="fleet-operation-list">${rows||'<div class="fleet-operation-empty">この日付の列車・運用情報はありません。</div>'}</div>`;
+    const dateInput=document.getElementById('fleetOperationDate');
+    dateInput?.addEventListener('change',()=>{
+      const value=String(dateInput.value||'').trim();
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(value)) return;
+      const mainInput=document.getElementById('dateInput');
+      if(mainInput) mainInput.value=value;
+      try{
+        if(typeof setSelectedDate==='function') setSelectedDate(value);
+        else { try{selectedDateKey=value;}catch(e){window.selectedDateKey=value;} }
+      }catch(error){console.error('日付切替に失敗しました',error);}
+      content.innerHTML='<div class="fleet-operation-empty">選択した日付の時刻表を読み込み中…</div>';
+      renderToken++;
+      // 日付切替は時刻表JSONの再読込を伴う路線があるため、再読込完了イベントでも更新する。
+      setTimeout(()=>{if(overlay.classList.contains('active')&&activeTab==='operation') renderOperationTab();},450);
+      setTimeout(()=>{if(overlay.classList.contains('active')&&activeTab==='operation') renderOperationTab();},1200);
+    });
+  }
+
+  function render(){
+    if(!overlay.classList.contains('active')) return;
+    mainTabMarkup().forEach(button=>{
+      const active=button.dataset.fleetMainTab===activeTab;
+      button.classList.toggle('active',active);
+      button.setAttribute('aria-pressed',active?'true':'false');
+    });
+    if(activeTab==='operation') renderOperationTab();
+    else renderFormationTab();
+  }
+
+  // 日付再読込後に最新データで運用一覧を更新する。
+  const originalDateReload=window.reloadScheduleForSelectedDateIfNeeded;
+  if(typeof originalDateReload==='function'&&!originalDateReload.__fleetPanelWrapped){
+    const wrappedDateReload=function(...args){
+      const result=originalDateReload.apply(this,args);
+      if(result&&typeof result.then==='function'){
+        return result.finally(()=>{if(overlay.classList.contains('active')&&activeTab==='operation') renderOperationTab();});
+      }
+      if(overlay.classList.contains('active')&&activeTab==='operation') renderOperationTab();
+      return result;
+    };
+    wrappedDateReload.__fleetPanelWrapped=true;
+    window.reloadScheduleForSelectedDateIfNeeded=wrappedDateReload;
+  }
+
+  openButton.addEventListener('click',openPanel);
+  closeButton.addEventListener('click',closePanel);
+  overlay.querySelectorAll('[data-fleet-main-tab]').forEach(button=>button.addEventListener('click',()=>setActiveTab(button.dataset.fleetMainTab)));
+  document.addEventListener('keydown',event=>{
+    if(event.key==='Escape'&&overlay.classList.contains('active')) closePanel();
+  });
+  window.__refreshFleetOperationPanel=render;
+})();
+</script>
+
 </body>
 </html>
 
@@ -13373,6 +13917,8 @@ initRegionNavigation();
     }
     return expanded.length ? expanded : [{no:'',type:String(train?.type||''),start:String(train?.start||''),dest:String(train?.dest||''),startTime:String(train?.startTime||''),endTime:String(train?.endTime||''),_sourceTrain:train}];
   }
+  // 右下の独立した「列車・運用情報」パネルでも、既存の列番変更分割・運用連結処理を共用する。
+  window.__operationChainForFleetPanel=operationChainForCurrentTrain;
 
   /* 今日の運用だけで使用する駅名略称。停車駅案内・駅時刻表などには適用しない。
      JSON/路線設定に存在する代表的なキーを順に参照し、指定がなければ正式駅名をそのまま表示する。 */
@@ -14175,8 +14721,13 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
           const carPosition=i+1;
           const direction=String(train?.direction||'').trim();
           const day=String(currentDay||'').trim();
-          const womenByDirection=raw?.womenOnlyCarsByDirection&&typeof raw.womenOnlyCarsByDirection==='object'
+          const showAllServiceFeatures=train?.__showAllServiceFeatures===true;
+          let womenByDirection=raw?.womenOnlyCarsByDirection&&typeof raw.womenOnlyCarsByDirection==='object'
             ? (raw.womenOnlyCarsByDirection[direction]??raw.womenOnlyCarsByDirection[direction==='up'?'上り':direction==='down'?'下り':direction]) : null;
+          // 形式一覧では特定の列車・方向を選べないため、方向別設定は全方向分の位置を表示する。
+          if(showAllServiceFeatures&&raw?.womenOnlyCarsByDirection&&typeof raw.womenOnlyCarsByDirection==='object'){
+            womenByDirection=Object.values(raw.womenOnlyCarsByDirection).flatMap(value=>Array.isArray(value)?value:(value==null?[]:[value]));
+          }
           const womenOnlyCars=[
             ...(Array.isArray(raw?.womenOnlyCars)?raw.womenOnlyCars:[]),
             ...(Array.isArray(obj?.womenOnlyCars)?obj.womenOnlyCars:[]),
@@ -14186,7 +14737,7 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
           const womenDays=Array.isArray(raw?.womenOnlyDays)?raw.womenOnlyDays.map(String):[];
           let womenConditionPassed=true;
           const timeCondition=raw?.womenOnlyTimeCondition;
-          if(timeCondition&&typeof timeCondition==='object'){
+          if(timeCondition&&typeof timeCondition==='object'&&!showAllServiceFeatures){
             const target=String(timeCondition.station||'').trim();
             const stop=(Array.isArray(train?.stops)?train.stops:[]).find(s=>String(s?.station||'').trim()===target);
             const timeValue=String(stop?.[String(timeCondition.field||'time')]||stop?.arrival||stop?.departure||stop?.time||'').trim();
@@ -14194,11 +14745,11 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
             const nowMinutes=toMinutes(timeValue),fromMinutes=toMinutes(timeCondition.from||'00:00'),toMinutesValue=toMinutes(timeCondition.to||'23:59');
             womenConditionPassed=!!stop&&Number.isFinite(nowMinutes)&&nowMinutes>=fromMinutes&&nowMinutes<=toMinutesValue;
           }
-          const womenTypeAllowed=!womenTypes.length||womenTypes.includes(String(train?.type||''));
-          const womenDayAllowed=!womenDays.length||womenDays.includes(day);
+          const womenTypeAllowed=showAllServiceFeatures||!womenTypes.length||womenTypes.includes(String(train?.type||''));
+          const womenDayAllowed=showAllServiceFeatures||!womenDays.length||womenDays.includes(day);
           const womenTrainNumbers=Array.isArray(raw?.womenOnlyTrainNumbers)?raw.womenOnlyTrainNumbers.map(x=>String(x||'').trim()).filter(Boolean):[];
           const currentTrainNumber=String(train?.no??train?.trainNo??'').trim();
-          const womenTrainAllowed=!womenTrainNumbers.length||womenTrainNumbers.includes(currentTrainNumber);
+          const womenTrainAllowed=showAllServiceFeatures||!womenTrainNumbers.length||womenTrainNumbers.includes(currentTrainNumber);
           const isWomenOnly=womenConditionPassed&&womenTypeAllowed&&womenDayAllowed&&womenTrainAllowed&&womenOnlyCars.some(n=>Number(n)===carPosition);
           const weakCoolingCars=[
             ...(Array.isArray(raw?.weakCoolingCars)?raw.weakCoolingCars:[]),
