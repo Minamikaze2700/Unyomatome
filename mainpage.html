@@ -1512,6 +1512,35 @@ const ROUTE_REGISTRY={
     prescribedFormationRule:'common',
     access:{public:false,routeAdmins:[]},
   },
+
+  '京急本線・空港線・逗子線・久里浜線':{
+    id:'keikyu-main',
+    jsonLines:['京急本線','空港線','逗子線','久里浜線'],
+    range:'泉岳寺～浦賀・羽田空港・逗子・葉山・三崎口',
+    area:'京急',
+    storageRoot:'京急',
+    storageArea:null,
+    company:'京急',
+    diagramTopology:'multi-junction',
+    formationFamily:'keikyu',
+    maxFormationCoupling:2,
+    prescribedFormationRule:'common',
+    disableCrossDayTrainFallback:true,
+    access:{public:false,routeAdmins:[]},
+  },
+  '京急大師線':{
+    id:'keikyu-daishi',
+    jsonLines:['京急大師線'],
+    range:'京急川崎～小島新田',
+    area:'京急',
+    storageRoot:'京急',
+    storageArea:null,
+    company:'京急',
+    formationFamily:'keikyu',
+    prescribedFormationRule:'common',
+    disableCrossDayTrainFallback:true,
+    access:{public:false,routeAdmins:[]},
+  },
 };
 // 旧名称を参照する既存処理向けの互換エイリアス（登録名一覧には表示しない）。
 const LEGACY_ROUTE_NAME_ALIASES=Object.freeze({"山陽本線（糸崎～岩国）": "山陽本線（糸崎～岩国）", "可部線": "可部線", "呉線": "呉線", "海岸線": "神戸市営地下鉄海岸線", "西神・山手線": "神戸市営地下鉄西神・山手線", "南海泉北線": "南海電気鉄道泉北線", "京浜東北・根岸線": "京浜東北・根岸線", "横浜線": "横浜線", "南武線": "南武線", "内房線": "内房線", "大阪環状線": "大阪環状線", "ゆめ咲線": "ゆめ咲線", "日比谷線": "東京メトロ日比谷線", "空港線・箱崎線": "福岡市地下鉄空港線・箱崎線", "七隈線": "福岡市地下鉄七隈線", "東武野田線": "東武鉄道アーバンパークライン", "東武スカイツリーライン": "東武鉄道スカイツリーライン", "水島臨海鉄道": "水島臨海鉄道", "長野電鉄長野線": "長野電鉄長野線", "関西本線（名古屋～亀山）": "関西本線（名古屋～亀山）", "御殿場線": "御殿場線", "樽見鉄道樽見線": "樽見鉄道樽見線", "しなの鉄道線（篠ノ井～軽井沢）": "しなの鉄道線（篠ノ井～軽井沢）", "北しなの線（豊野～妙高高原）": "しなの鉄道北しなの線（豊野～妙高高原）", "勝山永平寺線": "えちぜん鉄道勝山永平寺線", "三国芦原線": "えちぜん鉄道三国芦原線"});
@@ -1586,7 +1615,13 @@ const ROUTE_SCHEDULE_CONFIG={
   ],
   'しなの鉄道北しなの線（豊野～妙高高原）':[
     {from:'2026-03-14',to:'2027-03-13',file:'Shinano_2026.json'}
-  ]
+  ],
+  '京急本線・空港線・逗子線・久里浜線':[
+    {from:'2025-12-13',to:'2026-11-20',file:'Keikyu_2025.json'}
+  ],
+  '京急大師線':[
+    {from:'2025-12-13',to:'2026-11-20',file:'Keikyu_2025.json'}
+  ],
 };
 const ROUTE_DATA_BASE_URL='https://minamikaze2700.github.io/Unyomatome/data/';
 for(const [routeName,periods] of Object.entries(ROUTE_SCHEDULE_CONFIG)){
@@ -6776,6 +6811,12 @@ const REGION_DEFINITIONS={
     company:'東京メトロ',
     routes:[
       {name:'東京メトロ日比谷線',id:'hibiya'}
+    ]
+  },{
+    company:'京急',
+    routes:[
+      {name:'京急本線・空港線・逗子線・久里浜線',id:'keikyu-main'},
+      {name:'京急大師線',id:'keikyu-daishi'}
     ]
   },{
     company:'東武鉄道',
@@ -13785,7 +13826,10 @@ function renderSingleFormationOperationHistory(train, visibility={}, targetForma
           }
           const womenTypeAllowed=!womenTypes.length||womenTypes.includes(String(train?.type||''));
           const womenDayAllowed=!womenDays.length||womenDays.includes(day);
-          const isWomenOnly=womenConditionPassed&&womenTypeAllowed&&womenDayAllowed&&womenOnlyCars.some(n=>Number(n)===carPosition);
+          const womenTrainNumbers=Array.isArray(raw?.womenOnlyTrainNumbers)?raw.womenOnlyTrainNumbers.map(x=>String(x||'').trim()).filter(Boolean):[];
+          const currentTrainNumber=String(train?.no??train?.trainNo??'').trim();
+          const womenTrainAllowed=!womenTrainNumbers.length||womenTrainNumbers.includes(currentTrainNumber);
+          const isWomenOnly=womenConditionPassed&&womenTypeAllowed&&womenDayAllowed&&womenTrainAllowed&&womenOnlyCars.some(n=>Number(n)===carPosition);
           const weakCoolingCars=[
             ...(Array.isArray(raw?.weakCoolingCars)?raw.weakCoolingCars:[]),
             ...(Array.isArray(obj?.weakCoolingCars)?obj.weakCoolingCars:[])
