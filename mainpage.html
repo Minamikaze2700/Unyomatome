@@ -1574,37 +1574,40 @@ const ROUTE_REGISTRY={
     access:{public:false,routeAdmins:[]},
   },
 
-  '京急本線・空港線・逗子線・久里浜線':{
+  '京急電鉄本線':{
     id:'keikyu-main',
     jsonLines:['京急本線','空港線','逗子線','久里浜線'],
+    sharedJsonRouteName:'京急本線・空港線・逗子線・久里浜線',
     range:'泉岳寺～浦賀・羽田空港・逗子・葉山・三崎口',
-    area:'京急',
+    area:'京急電鉄',
+    // Firebaseの既存運用データを引き継ぐため保存先のキー「京急」は維持する。
     storageRoot:'京急',
     storageArea:null,
-    company:'京急',
+    company:'京急電鉄',
     diagramTopology:'multi-junction',
     formationFamily:'keikyu',
     maxFormationCoupling:2,
     prescribedFormationRule:'common',
     disableCrossDayTrainFallback:true,
-    access:{public:true,routeAdmins:[]},
+    access:{public:false,routeAdmins:[]},
   },
-  '京急大師線':{
+  '京急電鉄大師線':{
     id:'keikyu-daishi',
     jsonLines:['京急大師線'],
+    sharedJsonRouteName:'京急大師線',
     range:'京急川崎～小島新田',
-    area:'京急',
+    area:'京急電鉄',
     storageRoot:'京急',
     storageArea:null,
-    company:'京急',
+    company:'京急電鉄',
     formationFamily:'keikyu',
     prescribedFormationRule:'common',
     disableCrossDayTrainFallback:true,
-    access:{public:true,routeAdmins:[]},
+    access:{public:false,routeAdmins:[]},
   },
 };
 // 旧名称を参照する既存処理向けの互換エイリアス（登録名一覧には表示しない）。
-const LEGACY_ROUTE_NAME_ALIASES=Object.freeze({"山陽本線（糸崎～岩国）": "山陽本線（糸崎～岩国）", "可部線": "可部線", "呉線": "呉線", "海岸線": "神戸市営地下鉄海岸線", "西神・山手線": "神戸市営地下鉄西神・山手線", "南海泉北線": "南海電気鉄道泉北線", "京浜東北・根岸線": "京浜東北・根岸線", "横浜線": "横浜線", "南武線": "南武線", "内房線": "内房線", "大阪環状線": "大阪環状線", "ゆめ咲線": "ゆめ咲線", "日比谷線": "東京メトロ日比谷線", "空港線・箱崎線": "福岡市地下鉄空港線・箱崎線", "七隈線": "福岡市地下鉄七隈線", "東武野田線": "東武鉄道アーバンパークライン", "東武スカイツリーライン": "東武鉄道スカイツリーライン", "水島臨海鉄道": "水島臨海鉄道", "長野電鉄長野線": "長野電鉄長野線", "関西本線（名古屋～亀山）": "関西本線（名古屋～亀山）", "御殿場線": "御殿場線", "樽見鉄道樽見線": "樽見鉄道樽見線", "しなの鉄道線（篠ノ井～軽井沢）": "しなの鉄道線（篠ノ井～軽井沢）", "北しなの線（豊野～妙高高原）": "しなの鉄道北しなの線（豊野～妙高高原）", "勝山永平寺線": "えちぜん鉄道勝山永平寺線", "三国芦原線": "えちぜん鉄道三国芦原線"});
+const LEGACY_ROUTE_NAME_ALIASES=Object.freeze({"山陽本線（糸崎～岩国）": "山陽本線（糸崎～岩国）", "可部線": "可部線", "呉線": "呉線", "海岸線": "神戸市営地下鉄海岸線", "西神・山手線": "神戸市営地下鉄西神・山手線", "南海泉北線": "南海電気鉄道泉北線", "京浜東北・根岸線": "京浜東北・根岸線", "横浜線": "横浜線", "南武線": "南武線", "内房線": "内房線", "大阪環状線": "大阪環状線", "ゆめ咲線": "ゆめ咲線", "日比谷線": "東京メトロ日比谷線", "空港線・箱崎線": "福岡市地下鉄空港線・箱崎線", "七隈線": "福岡市地下鉄七隈線", "東武野田線": "東武鉄道アーバンパークライン", "東武スカイツリーライン": "東武鉄道スカイツリーライン", "水島臨海鉄道": "水島臨海鉄道", "長野電鉄長野線": "長野電鉄長野線", "関西本線（名古屋～亀山）": "関西本線（名古屋～亀山）", "御殿場線": "御殿場線", "樽見鉄道樽見線": "樽見鉄道樽見線", "しなの鉄道線（篠ノ井～軽井沢）": "しなの鉄道線（篠ノ井～軽井沢）", "北しなの線（豊野～妙高高原）": "しなの鉄道北しなの線（豊野～妙高高原）", "勝山永平寺線": "えちぜん鉄道勝山永平寺線", "三国芦原線": "えちぜん鉄道三国芦原線", "京急本線・空港線・逗子線・久里浜線": "京急電鉄本線", "京急大師線": "京急電鉄大師線"});
 for(const [legacyName,registeredName] of Object.entries(LEGACY_ROUTE_NAME_ALIASES)){ if(legacyName!==registeredName && ROUTE_REGISTRY[registeredName]) Object.defineProperty(ROUTE_REGISTRY,legacyName,{configurable:true,enumerable:false,get(){return ROUTE_REGISTRY[registeredName];}}); }
 
 
@@ -1677,10 +1680,10 @@ const ROUTE_SCHEDULE_CONFIG={
   'しなの鉄道北しなの線（豊野～妙高高原）':[
     {from:'2026-03-14',to:'2027-03-13',file:'Shinano_2026.json'}
   ],
-  '京急本線・空港線・逗子線・久里浜線':[
+  '京急電鉄本線':[
     {from:'2025-12-13',to:'2026-11-20',file:'Keikyu_2025.json'}
   ],
-  '京急大師線':[
+  '京急電鉄大師線':[
     {from:'2025-12-13',to:'2026-11-20',file:'Keikyu_2025.json'}
   ],
 };
@@ -2909,6 +2912,7 @@ async function loadExternalRouteJsons(routeMeta){
     if(rawJson && typeof rawJson==='object' && rawJson.routes && typeof rawJson.routes==='object' && !Array.isArray(rawJson.routes)){
       const candidates=[
         String(activeRouteName||'').trim(),
+        String(routeMeta?.sharedJsonRouteName||'').trim(),
         ...(Array.isArray(routeMeta?.jsonLines)?routeMeta.jsonLines.map(x=>String(x||'').trim()):[])
       ].filter(Boolean);
       for(const key of candidates){
@@ -6954,10 +6958,10 @@ const REGION_DEFINITIONS={
       {name:'東京メトロ日比谷線',id:'hibiya'}
     ]
   },{
-    company:'京急',
+    company:'京急電鉄',
     routes:[
-      {name:'京急本線・空港線・逗子線・久里浜線',id:'keikyu-main'},
-      {name:'京急大師線',id:'keikyu-daishi'}
+      {name:'京急電鉄本線',id:'keikyu-main'},
+      {name:'京急電鉄大師線',id:'keikyu-daishi'}
     ]
   },{
     company:'東武鉄道',
@@ -12555,8 +12559,8 @@ initRegionNavigation();
 <script id="private-announcements-feature">
 (function(){
   'use strict';
-  const ROOT='運用/お知らせ';
-  const READ_ROOT='運用/お知らせ既読';
+  const ROOT='お知らせ';
+  const READ_ROOT='お知らせ既読';
   let signedInUser=null;
   let announcements=[];
   let readMap={};
@@ -15147,31 +15151,31 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     }),
     // JR東日本。別線区の駅名が異なる接続は station に接続先駅名を指定する。
     '京浜東北・根岸線':Object.freeze({
-      '品川':[{route:'京急本線・空港線・逗子線・久里浜線',station:'品川'}],
-      '東神奈川':['横浜線',{route:'京急本線・空港線・逗子線・久里浜線',station:'京急東神奈川'}],
-      '川崎':['南武線',{route:'京急本線・空港線・逗子線・久里浜線',station:'京急川崎'},{route:'京急大師線',station:'京急川崎'}],
-      '新子安':[{route:'京急本線・空港線・逗子線・久里浜線',station:'京急新子安'}],
-      '横浜':[{route:'京急本線・空港線・逗子線・久里浜線',station:'横浜'},'横浜線'],
+      '品川':[{route:'京急電鉄本線',station:'品川'}],
+      '東神奈川':['横浜線',{route:'京急電鉄本線',station:'京急東神奈川'}],
+      '川崎':['南武線',{route:'京急電鉄本線',station:'京急川崎'},{route:'京急電鉄大師線',station:'京急川崎'}],
+      '新子安':[{route:'京急電鉄本線',station:'京急新子安'}],
+      '横浜':[{route:'京急電鉄本線',station:'横浜'},'横浜線'],
       '大宮':['東武鉄道アーバンパークライン'],
       '上野':['東京メトロ日比谷線'],
       '秋葉原':['東京メトロ日比谷線']
     }),
     '横浜線':Object.freeze({
-      '東神奈川':['京浜東北・根岸線',{route:'京急本線・空港線・逗子線・久里浜線',station:'京急東神奈川'}],
-      '横浜':[{route:'京急本線・空港線・逗子線・久里浜線',station:'横浜'}]
+      '東神奈川':['京浜東北・根岸線',{route:'京急電鉄本線',station:'京急東神奈川'}],
+      '横浜':[{route:'京急電鉄本線',station:'横浜'}]
     }),
     '南武線':Object.freeze({
-      '川崎':['京浜東北・根岸線',{route:'京急本線・空港線・逗子線・久里浜線',station:'京急川崎'},{route:'京急大師線',station:'京急川崎'}]
+      '川崎':['京浜東北・根岸線',{route:'京急電鉄本線',station:'京急川崎'},{route:'京急電鉄大師線',station:'京急川崎'}]
     }),
-    '京急本線・空港線・逗子線・久里浜線':Object.freeze({
+    '京急電鉄本線':Object.freeze({
       '品川':['京浜東北・根岸線'],
-      '京急川崎':[{route:'南武線',station:'川崎'},'京急大師線'],
+      '京急川崎':[{route:'南武線',station:'川崎'},'京急電鉄大師線'],
       '京急新子安':[{route:'京浜東北・根岸線',station:'新子安'}],
       '京急東神奈川':[{route:'京浜東北・根岸線',station:'東神奈川'},{route:'横浜線',station:'東神奈川'}],
       '横浜':['京浜東北・根岸線','横浜線']
     }),
-    '京急大師線':Object.freeze({
-      '京急川崎':[{route:'南武線',station:'川崎'},'京急本線・空港線・逗子線・久里浜線']
+    '京急電鉄大師線':Object.freeze({
+      '京急川崎':[{route:'南武線',station:'川崎'},'京急電鉄本線']
     }),
     // 東武鉄道。分岐表示中の駅も対象にする。
     // 北千住には日比谷線を登録しない。
