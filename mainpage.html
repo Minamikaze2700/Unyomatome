@@ -679,6 +679,9 @@ button,input,select,textarea{font-family:inherit}
 #operationInfoBtn{position:fixed;right:80px;left:auto;top:10px;appearance:none;border:0;border-radius:999px;background:#fff;color:var(--control-accent,#808080);padding:8px 17px;font:700 16px/1 inherit;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.18);white-space:nowrap;z-index:1001}#operationInfoBtn:disabled{cursor:default;opacity:1;box-shadow:0 2px 6px rgba(0,0,0,.18)}
 #siteMenuBtn{position:fixed;right:2px;top:0;width:88px;height:58px;appearance:none;border:0;border-radius:0;background:transparent;color:#fff;padding:0;font:900 30px/.72 Arial,sans-serif;cursor:pointer;z-index:1001;display:inline-flex;align-items:center;justify-content:center;line-height:.62;text-shadow:0 1px 3px rgba(0,0,0,.25);transform:scale(1.0);transform-origin:center}
 #siteMenuBtn:hover{filter:brightness(.9)}
+#siteMenuBtn .announcement-unread-count{position:absolute;top:3px;right:5px;display:inline-flex;align-items:center;justify-content:center;gap:3px;min-width:20px;height:19px;padding:0 5px;border:1px solid #fff;border-radius:999px;background:#d32f2f;color:#fff;font:900 11px/1 Arial,sans-serif;line-height:1;text-shadow:none;box-shadow:0 1px 3px rgba(0,0,0,.25);white-space:nowrap;z-index:2}
+#siteMenuBtn .announcement-unread-count::before{content:"●";font-size:8px}
+#siteMenuBtn .announcement-unread-count[hidden]{display:none!important}
 .site-menu-backdrop,.auth-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.32);z-index:1600;display:none}
 .site-menu-backdrop.active,.auth-backdrop.active{display:block}
 .site-menu-panel{position:fixed;right:14px;top:66px;width:min(320px,calc(100vw - 28px));background:#fff;border-radius:14px;box-shadow:0 10px 32px rgba(0,0,0,.28);z-index:1601;display:none;overflow:hidden}
@@ -1057,7 +1060,7 @@ body{padding-bottom:42px !important;}
 </head>
 <body>
 
-<h1 id="title"><span id="titleText">運用まとめ</span><button id="operationInfoBtn" type="button" onclick="openOperationInfo()" aria-label="運行情報：平常運転" aria-disabled="false" title="運行情報を表示"><span class="operation-info-prefix">運行情報：</span><span id="operationInfoStatusText" class="operation-info-status-text">平常運転</span></button><button id="siteMenuBtn" type="button" onclick="toggleSiteMenu(event)" aria-label="メニュー" aria-expanded="false">☰</button></h1>
+<h1 id="title"><span id="titleText">運用まとめ</span><button id="operationInfoBtn" type="button" onclick="openOperationInfo()" aria-label="運行情報：平常運転" aria-disabled="false" title="運行情報を表示"><span class="operation-info-prefix">運行情報：</span><span id="operationInfoStatusText" class="operation-info-status-text">平常運転</span></button><button id="siteMenuBtn" type="button" onclick="toggleSiteMenu(event)" aria-label="メニュー" aria-expanded="false">☰<span id="announcementUnreadCount" class="announcement-unread-count" hidden aria-label="未読件数">0</span></button></h1>
 <div class="control-bar">
   <div class="day-filter">
     <input id="dateInput" class="date-input" type="date">
@@ -1100,7 +1103,6 @@ body{padding-bottom:42px !important;}
     <button id="siteAccountBtn" class="site-menu-item primary" type="button" onclick="openAccountFromMenu()">ログイン</button>
     <div class="site-menu-announcement-row">
       <button id="siteAnnouncementsBtn" class="site-menu-item" type="button" onclick="openAnnouncementsFromMenu()">お知らせ</button>
-      <span id="announcementUnreadCount" class="announcement-unread-count" hidden aria-label="未読件数">0</span>
     </div>
   </div>
 </div>
