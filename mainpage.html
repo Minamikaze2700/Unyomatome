@@ -1990,12 +1990,13 @@ function branchFadeGradient(color,direction='to bottom'){
 function branchBlendGradient(fromColor,toColor,direction='to bottom'){
   const from=String(fromColor||'#666').trim();
   const to=String(toColor||'#666').trim();
-  // 同色の場合に白い帯を挿入すると、路線色が途中で変色して見えるため、
-  // 同じ色を維持する。フェードが必要な接続は branchFadeGradient で処理する。
+  // 接続元・接続先の路線色が同じでも、接続区間そのものを省略しない。
+  // 東武の「中目黒→牛田」と同様に、分岐終点側を透明、本線側を不透明にする。
+  // 白い帯は挿入せず、同じ路線色のアルファだけを滑らかに変化させる。
   if(from.toLowerCase()===to.toLowerCase()){
-    return `linear-gradient(${direction},${from} 0%,${to} 100%)`;
+    return branchFadeGradient(from,direction);
   }
-  // 色の切替位置を固定した帯状表示ではなく、区間全体で滑らかに補間する。
+  // 色が異なる場合は、接続区間全体で分岐線色から本線色へ滑らかに補間する。
   return `linear-gradient(${direction},${from} 0%,${to} 100%)`;
 }
 function commonBranchSegmentEffect(a,b,json=activeJson,meta=activeRouteMeta){
