@@ -1976,32 +1976,22 @@ function createCommonBranchToggleButton({label,color,isOpen,onToggle,position='b
 function branchFadeGradient(color,direction='to bottom'){
   const value=String(color||'#666').trim();
   const hex=value.match(/^#?([0-9a-f]{6})$/i);
-  if(!hex) return `linear-gradient(${direction},${value} 0%,transparent 50%,transparent 100%)`;
+  if(!hex) return `linear-gradient(${direction},${value} 0%,transparent 100%)`;
   const rgb=parseInt(hex[1],16);
   const r=(rgb>>16)&255,g=(rgb>>8)&255,b=rgb&255;
-  return `linear-gradient(${direction},rgba(${r},${g},${b},1) 0%,rgba(${r},${g},${b},0) 50%,rgba(${r},${g},${b},0) 100%)`;
+  // 半分の位置で透明に切り替わる段差をなくし、線の端まで滑らかにフェードさせる。
+  return `linear-gradient(${direction},rgba(${r},${g},${b},1) 0%,rgba(${r},${g},${b},0) 100%)`;
 }
 function branchBlendGradient(fromColor,toColor,direction='to bottom'){
   const from=String(fromColor||'#666').trim();
   const to=String(toColor||'#666').trim();
-  // 京急のように分岐線・本線が同じ路線色の場合、同色同士の補間は単色になり
-  // グラデーションが見えなくなる。中間だけ同じ色を少し白方向へ寄せて、
-  // 色を変えずに分岐線から本線へつながるグラデーションを視認できるようにする。
+  // 同色の場合に白い帯を挿入すると、路線色が途中で変色して見えるため、
+  // 同じ色を維持する。フェードが必要な接続は branchFadeGradient で処理する。
   if(from.toLowerCase()===to.toLowerCase()){
-    const hex=from.match(/^#?([0-9a-f]{6})$/i);
-    let middle;
-    if(hex){
-      const value=parseInt(hex[1],16);
-      const mix=channel=>Math.round(channel+(255-channel)*0.42);
-      const r=mix((value>>16)&255),g=mix((value>>8)&255),b=mix(value&255);
-      middle='#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
-    }else{
-      middle=`color-mix(in srgb,${from} 58%,#fff 42%)`;
-    }
-    return `linear-gradient(${direction},${from} 0%,${from} 28%,${middle} 50%,${to} 72%,${to} 100%)`;
+    return `linear-gradient(${direction},${from} 0%,${to} 100%)`;
   }
-  // 異なる路線色は、駅間の前半を分岐線、後半を本線として連続的に補間する。
-  return `linear-gradient(${direction},${from} 0%,${from} 28%,${to} 72%,${to} 100%)`;
+  // 色の切替位置を固定した帯状表示ではなく、区間全体で滑らかに補間する。
+  return `linear-gradient(${direction},${from} 0%,${to} 100%)`;
 }
 function commonBranchSegmentEffect(a,b,json=activeJson,meta=activeRouteMeta){
   const aa=String(a||''),bb=String(b||'');
@@ -5206,7 +5196,74 @@ function multiJunctionBranchTransitPositionForTrain(train,stops,minutes,rawDirec
     for(let i=0;i<stops.length;i++){
       if(branchSet.has(String(stops[i]?.station||''))) branchIndexes.push(i);
     }
-    if(!branchIndexes.length) continue;
+    if(!branchIndexes.length){
+      // 分岐線内に停車しない列車も、分岐をまたぐ本線駅間を検出する。
+      // 分岐線を閉じていた場合の本線座標で分岐前を描き、
+      // 分岐通過時点から分岐駅数ぶん下へずらした座標で分岐後を描く。
+      const anchorIndex=main.indexOf(def.anchor);
+      if(anchorIndex<0) continue;
+      const crossFromIndex=def.insert==='before'?anchorIndex-1:anchorIndex;
+      const crossToIndex=crossFromIndex+1;
+      if(crossFromIndex<0||crossToIndex>=main.length) continue;
+      const branchOffset=def.stations.length;
+      const baseMainlinePosition=name=>{
+        const mainIndex=main.indexOf(String(name||''));
+        const currentIndex=stationIndex(String(name||''));
+        if(mainIndex<0||currentIndex<0) return -1;
+        const shiftedSide=def.insert==='before'
+          ? mainIndex>=anchorIndex
+          : mainIndex>anchorIndex;
+        return currentIndex-(shiftedSide?branchOffset:0);
+      };
+      for(let i=0;i<stops.length-1;i++){
+        const fromName=String(stops[i]?.station||'');
+        const toName=String(stops[i+1]?.station||'');
+        const fromMainIndex=main.indexOf(fromName);
+        const toMainIndex=main.indexOf(toName);
+        if(fromMainIndex<0||toMainIndex<0||fromMainIndex===toMainIndex) continue;
+        const lo=Math.min(fromMainIndex,toMainIndex),hi=Math.max(fromMainIndex,toMainIndex);
+        if(!(lo<=crossFromIndex&&hi>=crossToIndex)) continue;
+        const fromMinute=Number(stops[i]?._departure)+0.75;
+        const toMinute=Number(stops[i+1]?._arrival)+0.25;
+        if(!Number.isFinite(fromMinute)||!Number.isFinite(toMinute)||toMinute<=fromMinute) continue;
+        if(minutes<fromMinute||minutes>toMinute) continue;
+
+        const span=toMainIndex-fromMainIndex;
+        const crossingRatio=(crossToIndex-fromMainIndex)/span;
+        const crossingMinute=fromMinute+(toMinute-fromMinute)*crossingRatio;
+        const timeRatio=(minutes-fromMinute)/(toMinute-fromMinute);
+        const fromPos=stationIndex(fromName);
+        const toPos=stationIndex(toName);
+        if(fromPos<0||toPos<0) continue;
+        const boundaryBase=crossToIndex;
+        const isShifted=name=>{
+          const idx=main.indexOf(String(name||''));
+          return idx>=0 && (def.insert==='before'?idx>=anchorIndex:idx>anchorIndex);
+        };
+        const beforeBoundary=boundaryBase+(isShifted(fromName)?branchOffset:0);
+        const afterBoundary=boundaryBase+(isShifted(toName)?branchOffset:0);
+        let pos;
+        if(minutes<crossingMinute){
+          const localRatio=(minutes-fromMinute)/(crossingMinute-fromMinute||1);
+          pos=fromPos+(beforeBoundary-fromPos)*Math.max(0,Math.min(1,localRatio));
+        }else{
+          const localRatio=(minutes-crossingMinute)/(toMinute-crossingMinute||1);
+          pos=afterBoundary+(toPos-afterBoundary)*Math.max(0,Math.min(1,localRatio));
+        }
+        return {
+          pos,
+          side:trainSideForStationPair(fromName,toName,rawDirection),
+          visualTrain:train,
+          mode:minutes<crossingMinute?'branch-mainline-before':'branch-mainline-after',
+          projectedMainline:true,
+          branchSkippedStops:true,
+          mainlineFrom:fromName,
+          mainlineTo:toName,
+          mainlineRatio:timeRatio
+        };
+      }
+      continue;
+    }
 
     // 同じ分岐線上の連続停車駅をひとまとまりの「分岐通過」として扱う。
     const blocks=[];
@@ -5302,13 +5359,17 @@ function multiJunctionBranchTransitPositionForTrain(train,stops,minutes,rawDirec
           : mainIndex>anchorMainIndex;
         return currentIndex-(shiftedSide?branchOffset:0);
       };
-      const beforeJunctionPos=baseMainlinePosition(def.anchor);
-      const afterJunctionPos=beforeJunctionPos+branchOffset;
+      const baseAnchorPos=baseMainlinePosition(def.anchor);
+      const isShiftedMainStation=name=>{
+        const idx=main.indexOf(String(name||''));
+        return idx>=0 && (def.insert==='before'?idx>=anchorMainIndex:idx>anchorMainIndex);
+      };
+      const beforeJunctionPos=baseAnchorPos+(prevStop&&isShiftedMainStation(prevName)?branchOffset:0);
+      const afterJunctionPos=baseAnchorPos+(nextStop&&isShiftedMainStation(nextName)?branchOffset:0);
 
       const interpolate=(from,to,ratio)=>from+(to-from)*Math.max(0,Math.min(1,ratio));
-      const prevPos=prevStop?baseMainlinePosition(prevName):-1;
-      const nextBasePos=nextStop?baseMainlinePosition(nextName):-1;
-      const nextPos=nextStop&&nextBasePos>=0?nextBasePos+branchOffset:-1;
+      const prevPos=prevStop?stationIndex(prevName):-1;
+      const nextPos=nextStop?stationIndex(nextName):-1;
 
       // 分岐線へ入る前：分岐線を開く前と同じ本線位置を維持する。
       if(prevStop && Number.isFinite(Number(prevStop._departure))){
