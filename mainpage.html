@@ -2023,10 +2023,10 @@ function commonBranchSegmentEffect(a,b,json=activeJson,meta=activeRouteMeta){
       for(const item of fades){
         if(String(item?.branch||'')!==key) continue;
         const from=String(item?.from||''),to=String(item?.to||'');
-        // direction は路線図上の進行方向。up は上向き分岐の fade-down、
-        // down は下向き分岐の fade-up に相当するよう、CSSグラデーションを反転する。
+        // 分岐側(from)では透明、接続側(to)へ向かって不透明になる向きにする。
+        // JSON の up/down は路線図上の分岐方向なので、CSS の向きは従来設定から反転。
         const branchDirection=String(item?.direction||'down').toLowerCase();
-        const forwardGradient=branchDirection==='up'?'to bottom':'to top';
+        const forwardGradient=branchDirection==='up'?'to top':'to bottom';
         const reverseGradient=forwardGradient==='to top'?'to bottom':'to top';
         const color=String(lineDefByName(item?.useLine)?.color||item?.color||'#666');
         if(aa===from&&bb===to) return {kind:'fade',from,to,color,direction:forwardGradient};
@@ -2327,17 +2327,37 @@ function multiJunctionStationNeighbors(stationName,json=activeJson,meta=activeRo
     // フェード色が不透明になる側の駅に、境界で使う路線色を割り当てる。
     // to top は画面下端側（effect.to）、to bottom は画面上端側（effect.from）が不透明側。
     if(effect?.kind==='fade'){
+      // 分岐の直前にある本線駅（insert=before）／直後にある本線駅
+      // （insert=after）は、フェード方向のCSS解釈に左右されず、
+      // 分岐接続に指定された色を駅名標にも使う。
+      // solidStation だけで判定すると、上方向の分岐では接続駅が
+      // 透明側と誤認され、本線の基本色へフォールバックする場合がある。
+      const mainSideJoin=defs.find(def=>{
+        const anchorIndex=main.indexOf(def.anchor);
+        if(anchorIndex<0) return false;
+        const mainNeighbor=def.insert==='before'?main[anchorIndex-1]:main[anchorIndex+1];
+        const branchTerminal=def.insert==='before'
+          ? def.stations[0]
+          : def.stations[def.stations.length-1];
+        if(!mainNeighbor||!branchTerminal) return false;
+        return (String(a)===String(mainNeighbor)&&String(b)===String(branchTerminal))
+          || (String(b)===String(mainNeighbor)&&String(a)===String(branchTerminal));
+      });
+      if(mainSideJoin){
+        const anchorIndex=main.indexOf(mainSideJoin.anchor);
+        const mainNeighbor=mainSideJoin.insert==='before'?main[anchorIndex-1]:main[anchorIndex+1];
+        if(String(station)===String(mainNeighbor)) return String(effect.color||'').trim()||null;
+      }
+
       const solidStation=String(effect.direction||'to bottom')==='to top'?effect.to:effect.from;
       if(String(station)===String(solidStation)) return effect.color;
-      // フェードの反対側（分岐線側）は、分岐線内の直前/直後区間色を使う。
+      // フェードの反対側（分岐線側）は、分岐線内部の直前/直後区間色を使う。
       // 終端～本線駅の接続そのものは線区配列にない場合があるため、隣駅から色を引く。
       const branch=defs.find(def=>def.stations.includes(String(station)));
       if(branch){
-        const branchIndex=branch.stations.indexOf(String(station));
-        const branchNeighbor=branchIndex===0
-          ? (branch.stations[1]||branch.anchor)
-          : (branch.stations[branchIndex-1]||branch.anchor);
-        const branchColor=branchNeighbor?activeSegmentColors(branchNeighbor,String(station))[0]:null;
+        // 透明側の分岐駅は、分岐線の基本色ではなく、分岐線内部で
+        // その駅に接する実際の区間色を使う（路線カラーの切替にも対応）。
+        const branchColor=multiJunctionBranchStationSectionColor(branch,String(station),'inner');
         if(branchColor) return branchColor;
       }
     }
@@ -7643,12 +7663,71 @@ function circularStationLabelDisplayColor(stationName){
   const lineName=String(rule?.line||rule?.defaultLine||'');
   return String(lineDefByName(lineName)?.color||rule?.color||'').trim()||null;
 }
+// 分岐線上の駅名標色は、分岐線の基本色で固定せず、
+// 路線図上でその駅に隣接する分岐線区間の色から決定する。
+// insert=before（上方向へ伸びる分岐）でも、def.stations は表示順なので
+// 次駅側を優先し、表示末端では実際に隣接する分岐線区間を参照する。
+function multiJunctionBranchStationSectionColor(def,stationName,mode='display'){
+  if(!def) return null;
+  const station=String(stationName||'').trim();
+  const stations=Array.isArray(def.stations)?def.stations.map(x=>String(x||'').trim()).filter(Boolean):[];
+  const index=stations.indexOf(station);
+  if(index<0) return null;
+  let neighbor=null;
+  if(mode==='inner'){
+    // フェード接続側の駅名標は、外側の接続区間ではなく分岐線内部の色を使う。
+    neighbor=index===0?(stations[1]||def.anchor):(stations[index-1]||def.anchor);
+  }else if(index<stations.length-1){
+    neighbor=stations[index+1];
+  }else if(def.insert==='before'){
+    // 上方向の分岐では、分岐駅列の末尾が本線の接続駅に隣接する。
+    neighbor=def.anchor;
+  }else if(index>0){
+    neighbor=stations[index-1];
+  }else{
+    // 1駅だけの下方向分岐は、接続駅との区間色を使う。
+    neighbor=def.anchor;
+  }
+  if(neighbor){
+    const color=String(activeSegmentColors(station,neighbor)[0]||activeSegmentColors(neighbor,station)[0]||'').trim();
+    if(color) return color;
+  }
+  return String(lineDefByName(def.line)?.color||'').trim()||null;
+}
+
 function stationLabelColor(index){
   const i=Math.max(0,Math.min(STATIONS.length-1,Number(index)||0));
   const circularColor=circularStationLabelDisplayColor(STATIONS[i]?.nameJa);
   if(circularColor) return circularColor;
   const cur=String(STATIONS[i]?.nameJa||'');
   if(hasMultiJunctionDiagram()){
+    // 上方向（insert=before）の分岐接続駅は、駅の直前側に分岐線が接続する。
+    // 通常の nextColor 優先だと下側の本線色を拾うため、接続駅自身の色は
+    // 分岐末端駅に接する「分岐線内部」の区間色から決定する。
+    // 分岐線内で色が切り替わる場合も、末端駅の内側区間色をそのまま反映する。
+    const attachedBranches=multiJunctionBranchDefinitions().filter(def=>
+      multiJunctionBranchesOpen.has(def.id) && def.anchor===cur
+    );
+    for(const attachedBranch of attachedBranches){
+      const terminal=attachedBranch.insert==='before'
+        ? attachedBranch.stations[attachedBranch.stations.length-1]
+        : attachedBranch.stations[0];
+      if(!terminal) continue;
+      const branchJoinColor=multiJunctionBranchStationSectionColor(attachedBranch,terminal,'inner');
+      if(branchJoinColor) return branchJoinColor;
+    }
+    // 分岐線駅は、所属路線の基本色ではなく、表示方向に沿った
+    // 直後の分岐線区間（末端駅では直前の分岐線区間）の色を使う。
+    // これにより上方向の分岐と、分岐線内の路線カラー境界の両方に対応する。
+    const stationBranchKey=String(STATIONS[i]?.branchKey||'').trim();
+    const branchDefinition=multiJunctionBranchDefinitions().find(def=>
+      multiJunctionBranchesOpen.has(def.id)
+      && (stationBranchKey ? def.id===stationBranchKey : def.stations.includes(cur))
+    );
+    if(branchDefinition){
+      const branchSectionColor=multiJunctionBranchStationSectionColor(branchDefinition,cur,'display');
+      if(branchSectionColor) return branchSectionColor;
+    }
     const neighbors=multiJunctionStationNeighbors(cur);
     if(neighbors) return neighbors.nextColor||neighbors.prevColor||activeRouteColors()[0]||'#666';
   }
