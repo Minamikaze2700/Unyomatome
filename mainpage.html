@@ -12576,7 +12576,8 @@ initRegionNavigation();
 <script id="private-announcements-feature">
 (function(){
   'use strict';
-  const ROOT='お知らせ';
+  // お知らせ送信ページの保存先（運用/お知らせ/全員・個別）に合わせる。
+  const ROOT='運用/お知らせ';
   const READ_ROOT='お知らせ既読';
   let signedInUser=null;
   let announcements=[];
