@@ -5278,37 +5278,75 @@ function multiJunctionBranchTransitPositionForTrain(train,stops,minutes,rawDirec
         endName=def.anchor;
       }
 
-      const startPos=stationIndex(startName);
-      const endPos=stationIndex(endName);
-      if(startPos<0 || endPos<0 || startPos===endPos) continue;
-
       const firstBranchStop=stops[block.start];
       const lastBranchStop=stops[block.end];
-      const startRaw=prevStop?Number(prevStop._departure):Number(firstBranchStop?._departure);
-      const endRaw=nextStop?Number(nextStop._arrival):Number(lastBranchStop?._arrival);
-      if(!Number.isFinite(startRaw)||!Number.isFinite(endRaw)) continue;
+      const entryMinute=Number(firstBranchStop?._arrival);
+      const exitMinute=Number(lastBranchStop?._departure);
+      if(!Number.isFinite(entryMinute)||!Number.isFinite(exitMinute)) continue;
 
-      // 始発・終着が分岐線上の場合も、駅停車中は本線側の端点に留める。
-      const startMinute=prevStop
-        ? startRaw+0.75
-        : startRaw+(block.start===0?-RESET_DWELL_MIN+0.5:0.75);
-      const endMinute=nextStop
-        ? endRaw+0.25
-        : endRaw+(block.end===stops.length-1?RESET_DWELL_MIN+0.5:0.25);
-      if(!Number.isFinite(startMinute)||!Number.isFinite(endMinute)||endMinute<startMinute) continue;
-      if(minutes<startMinute || minutes>endMinute) continue;
-
-      const ratio=endMinute===startMinute?0:Math.max(0,Math.min(1,(minutes-startMinute)/(endMinute-startMinute)));
-      return {
-        pos:startPos+(endPos-startPos)*ratio,
-        side:trainSideForStationPair(startName,endName,rawDirection),
-        visualTrain:train,
-        mode:'branch-mainline-projection',
-        projectedMainline:true,
-        mainlineFrom:startName,
-        mainlineTo:endName,
-        mainlineRatio:ratio
+      // 分岐線の駅は列車アイコンの走行位置に使わない。
+      // 分岐に入るまでは従来の本線位置、分岐を抜けた後は
+      // 分岐駅数ぶん下へ移動した本線位置を使い、分岐線上は非表示にする。
+      const anchorPos=stationIndex(def.anchor);
+      const anchorMainIndex=main.indexOf(def.anchor);
+      if(anchorPos<0 || anchorMainIndex<0) continue;
+      const branchOffset=def.stations.length;
+      // 現在の路線図座標から、この分岐を閉じていた場合の本線座標を復元する。
+      // insert=before なら anchor 以降、after なら anchor の次駅以降が分岐駅数ぶん下がる。
+      const baseMainlinePosition=name=>{
+        const mainIndex=main.indexOf(String(name||''));
+        const currentIndex=stationIndex(String(name||''));
+        if(mainIndex<0||currentIndex<0) return -1;
+        const shiftedSide=def.insert==='before'
+          ? mainIndex>=anchorMainIndex
+          : mainIndex>anchorMainIndex;
+        return currentIndex-(shiftedSide?branchOffset:0);
       };
+      const beforeJunctionPos=baseMainlinePosition(def.anchor);
+      const afterJunctionPos=beforeJunctionPos+branchOffset;
+
+      const interpolate=(from,to,ratio)=>from+(to-from)*Math.max(0,Math.min(1,ratio));
+      const prevPos=prevStop?baseMainlinePosition(prevName):-1;
+      const nextBasePos=nextStop?baseMainlinePosition(nextName):-1;
+      const nextPos=nextStop&&nextBasePos>=0?nextBasePos+branchOffset:-1;
+
+      // 分岐線へ入る前：分岐線を開く前と同じ本線位置を維持する。
+      if(prevStop && Number.isFinite(Number(prevStop._departure))){
+        const fromMinute=Number(prevStop._departure)+0.75;
+        if(minutes>=fromMinute && minutes<entryMinute){
+          const ratio=(minutes-fromMinute)/(entryMinute-fromMinute||1);
+          const pos=interpolate(prevPos,beforeJunctionPos,ratio);
+          return {
+            pos,side:trainSideForStationPair(prevName,def.anchor,rawDirection),
+            visualTrain:train,mode:'branch-mainline-before',
+            projectedMainline:true,mainlineFrom:prevName,mainlineTo:def.anchor
+          };
+        }
+      }
+
+      // 分岐線を走行・停車している時間帯は、分岐線上に列車を表示しない。
+      if(minutes>=entryMinute && minutes<=exitMinute){
+        return {hidden:true,mode:'branch-transit-hidden'};
+      }
+
+      // 分岐線を抜けた後：分岐駅数ぶん下へずらした本線位置から再開する。
+      if(nextStop && Number.isFinite(Number(nextStop._arrival))){
+        const toMinute=Number(nextStop._arrival)+0.25;
+        const fromMinute=exitMinute+0.75;
+        if(minutes>exitMinute && minutes<=toMinute){
+          const ratio=(minutes-fromMinute)/(toMinute-fromMinute||1);
+          const pos=interpolate(afterJunctionPos,nextPos,ratio);
+          return {
+            pos,side:trainSideForStationPair(def.anchor,nextName,rawDirection),
+            visualTrain:train,mode:'branch-mainline-after',
+            projectedMainline:true,mainlineFrom:def.anchor,mainlineTo:nextName
+          };
+        }
+      }
+
+      // 始発・終着が分岐線内の場合、分岐線上には表示しない。
+      if(!prevStop && minutes<entryMinute) return {hidden:true,mode:'branch-transit-hidden'};
+      if(!nextStop && minutes>exitMinute) return {hidden:true,mode:'branch-transit-hidden'};
     }
   }
   return null;
@@ -5331,6 +5369,7 @@ function positionForTrain(t,minutes){
   // 分岐線を開いている間、分岐内の列車位置は本線 mainOrder の駅間へ投影する。
   // 分岐線駅そのものを補間端点にしないため、列車アイコンは分岐線の駅間を走らない。
   const projectedBranchPosition=multiJunctionBranchTransitPositionForTrain(t,stops,minutes,rawDirection);
+  if(projectedBranchPosition?.hidden) return null;
   if(projectedBranchPosition) return projectedBranchPosition;
 
     // 連結運用の先頭列車は先頭側の始発停車、末尾列車は末尾側の終着停車を担当する。
