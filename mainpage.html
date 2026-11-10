@@ -1976,11 +1976,16 @@ function createCommonBranchToggleButton({label,color,isOpen,onToggle,position='b
 function branchFadeGradient(color,direction='to bottom'){
   const value=String(color||'#666').trim();
   const hex=value.match(/^#?([0-9a-f]{6})$/i);
-  if(!hex) return `linear-gradient(${direction},${value} 0%,transparent 100%)`;
+  if(!hex){
+    // 分岐線終点から中点までは完全透明。
+    // 中点から本線駅に向かって徐々に不透明にする。
+    return `linear-gradient(${direction},transparent 0%,transparent 50%,${value} 100%)`;
+  }
   const rgb=parseInt(hex[1],16);
   const r=(rgb>>16)&255,g=(rgb>>8)&255,b=rgb&255;
-  // 半分の位置で透明に切り替わる段差をなくし、線の端まで滑らかにフェードさせる。
-  return `linear-gradient(${direction},rgba(${r},${g},${b},1) 0%,rgba(${r},${g},${b},0) 100%)`;
+  // 分岐線終点〜中点は完全透明のまま維持し、
+  // 中点〜本線駅の区間だけ透明から不透明へ滑らかに変化させる。
+  return `linear-gradient(${direction},rgba(${r},${g},${b},0) 0%,rgba(${r},${g},${b},0) 50%,rgba(${r},${g},${b},1) 100%)`;
 }
 function branchBlendGradient(fromColor,toColor,direction='to bottom'){
   const from=String(fromColor||'#666').trim();
@@ -5189,83 +5194,86 @@ function multiJunctionBranchTransitPositionForTrain(train,stops,minutes,rawDirec
   const mainSet=new Set(main);
   const defs=multiJunctionBranchDefinitions(activeJson,activeRouteMeta)
     .filter(def=>multiJunctionBranchesOpen.has(def.id));
+  const clampRatio=value=>Math.max(0,Math.min(1,value));
+  const lerp=(a,b,r)=>a+(b-a)*clampRatio(r);
 
   for(const def of defs){
-    const branchSet=new Set(def.stations.map(String));
+    const anchorIndex=main.indexOf(def.anchor);
+    if(anchorIndex<0) continue;
+
+    // 図上の分岐区間の両端。insert=before は隣駅→anchor、
+    // insert=after は anchor→隣駅の間に分岐駅が挿入される。
+    const leftEndpoint=def.insert==='before' ? main[anchorIndex-1] : def.anchor;
+    const rightEndpoint=def.insert==='before' ? def.anchor : main[anchorIndex+1];
+    if(!leftEndpoint||!rightEndpoint) continue;
+    const leftMainIndex=main.indexOf(leftEndpoint);
+    const rightMainIndex=main.indexOf(rightEndpoint);
+    if(leftMainIndex<0||rightMainIndex<0) continue;
+
     const branchIndexes=[];
+    const branchSet=new Set(def.stations.map(String));
     for(let i=0;i<stops.length;i++){
       if(branchSet.has(String(stops[i]?.station||''))) branchIndexes.push(i);
     }
+
+    // 分岐線内に停車しない列車：本線の連続する駅間が分岐区間を横切るか調べる。
     if(!branchIndexes.length){
-      // 分岐線内に停車しない列車も、分岐をまたぐ本線駅間を検出する。
-      // 分岐線を閉じていた場合の本線座標で分岐前を描き、
-      // 分岐通過時点から分岐駅数ぶん下へずらした座標で分岐後を描く。
-      const anchorIndex=main.indexOf(def.anchor);
-      if(anchorIndex<0) continue;
-      const crossFromIndex=def.insert==='before'?anchorIndex-1:anchorIndex;
-      const crossToIndex=crossFromIndex+1;
-      if(crossFromIndex<0||crossToIndex>=main.length) continue;
-      const branchOffset=def.stations.length;
-      const baseMainlinePosition=name=>{
-        const mainIndex=main.indexOf(String(name||''));
-        const currentIndex=stationIndex(String(name||''));
-        if(mainIndex<0||currentIndex<0) return -1;
-        const shiftedSide=def.insert==='before'
-          ? mainIndex>=anchorIndex
-          : mainIndex>anchorIndex;
-        return currentIndex-(shiftedSide?branchOffset:0);
-      };
       for(let i=0;i<stops.length-1;i++){
         const fromName=String(stops[i]?.station||'');
         const toName=String(stops[i+1]?.station||'');
         const fromMainIndex=main.indexOf(fromName);
         const toMainIndex=main.indexOf(toName);
         if(fromMainIndex<0||toMainIndex<0||fromMainIndex===toMainIndex) continue;
-        const lo=Math.min(fromMainIndex,toMainIndex),hi=Math.max(fromMainIndex,toMainIndex);
-        if(!(lo<=crossFromIndex&&hi>=crossToIndex)) continue;
+        const lo=Math.min(fromMainIndex,toMainIndex);
+        const hi=Math.max(fromMainIndex,toMainIndex);
+        if(lo>Math.min(leftMainIndex,rightMainIndex) || hi<Math.max(leftMainIndex,rightMainIndex)) continue;
+
         const fromMinute=Number(stops[i]?._departure)+0.75;
         const toMinute=Number(stops[i+1]?._arrival)+0.25;
-        if(!Number.isFinite(fromMinute)||!Number.isFinite(toMinute)||toMinute<=fromMinute) continue;
-        if(minutes<fromMinute||minutes>toMinute) continue;
+        if(!Number.isFinite(fromMinute)||!Number.isFinite(toMinute)||toMinute<=fromMinute
+          || minutes<fromMinute||minutes>toMinute) continue;
 
+        const fromPos=stationIndex(fromName),toPos=stationIndex(toName);
+        const leftPos=stationIndex(leftEndpoint),rightPos=stationIndex(rightEndpoint);
+        if([fromPos,toPos,leftPos,rightPos].some(v=>v<0)) continue;
         const span=toMainIndex-fromMainIndex;
-        const crossingRatio=(crossToIndex-fromMainIndex)/span;
+        // 本線上の分岐区間の中点を通過時刻の境界にする。
+        // 右端固定だと逆方向列車では分岐区間に入る前に補正が切り替わってしまう。
+        const boundaryMainIndex=(leftMainIndex+rightMainIndex)/2;
+        const crossingRatio=(boundaryMainIndex-fromMainIndex)/span;
         const crossingMinute=fromMinute+(toMinute-fromMinute)*crossingRatio;
-        const timeRatio=(minutes-fromMinute)/(toMinute-fromMinute);
-        const fromPos=stationIndex(fromName);
-        const toPos=stationIndex(toName);
-        if(fromPos<0||toPos<0) continue;
-        const boundaryBase=crossToIndex;
-        const isShifted=name=>{
+        const isOnShiftedSide=name=>{
           const idx=main.indexOf(String(name||''));
           return idx>=0 && (def.insert==='before'?idx>=anchorIndex:idx>anchorIndex);
         };
-        const beforeBoundary=boundaryBase+(isShifted(fromName)?branchOffset:0);
-        const afterBoundary=boundaryBase+(isShifted(toName)?branchOffset:0);
+        const offset=def.stations.length;
+        const baseFrom=fromPos-(isOnShiftedSide(fromName)?offset:0);
+        const baseTo=toPos-(isOnShiftedSide(toName)?offset:0);
+        const leftBase=leftPos-(isOnShiftedSide(leftEndpoint)?offset:0);
+        const rightBase=rightPos-(isOnShiftedSide(rightEndpoint)?offset:0);
+        const baseCross=(leftBase+rightBase)/2;
         let pos;
         if(minutes<crossingMinute){
-          const localRatio=(minutes-fromMinute)/(crossingMinute-fromMinute||1);
-          pos=fromPos+(beforeBoundary-fromPos)*Math.max(0,Math.min(1,localRatio));
+          const ratio=(minutes-fromMinute)/(crossingMinute-fromMinute||1);
+          pos=lerp(baseFrom,baseCross,ratio);
         }else{
-          const localRatio=(minutes-crossingMinute)/(toMinute-crossingMinute||1);
-          pos=afterBoundary+(toPos-afterBoundary)*Math.max(0,Math.min(1,localRatio));
+          const ratio=(minutes-crossingMinute)/(toMinute-crossingMinute||1);
+          // 分岐を抜けた後は、進行方向にかかわらず分岐駅数分だけ下へずらす。
+          pos=lerp(baseCross+offset,baseTo+offset,ratio);
         }
         return {
-          pos,
-          side:trainSideForStationPair(fromName,toName,rawDirection),
+          pos,side:trainSideForStationPair(fromName,toName,rawDirection),
           visualTrain:train,
           mode:minutes<crossingMinute?'branch-mainline-before':'branch-mainline-after',
-          projectedMainline:true,
-          branchSkippedStops:true,
-          mainlineFrom:fromName,
-          mainlineTo:toName,
-          mainlineRatio:timeRatio
+          projectedMainline:true,branchSkippedStops:true,
+          mainlineFrom:fromName,mainlineTo:toName,
+          mainlineRatio:(minutes-fromMinute)/(toMinute-fromMinute)
         };
       }
       continue;
     }
 
-    // 同じ分岐線上の連続停車駅をひとまとまりの「分岐通過」として扱う。
+    // 分岐線の停車駅が一部だけの場合も、連続した分岐停車ブロックごとに扱う。
     const blocks=[];
     for(const index of branchIndexes){
       const last=blocks[blocks.length-1];
@@ -5278,141 +5286,77 @@ function multiJunctionBranchTransitPositionForTrain(train,stops,minutes,rawDirec
       while(prevIndex>=0 && !mainSet.has(String(stops[prevIndex]?.station||''))) prevIndex--;
       let nextIndex=block.end+1;
       while(nextIndex<stops.length && !mainSet.has(String(stops[nextIndex]?.station||''))) nextIndex++;
-
       const prevStop=prevIndex>=0?stops[prevIndex]:null;
       const nextStop=nextIndex<stops.length?stops[nextIndex]:null;
       const prevName=prevStop?String(prevStop.station):'';
       const nextName=nextStop?String(nextStop.station):'';
 
-      const anchorIndex=main.indexOf(def.anchor);
-      if(anchorIndex<0) continue;
-      const branchSide=def.insert==='before'?-1:1;
-      const neighborName=main[anchorIndex+branchSide]||'';
-      if(!neighborName) continue;
-
-      // 前後に本線停車駅があればそれを優先する。
-      // 片側が列車の始発・終着で欠ける場合は、分岐の接続駅と隣接本線駅で補う。
-      let startName=prevName;
-      let endName=nextName;
+      // 分岐駅停車列の並びから、分岐区間をどちら向きに通過するか判定。
+      const firstBranchOrder=def.stations.indexOf(String(stops[block.start]?.station||''));
+      const lastBranchOrder=def.stations.indexOf(String(stops[block.end]?.station||''));
+      let entersFromLeft=firstBranchOrder<=lastBranchOrder;
       const prevMainIndex=prevName?main.indexOf(prevName):-1;
       const nextMainIndex=nextName?main.indexOf(nextName):-1;
-
-      if(!startName){
-        if(nextName){
-          // 次の本線停車駅が分岐駅、または分岐駅の反対側なら隣接本線駅から始める。
-          const nextIsBranchSide=nextMainIndex>=0
-            && (nextMainIndex-anchorIndex)*branchSide>0;
-          startName=(nextName===def.anchor || !nextIsBranchSide)?neighborName:def.anchor;
-        }else{
-          startName=neighborName;
-        }
+      if(prevMainIndex>=0){
+        if(prevMainIndex<=leftMainIndex) entersFromLeft=true;
+        else if(prevMainIndex>=rightMainIndex) entersFromLeft=false;
+      }else if(nextMainIndex>=0){
+        if(nextMainIndex<=leftMainIndex) entersFromLeft=false;
+        else if(nextMainIndex>=rightMainIndex) entersFromLeft=true;
       }
-      if(!endName){
-        if(prevName){
-          const prevIsOppositeSide=prevMainIndex>=0
-            && (prevMainIndex-anchorIndex)*branchSide<0;
-          endName=(prevName===def.anchor || prevIsOppositeSide)?neighborName:def.anchor;
-        }else{
-          endName=def.anchor;
-        }
-      }
-
-      // 本線停車駅を含まず分岐線内だけで完結する場合は、分岐駅配列の順序から進行方向を判定する。
-      if(!prevStop && !nextStop){
-        const firstBranchName=String(stops[block.start]?.station||'');
-        const lastBranchName=String(stops[block.end]?.station||'');
-        const firstBranchOrder=def.stations.indexOf(firstBranchName);
-        const lastBranchOrder=def.stations.indexOf(lastBranchName);
-        const towardAnchor=def.insert==='before'
-          ? firstBranchOrder>=0 && lastBranchOrder>=0 && firstBranchOrder<lastBranchOrder
-          : firstBranchOrder>=0 && lastBranchOrder>=0 && firstBranchOrder>lastBranchOrder;
-        startName=towardAnchor?neighborName:def.anchor;
-        endName=towardAnchor?def.anchor:neighborName;
-      }
-      // 片側の補完が同じ駅になった場合の最終フォールバック。
-      if(!startName || !endName || startName===endName){
-        startName=neighborName;
-        endName=def.anchor;
-      }
-
-      const firstBranchStop=stops[block.start];
-      const lastBranchStop=stops[block.end];
-      const entryMinute=Number(firstBranchStop?._arrival);
-      const exitMinute=Number(lastBranchStop?._departure);
+      const entryEndpoint=entersFromLeft?leftEndpoint:rightEndpoint;
+      const exitEndpoint=entersFromLeft?rightEndpoint:leftEndpoint;
+      const entryMinute=Number(stops[block.start]?._arrival);
+      const exitMinute=Number(stops[block.end]?._departure);
       if(!Number.isFinite(entryMinute)||!Number.isFinite(exitMinute)) continue;
 
-      // 分岐線の駅は列車アイコンの走行位置に使わない。
-      // 分岐に入るまでは従来の本線位置、分岐を抜けた後は
-      // 分岐駅数ぶん下へ移動した本線位置を使い、分岐線上は非表示にする。
-      const anchorPos=stationIndex(def.anchor);
-      const anchorMainIndex=main.indexOf(def.anchor);
-      if(anchorPos<0 || anchorMainIndex<0) continue;
-      const branchOffset=def.stations.length;
-      // 現在の路線図座標から、この分岐を閉じていた場合の本線座標を復元する。
-      // insert=before なら anchor 以降、after なら anchor の次駅以降が分岐駅数ぶん下がる。
-      const baseMainlinePosition=name=>{
-        const mainIndex=main.indexOf(String(name||''));
-        const currentIndex=stationIndex(String(name||''));
-        if(mainIndex<0||currentIndex<0) return -1;
-        const shiftedSide=def.insert==='before'
-          ? mainIndex>=anchorMainIndex
-          : mainIndex>anchorMainIndex;
-        return currentIndex-(shiftedSide?branchOffset:0);
-      };
-      const baseAnchorPos=baseMainlinePosition(def.anchor);
-      const isShiftedMainStation=name=>{
-        const idx=main.indexOf(String(name||''));
-        return idx>=0 && (def.insert==='before'?idx>=anchorMainIndex:idx>anchorMainIndex);
-      };
-      const beforeJunctionPos=baseAnchorPos+(prevStop&&isShiftedMainStation(prevName)?branchOffset:0);
-      const afterJunctionPos=baseAnchorPos+(nextStop&&isShiftedMainStation(nextName)?branchOffset:0);
-
-      const interpolate=(from,to,ratio)=>from+(to-from)*Math.max(0,Math.min(1,ratio));
+      const entryPos=stationIndex(entryEndpoint);
+      const exitPos=stationIndex(exitEndpoint);
       const prevPos=prevStop?stationIndex(prevName):-1;
       const nextPos=nextStop?stationIndex(nextName):-1;
 
-      // 分岐線へ入る前：分岐線を開く前と同じ本線位置を維持する。
-      if(prevStop && Number.isFinite(Number(prevStop._departure))){
+      // 分岐線へ入る前は、実際に進入する側の本線端点へ向けて補間する。
+      if(prevStop && prevPos>=0 && entryPos>=0){
         const fromMinute=Number(prevStop._departure)+0.75;
-        if(minutes>=fromMinute && minutes<entryMinute){
+        if(Number.isFinite(fromMinute)&&minutes>=fromMinute&&minutes<entryMinute){
           const ratio=(minutes-fromMinute)/(entryMinute-fromMinute||1);
-          const pos=interpolate(prevPos,beforeJunctionPos,ratio);
           return {
-            pos,side:trainSideForStationPair(prevName,def.anchor,rawDirection),
+            pos:lerp(prevPos,entryPos,ratio),
+            side:trainSideForStationPair(prevName,entryEndpoint,rawDirection),
             visualTrain:train,mode:'branch-mainline-before',
-            projectedMainline:true,mainlineFrom:prevName,mainlineTo:def.anchor
+            projectedMainline:true,mainlineFrom:prevName,mainlineTo:entryEndpoint
           };
         }
       }
 
-      // 分岐線を走行・停車している時間帯は、分岐線上に列車を表示しない。
+      // 分岐線上（分岐駅での停車を含む）は描画しない。
       if(minutes>=entryMinute && minutes<=exitMinute){
         return {hidden:true,mode:'branch-transit-hidden'};
       }
 
-      // 分岐線を抜けた後：分岐駅数ぶん下へずらした本線位置から再開する。
-      if(nextStop && Number.isFinite(Number(nextStop._arrival))){
-        const toMinute=Number(nextStop._arrival)+0.25;
+      // 分岐線を抜けた後は、反対側の端点から本線駅へ補間する。
+      if(nextStop && nextPos>=0 && exitPos>=0){
         const fromMinute=exitMinute+0.75;
-        if(minutes>exitMinute && minutes<=toMinute){
+        const toMinute=Number(nextStop._arrival)+0.25;
+        if(Number.isFinite(fromMinute)&&Number.isFinite(toMinute)
+          && minutes>exitMinute&&minutes<=toMinute){
           const ratio=(minutes-fromMinute)/(toMinute-fromMinute||1);
-          const pos=interpolate(afterJunctionPos,nextPos,ratio);
           return {
-            pos,side:trainSideForStationPair(def.anchor,nextName,rawDirection),
+            pos:lerp(exitPos,nextPos,ratio),
+            side:trainSideForStationPair(exitEndpoint,nextName,rawDirection),
             visualTrain:train,mode:'branch-mainline-after',
-            projectedMainline:true,mainlineFrom:def.anchor,mainlineTo:nextName
+            projectedMainline:true,mainlineFrom:exitEndpoint,mainlineTo:nextName
           };
         }
       }
 
-      // 始発・終着が分岐線内の場合、分岐線上には表示しない。
+      // 始発・終着が分岐線内にある場合も、分岐線上には表示しない。
       if(!prevStop && minutes<entryMinute) return {hidden:true,mode:'branch-transit-hidden'};
       if(!nextStop && minutes>exitMinute) return {hidden:true,mode:'branch-transit-hidden'};
     }
   }
   return null;
 }
-
 function positionForTrain(t,minutes){
   const meta=getTrainRuntimeMeta(t);
   if(!meta) return null;
@@ -15216,6 +15160,60 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     background:#f3f3f3;
     outline:2px solid color-mix(in srgb,var(--transfer-route-color,#888) 35%,transparent);
     outline-offset:1px;
+  }
+
+  /* 乗換路線カードの高さが路線名の折り返しで伸びすぎないようにする。 */
+  #sheetContent .station-transfer-card{
+    gap:4px;
+    padding:6px 8px;
+    margin-bottom:7px;
+    min-height:0;
+  }
+  #sheetContent .station-transfer-list{
+    align-items:center;
+    gap:4px;
+    max-height:62px;
+    overflow-y:auto;
+    overflow-x:hidden;
+    padding:1px 2px 2px 1px;
+    box-sizing:border-box;
+  }
+  #sheetContent .station-transfer-button{
+    min-height:25px;
+    width:auto;
+    max-width:100%;
+    min-width:0;
+    flex:0 1 auto;
+    padding:3px 7px;
+    gap:0;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    line-height:1.1;
+  }
+  #sheetContent .station-transfer-label-group{
+    min-width:0;
+    max-width:100%;
+    align-items:center;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+  }
+  #sheetContent .station-transfer-route-name{
+    min-width:0;
+    max-width:100%;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+  }
+  #sheetContent .station-transfer-target-station{
+    flex:0 1 auto;
+    min-width:0;
+    max-width:42%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    margin-left:3px;
   }
 
   /* 列車の番号・画像・編成・行先を一つの表示塊にし、矢印も同じ塊の子として重ねる。 */
