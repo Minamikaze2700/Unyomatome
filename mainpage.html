@@ -1622,7 +1622,7 @@ const ROUTE_REGISTRY={
     noTrainTypes:true,
     prescribedFormationRule:'common',
     disableCrossDayTrainFallback:true,
-    access:{public:true,routeAdmins:['AZUMI445']},
+    access:{public:false,routeAdmins:['AZUMI445']},
   },
   '伊予鉄道郡中線':{
     id:'iyotetsu-gunchu',
@@ -1639,7 +1639,22 @@ const ROUTE_REGISTRY={
     noTrainTypes:true,
     prescribedFormationRule:'common',
     disableCrossDayTrainFallback:true,
-    access:{public:true,routeAdmins:['AZUMI445']},
+    access:{public:false,routeAdmins:['AZUMI445']},
+  },
+  '名鉄瀬戸線':{
+    id:'meitetsu-seto',
+    jsonLines:['名鉄瀬戸線'],
+    sharedJsonRouteName:'名鉄瀬戸線',
+    range:'栄町～尾張瀬戸',
+    area:'名鉄',
+    storageRoot:'名鉄',
+    storageArea:null,
+    company:'名古屋鉄道',
+    formationFamily:'meitetsu-seto',
+    maxFormationCoupling:1,
+    prescribedFormationRule:'common',
+    disableCrossDayTrainFallback:true,
+    access:{public:false,routeAdmins:['AZUMI445']},
   },
 };
 // 旧名称を参照する既存処理向けの互換エイリアス（登録名一覧には表示しない）。
@@ -15812,4 +15827,7 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     requestAnimationFrame(refreshStationStopTypeLabels);
   },{passive:true});
 })();
-</script>
+</script>  '名鉄瀬戸線':[
+    {from:'2026-03-14',to:'2027-03-13',file:'MeitetsuSeto_2026.json'}
+  ],
+
