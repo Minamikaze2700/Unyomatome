@@ -1744,6 +1744,9 @@ const ROUTE_SCHEDULE_CONFIG={
   '伊予鉄道郡中線':[
     {from:'2026-10-16',to:'2027-03-13',file:'Iyotetsu_2026.json'}
   ],
+  '名鉄瀬戸線':[
+    {from:'2026-03-14',to:'2027-03-13',file:'MeitetsuSeto_2026.json'}
+  ],
 };
 const ROUTE_DATA_BASE_URL='https://minamikaze2700.github.io/Unyomatome/data/';
 for(const [routeName,periods] of Object.entries(ROUTE_SCHEDULE_CONFIG)){
@@ -15827,7 +15830,4 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     requestAnimationFrame(refreshStationStopTypeLabels);
   },{passive:true});
 })();
-</script>  '名鉄瀬戸線':[
-    {from:'2026-03-14',to:'2027-03-13',file:'MeitetsuSeto_2026.json'}
-  ],
-
+</script>
