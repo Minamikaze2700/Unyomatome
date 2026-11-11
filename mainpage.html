@@ -1642,11 +1642,6 @@ const ROUTE_REGISTRY={
     access:{public:false,routeAdmins:['AZUMI445']},
   },
 };
-// 旧名称を参照する既存処理向けの互換エイリアス（登録名一覧には表示しない）。
-const LEGACY_ROUTE_NAME_ALIASES=Object.freeze({"山陽本線（糸崎～岩国）": "山陽本線（糸崎～岩国）", "可部線": "可部線", "呉線": "呉線", "海岸線": "神戸市営地下鉄海岸線", "西神・山手線": "神戸市営地下鉄西神・山手線", "南海泉北線": "南海電気鉄道泉北線", "京浜東北・根岸線": "京浜東北・根岸線", "横浜線": "横浜線", "南武線": "南武線", "内房線": "内房線", "大阪環状線": "大阪環状線", "ゆめ咲線": "ゆめ咲線", "日比谷線": "東京メトロ日比谷線", "空港線・箱崎線": "福岡市地下鉄空港線・箱崎線", "七隈線": "福岡市地下鉄七隈線", "東武野田線": "東武鉄道アーバンパークライン", "東武スカイツリーライン": "東武鉄道スカイツリーライン", "水島臨海鉄道": "水島臨海鉄道", "長野電鉄長野線": "長野電鉄長野線", "関西本線（名古屋～亀山）": "関西本線（名古屋～亀山）", "御殿場線": "御殿場線", "樽見鉄道樽見線": "樽見鉄道樽見線", "しなの鉄道線（篠ノ井～軽井沢）": "しなの鉄道線（篠ノ井～軽井沢）", "北しなの線（豊野～妙高高原）": "しなの鉄道北しなの線（豊野～妙高高原）", "勝山永平寺線": "えちぜん鉄道勝山永平寺線", "三国芦原線": "えちぜん鉄道三国芦原線", "京急本線・空港線・逗子線・久里浜線": "京急電鉄本線", "京急大師線": "京急電鉄大師線"});
-for(const [legacyName,registeredName] of Object.entries(LEGACY_ROUTE_NAME_ALIASES)){ if(legacyName!==registeredName && ROUTE_REGISTRY[registeredName]) Object.defineProperty(ROUTE_REGISTRY,legacyName,{configurable:true,enumerable:false,get(){return ROUTE_REGISTRY[registeredName];}}); }
-
-
 /* 時刻表ファイルは改正年で管理し、選択日付に有効なファイルを読み込む。 */
 const ROUTE_SCHEDULE_CONFIG={
   '山陽本線（糸崎～岩国）':[
@@ -8291,8 +8286,6 @@ function openRegionSheet(region){
     const route=String(routeName||'').trim();
     const company=String(companyName||'').trim();
     if(!route) return '';
-    if(route==='東武鉄道アーバンパークライン') return 'アーバンパークライン';
-    if(route==='東武鉄道スカイツリーライン') return 'スカイツリーライン';
     if(company && route.startsWith(company)) return route.slice(company.length);
     if(company.endsWith('鉄道')){
       const operator=company.slice(0,-2);
@@ -15624,6 +15617,12 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     }),
     'えちぜん鉄道三国芦原線':Object.freeze({
       '福井口':['えちぜん鉄道勝山永平寺線']
+    }),
+    '伊予鉄道高浜線・横河原線':Object.freeze({
+      '松山市':['伊予鉄道郡中線']
+    }),
+    '伊予鉄道郡中線':Object.freeze({
+      '松山市':['伊予鉄道高浜線・横河原線']
     })
   });
 
