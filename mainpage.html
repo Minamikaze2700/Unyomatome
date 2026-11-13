@@ -1308,7 +1308,6 @@ const ROUTE_REGISTRY={
     area:'JR東日本',
     storageRoot:'京浜東北・根岸線',
     storageArea:null,
-    formationFamily:'keihin',
     company:'JR東日本',
     typeClassMap:{'快速':'keihin-express','普通':'keihin-local','各停':'keihin-local'},
     access:{public:true,routeAdmins:[]},
@@ -1324,7 +1323,6 @@ const ROUTE_REGISTRY={
     area:'JR東日本',
     storageRoot:'横浜線',
     storageArea:null,
-    formationFamily:'yokohama',
     company:'JR東日本',
     typeClassMap:{'快速':'yokohama-express','普通':'yokohama-local','各停':'yokohama-local'},
     // 京浜東北・根岸線との共有区間を表示する際も、同路線の行先略称を適用する。
@@ -1339,7 +1337,6 @@ const ROUTE_REGISTRY={
     area:'JR東日本',
     storageRoot:'JR南武線',
     storageArea:null,
-    formationFamily:'nambu',
     company:'JR東日本',
     access:{public:true,routeAdmins:['syakutaba6174']},
     prescribedFormationRule:'common'
@@ -1394,7 +1391,6 @@ const ROUTE_REGISTRY={
     area:'東京メトロ',
     storageRoot:'日比谷線',
     storageArea:'__ROOT__',
-    formationFamily:'hibiya',
     company:'東京メトロ',
     access:{public:false,routeAdmins:[]},
     prescribedFormationRule:'common'
@@ -1737,10 +1733,10 @@ const ROUTE_SCHEDULE_CONFIG={
     {from:'2026-03-14',to:'2027-03-13',file:'Shinano_2026.json'}
   ],
   '京急電鉄本線':[
-    {from:'2025-12-13',to:'2026-11-20',file:'Keikyu_2025.json'}
+    {from:'2026-11-21',to:'2027-03-13',file:'Keikyu_2026.json'}
   ],
   '京急電鉄大師線':[
-    {from:'2025-12-13',to:'2026-11-20',file:'Keikyu_2025.json'}
+    {from:'2026-11-21',to:'2027-03-13',file:'Keikyu_2026.json'}
   ],
   '伊予鉄道高浜線・横河原線':[
     {from:'2026-10-16',to:'2027-03-13',file:'Iyotetsu_2026.json'}
@@ -4661,13 +4657,7 @@ function formationRouteAllowed(target,train){
   if(!routes.length) return true;
   const route=String(train?.routeName||activeRouteName||'').trim();
   if(activeRouteMeta?.formationRouteFilter==='ignore') return true;
-  // JSONのrouteNamesには「日比谷線」のような線区名が入り、
-  // ROUTE_REGISTRY側では「東京メトロ日比谷線」のような正式名を使う場合がある。
-  // 現在路線のjsonLinesも照合対象にして、別名の違いだけで編成を除外しない。
-  const jsonLineAliases=Array.isArray(activeRouteMeta?.jsonLines)
-    ? activeRouteMeta.jsonLines.map(x=>String(x||'').trim()).filter(Boolean)
-    : [];
-  return !!route && (routes.includes(route) || jsonLineAliases.some(name=>routes.includes(name)));
+  return !!route && routes.includes(route);
 }
 function isFormationInputBlocked(train,id){
   const canonical=String(id??'').trim().replace(/F$/i,'');
