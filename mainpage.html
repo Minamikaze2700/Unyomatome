@@ -3253,7 +3253,10 @@ async function loadLineTrainData(routeName=activeRouteName,timetableDate=selecte
   if(!activeRouteMeta.json) throw new Error(`路線JSONの設定がありません: ${activeRouteName}`);
   json=await loadExternalRouteJsons(activeRouteMeta);
   if(activeRouteMeta?.diagramTopology==='multi-junction'){
-    const hasDays=json?.trains && ['平日','休日'].every(day=>json.trains[day] && typeof json.trains[day]==='object' && (Array.isArray(json.trains[day]?.上り)||Array.isArray(json.trains[day]?.下り)));
+    // 休日ダイヤのキーは路線データにより「休日」「土休日」「土休」がある。
+    // 京急2026年版は「土休日」を使用しているため、複数分岐JSONの検証でも別名を許容する。
+    const hasDirectionArrays=day=>day && typeof day==='object' && Array.isArray(day.上り) && Array.isArray(day.下り);
+    const hasDays=!!json?.trains && hasDirectionArrays(json.trains.平日) && ['休日','土休日','土休'].some(key=>hasDirectionArrays(json.trains[key]));
     if(!Array.isArray(json?.lines) || !Array.isArray(json?.diagram?.mainOrder) || !hasDays){
       throw new Error(`複数分岐路線のJSON形式が不正です: ${activeRouteName}`);
     }
