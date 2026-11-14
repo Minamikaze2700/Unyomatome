@@ -1733,10 +1733,10 @@ const ROUTE_SCHEDULE_CONFIG={
     {from:'2026-03-14',to:'2027-03-13',file:'Shinano_2026.json'}
   ],
   '京急電鉄本線':[
-    {from:'2026-11-21',to:'2027-03-13',file:'Keikyu_2026.json'}
+    {from:'2026-11-21',to:'2027-03-13',file:'Keikyu_2026_NorthShinagawa_localonly_r3.json'}
   ],
   '京急電鉄大師線':[
-    {from:'2026-11-21',to:'2027-03-13',file:'Keikyu_2026.json'}
+    {from:'2026-11-21',to:'2027-03-13',file:'Keikyu_2026_NorthShinagawa_localonly_r3.json'}
   ],
   '伊予鉄道高浜線・横河原線':[
     {from:'2026-10-16',to:'2027-03-13',file:'Iyotetsu_2026.json'}
@@ -11510,6 +11510,14 @@ initRegionNavigation();
 })();
 </script>
 <style id="railway-diagram-ui-styles">
+@font-face{
+  font-family:"A-Type";
+  src:url("https://minamikaze2700.github.io/Unyomatome/A-Type.ttf") format("truetype");
+  font-style:normal;
+  font-weight:100 900;
+  font-display:swap;
+}
+.railway-diagram-train-number-label{font-family:"A-Type",sans-serif;}
 #railwayDiagramOpenBtn{
   position:fixed;right:16px;bottom:calc(var(--region-nav-height,42px) + 14px);
   width:58px;height:58px;z-index:50010;display:flex;align-items:center;justify-content:center;
