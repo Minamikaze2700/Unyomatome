@@ -1733,10 +1733,10 @@ const ROUTE_SCHEDULE_CONFIG={
     {from:'2026-03-14',to:'2027-03-13',file:'Shinano_2026.json'}
   ],
   '京急電鉄本線':[
-    {from:'2026-11-21',to:'2027-03-13',file:'Keikyu_2026.json'}
+    {from:'2026-11-21',to:'2027-03-13',file:'Keikyu_2026_NorthShinagawa_localonly_r3.json'}
   ],
   '京急電鉄大師線':[
-    {from:'2026-11-21',to:'2027-03-13',file:'Keikyu_2026.json'}
+    {from:'2026-11-21',to:'2027-03-13',file:'Keikyu_2026_NorthShinagawa_localonly_r3.json'}
   ],
   '伊予鉄道高浜線・横河原線':[
     {from:'2026-10-16',to:'2027-03-13',file:'Iyotetsu_2026.json'}
@@ -3443,6 +3443,7 @@ let firebaseAuth=null;
 let currentAuthUser=null;
 let currentUserProfile=null;
 let profileRegistered=false;
+let profileReadFailed=false; // Firebase一時エラー時に新規ID扱い・自動プロフィール表示をしない
 let authStateReady=false;
 let lastHistoryFingerprint='';
 let firebaseDayListenerDay=null;
@@ -10358,23 +10359,39 @@ initRegionNavigation();
     }
   }
   async function loadUserProfile(user){
-    if(!user || !firebaseAuth) return null;
+    if(!user || !firebaseAuth) return {ok:false,profile:null,error:new Error('Firebase Authentication is not ready')};
     try{
       const db=firebaseDatabase();
-      if(!db) return null;
+      if(!db) throw new Error('Firebase Database is not ready');
       const snap=await db.ref(USER_PROFILE_ROOT).child(user.uid).once('value');
       const raw=snap.val();
-      if(raw&&typeof raw==='object') return {uid:user.uid,name:String(raw.n??raw.name??'').trim(),id:String(raw.i??raw.id??'').trim()};
-    }catch(e){ console.warn('ユーザー情報読込失敗',e); }
-    return null;
+      if(raw&&typeof raw==='object'){
+        return {ok:true,profile:{uid:user.uid,name:String(raw.n??raw.name??'').trim(),id:String(raw.i??raw.id??'').trim()}};
+      }
+      // 正常に読み込めてデータが存在しない場合だけ、新規プロフィールとして扱う。
+      return {ok:true,profile:null};
+    }catch(e){
+      console.warn('ユーザー情報読込失敗（既存IDを保持し、自動プロフィール表示を抑止）',e);
+      return {ok:false,profile:null,error:e};
+    }
   }
   function makeDefaultUserId(user){
     const tail=String(user?.uid||'').replace(/[^A-Za-z0-9]/g,'').slice(-8) || Math.random().toString(36).slice(2,10);
     return tail;
   }
   async function ensureUserProfile(user){
+    profileReadFailed=false;
     if(!user){ profileRegistered=false; return null; }
-    const existing=await loadUserProfile(user);
+    const loaded=await loadUserProfile(user);
+    if(!loaded.ok){
+      // 通信・権限エラーを「プロフィール未登録」と誤認しない。
+      // 同じUIDの既存プロフィールがメモリにあれば保持し、なければIDを生成しない。
+      profileReadFailed=true;
+      const cached=currentUserProfile?.uid===user.uid?currentUserProfile:null;
+      profileRegistered=!!(cached?.name && cached?.id);
+      return cached;
+    }
+    const existing=loaded.profile;
     if(existing?.name && existing?.id){ profileRegistered=true; currentUserProfile=existing; return existing; }
     profileRegistered=false;
     currentUserProfile={uid:user.uid,name:existing?.name||String(user.displayName||'').trim()||'',id:existing?.id||makeDefaultUserId(user)};
@@ -10562,7 +10579,8 @@ initRegionNavigation();
         updateSiteAccountButton();
         renderOperationInfoAuthState();
         if(document.getElementById('operationInfoPanel')?.classList.contains('active')) renderOperationInfoList();
-        if(user && !profileRegistered){
+        // Firebase読み込みエラー時は新規登録扱いにせず、IDを再生成せず、プロフィール画面も自動表示しない。
+        if(user && !profileRegistered && !profileReadFailed){
           setTimeout(()=>openAuthPanel(),0);
         }
         if(document.getElementById('authPanel')?.classList.contains('active')) renderAuthPanel();
@@ -10785,11 +10803,15 @@ initRegionNavigation();
       const db=firebaseDatabase(); if(!db) return;
       const snap=await db.ref(USER_ROOT).child(user.uid).once('value');
       const raw=snap.val()||{};
+      const sameUserProfile=currentUserProfile?.uid===user.uid?currentUserProfile:null;
+      const loadedName=String(raw.n??raw.name??'').trim();
+      const loadedId=String(raw.i??raw.id??'').trim();
       currentUserProfile={
-        ...(currentUserProfile||{uid:user.uid}),
+        ...(sameUserProfile||{}),
         uid:user.uid,
-        name:String(raw.n??raw.name??currentUserProfile?.name??'').trim(),
-        id:String(raw.i??raw.id??currentUserProfile?.id??'').trim()
+        // 古い/部分的なユーザーレコードや一時的な空値で、同一UIDの登録名・IDを消さない。
+        name:loadedName||String(sameUserProfile?.name||'').trim(),
+        id:loadedId||String(sameUserProfile?.id||'').trim()
       };
     }catch(e){}
   }
