@@ -1562,7 +1562,7 @@ const ROUTE_REGISTRY={
   'えちぜん鉄道三国芦原線':{
     id:'echizen-mikuni',
     json:'https://minamikaze2700.github.io/Unyomatome/data/Echizen_2026.json',
-    jsonLines:['勝山永平寺線','三国芦原線'],
+    jsonLines:['三国芦原線'],
     range:'福井～三国港',
     area:'えちぜん鉄道',
     storageRoot:'えちぜん鉄道',
@@ -13243,11 +13243,12 @@ initRegionNavigation();
     try{return typeof window.appCanViewRoute==='function'&&window.appCanViewRoute(routeName)===true;}
     catch(e){return false;}
   }
-  function currentRouteJsonMeta(meta){
+  function currentRouteJsonMeta(meta,dateKey=selectedDateKey){
     try{
       if(typeof routeMetaForScheduleDate==='function'){
-        const dated=routeMetaForScheduleDate(meta,typeof selectedDateKey!=='undefined'?selectedDateKey:undefined);
-        if(dated)return dated;
+        // scheduleVersionsがある路線は、選択日付に対応するJSONがない場合に
+        // 古い/別期間のJSONへフォールバックしない。
+        return routeMetaForScheduleDate(meta,dateKey);
       }
     }catch(e){}
     return meta;
@@ -13298,9 +13299,10 @@ initRegionNavigation();
     }
     return [...unique.values()];
   }
-  async function loadRouteLineDefinitions(routeName,meta){
-    const datedMeta=currentRouteJsonMeta(meta)||meta;
-    const urls=[datedMeta?.json||meta?.json,...(Array.isArray(datedMeta?.relatedJsons)?datedMeta.relatedJsons:(Array.isArray(meta?.relatedJsons)?meta.relatedJsons:[]))]
+  async function loadRouteLineDefinitions(routeName,meta,dateKey=selectedDateKey){
+    const datedMeta=currentRouteJsonMeta(meta,dateKey);
+    if(!datedMeta)return {routeName,meta,json:null,lineDefs:[],jsonSources:[],scheduleUnavailable:true};
+    const urls=[datedMeta?.json,...(Array.isArray(datedMeta?.relatedJsons)?datedMeta.relatedJsons:[])]
       .map(value=>String(value||'').trim()).filter((value,index,array)=>value&&array.indexOf(value)===index);
     if(!urls.length)return {routeName,meta,json:null,lineDefs:[],jsonSources:[]};
     const jsonSources=[];
@@ -13309,12 +13311,12 @@ initRegionNavigation();
         const json=await fetchJsonCached(urls[i]);
         const sourceLines=mapJsonLineDefinitions(json,routeName,meta);
         jsonSources.push({url:urls[i],json,lines:sourceLines});
-        const wanted=Array.isArray(meta?.jsonLines)?meta.jsonLines:[];
+        const wanted=Array.isArray(datedMeta?.jsonLines)?datedMeta.jsonLines:[];
         const found=wanted.length?wanted.every(name=>sourceLines.some(line=>String(line?.name||'')===String(name))):sourceLines.length>0;
         if(found)break;
       }catch(error){console.warn('路線図JSON取得失敗',routeName,urls[i],error);}
     }
-    const wanted=Array.isArray(meta?.jsonLines)?meta.jsonLines:[];
+    const wanted=Array.isArray(datedMeta?.jsonLines)?datedMeta.jsonLines:[];
     const lineDefs=[];
     if(wanted.length){
       for(const name of wanted){
@@ -13424,6 +13426,21 @@ initRegionNavigation();
     // 福岡市地下鉄空港線・箱崎線は全国KMLの同名路線（例：京急空港線）を使わず、
     // 路線専用の駅座標を使った駅間直線で描画する。
     if(route==='福岡市地下鉄空港線・箱崎線')return false;
+    // 京急は線区ごとに対応する京急のKMLだけを採用する。
+    // 「空港線」という一般名だけでJR関西空港線などを拾わない。
+    if(route==='京急電鉄本線'){
+      const allowed={
+        [normalizeLineName('京急本線')]:['京急本線'],
+        [normalizeLineName('空港線')]:['空港線','京急空港線'],
+        [normalizeLineName('逗子線')]:['逗子線','京急逗子線'],
+        [normalizeLineName('久里浜線')]:['久里浜線','京急久里浜線']
+      };
+      const names=allowed[line];
+      return !!names&&names.map(normalizeLineName).includes(kml);
+    }
+    if(route==='京急電鉄大師線'){
+      return line===normalizeLineName('京急大師線')&&kml===normalizeLineName('京急大師線');
+    }
     // 京浜東北・根岸線と横浜線は共有JSONを参照することがあるため、
     // 地図ではそれぞれの実線区のKMLだけを使用し、相手路線の線形を混ぜない。
     if(route==='京浜東北・根岸線')return ['京浜東北線','根岸線'].map(normalizeLineName).includes(kml);
@@ -13469,19 +13486,8 @@ initRegionNavigation();
         if(coords.length>=2)selected.push(coords);
       }
     }
-    // 表記揺れがある場合のみ、長い線名の包含一致を補助的に使う。
-    if(!selected.length){
-      for(const [kmlName,encodedPaths] of Object.entries(KML_DATA.lines||{})){
-        if(isExcludedMapLineName(kmlName)||!mapKmlLineAllowed(routeName,lineDef?.name,kmlName))continue;
-        const normalized=normalizeLineName(kmlName);
-        const matched=aliases.some(alias=>alias.length>=4&&(normalized.includes(alias)||alias.includes(normalized)));
-        if(!matched)continue;
-        for(const encoded of (Array.isArray(encodedPaths)?encodedPaths:[])){
-          const coords=decodeKmlPolyline(encoded);
-          if(coords.length>=2)selected.push(coords);
-        }
-      }
-    }
+    // KML線名は完全一致（またはLINE_NAME_ALIASESで明示した別名）のみ採用する。
+    // 部分一致は「関西空港線」を「京急空港線」と誤認するため行わない。
     return stitchWayGeometries(selected);
   }
   function buildStationLookup(){
@@ -14474,13 +14480,14 @@ initRegionNavigation();
     }
     return count;
   }
-  async function renderNationalRouteMap(requestId){
-    // 路線JSONの描画・駅座標による直線補完は、現在のユーザーが閲覧できる実装済み路線だけを対象にする。
-    // KML由来でHTMLに格納済みの全国背景線は、別レイヤーで従来どおり表示する。
+  async function renderNationalRouteMap(requestId,mapSelection){
+    // 地図を開く直前の選択日付・時刻を固定して、その日付に対応するJSONだけを取得する。
+    // 選択日付のスケジュール設定がない路線、JSON取得に失敗した路線は色付き路線として表示しない。
+    const dateKey=String(mapSelection?.dateKey||selectedDateKey||'');
     const allRoutes=Object.entries(ROUTE_REGISTRY||{}).filter(([routeName])=>!isExcludedMapLineName(routeName)&&routeCanBeViewed(routeName));
-    setStatus(`閲覧可能な路線 ${allRoutes.length} 路線のJSONを確認中…`);
-    const loadedRouteInfos=await mapWithConcurrency(allRoutes,4,async([routeName,meta])=>loadRouteLineDefinitions(routeName,meta));
-    const routeInfos=loadedRouteInfos.filter(info=>info&&!info.error&&!isExcludedMapLineName(info.routeName)).map(info=>({
+    setStatus(`選択日付 ${dateKey} の路線JSONを確認中…`);
+    const loadedRouteInfos=await mapWithConcurrency(allRoutes,4,async([routeName,meta])=>loadRouteLineDefinitions(routeName,meta,dateKey));
+    const routeInfos=loadedRouteInfos.filter(info=>info&&!info.error&&!info.scheduleUnavailable&&!isExcludedMapLineName(info.routeName)&&info.jsonSources?.length>0&&info.lineDefs?.length>0).map(info=>({
       ...info,lineDefs:[...(info.lineDefs||[]).filter(entry=>!isExcludedMapLineName(entry?.line?.name||'')),...appendKmlFallbackLineDefinitions(info)].filter(entry=>!isExcludedMapLineName(entry?.line?.name||''))
     }));
     const validRoutes=routeInfos.filter(info=>info.lineDefs?.length);
@@ -14520,11 +14527,15 @@ initRegionNavigation();
       const missingText=missing.length?`（KML未収録 ${missing.length} 路線）`:'';
       setStatus(`${drawnRoutes} 路線を表示中${missingText}。添付KML線形データを使用しています。`);
     }else{
-      setStatus('閲覧可能な路線の線形が添付KML内に見つかりませんでした。');
+      setStatus(`選択日付 ${dateKey} に対応する路線JSONを取得できた路線がありません。`);
     }
   }
   async function openMap(){
     if(overlay.classList.contains('active'))return;
+    const mapSelection={
+      dateKey:String(document.getElementById('dateInput')?.value||selectedDateKey||''),
+      time:String(document.getElementById('timeInput')?.value||'')
+    };
     originalBodyOverflow=document.body.style.overflow;
     document.body.style.overflow='hidden';
     overlay.classList.add('active');overlay.setAttribute('aria-hidden','false');
@@ -14542,7 +14553,7 @@ initRegionNavigation();
         map?.invalidateSize({pan:false});
       },60);
       routeLayer.clearLayers();stationLabelLayer?.clearLayers();
-      await renderNationalRouteMap(requestId);
+      await renderNationalRouteMap(requestId,mapSelection);
       setTimeout(()=>map?.invalidateSize({pan:false}),120);
       closeBtn.focus();
     }catch(error){
