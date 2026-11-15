@@ -13088,14 +13088,21 @@ initRegionNavigation();
   for(const name of Object.keys(KML_DATA.lines||{}))if(isExcludedMapLineName(name))delete KML_DATA.lines[name];
   if(Array.isArray(KML_DATA.stations))KML_DATA.stations=KML_DATA.stations.filter(item=>!isExcludedMapStationName(item?.[0]));
   const HIDDEN_STATION_PAIRS={
-    '呉線':[['糸崎','三原'],['海田市','広島']],
-    '可部線':[['広島','横川']]
+    // 呉線は広島～天神川～海田市を山陽本線との共用区間として扱わない。
+    // 駅順ベースの除外判定が使えない直線補完時にも除外できるよう駅間を明示する。
+    '呉線':[['糸崎','三原'],['広島','天神川'],['天神川','海田市']],
+    '可部線':[]
   };
+  // 広島地区の共用区間は駅間1本とは限らないため、線区内の駅順で区間全体を除外する。
+  // 山陽本線・可部線・呉線の線形に限り、横川～広島／広島～海田市の間にある
+  // 全ての隣接駅間を、灰色背景線・色付き線の双方から除外する。
+  const HIDDEN_STATION_RANGES=[['横川','広島'],['広島','海田市']];
   const LINE_NAME_ALIASES={
     'スカイツリーライン':['伊勢崎線'],
     '伊勢崎線':['スカイツリーライン'],
     '京浜東北・根岸線':['京浜東北線','根岸線'],
     'アーバンパークライン':['東武野田線','野田線','東武アーバンパークライン'],
+    '東武野田線':['野田線','アーバンパークライン','東武アーバンパークライン'],
     '泉北線':['泉北高速鉄道線','南海泉北線'],
     '海岸線':['神戸市営地下鉄海岸線'],
     '西神・山手線':['神戸市営地下鉄西神・山手線','北神線','山手線','西神線','西神延伸線'],
@@ -13653,10 +13660,31 @@ initRegionNavigation();
     if(endDistance<startDistance)coords.reverse();
     return coords.length>=2?coords:null;
   }
-  function segmentIsHidden(routeName,a,b,lineName){
+  function segmentIsHidden(routeName,a,b,lineName,stationSequence=[]){
     if(routeName==='東武鉄道スカイツリーライン'&&HIDDEN_LINE_NAMES.has(normalizeLineName(lineName)))return true;
-    const pairs=HIDDEN_STATION_PAIRS[routeName]||[];
-    return pairs.some(pair=>(pair[0]===a&&pair[1]===b)||(pair[0]===b&&pair[1]===a));
+    const routePairs=HIDDEN_STATION_PAIRS[routeName]||[];
+    const linePairs=HIDDEN_STATION_PAIRS[lineName]||[];
+    const pairs=[...routePairs,...linePairs];
+    if(pairs.some(pair=>(pair[0]===a&&pair[1]===b)||(pair[0]===b&&pair[1]===a)))return true;
+    // 広島周辺の共用区間は、該当する支線ページだけで非表示にする。
+    // 山陽本線ページまで除外すると、山陽本線の広島～天神川方面も消えてしまうため、
+    // routeName（表示対象ページ）を基準に判定し、lineNameだけでは除外しない。
+    const routeKey=normalizeLineName(routeName);
+    const isKabePage=routeKey.includes(normalizeLineName('可部線'));
+    const isKurePage=routeKey.includes(normalizeLineName('呉線'));
+    if((!isKabePage&&!isKurePage)||!Array.isArray(stationSequence)||stationSequence.length<2)return false;
+    const normalized=stationSequence.map(normalizeStationName);
+    const from=normalizeStationName(a),to=normalizeStationName(b);
+    const ia=normalized.indexOf(from),ib=normalized.indexOf(to);
+    if(ia<0||ib<0||Math.abs(ia-ib)!==1)return false;
+    const segmentStart=Math.min(ia,ib),segmentEnd=Math.max(ia,ib);
+    const ranges=isKabePage?[['横川','広島']]:[['広島','海田市']];
+    return ranges.some(([rangeA,rangeB])=>{
+      const irA=normalized.indexOf(normalizeStationName(rangeA));
+      const irB=normalized.indexOf(normalizeStationName(rangeB));
+      if(irA<0||irB<0)return false;
+      return segmentStart>=Math.min(irA,irB)&&segmentEnd<=Math.max(irA,irB);
+    });
   }
   function ruleColorForPair(info,a,b){
     const lineDefs=info.lineDefs.map(entry=>entry.line);
@@ -13722,7 +13750,7 @@ initRegionNavigation();
       // 駅名の重複を避けるため、各線区専用の座標辞書を使う。
       const lineLookup=createLineStationLookup(line,routeInfo,lookup);
       // 指定された線区は、駅間の推定ではなく添付KMLの線形全体をそのまま使用する。
-      const directKmlLines=new Set(['鶴見線','中央本線','長崎本線','東海道本線','本四備讃線','瀬戸大橋線']);
+      const directKmlLines=new Set(['鶴見線','中央本線','長崎本線','東海道本線','本四備讃線','瀬戸大橋線','東武野田線']);
       if(directKmlLines.has(normalizeLineName(lineName))){
         const kmlPaths=elementPathsForLine(line,routeInfo.meta,routeInfo.routeName);
         if(kmlPaths.length){
@@ -13756,7 +13784,7 @@ initRegionNavigation();
       const pairFeatures=[];
       for(let i=0;i<stations.length-1;i++){
         const a=stations[i],b=stations[i+1];
-        if(!a||!b||segmentIsHidden(routeInfo.routeName,a,b,lineName))continue;
+        if(!a||!b||segmentIsHidden(routeInfo.routeName,a,b,lineName,stations))continue;
         const match=pathCandidatesForPair(line,routeInfo.meta,a,b,localPathCache,projectionCache,lineLookup,routeInfo.routeName);
         if(match){
           const coords=slicePathBetween(match.path,match.pa.s,match.pb.s);
@@ -13882,7 +13910,7 @@ initRegionNavigation();
             const previous=chosen[i-1],current=chosen[i];
             const gap=coordinateDistance(previous,current);
             const a=chunk[i-1].name,b=chunk[i].name;
-            if(gap>50000||segmentIsHidden(routeInfo.routeName,a,b,lineName))emit();
+            if(gap>50000||segmentIsHidden(routeInfo.routeName,a,b,lineName,stations))emit();
           }
           if(!run.length)run.push(chosen[i]);
           else if(coordinateDistance(run[run.length-1],chosen[i])>0.5)run.push(chosen[i]);
@@ -14454,6 +14482,13 @@ initRegionNavigation();
     }
   }
 
+  function backgroundPathsWithoutHiddenSharedSections(lineName,coords){
+    // 全国共通の背景KMLから山陽本線の共用区間を切り取ると、
+    // 山陽本線ページでも広島～天神川方面が消えてしまう。
+    // 背景線形はそのまま保持し、可部線・呉線ページの非表示は
+    // buildRouteFeatures内のrouteName別判定で処理する。
+    return [coords];
+  }
   function drawAllKmlBackgroundLines(){
     // KML背景線は全線を1つのCanvas MultiPolylineにまとめ、Leafletレイヤー数を大幅に削減。
     // 端点座標は別途保持し、非公開路線の終着駅名判定に使用する。
@@ -14468,7 +14503,12 @@ initRegionNavigation();
         const latlngs=coords.map(point=>[Number(point[0]),Number(point[1])]);
         if(latlngs.some(point=>!Number.isFinite(point[0])||!Number.isFinite(point[1])))continue;
         kmlLineTerminalPoints.push({lat:coords[0][0],lon:coords[0][1]},{lat:coords[coords.length-1][0],lon:coords[coords.length-1][1]});
-        allLatLngs.push(latlngs);count++;
+        const visiblePaths=backgroundPathsWithoutHiddenSharedSections(lineName,coords);
+        for(const visiblePath of visiblePaths){
+          if(!Array.isArray(visiblePath)||visiblePath.length<2)continue;
+          allLatLngs.push(visiblePath.map(point=>[Number(point[0]),Number(point[1])]));
+          count++;
+        }
       }
     }
     if(allLatLngs.length){
