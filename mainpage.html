@@ -13652,6 +13652,11 @@ initRegionNavigation();
       '上条':[36.749525,138.407552],
       '湯田中':[36.741770,138.414588]
     },
+    // 東武アーバンパークラインの大宮駅は、同名のニューシャトル大宮駅とは位置が異なる。
+    // 共通の駅名検索でニューシャトル側を拾わないよう、東武線専用の座標を指定する。
+    '東武鉄道アーバンパークライン':{
+      '大宮':[35.90622,139.62450]
+    },
     '樽見鉄道樽見線':{
       '大垣':[35.367105,136.617965],'東大垣':[35.37539,136.64662],
       '横屋':[35.38693,136.65956],'十九条':[35.39574,136.66103],
@@ -14134,12 +14139,23 @@ initRegionNavigation();
     return leafletPromise;
   }
   const JAPAN_MAP_BOUNDS=[[19.0,119.0],[49.0,157.0]];
+  // ズーム中の全ベクターレイヤー再計算を避けるため、ホイール処理はLeaflet標準へ委譲。
+  // zoomSnap:0とLeafletのCSS zoom animationで、小数ズームを保ったまま軽量に拡縮する。
   // 起動時の中心位置・縮尺を維持し、表示開始時の自動ズーム／自動移動は行わない。
   function initializeMap(){
     if(map)return;
+    // 全国路線図はCanvas上に大量の線・駅を描くため、ズーム中はCanvasを再描画せず
+    // CSS変換で一時表示し、ズーム終了時に一度だけ高精細に描き直す。
+    // Leaflet標準のCanvasレンダラー設定のみを変更し、地図データやレイヤー構成は維持する。
+    if(window.L?.Canvas?.prototype?.options){
+      window.L.Canvas.prototype.options.updateWhenZooming=false;
+      window.L.Canvas.prototype.options.updateInterval=64;
+    }
     map=L.map(mapElement,{
       zoomControl:true,preferCanvas:true,worldCopyJump:false,attributionControl:false,
-      minZoom:4,maxZoom:15,zoomSnap:0.25,zoomDelta:0.5,
+      // 表示ズームは小数を維持。上下限は既存の日本地図の範囲（4～15）を尊重する。
+      minZoom:4,maxZoom:15,zoomSnap:0,zoomDelta:0.5,scrollWheelZoom:true,
+      wheelPxPerZoomLevel:80,zoomAnimation:true,
       maxBounds:JAPAN_MAP_BOUNDS,maxBoundsViscosity:1.0
     }).setView([36.2,138.2],5);
     // 陸地は独立した低いPaneへ。海岸線の非同期取得完了後も路線より下に固定する。
@@ -14719,8 +14735,11 @@ initRegionNavigation();
           }
         }
         const stationCoordinate=fallbackCoordinates?.get(stationIndex);
-        if(terminal&&stationCoordinate){
-          // 路線の端点は線形への投影点ではなく、対応する駅位置に必ず丸を置く。
+        const useEmbeddedPathForTobuTerminal=
+          normalizeLineName(routeInfo?.routeName||'')===normalizeLineName('東武鉄道アーバンパークライン')
+          ||normalizeLineName(routeInfo?.routeName||'')===normalizeLineName('東武野田線');
+        if(terminal&&stationCoordinate&&!useEmbeddedPathForTobuTerminal){
+          // 通常は路線の端点を駅位置に固定する。
           best={point:stationCoordinate,distance:0};
         }else if(!best&&stationCoordinate){
           best={point:stationCoordinate,distance:0};
