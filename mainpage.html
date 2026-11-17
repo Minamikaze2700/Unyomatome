@@ -14876,7 +14876,30 @@ initRegionNavigation();
     const lookup=new Map(baseLookup||[]);
     const stations=mapStationSequence(routeInfo,line,(Array.isArray(line?.stations)?line.stations:[]).map(stationNameOf).filter(Boolean));
     const paths=elementPathsForLine(line,routeInfo?.meta,routeInfo?.routeName||'');
-    const automatic=resolveRouteStationCoordinates(stations,baseLookup||new Map(),paths);
+    let automatic;
+    if(String(routeInfo?.routeName||'')==='大阪環状線'&&paths.some(path=>
+      Array.isArray(path?.coords)&&path.coords.length>=3&&coordinateDistance(path.coords[0],path.coords[path.coords.length-1])<=50
+    )){
+      // 環状線では駅順が線形データの始点をまたぐため、直線路線用の
+      // 単調増加DPで候補を選ぶと、ループの片側の駅位置を誤ることがある。
+      // 駅名ごとに同名候補を実際の環状線線形へ投影し、線形に最も近い点を採用する。
+      // 駅ごとの座標を手入力せず、KML駅候補と路線線形から自動対応させる。
+      automatic=new Map();
+      const sourceLookup=baseLookup||new Map();
+      for(const stationName of stations){
+        const candidates=sourceLookup.get(normalizeStationName(stationName))||[];
+        let best=null;
+        for(const candidate of candidates){
+          for(const path of paths){
+            const projected=projectCoordinateToPath(path,candidate);
+            if(projected&&(!best||projected.distance<best.distance))best=projected;
+          }
+        }
+        if(best&&best.distance<=1000)automatic.set(normalizeStationName(stationName),best.point);
+      }
+    }else{
+      automatic=resolveRouteStationCoordinates(stations,baseLookup||new Map(),paths);
+    }
     for(const [name,point] of automatic)lookup.set(name,[point]);
     const lineName=normalizeLineName(line?.name||'');
     const coordinates=ROUTE_SPECIFIC_STATION_COORDS[`${routeInfo?.routeName||''}::${lineName}`]||ROUTE_SPECIFIC_STATION_COORDS[routeInfo?.routeName]||ROUTE_SPECIFIC_STATION_COORDS[lineName]||null;
