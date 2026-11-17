@@ -11705,6 +11705,15 @@ initRegionNavigation();
   #nationalRouteMapStatus{font-size:11px;}
 }
 
+
+.national-map-api-help{color:#555;}
+.national-map-api-help a{color:#1263a5;text-decoration:underline;}
+.national-map-api-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;}
+.national-map-api-actions button{border:0;border-radius:8px;padding:9px 13px;font:700 13px/1.2 inherit;cursor:pointer;}
+.national-map-api-note{color:#666;font-size:12px;}
+@media(max-width:600px){
+  #nationalRouteMapTitleGroup{max-width:min(72vw,430px);}
+}
 </style>
 
 <button id="nationalRouteMapOpenBtn" type="button" aria-label="全国路線図を表示" title="全国路線図を表示">
@@ -11719,7 +11728,9 @@ initRegionNavigation();
 <div id="nationalRouteMapOverlay" aria-hidden="true">
   <div id="nationalRouteMapCanvas" role="application" aria-label="日本全国の鉄道路線図"></div>
   <div id="nationalRouteMapHeader">
-    <div id="nationalRouteMapTitleGroup"><span id="nationalRouteMapTitle" title="都道府県境界：OpenStreetMap由来GeoJSON">全国路線図</span></div>
+    <div id="nationalRouteMapTitleGroup">
+      <span id="nationalRouteMapTitle" title="都道府県境界：OpenStreetMap由来GeoJSON">全国路線図</span>
+    </div>
     <div id="nationalRouteMapOperationLegend" aria-label="運行情報の凡例"><span><i class="delay"></i>遅延</span><span><i class="suspend"></i>運転見合わせ</span></div>
     <button id="nationalRouteMapCloseBtn" type="button" aria-label="路線図を閉じる">×</button>
   </div>
@@ -14317,7 +14328,17 @@ initRegionNavigation();
   let locationAccuracyCircle=null;
   let locationFirstFix=true;
 
-  function setStatus(message){/* 地図上の状態メッセージは表示しない */}
+  function nationalMapCurrentDateKey(){
+    // 全国路線図の時刻表JSONは、ページ全体の日付選択に関係なく日本時間の当日分だけを使う。
+    try{
+      const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+      const values={};for(const part of parts)if(part.type!=='literal')values[part.type]=part.value;
+      return `${values.year}-${values.month}-${values.day}`;
+    }catch(error){
+      const now=new Date();return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    }
+  }
+  function setStatus(message){/* 地図上の一般ステータスは表示しない */}
   function setLocationButton(active,label){
     if(!locationBtn)return;
     locationBtn.setAttribute('aria-pressed',active?'true':'false');
@@ -16174,10 +16195,12 @@ initRegionNavigation();
     const color=status==='suspend'?'#ef5350':'#f2c94c';
     // 広い線から細い線へ多数の段階で重ね、路線中心から外側へ自然に薄くなるグラデーションを近似する。
     // 線幅の刻みを細かくして、従来の少数レイヤーで生じる帯状の境界を目立たなくする。
-    const strokeCount=24;
+    // 外側の光彩を先に描き、中心に近づくほど太く・濃くする。
+    // 背面の路線色に埋もれないよう、外周の透明度を抑えすぎず中心部は明瞭にする。
+    const strokeCount=30;
     const strokes=Array.from({length:strokeCount},(_,index)=>{
       const t=index/(strokeCount-1);
-      return {weight:46-40*t,opacity:.008+.055*t*t};
+      return {weight:58-52*t,opacity:.018+.24*Math.pow(t,2.15)};
     });
     for(const stroke of strokes){
       L.polyline(paths,{
@@ -16185,6 +16208,11 @@ initRegionNavigation();
         interactive:false,bubblingMouseEvents:false,lineCap:'round',lineJoin:'round',smoothFactor:0
       }).addTo(nationalMapOperationInfoLayer);
     }
+    // 路線本体の直下に細い高彩度ラインを置き、縮尺を引いても状態を判別しやすくする。
+    L.polyline(paths,{
+      pane:'operationInfoRoutePane',color,weight:5.5,opacity:.92,
+      interactive:false,bubblingMouseEvents:false,lineCap:'round',lineJoin:'round',smoothFactor:0
+    }).addTo(nationalMapOperationInfoLayer);
   }
   function drawNationalMapOperationInfo(entries){
     if(!nationalMapOperationInfoLayer)return;
@@ -16272,7 +16300,7 @@ initRegionNavigation();
   async function renderNationalRouteMap(requestId,mapSelection){
     // 地図を開く直前の選択日付・時刻を固定して、その日付に対応するJSONだけを取得する。
     // 選択日付のスケジュール設定がない路線、JSON取得に失敗した路線は色付き路線として表示しない。
-    const dateKey=String(mapSelection?.dateKey||selectedDateKey||'');
+    const dateKey=nationalMapCurrentDateKey();
     const allRoutes=Object.entries(ROUTE_REGISTRY||{}).filter(([routeName])=>!isExcludedMapLineName(routeName)&&routeCanBeViewed(routeName));
     setStatus(`選択日付 ${dateKey} の路線JSONを確認中…`);
     const loadedRouteInfos=await mapWithConcurrency(allRoutes,4,async([routeName,meta])=>loadRouteLineDefinitions(routeName,meta,dateKey));
@@ -16333,7 +16361,7 @@ initRegionNavigation();
   async function openMap(){
     if(overlay.classList.contains('active'))return;
     const mapSelection={
-      dateKey:String(document.getElementById('dateInput')?.value||selectedDateKey||''),
+      dateKey:nationalMapCurrentDateKey(),
       time:String(document.getElementById('timeInput')?.value||'')
     };
     originalBodyOverflow=document.body.style.overflow;
@@ -16344,7 +16372,7 @@ initRegionNavigation();
       await ensureLeaflet();
       if(requestId!==activeOpenRequest)return;
       initializeMap();
-      attachNationalMapOperationInfoListener(mapSelection.dateKey);
+      attachNationalMapOperationInfoListener(nationalMapCurrentDateKey());
       loadDetailedCoastline().then(()=>{
         if(overlay.classList.contains('active')){
           map?.invalidateSize({pan:false});
