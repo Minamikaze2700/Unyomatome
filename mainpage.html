@@ -14758,12 +14758,6 @@ initRegionNavigation();
       '上条':[36.749525,138.407552],
       '湯田中':[36.741770,138.414588]
     },
-    // 大阪環状線の新今宮は南海側の同名駅ポイントを拾わず、JR大阪環状線ホーム側へ固定する。
-    '大阪環状線':{
-      '新今宮':[34.65041,135.50034],
-      '今宮':[34.65395,135.49303],
-      '天王寺':[34.64698,135.51485]
-    },
     // 東武アーバンパークラインの大宮駅は、同名のニューシャトル大宮駅とは位置が異なる。
     // 共通の駅名検索でニューシャトル側を拾わないよう、東武線専用の座標を指定する。
     '東武鉄道アーバンパークライン':{
@@ -14808,28 +14802,94 @@ initRegionNavigation();
       return false;
     });
   })();
+  // 路線と駅座標を自動対応付けする。全国共通の駅名辞書には同名駅が複数含まれるため、
+  // 対象路線の線形への距離と駅順（線形上の進行方向）を同時に評価して候補を選ぶ。
+  // これにより、同名の別会社駅（例：新今宮の南海・JR）を個別に座標指定せずに判別する。
+  function resolveRouteStationCoordinates(stations,baseLookup,paths){
+    const resolved=new Map();
+    if(!Array.isArray(stations)||!paths?.length)return resolved;
+    let bestSolution=null;
+    for(const path of paths){
+      if(!path?.coords||path.coords.length<2||!path.length)continue;
+      const closed=coordinateDistance(path.coords[0],path.coords[path.coords.length-1])<120;
+      for(const reverse of [false,true]){
+        const rows=[];
+        for(let i=0;i<stations.length;i++){
+          const name=stations[i],candidates=baseLookup.get(normalizeStationName(name))||[];
+          const options=[];
+          // 候補が1件だけの駅は駅名辞書の座標をそのまま採用する。
+          // 路線形状との照合は同名駅が複数ある駅だけに限定し、全国地図の初期表示を重くしない。
+          if(candidates.length<2){rows.push(options);continue;}
+          for(const point of candidates){
+            const projected=projectCoordinateToPath(path,point);
+            if(!projected||projected.distance>1800)continue;
+            let progress=reverse?path.length-projected.s:projected.s;
+            options.push({point:projected.point,distance:projected.distance,progress,source:point});
+            if(closed)options.push({point:projected.point,distance:projected.distance,progress:progress+path.length,source:point});
+          }
+          rows.push(options);
+        }
+        // 駅候補が欠けている箇所で分割し、連続する駅列ごとに最小コストを求める。
+        let chunks=[],chunk=[];
+        for(let i=0;i<rows.length;i++){
+          if(!rows[i].length){if(chunk.length)chunks.push(chunk);chunk=[];continue;}
+          chunk.push({index:i,options:rows[i]});
+        }
+        if(chunk.length)chunks.push(chunk);
+        const selected=new Map();let coverage=0,totalCost=0;
+        for(const part of chunks){
+          let states=part[0].options.map((option,j)=>({cost:option.distance,parent:-1,option,j}));
+          const history=[states];
+          for(let i=1;i<part.length;i++){
+            const next=[];
+            for(let j=0;j<part[i].options.length;j++){
+              const option=part[i].options[j];let best=null;
+              for(let k=0;k<states.length;k++){
+                const prev=states[k];
+                const delta=option.progress-prev.option.progress;
+                // 駅順と逆向きの候補は強く不利にする。駅間が極端に長い候補も抑制。
+                const orderPenalty=delta < -120 ? Math.min(100000,(-delta-120)*7) : 0;
+                const jumpPenalty=delta>50000 ? (delta-50000)*.015 : 0;
+                const cost=prev.cost+option.distance+orderPenalty+jumpPenalty;
+                if(!best||cost<best.cost)best={cost,parent:k,option,j};
+              }
+              next.push(best);
+            }
+            states=next;history.push(states);
+          }
+          let state=states.reduce((a,b)=>!a||b.cost<a.cost?b:a,null);
+          if(!state)continue;
+          totalCost+=state.cost;coverage+=part.length;
+          for(let i=part.length-1;i>=0;i--){
+            selected.set(part[i].index,state.option.point);
+            state= i>0 ? history[i-1][state.parent] : null;
+          }
+        }
+        const score=coverage*10000-totalCost;
+        if(coverage&&(!bestSolution||score>bestSolution.score))bestSolution={score,selected,coverage,totalCost};
+      }
+    }
+    if(bestSolution)for(const [index,point] of bestSolution.selected)resolved.set(normalizeStationName(stations[index]),point);
+    return resolved;
+  }
   function createLineStationLookup(line,routeInfo,baseLookup){
     const lookup=new Map(baseLookup||[]);
+    const stations=mapStationSequence(routeInfo,line,(Array.isArray(line?.stations)?line.stations:[]).map(stationNameOf).filter(Boolean));
+    const paths=elementPathsForLine(line,routeInfo?.meta,routeInfo?.routeName||'');
+    const automatic=resolveRouteStationCoordinates(stations,baseLookup||new Map(),paths);
+    for(const [name,point] of automatic)lookup.set(name,[point]);
     const lineName=normalizeLineName(line?.name||'');
     const coordinates=ROUTE_SPECIFIC_STATION_COORDS[`${routeInfo?.routeName||''}::${lineName}`]||ROUTE_SPECIFIC_STATION_COORDS[routeInfo?.routeName]||ROUTE_SPECIFIC_STATION_COORDS[lineName]||null;
     if(coordinates){
-      // 七隈線の駅座標は、駅名辞書の座標をそのまま使わず、HTML内の実KML線形へ
-      // 投影して駅丸を配置する。これにより駅丸と線路のわずかなズレを解消する。
-      let nanakumaPaths=[];
-      if(normalizeLineName(routeInfo?.routeName||'')===normalizeLineName('福岡市地下鉄七隈線')){
-        nanakumaPaths=elementPathsForLine(line,routeInfo.meta,routeInfo.routeName);
-      }
       for(const [name,point] of Object.entries(coordinates)){
         let displayPoint=point;
-        if(nanakumaPaths.length){
-          let best=null;
-          for(const path of nanakumaPaths){
-            const projected=projectCoordinateToPath(path,point);
-            if(projected&&(!best||projected.distance<best.distance))best=projected;
-          }
-          // 極端に離れた別線形へ誤吸着しないよう、80m以内の場合だけ補正。
-          if(best&&best.distance<=80)displayPoint=best.point;
+        // 既存の個別補正座標も、線形が近くにある場合は線路上へ吸着させる。
+        let best=null;
+        for(const path of paths){
+          const projected=projectCoordinateToPath(path,point);
+          if(projected&&(!best||projected.distance<best.distance))best=projected;
         }
+        if(best&&best.distance<=100)displayPoint=best.point;
         lookup.set(normalizeStationName(name),[displayPoint]);
       }
     }
