@@ -15072,9 +15072,21 @@ initRegionNavigation();
     const paths=cache.get(lineKey)||[];
     let best=null;
     for(const path of paths){
-      const pa=nearestStationProjection(a,path,lookup,projectionCache);
-      const pb=nearestStationProjection(b,path,lookup,projectionCache);
-      if(!pa||!pb||Math.abs(pa.s-pb.s)<30)continue;
+      let pa=nearestStationProjection(a,path,lookup,projectionCache);
+      let pb=nearestStationProjection(b,path,lookup,projectionCache);
+      if(!pa||!pb)continue;
+      // 大阪環状線のKMLは大阪駅を始点・終点の両方に持つ閉ループ。
+      // 大阪駅の最近傍投影は常に先頭(s=0)になりやすく、天満方面の
+      // 最終区間でループ全周を切り出してしまうため、隣駅側の位置に応じて
+      // 大阪駅を終端(s=path.length)として扱い、閉ループの継ぎ目を正しく描く。
+      if(String(routeName||'')==='大阪環状線'&&path.length>0
+        &&coordinateDistance(path.coords[0],path.coords[path.coords.length-1])<=50){
+        const aIsOsaka=normalizeStationName(a)===normalizeStationName('大阪');
+        const bIsOsaka=normalizeStationName(b)===normalizeStationName('大阪');
+        if(aIsOsaka&&pb.s>path.length/2)pa={...pa,s:path.length};
+        if(bIsOsaka&&pa.s>path.length/2)pb={...pb,s:path.length};
+      }
+      if(Math.abs(pa.s-pb.s)<30)continue;
       const score=pa.distance+pb.distance;
       if(!best||score<best.score)best={path,pa,pb,score};
     }
