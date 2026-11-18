@@ -755,6 +755,14 @@ button,input,select,textarea{font-family:inherit}
 
 .formation-input-history-input-meta{display:block;flex-basis:100%;font-size:11px;line-height:1.3;color:#64748b;}
 </style>
+<style id="hydrosheds-crisp-mask-rendering">
+  .hydrosheds-landmask-tile,
+  .hydrosheds-sea-mask-tile {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+</style>
+
 <style id="today-operation-type-width-fix">
 /* 今日の運用：種別は2文字までなので、背景・列幅とも2文字相当に縮小 */
 .train-operation-type{
@@ -15647,6 +15655,16 @@ initRegionNavigation();
     return hydroMaskZipBuffer;
   }
 
+  // 15秒グリッドをWeb Mercator表示用の行へ再サンプリングしてから画像化する。
+  // Leaflet ImageOverlayは投影座標上で画像を伸縮するため、緯度方向を単純な等間隔
+  // （緯度経度のまま）で画像化すると海岸線が上下にずれて見える。
+  const HYDRO_MERCATOR_RADIUS=6378137;
+  const hydroLatToMercatorY=lat=>HYDRO_MERCATOR_RADIUS*Math.log(Math.tan(Math.PI/4+(lat*Math.PI/180)/2));
+  const hydroMercatorYToLat=y=>(2*Math.atan(Math.exp(y/HYDRO_MERCATOR_RADIUS))-Math.PI/2)*180/Math.PI;
+  let hydroSeaMaskTiles=[];
+  function canvasToPngBlob(canvas){
+    return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('HydroSHEDSタイルPNGの生成に失敗しました')),'image/png'));
+  }
   async function loadHydroSHEDSLandMask(){
     await ensureHydroMaskDependencies();
     console.info('HydroSHEDS land maskを取得しています:',HYDROSHEDS_LANDMASK_ZIP_URL);
@@ -15674,50 +15692,61 @@ initRegionNavigation();
     if(!mask||mask.length!==width*height)throw new Error('HydroSHEDS Land Maskの画素数が一致しません');
     const west=rasterWest+x0*pixelX;
     const north=rasterNorth-y0*pixelY;
+    const south=north-height*pixelY;
     hydroSHEDSLandMaskRaster={data:mask,width,height,west,north,pixelX,pixelY};
     hydroSeaLandMaskReady=true;
 
-    // 15秒解像度のグリッドをタイル単位で描画。縦横のタイル境界線は描かず、
-    // 画素値2を海、1/3を陸として塗り分ける。水色は河川と同色。
+    // 陸地・海の画像を同じ走査で同時生成。前版のように同じラスターを2回走査しない。
+    // 15sデータの本来の解像度は維持し、Web Mercatorへ再配置して位置ずれを防ぐ。
     landLayer.clearLayers();
-    const tileSize=1536;
-    const seaRgb=[131,204,233],landRgb=[247,248,242];
+    hydroSeaMaskTiles.forEach(tile=>{try{URL.revokeObjectURL(tile.url);}catch(_){}});
+    hydroSeaMaskTiles=[];
+    const tileSize=2048,seaRgb=[131,204,233],landRgb=[247,248,242];
+    const mercNorth=hydroLatToMercatorY(north),mercSouth=hydroLatToMercatorY(south);
     let tileCount=0,seaCells=0,landCells=0;
-    const addTile=(tx,ty,tw,th)=>new Promise((resolve,reject)=>{
-      const canvas=document.createElement('canvas');canvas.width=tw;canvas.height=th;
-      const ctx=canvas.getContext('2d',{alpha:true});
-      if(!ctx){reject(new Error('HydroSHEDSマスク描画用Canvasを作成できません'));return;}
-      const imageData=ctx.createImageData(tw,th),pixels=imageData.data;
-      for(let row=0;row<th;row++){
-        const sourceStart=(ty+row)*width+tx;
-        for(let col=0;col<tw;col++){
-          const value=Number(mask[sourceStart+col]);
-          const dest=(row*tw+col)*4;
-          if(value===2){seaCells++;pixels[dest+3]=0;}
-          else if(value===1||value===3){pixels[dest]=landRgb[0];pixels[dest+1]=landRgb[1];pixels[dest+2]=landRgb[2];pixels[dest+3]=255;landCells++;}
-          else pixels[dest+3]=0;
+    for(let ty=0;ty<height;ty+=tileSize){
+      const th=Math.min(tileSize,height-ty);
+      const yMercTop=mercNorth-(ty/height)*(mercNorth-mercSouth);
+      const yMercBottom=mercNorth-((ty+th)/height)*(mercNorth-mercSouth);
+      const tileNorth=hydroMercatorYToLat(yMercTop);
+      const tileSouth=hydroMercatorYToLat(yMercBottom);
+      for(let tx=0;tx<width;tx+=tileSize){
+        const tw=Math.min(tileSize,width-tx);
+        const landCanvas=document.createElement('canvas'),seaCanvas=document.createElement('canvas');
+        landCanvas.width=seaCanvas.width=tw;landCanvas.height=seaCanvas.height=th;
+        const landCtx=landCanvas.getContext('2d',{alpha:true}),seaCtx=seaCanvas.getContext('2d',{alpha:true});
+        if(!landCtx||!seaCtx)throw new Error('HydroSHEDSマスク描画用Canvasを作成できません');
+        const landImage=landCtx.createImageData(tw,th),seaImage=seaCtx.createImageData(tw,th);
+        const landPixels=landImage.data,seaPixels=seaImage.data;
+        for(let row=0;row<th;row++){
+          // 出力画像の各行はWeb Mercator上で等間隔。対応する元GeoTIFF行を最近傍で参照。
+          const mercY=yMercTop-((row+0.5)/th)*(yMercTop-yMercBottom);
+          const lat=hydroMercatorYToLat(mercY);
+          const srcRow=Math.max(0,Math.min(height-1,Math.floor((north-lat)/pixelY)));
+          const sourceStart=srcRow*width+tx;
+          for(let col=0;col<tw;col++){
+            const value=mask[sourceStart+col],dest=(row*tw+col)*4;
+            if(value===1||value===3){
+              landPixels[dest]=landRgb[0];landPixels[dest+1]=landRgb[1];landPixels[dest+2]=landRgb[2];landPixels[dest+3]=255;landCells++;
+            }else landPixels[dest+3]=0;
+            if(value===2){
+              seaPixels[dest]=seaRgb[0];seaPixels[dest+1]=seaRgb[1];seaPixels[dest+2]=seaRgb[2];seaPixels[dest+3]=255;seaCells++;
+            }else seaPixels[dest+3]=0;
+          }
         }
-      }
-      ctx.putImageData(imageData,0,0);
-      canvas.toBlob(blob=>{
-        if(!blob){reject(new Error('HydroSHEDS海陸タイルをPNGに変換できません'));return;}
-        const url=URL.createObjectURL(blob);
-        const tileWest=west+tx*pixelX,tileEast=west+(tx+tw)*pixelX;
-        const tileNorth=north-ty*pixelY,tileSouth=north-(ty+th)*pixelY;
-        L.imageOverlay(url,[[tileSouth,tileWest],[tileNorth,tileEast]],{
+        landCtx.putImageData(landImage,0,0);seaCtx.putImageData(seaImage,0,0);
+        const [landBlob,seaBlob]=await Promise.all([canvasToPngBlob(landCanvas),canvasToPngBlob(seaCanvas)]);
+        const bounds=[[tileSouth,west+tx*pixelX],[tileNorth,west+(tx+tw)*pixelX]];
+        const landUrl=URL.createObjectURL(landBlob),seaUrl=URL.createObjectURL(seaBlob);
+        L.imageOverlay(landUrl,bounds,{
           pane:'landPane',opacity:1,interactive:false,className:'hydrosheds-landmask-tile'
         }).addTo(landLayer);
-        tileCount++;resolve();
-      },'image/png');
-    });
-    for(let ty=0;ty<height;ty+=tileSize){
-      for(let tx=0;tx<width;tx+=tileSize){
-        const tw=Math.min(tileSize,width-tx),th=Math.min(tileSize,height-ty);
-        await addTile(tx,ty,tw,th);
+        hydroSeaMaskTiles.push({url:seaUrl,bounds});
+        tileCount++;
       }
     }
     map?.attributionControl?.addAttribution('Land/sea mask: HydroSHEDS v1.1 (15 arc-sec) / WWF');
-    console.info(`陸地の色を描画しました: ${tileCount}タイル、陸 ${landCells.toLocaleString()}セル（海データは後続フェーズで描画）、解像度 ${pixelX.toFixed(6)}°`);
+    console.info(`陸地マスクを描画しました: ${tileCount}タイル、陸 ${landCells.toLocaleString()}セル、海 ${seaCells.toLocaleString()}セル、Mercator補正済み、解像度 ${pixelX.toFixed(6)}°`);
     return tileCount;
   }
   function loadHydroSHEDSSeaLandMask(){
@@ -15725,56 +15754,28 @@ initRegionNavigation();
     hydroSeaLandMaskPromise=loadHydroSHEDSLandMask().catch(error=>{
       hydroSeaLandMaskPromise=null;
       hydroSeaLandMaskReady=false;hydroSHEDSLandMaskRaster=null;
+      hydroSeaMaskTiles.forEach(tile=>{try{URL.revokeObjectURL(tile.url);}catch(_){}});hydroSeaMaskTiles=[];
       landLayer?.clearLayers();
       console.error('HydroSHEDS Land Maskを読み込めません。旧OSM/GSHHG海岸線へのフォールバックは行いません。',error);
       return 0;
     });
     return hydroSeaLandMaskPromise;
   }
-  // 海は陸地タイルとは別フェーズで描画する。Paneは従来と同じlandPane(350)を使い、
-  // 路線・国道・高速道路・都道府県境界との視覚的な重なり順は変更しない。
+  // 海は先に作成した同一マスクタイルを追加するだけ。再走査・再PNG化を行わない。
+  // Paneのz-indexは変更せず、既存の表示順を維持する。
   function drawHydroSHEDSSeaMask(){
     if(hydroSeaMaskRenderPromise)return hydroSeaMaskRenderPromise;
-    if(!hydroSeaLandMaskReady||!hydroSHEDSLandMaskRaster||!seaLayer)return Promise.resolve(0);
-    hydroSeaMaskRenderPromise=(async()=>{
-      const {data,width,height,west,north,pixelX,pixelY}=hydroSHEDSLandMaskRaster;
+    if(!hydroSeaLandMaskReady||!seaLayer)return Promise.resolve(0);
+    hydroSeaMaskRenderPromise=Promise.resolve().then(()=>{
       seaLayer.clearLayers();
-      const tileSize=1536,seaRgb=[131,204,233];
-      let tileCount=0,seaCells=0;
-      const addTile=(tx,ty,tw,th)=>new Promise((resolve,reject)=>{
-        const canvas=document.createElement('canvas');canvas.width=tw;canvas.height=th;
-        const ctx=canvas.getContext('2d',{alpha:true});
-        if(!ctx){reject(new Error('HydroSHEDS海タイル描画用Canvasを作成できません'));return;}
-        const imageData=ctx.createImageData(tw,th),pixels=imageData.data;
-        for(let row=0;row<th;row++){
-          const sourceStart=(ty+row)*width+tx;
-          for(let col=0;col<tw;col++){
-            const dest=(row*tw+col)*4;
-            if(Number(data[sourceStart+col])===2){
-              pixels[dest]=seaRgb[0];pixels[dest+1]=seaRgb[1];pixels[dest+2]=seaRgb[2];pixels[dest+3]=255;seaCells++;
-            }else pixels[dest+3]=0;
-          }
-        }
-        ctx.putImageData(imageData,0,0);
-        canvas.toBlob(blob=>{
-          if(!blob){reject(new Error('HydroSHEDS海タイルをPNGに変換できません'));return;}
-          const url=URL.createObjectURL(blob);
-          const tileWest=west+tx*pixelX,tileEast=west+(tx+tw)*pixelX;
-          const tileNorth=north-ty*pixelY,tileSouth=north-(ty+th)*pixelY;
-          L.imageOverlay(url,[[tileSouth,tileWest],[tileNorth,tileEast]],{
-            pane:'landPane',opacity:1,interactive:false,className:'hydrosheds-sea-mask-tile'
-          }).addTo(seaLayer);
-          tileCount++;resolve();
-        },'image/png');
-      });
-      for(let ty=0;ty<height;ty+=tileSize){
-        for(let tx=0;tx<width;tx+=tileSize){
-          await addTile(tx,ty,Math.min(tileSize,width-tx),Math.min(tileSize,height-ty));
-        }
+      for(const tile of hydroSeaMaskTiles){
+        L.imageOverlay(tile.url,tile.bounds,{
+          pane:'landPane',opacity:1,interactive:false,className:'hydrosheds-sea-mask-tile'
+        }).addTo(seaLayer);
       }
-      console.info(`海データを描画しました: ${tileCount}タイル、海 ${seaCells.toLocaleString()}セル`);
-      return tileCount;
-    })().catch(error=>{hydroSeaMaskRenderPromise=null;console.warn('HydroSHEDS海データを描画できませんでした',error);return 0;});
+      console.info(`海データを描画しました: ${hydroSeaMaskTiles.length}タイル（陸地マスクと同じMercator補正）`);
+      return hydroSeaMaskTiles.length;
+    }).catch(error=>{hydroSeaMaskRenderPromise=null;console.warn('HydroSHEDS海データを描画できませんでした',error);return 0;});
     return hydroSeaMaskRenderPromise;
   }
 
@@ -15937,7 +15938,7 @@ initRegionNavigation();
     for(let i=0;i<endpoints.length;i++){
       const endpoint=endpoints[i];
       const controller=new AbortController();
-      const timeout=setTimeout(()=>controller.abort(),i===0?25000:15000);
+      const timeout=setTimeout(()=>controller.abort(),i===0?9000:5500);
       try{
         waterwayLastRequestAt=Date.now();
         const response=await fetch(endpoint,{method:'POST',mode:'cors',cache:'no-store',signal:controller.signal,
@@ -16025,7 +16026,7 @@ initRegionNavigation();
       if(zoom>=13)waterwayPattern+='|drain|ditch';
       if(zoom>=14)waterwayPattern+='|fairway';
       const bbox=`${south},${west},${north},${east}`;
-      const query=`[out:json][timeout:45];(way["waterway"~"^(${waterwayPattern})$"](${bbox});way["natural"="water"](${bbox});way["waterway"="riverbank"](${bbox});way["landuse"="reservoir"](${bbox}););out geom;`;
+      const query=`[out:json][timeout:25];(way["waterway"~"^(${waterwayPattern})$"](${bbox});way["natural"="water"](${bbox});way["waterway"="riverbank"](${bbox});way["landuse"="reservoir"](${bbox}););out geom;`;
       let data=null,lastError=null;
       waterwayRequestInFlight=true;
       try{
@@ -17060,37 +17061,30 @@ initRegionNavigation();
       attachNationalMapOperationInfoListener(nationalMapCurrentDateKey());
       waterwaysEnabled=false;
       routeLayer.clearLayers();stationLabelLayer?.clearLayers();
-      setStatus('陸地の色を読み込み中…');
-      await loadHydroSHEDSSeaLandMask();
+      // 陸海マスクと路線JSONは独立しているため同時に取得・準備する。
+      // 実際の前後関係は各Paneの既存z-indexで固定し、表示レイヤーの重なり順は変えない。
+      setStatus('陸地・路線を並行して読み込み中…');
+      await Promise.all([
+        loadHydroSHEDSSeaLandMask(),
+        renderNationalRouteMap(requestId,mapSelection)
+      ]);
       if(requestId!==activeOpenRequest)return;
 
-      setStatus('路線を読み込み中…');
-      await renderNationalRouteMap(requestId,mapSelection);
-      if(requestId!==activeOpenRequest)return;
-
-      setStatus('国道を読み込み中…');
-      await loadNationalRoadGeometry();
-      if(requestId!==activeOpenRequest)return;
-
-      setStatus('高速道路を読み込み中…');
-      await loadExpresswayGeometry();
-      if(requestId!==activeOpenRequest)return;
-
-      setStatus('都道府県境界を読み込み中…');
-      await loadPrefectureBoundaries();
-      if(requestId!==activeOpenRequest)return;
-
-      setStatus('海を読み込み中…');
-      await drawHydroSHEDSSeaMask();
-      if(requestId!==activeOpenRequest)return;
-
-      setStatus('湖沼を読み込み中…');
-      await loadInlandWaterPolygons();
-      if(requestId!==activeOpenRequest)return;
-
-      setStatus('河川を読み込み中…');
+      // 国道・高速道路・都道府県境界は相互依存しないため並列取得。
+      // 海・湖沼・河川も陸海マスク準備後に並列化し、全体の待ち時間を短縮する。
+      setStatus('道路・境界・水域データを並行して読み込み中…');
       waterwaysEnabled=true;
-      scheduleVisibleWaterways();
+      const backgroundTasks=await Promise.allSettled([
+        loadNationalRoadGeometry(),
+        loadExpresswayGeometry(),
+        loadPrefectureBoundaries(),
+        drawHydroSHEDSSeaMask(),
+        loadInlandWaterPolygons(),
+        loadVisibleWaterways()
+      ]);
+      if(requestId!==activeOpenRequest)return;
+      const failedTasks=backgroundTasks.filter(item=>item.status==='rejected').length;
+      if(failedTasks)console.warn(`背景データの読み込みに失敗した処理: ${failedTasks}件`);
       map?.invalidateSize({pan:false});
       setTimeout(()=>map?.invalidateSize({pan:false}),120);
       closeBtn.focus();
