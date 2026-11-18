@@ -15567,10 +15567,97 @@ initRegionNavigation();
   }
 
   let detailedCoastlinePromise=null;
+  // 海岸線ポリゴンを国道の陸海判定にも共有する。
+  let coastlineLandMaskFeatures=[];
+  let coastlineLandMaskGrid=null;
+  const COAST_EDGE_LAT_CELL=.05;
+  function buildCoastlineLandMaskGrid(){
+    // ポリゴン全頂点を毎回走査すると重いため、経度・緯度の粗いセルと
+    // 緯度帯ごとの海岸線エッジ索引を作り、点判定を局所化する。
+    const cellSize=.25,grid=new Map();
+    coastlineLandMaskFeatures.forEach((feature,index)=>{
+      const minX=Math.floor(feature.minLon/cellSize),maxX=Math.floor(feature.maxLon/cellSize);
+      const minY=Math.floor(feature.minLat/cellSize),maxY=Math.floor(feature.maxLat/cellSize);
+      for(let x=minX;x<=maxX;x++)for(let y=minY;y<=maxY;y++){
+        const key=`${x},${y}`;let bucket=grid.get(key);if(!bucket)grid.set(key,bucket=[]);bucket.push(index);
+      }
+      const edgeGrid=new Map();
+      for(const ring of feature.latlngs){
+        for(let i=1;i<ring.length;i++){
+          const a=ring[i-1],b=ring[i];
+          const minLat=Math.min(a[0],b[0]),maxLat=Math.max(a[0],b[0]);
+          if(maxLat-minLat<1e-10)continue;
+          const minBucket=Math.floor(minLat/COAST_EDGE_LAT_CELL);
+          const maxBucket=Math.floor(maxLat/COAST_EDGE_LAT_CELL);
+          for(let bucketIndex=minBucket;bucketIndex<=maxBucket;bucketIndex++){
+            let edges=edgeGrid.get(bucketIndex);
+            if(!edges)edgeGrid.set(bucketIndex,edges=[]);
+            edges.push([a[0],a[1],b[0],b[1]]);
+          }
+        }
+      }
+      feature.edgeGrid=edgeGrid;
+    });
+    coastlineLandMaskGrid={cellSize,grid};
+  }
+  function pointInCoastRings(lat,lon,feature){
+    const edges=feature.edgeGrid?.get(Math.floor(lat/COAST_EDGE_LAT_CELL))||[];
+    let inside=false;
+    for(const edge of edges){
+      const aLat=edge[0],aLon=edge[1],bLat=edge[2],bLon=edge[3];
+      if(((aLat>lat)!==(bLat>lat))&&lon<(bLon-aLon)*(lat-aLat)/(bLat-aLat)+aLon)inside=!inside;
+    }
+    return inside;
+  }
+  function isCoordinateOnLand(lat,lon){
+    if(!coastlineLandMaskGrid)return false;
+    const {cellSize,grid}=coastlineLandMaskGrid;
+    const candidates=grid.get(`${Math.floor(lon/cellSize)},${Math.floor(lat/cellSize)}`)||[];
+    let land=false;
+    for(const index of candidates){
+      const feature=coastlineLandMaskFeatures[index];
+      if(lat<feature.minLat||lat>feature.maxLat||lon<feature.minLon||lon>feature.maxLon)continue;
+      if(pointInCoastRings(lat,lon,feature))land=(feature.level%2===1);
+    }
+    return land;
+  }
+  function clipRoadPathToLand(latlngs){
+    // 海岸線マスクがない状態で未加工の国道を表示すると、海上区間が残るため描画しない。
+    if(!coastlineLandMaskGrid||latlngs.length<2)return [];
+    const result=[];let current=[];
+    const pushPoint=(point)=>{if(!current.length||Math.abs(current[current.length-1][0]-point[0])>1e-8||Math.abs(current[current.length-1][1]-point[1])>1e-8)current.push(point);};
+    for(let i=1;i<latlngs.length;i++){
+      const a=latlngs[i-1],b=latlngs[i];
+      const meanLat=(a[0]+b[0])/2,dx=(b[1]-a[1])*111.32*Math.cos(meanLat*Math.PI/180),dy=(b[0]-a[0])*111.32;
+      const steps=Math.max(1,Math.ceil(Math.hypot(dx,dy)/.05));
+      let prev=[a[0],a[1]],prevLand=isCoordinateOnLand(prev[0],prev[1]);
+      if(prevLand)pushPoint(prev);else if(current.length){if(current.length>1)result.push(current);current=[];}
+      for(let j=1;j<=steps;j++){
+        const t=j/steps,point=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+        const onLand=isCoordinateOnLand(point[0],point[1]);
+        if(onLand!==prevLand){
+          let lo=(j-1)/steps,hi=t;
+          for(let k=0;k<12;k++){
+            const mid=(lo+hi)/2,probe=[a[0]+(b[0]-a[0])*mid,a[1]+(b[1]-a[1])*mid];
+            if(isCoordinateOnLand(probe[0],probe[1])===prevLand)lo=mid;else hi=mid;
+          }
+          const edgeT=(lo+hi)/2,edge=[a[0]+(b[0]-a[0])*edgeT,a[1]+(b[1]-a[1])*edgeT];
+          if(prevLand){pushPoint(edge);if(current.length>1)result.push(current);current=[];}
+          else pushPoint(edge);
+        }
+        if(onLand)pushPoint(point);
+        else if(current.length){if(current.length>1)result.push(current);current=[];}
+        prev=point;prevLand=onLand;
+      }
+    }
+    if(current.length>1)result.push(current);
+    return result;
+  }
   function loadDetailedCoastline(){
     if(detailedCoastlinePromise)return detailedCoastlinePromise;
     detailedCoastlinePromise=(async()=>{
-      // GSHHG 2.3.7 High-resolution polygons. Unlike the former Natural Earth 1:10m
+      coastlineLandMaskFeatures=[];coastlineLandMaskGrid=null;
+      // GSHHG 2.3.7 High-resolution polygons (2017-era baseline; see source notes). Unlike the former Natural Earth 1:10m
       // line layer, this source carries closed land/ocean boundary polygons and can
       // therefore provide both the outline and the land fill from the same dataset.
       const base='https://services7.arcgis.com/WSiUmUhlFx4CtMBB/arcgis/rest/services/GSHHS_GlobalCoastlines_HighResolution/FeatureServer/0/query';
@@ -15601,7 +15688,16 @@ initRegionNavigation();
           if(Array.isArray(geometry.rings)){
             const latlngRings=geometry.rings.map(ring=>ring.map(point=>[Number(point[1]),Number(point[0])]))
               .filter(ring=>ring.length>=4&&ring.every(point=>Number.isFinite(point[0])&&Number.isFinite(point[1])));
-            if(latlngRings.length)polygonFeatures.push({level,latlngs:latlngRings});
+            if(latlngRings.length){
+              polygonFeatures.push({level,latlngs:latlngRings});
+              // Math.min(...大量配列) は引数上限を超えて RangeError になるため、逐次集計する。
+              let minLat=Infinity,maxLat=-Infinity,minLon=Infinity,maxLon=-Infinity;
+              for(const ring of latlngRings)for(const point of ring){
+                if(point[0]<minLat)minLat=point[0];if(point[0]>maxLat)maxLat=point[0];
+                if(point[1]<minLon)minLon=point[1];if(point[1]>maxLon)maxLon=point[1];
+              }
+              coastlineLandMaskFeatures.push({level,latlngs:latlngRings,minLat,maxLat,minLon,maxLon});
+            }
           }else if(Array.isArray(geometry.paths)){
             for(const path of geometry.paths){
               if(!Array.isArray(path)||path.length<4)continue;
@@ -15622,6 +15718,8 @@ initRegionNavigation();
       // GSHHGの階層を順番に重ねる。L1/L3は陸地、L2/L4は湖・池として水色。
       // これにより新しい海岸線ポリゴン自体を塗りつぶし元とし、旧KML陸地は使わない。
       polygonFeatures.sort((a,b)=>a.level-b.level);
+      coastlineLandMaskFeatures.sort((a,b)=>a.level-b.level);
+      buildCoastlineLandMaskGrid();
       for(const feature of polygonFeatures){
         const isLandLevel=!Number.isFinite(feature.level)||feature.level%2===1;
         L.polygon(feature.latlngs,{
@@ -15637,7 +15735,7 @@ initRegionNavigation();
       }
       if(!count)throw new Error('GSHHGから日本周辺の海岸線ポリゴンが返されませんでした');
       return count;
-    })().catch(error=>{detailedCoastlinePromise=null;console.warn('GSHHG海岸線を利用できません。旧簡略化塗りつぶしは使用しません。',error);return 0;});
+    })().catch(error=>{detailedCoastlinePromise=null;coastlineLandMaskFeatures=[];coastlineLandMaskGrid=null;console.warn('GSHHG海岸線を利用できません。海上区間の誤表示を防ぐため国道は描画しません。',error);return 0;});
     return detailedCoastlinePromise;
   }
   function escapeHtml(value){
@@ -16218,6 +16316,8 @@ initRegionNavigation();
   function drawNationalRoadBackgroundLines(){
     if(!nationalRoadLayer)return 0;
     nationalRoadLayer.clearLayers();
+    // 海岸線取得前に全区間を描くと海上国道が表示されるため、マスク完成まで待つ。
+    if(!coastlineLandMaskGrid){console.info('海岸線マスク未準備のため国道描画を保留しています');return 0;}
     const allPaths=[];let count=0,pointCount=0;
     for(const road of Object.values(NATIONAL_ROAD_DATA||{})){
       for(const coordinates of (Array.isArray(road?.lines)?road.lines:[])){
@@ -16229,7 +16329,12 @@ initRegionNavigation();
           latlngs.push([lat,lon]);
         }
         if(latlngs.length<2)continue;
-        allPaths.push(latlngs);count++;pointCount+=latlngs.length;
+        // 海上に伸びた国道線分（海上区間の誤った接続・座標ずれ）を海岸線でクリップ。
+        const clippedPaths=clipRoadPathToLand(latlngs);
+        for(const clipped of clippedPaths){
+          if(clipped.length<2)continue;
+          allPaths.push(clipped);count++;pointCount+=clipped.length;
+        }
       }
     }
     if(allPaths.length){
@@ -16563,9 +16668,9 @@ initRegionNavigation();
       initializeMap();
       attachNationalMapOperationInfoListener(nationalMapCurrentDateKey());
       loadDetailedCoastline().then(()=>{
-        if(overlay.classList.contains('active')){
-          map?.invalidateSize({pan:false});
-        }
+        // 海岸線データ取得前に描画された国道も、陸地マスク確定後に再描画する。
+        if(coastlineLandMaskGrid&&Object.keys(NATIONAL_ROAD_DATA||{}).length)drawNationalRoadBackgroundLines();
+        if(overlay.classList.contains('active'))map?.invalidateSize({pan:false});
       });
       setTimeout(()=>{
         map?.invalidateSize({pan:false});
