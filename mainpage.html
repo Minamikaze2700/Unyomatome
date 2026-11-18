@@ -14287,8 +14287,11 @@ initRegionNavigation();
   let kmlLineTerminalPoints=[];
   let stationLabelRefreshBound=false;
   let landLayer=null;
+  let seaLayer=null;
   let inlandWaterPolygonLayer=null;
   let waterwayLayer=null;
+  let waterwaysEnabled=false;
+  let hydroSeaMaskRenderPromise=null;
   // 海・河川・湖沼で統一する水色。海は地図コンテナの背景色で塗る。
   const NATIONAL_MAP_WATER_COLOR='#83cce9';
   let inlandWaterPolygonPromise=null;
@@ -15503,10 +15506,11 @@ initRegionNavigation();
       routeHitPane:L.canvas({pane:'routeHitPane',padding:0.5})
     };
     landLayer=L.layerGroup().addTo(map);
+    seaLayer=L.layerGroup().addTo(map);
     inlandWaterPolygonLayer=L.layerGroup().addTo(map);
     waterwayLayer=L.layerGroup().addTo(map);
     map.on('moveend zoomend',scheduleVisibleWaterways);
-    loadPrefectureBoundaries();
+    waterwaysEnabled=false;
     nationalMapOperationInfoLayer=L.layerGroup().addTo(map);
     nationalRoadLayer=L.layerGroup().addTo(map);
     highwayLayer=L.layerGroup().addTo(map);
@@ -15689,7 +15693,7 @@ initRegionNavigation();
         for(let col=0;col<tw;col++){
           const value=Number(mask[sourceStart+col]);
           const dest=(row*tw+col)*4;
-          if(value===2){pixels[dest]=seaRgb[0];pixels[dest+1]=seaRgb[1];pixels[dest+2]=seaRgb[2];pixels[dest+3]=255;seaCells++;}
+          if(value===2){seaCells++;pixels[dest+3]=0;}
           else if(value===1||value===3){pixels[dest]=landRgb[0];pixels[dest+1]=landRgb[1];pixels[dest+2]=landRgb[2];pixels[dest+3]=255;landCells++;}
           else pixels[dest+3]=0;
         }
@@ -15713,7 +15717,7 @@ initRegionNavigation();
       }
     }
     map?.attributionControl?.addAttribution('Land/sea mask: HydroSHEDS v1.1 (15 arc-sec) / WWF');
-    console.info(`HydroSHEDS海陸マスクを描画しました: ${tileCount}タイル、海 ${seaCells.toLocaleString()}セル、陸 ${landCells.toLocaleString()}セル、解像度 ${pixelX.toFixed(6)}°`);
+    console.info(`陸地の色を描画しました: ${tileCount}タイル、陸 ${landCells.toLocaleString()}セル（海データは後続フェーズで描画）、解像度 ${pixelX.toFixed(6)}°`);
     return tileCount;
   }
   function loadHydroSHEDSSeaLandMask(){
@@ -15727,6 +15731,53 @@ initRegionNavigation();
     });
     return hydroSeaLandMaskPromise;
   }
+  // 海は陸地タイルとは別フェーズで描画する。Paneは従来と同じlandPane(350)を使い、
+  // 路線・国道・高速道路・都道府県境界との視覚的な重なり順は変更しない。
+  function drawHydroSHEDSSeaMask(){
+    if(hydroSeaMaskRenderPromise)return hydroSeaMaskRenderPromise;
+    if(!hydroSeaLandMaskReady||!hydroSHEDSLandMaskRaster||!seaLayer)return Promise.resolve(0);
+    hydroSeaMaskRenderPromise=(async()=>{
+      const {data,width,height,west,north,pixelX,pixelY}=hydroSHEDSLandMaskRaster;
+      seaLayer.clearLayers();
+      const tileSize=1536,seaRgb=[131,204,233];
+      let tileCount=0,seaCells=0;
+      const addTile=(tx,ty,tw,th)=>new Promise((resolve,reject)=>{
+        const canvas=document.createElement('canvas');canvas.width=tw;canvas.height=th;
+        const ctx=canvas.getContext('2d',{alpha:true});
+        if(!ctx){reject(new Error('HydroSHEDS海タイル描画用Canvasを作成できません'));return;}
+        const imageData=ctx.createImageData(tw,th),pixels=imageData.data;
+        for(let row=0;row<th;row++){
+          const sourceStart=(ty+row)*width+tx;
+          for(let col=0;col<tw;col++){
+            const dest=(row*tw+col)*4;
+            if(Number(data[sourceStart+col])===2){
+              pixels[dest]=seaRgb[0];pixels[dest+1]=seaRgb[1];pixels[dest+2]=seaRgb[2];pixels[dest+3]=255;seaCells++;
+            }else pixels[dest+3]=0;
+          }
+        }
+        ctx.putImageData(imageData,0,0);
+        canvas.toBlob(blob=>{
+          if(!blob){reject(new Error('HydroSHEDS海タイルをPNGに変換できません'));return;}
+          const url=URL.createObjectURL(blob);
+          const tileWest=west+tx*pixelX,tileEast=west+(tx+tw)*pixelX;
+          const tileNorth=north-ty*pixelY,tileSouth=north-(ty+th)*pixelY;
+          L.imageOverlay(url,[[tileSouth,tileWest],[tileNorth,tileEast]],{
+            pane:'landPane',opacity:1,interactive:false,className:'hydrosheds-sea-mask-tile'
+          }).addTo(seaLayer);
+          tileCount++;resolve();
+        },'image/png');
+      });
+      for(let ty=0;ty<height;ty+=tileSize){
+        for(let tx=0;tx<width;tx+=tileSize){
+          await addTile(tx,ty,Math.min(tileSize,width-tx),Math.min(tileSize,height-ty));
+        }
+      }
+      console.info(`海データを描画しました: ${tileCount}タイル、海 ${seaCells.toLocaleString()}セル`);
+      return tileCount;
+    })().catch(error=>{hydroSeaMaskRenderPromise=null;console.warn('HydroSHEDS海データを描画できませんでした',error);return 0;});
+    return hydroSeaMaskRenderPromise;
+  }
+
   function isCoordinateOnLand(lat,lon){
     const grid=hydroSHEDSLandMaskRaster;
     if(!grid)return false;
@@ -15856,6 +15907,7 @@ initRegionNavigation();
   let waterwayApiCooldownUntil=0;
   let waterwayScheduleTimer=null;
   function scheduleVisibleWaterways(){
+    if(!waterwaysEnabled)return;
     if(waterwayLoadTimer)clearTimeout(waterwayLoadTimer);
     waterwayLoadTimer=setTimeout(()=>{
       loadVisibleWaterways().catch(error=>{
@@ -15948,7 +16000,7 @@ initRegionNavigation();
     return {polygons:[],lines,source:'HydroSHEDS'};
   }
   async function loadVisibleWaterways(){
-    if(!map||!waterwayLayer||!hydroSeaLandMaskReady||waterwayRequestInFlight)return;
+    if(!waterwaysEnabled||!map||!waterwayLayer||!hydroSeaLandMaskReady||waterwayRequestInFlight)return;
     const zoom=map.getZoom();
     if(zoom<8){waterwayLayer.clearLayers();waterwayLastBoundsKey='';return;}
     const bounds=map.getBounds();
@@ -16926,8 +16978,6 @@ initRegionNavigation();
     // 地図を開く直前の選択日付・時刻を固定して、その日付に対応するJSONだけを取得する。
     // 選択日付のスケジュール設定がない路線、JSON取得に失敗した路線は色付き路線として表示しない。
     const dateKey=nationalMapCurrentDateKey();
-    const nationalRoadPromise=loadNationalRoadGeometry();
-    const expresswayPromise=loadExpresswayGeometry();
     const allRoutes=Object.entries(ROUTE_REGISTRY||{}).filter(([routeName])=>!isExcludedMapLineName(routeName)&&routeCanBeViewed(routeName));
     setStatus(`選択日付 ${dateKey} の路線JSONを確認中…`);
     const loadedRouteInfos=await mapWithConcurrency(allRoutes,4,async([routeName,meta])=>loadRouteLineDefinitions(routeName,meta,dateKey));
@@ -16945,7 +16995,6 @@ initRegionNavigation();
       })
       .filter(Boolean);
     const validRoutes=routeInfos.filter(info=>info.lineDefs?.length);
-    const [nationalRoadCount,expresswayCount]=await Promise.all([nationalRoadPromise,expresswayPromise]);
     if(requestId!==activeOpenRequest)return;
     stationLookup=stationLookup||buildStationLookup();
     buildSubwayStationTargetIndex();
@@ -16981,7 +17030,7 @@ initRegionNavigation();
     const kmlStationCount=drawKmlBackgroundStationMarkers();
     drawOverviewStationConnectors();
     updateNationalMapLineDetail();updateStationMarkerVisibility();
-    console.info(`国道 ${nationalRoadCount} 本、KML背景路線 ${kmlBackgroundCount} 本、駅ポイント ${kmlStationCount} か所を描画しました。地下鉄 ${subwayStationTargetCount}駅（zoom ${SUBWAY_STATION_MARKER_ZOOM}以上）、路面電車 ${tramStationTargetCount}駅（zoom ${TRAM_STATION_MARKER_ZOOM}以上）を対象にしています`);
+    console.info(`路線データの描画完了: KML背景路線 ${kmlBackgroundCount} 本、駅ポイント ${kmlStationCount} か所。地下鉄 ${subwayStationTargetCount}駅（zoom ${SUBWAY_STATION_MARKER_ZOOM}以上）、路面電車 ${tramStationTargetCount}駅（zoom ${TRAM_STATION_MARKER_ZOOM}以上）を対象にしています`);
     drawVisibleStationLabels();
     // 路線線形・駅座標の準備が完了した状態でも運行情報を再描画する。
     // Firebaseの初回応答が地図描画より先に届いた場合の描画順序依存を防ぐ。
@@ -17009,18 +17058,40 @@ initRegionNavigation();
       if(requestId!==activeOpenRequest)return;
       initializeMap();
       attachNationalMapOperationInfoListener(nationalMapCurrentDateKey());
-      loadHydroSHEDSSeaLandMask().then(()=>{
-        loadInlandWaterPolygons();
-        scheduleVisibleWaterways();
-        // HydroSHEDS陸海マスク取得後に国道を陸地判定して描画する。
-        if(hydroSeaLandMaskReady&&Object.keys(NATIONAL_ROAD_DATA||{}).length)drawNationalRoadBackgroundLines();
-        if(overlay.classList.contains('active'))map?.invalidateSize({pan:false});
-      });
-      setTimeout(()=>{
-        map?.invalidateSize({pan:false});
-      },60);
+      waterwaysEnabled=false;
       routeLayer.clearLayers();stationLabelLayer?.clearLayers();
+      setStatus('陸地の色を読み込み中…');
+      await loadHydroSHEDSSeaLandMask();
+      if(requestId!==activeOpenRequest)return;
+
+      setStatus('路線を読み込み中…');
       await renderNationalRouteMap(requestId,mapSelection);
+      if(requestId!==activeOpenRequest)return;
+
+      setStatus('国道を読み込み中…');
+      await loadNationalRoadGeometry();
+      if(requestId!==activeOpenRequest)return;
+
+      setStatus('高速道路を読み込み中…');
+      await loadExpresswayGeometry();
+      if(requestId!==activeOpenRequest)return;
+
+      setStatus('都道府県境界を読み込み中…');
+      await loadPrefectureBoundaries();
+      if(requestId!==activeOpenRequest)return;
+
+      setStatus('海を読み込み中…');
+      await drawHydroSHEDSSeaMask();
+      if(requestId!==activeOpenRequest)return;
+
+      setStatus('湖沼を読み込み中…');
+      await loadInlandWaterPolygons();
+      if(requestId!==activeOpenRequest)return;
+
+      setStatus('河川を読み込み中…');
+      waterwaysEnabled=true;
+      scheduleVisibleWaterways();
+      map?.invalidateSize({pan:false});
       setTimeout(()=>map?.invalidateSize({pan:false}),120);
       closeBtn.focus();
     }catch(error){
