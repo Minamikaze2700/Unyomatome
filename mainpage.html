@@ -11673,7 +11673,7 @@ initRegionNavigation();
 }
 #nationalRouteMapOverlay{position:fixed;inset:0;z-index:70000;display:none;background:#e8edf0;}
 #nationalRouteMapOverlay.active{display:block}
-#nationalRouteMapCanvas{position:absolute;inset:0;width:100%;height:100%;background:#83cce9;}
+#nationalRouteMapCanvas{position:absolute;inset:0;width:100%;height:100%;background:#f7f8f2;}
 #nationalRouteMapLocationBtn{position:absolute;z-index:70003;right:16px;bottom:20px;display:flex;align-items:center;gap:8px;min-height:46px;padding:0 15px;border:1px solid rgba(0,0,0,.14);border-radius:999px;background:rgba(255,255,255,.97);color:#1769aa;font:700 14px/1 inherit;box-shadow:0 2px 10px rgba(0,0,0,.22);cursor:pointer;touch-action:manipulation;}
 #nationalRouteMapLocationBtn:hover{background:#fff;filter:brightness(.97)}
 #nationalRouteMapRoadAttribution{position:absolute;z-index:70002;left:8px;bottom:5px;padding:3px 6px;border-radius:4px;background:rgba(255,255,255,.78);color:#555;font:10px/1.35 system-ui,sans-serif;pointer-events:auto;}
@@ -14295,6 +14295,7 @@ initRegionNavigation();
   let kmlLineTerminalPoints=[];
   let stationLabelRefreshBound=false;
   let landLayer=null;
+  let coastlineLayer=null;
   let seaLayer=null;
   let inlandWaterPolygonLayer=null;
   let waterwayLayer=null;
@@ -15464,11 +15465,15 @@ initRegionNavigation();
     }).setView([36.2,138.2],5);
     // 海・陸の塗り分けと河川線形はHydroSHEDSのデータを使用。
     L.control.attribution({prefix:false,position:'bottomright'}).addTo(map)
-      .addAttribution('HydroSHEDS land mask © <a href="https://www.hydrosheds.org/" target="_blank" rel="noopener">HydroSHEDS / WWF</a>');
+      .addAttribution('Coastline: <a href="https://services7.arcgis.com/WSiUmUhlFx4CtMBB/ArcGIS/rest/services/GSHHS_GlobalCoastlines_HighResolution/FeatureServer" target="_blank" rel="noopener">GSHHG high resolution / Wessel &amp; Smith</a> · Road mask: <a href="https://www.hydrosheds.org/" target="_blank" rel="noopener">HydroSHEDS / WWF</a>');
     // HydroSHEDSの海・陸面は独立した低いPaneへ配置し、路線より下に固定する。
     map.createPane('landPane');
     map.getPane('landPane').style.zIndex='350';
     map.getPane('landPane').style.pointerEvents='none';
+    // ラスターの階段状輪郭ではなく、GSHHG高解像度ベクターで陸地塗りと海岸線を描画。
+    map.createPane('coastlinePane');
+    map.getPane('coastlinePane').style.zIndex='355';
+    map.getPane('coastlinePane').style.pointerEvents='none';
     // 陸地の上に内陸水域、都道府県境界・鉄道路線の下に配置する。
     map.createPane('waterPane');
     map.getPane('waterPane').style.zIndex='360';
@@ -15506,6 +15511,7 @@ initRegionNavigation();
     // ここでPaneごとのCanvas Rendererを明示し、運行情報を路線の背面、国道を背景路線と同じ層へ固定する。
     nationalMapPaneRenderers={
       landPane:L.canvas({pane:'landPane',padding:0.5}),
+      coastlinePane:L.canvas({pane:'coastlinePane',padding:0.5}),
       waterPane:L.canvas({pane:'waterPane',padding:0.5}),
       backgroundRoutePane:L.canvas({pane:'backgroundRoutePane',padding:0.5}),
       highwayPane:L.canvas({pane:'highwayPane',padding:0.5}),
@@ -15514,6 +15520,7 @@ initRegionNavigation();
       routeHitPane:L.canvas({pane:'routeHitPane',padding:0.5})
     };
     landLayer=L.layerGroup().addTo(map);
+    coastlineLayer=L.layerGroup().addTo(map);
     seaLayer=L.layerGroup().addTo(map);
     inlandWaterPolygonLayer=L.layerGroup().addTo(map);
     waterwayLayer=L.layerGroup().addTo(map);
@@ -15609,9 +15616,11 @@ initRegionNavigation();
   }
 
   let hydroSeaLandMaskPromise=null;
-  // 海・陸マスクは河川線と同じHydroSHEDS製品群の公式Land Maskを使用する。
-  // 従来のOSM Land polygons / GSHHG coastlineは海岸表示の取得元として使用しない。
+  // 道路の海上区間判定にはHydroSHEDS Land Maskを使用し、見た目の海岸線は高解像度ベクターで描画する。
   let hydroSeaLandMaskReady=false;
+  let smoothCoastlinePromise=null;
+  let smoothCoastlineReady=false;
+  const GSHHG_COASTLINE_QUERY='https://services7.arcgis.com/WSiUmUhlFx4CtMBB/ArcGIS/rest/services/GSHHS_GlobalCoastlines_HighResolution/FeatureServer/0/query';
   let hydroSHEDSLandMaskRaster=null;
   // ZIPはGitHub Pagesの同一リポジトリに一度だけ配置し、HTMLから自動取得する。
   const HYDROSHEDS_LANDMASK_ZIP_URL='https://minamikaze2700.github.io/Unyomatome/hyd_as_msk_15s.zip';
@@ -15655,16 +15664,6 @@ initRegionNavigation();
     return hydroMaskZipBuffer;
   }
 
-  // 15秒グリッドをWeb Mercator表示用の行へ再サンプリングしてから画像化する。
-  // Leaflet ImageOverlayは投影座標上で画像を伸縮するため、緯度方向を単純な等間隔
-  // （緯度経度のまま）で画像化すると海岸線が上下にずれて見える。
-  const HYDRO_MERCATOR_RADIUS=6378137;
-  const hydroLatToMercatorY=lat=>HYDRO_MERCATOR_RADIUS*Math.log(Math.tan(Math.PI/4+(lat*Math.PI/180)/2));
-  const hydroMercatorYToLat=y=>(2*Math.atan(Math.exp(y/HYDRO_MERCATOR_RADIUS))-Math.PI/2)*180/Math.PI;
-  let hydroSeaMaskTiles=[];
-  function canvasToPngBlob(canvas){
-    return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('HydroSHEDSタイルPNGの生成に失敗しました')),'image/png'));
-  }
   async function loadHydroSHEDSLandMask(){
     await ensureHydroMaskDependencies();
     console.info('HydroSHEDS land maskを取得しています:',HYDROSHEDS_LANDMASK_ZIP_URL);
@@ -15689,66 +15688,89 @@ initRegionNavigation();
     const rasterResult=await image.readRasters({window:[x0,y0,x1,y1],interleave:false});
     const mask=Array.isArray(rasterResult)?rasterResult[0]:rasterResult;
     const width=x1-x0,height=y1-y0;
-    if(!mask||mask.length!==width*height)throw new Error('HydroSHEDS Land Maskの画素数が一致しません');
+    if(!mask||mask.length!==width*height)throw new Error('HydroSHEDSマスクの画素数が一致しません');
     const west=rasterWest+x0*pixelX;
     const north=rasterNorth-y0*pixelY;
-    const south=north-height*pixelY;
     hydroSHEDSLandMaskRaster={data:mask,width,height,west,north,pixelX,pixelY};
     hydroSeaLandMaskReady=true;
-
-    // 陸地・海の画像を同じ走査で同時生成。前版のように同じラスターを2回走査しない。
-    // 15sデータの本来の解像度は維持し、Web Mercatorへ再配置して位置ずれを防ぐ。
-    landLayer.clearLayers();
-    hydroSeaMaskTiles.forEach(tile=>{try{URL.revokeObjectURL(tile.url);}catch(_){}});
-    hydroSeaMaskTiles=[];
-    const tileSize=2048,seaRgb=[131,204,233],landRgb=[247,248,242];
-    const mercNorth=hydroLatToMercatorY(north),mercSouth=hydroLatToMercatorY(south);
-    let tileCount=0,seaCells=0,landCells=0;
-    for(let ty=0;ty<height;ty+=tileSize){
-      const th=Math.min(tileSize,height-ty);
-      const yMercTop=mercNorth-(ty/height)*(mercNorth-mercSouth);
-      const yMercBottom=mercNorth-((ty+th)/height)*(mercNorth-mercSouth);
-      const tileNorth=hydroMercatorYToLat(yMercTop);
-      const tileSouth=hydroMercatorYToLat(yMercBottom);
-      for(let tx=0;tx<width;tx+=tileSize){
-        const tw=Math.min(tileSize,width-tx);
-        const landCanvas=document.createElement('canvas'),seaCanvas=document.createElement('canvas');
-        landCanvas.width=seaCanvas.width=tw;landCanvas.height=seaCanvas.height=th;
-        const landCtx=landCanvas.getContext('2d',{alpha:true}),seaCtx=seaCanvas.getContext('2d',{alpha:true});
-        if(!landCtx||!seaCtx)throw new Error('HydroSHEDSマスク描画用Canvasを作成できません');
-        const landImage=landCtx.createImageData(tw,th),seaImage=seaCtx.createImageData(tw,th);
-        const landPixels=landImage.data,seaPixels=seaImage.data;
-        for(let row=0;row<th;row++){
-          // 出力画像の各行はWeb Mercator上で等間隔。対応する元GeoTIFF行を最近傍で参照。
-          const mercY=yMercTop-((row+0.5)/th)*(yMercTop-yMercBottom);
-          const lat=hydroMercatorYToLat(mercY);
-          const srcRow=Math.max(0,Math.min(height-1,Math.floor((north-lat)/pixelY)));
-          const sourceStart=srcRow*width+tx;
-          for(let col=0;col<tw;col++){
-            const value=mask[sourceStart+col],dest=(row*tw+col)*4;
-            if(value===1||value===3){
-              landPixels[dest]=landRgb[0];landPixels[dest+1]=landRgb[1];landPixels[dest+2]=landRgb[2];landPixels[dest+3]=255;landCells++;
-            }else landPixels[dest+3]=0;
-            if(value===2){
-              seaPixels[dest]=seaRgb[0];seaPixels[dest+1]=seaRgb[1];seaPixels[dest+2]=seaRgb[2];seaPixels[dest+3]=255;seaCells++;
-            }else seaPixels[dest+3]=0;
-          }
-        }
-        landCtx.putImageData(landImage,0,0);seaCtx.putImageData(seaImage,0,0);
-        const [landBlob,seaBlob]=await Promise.all([canvasToPngBlob(landCanvas),canvasToPngBlob(seaCanvas)]);
-        const bounds=[[tileSouth,west+tx*pixelX],[tileNorth,west+(tx+tw)*pixelX]];
-        const landUrl=URL.createObjectURL(landBlob),seaUrl=URL.createObjectURL(seaBlob);
-        L.imageOverlay(landUrl,bounds,{
-          pane:'landPane',opacity:1,interactive:false,className:'hydrosheds-landmask-tile'
-        }).addTo(landLayer);
-        hydroSeaMaskTiles.push({url:seaUrl,bounds});
-        tileCount++;
-      }
-    }
-    map?.attributionControl?.addAttribution('Land/sea mask: HydroSHEDS v1.1 (15 arc-sec) / WWF');
-    console.info(`陸地マスクを描画しました: ${tileCount}タイル、陸 ${landCells.toLocaleString()}セル、海 ${seaCells.toLocaleString()}セル、Mercator補正済み、解像度 ${pixelX.toFixed(6)}°`);
-    return tileCount;
+    console.info(`HydroSHEDS陸海マスクを準備しました（海上道路の判定用）: ${width.toLocaleString()}×${height.toLocaleString()}、解像度 ${pixelX.toFixed(6)}°`);
+    // このラスターは道路の陸地判定専用。海岸線・陸地の見た目には使用せず、
+    // 高解像度GSHHGベクターポリゴンで滑らかな輪郭と陸地塗りを描画する。
+    return 1;
   }
+  function loadSmoothGSHHGCoastline(){
+    if(smoothCoastlinePromise)return smoothCoastlinePromise;
+    smoothCoastlinePromise=(async()=>{
+      if(!coastlineLayer)throw new Error('海岸線レイヤーが初期化されていません');
+      const bounds=HYDROSHEDS_MASK_BOUNDS;
+      const envelope={xmin:bounds.west,ymin:bounds.south,xmax:bounds.east,ymax:bounds.north,spatialReference:{wkid:4326}};
+      const pageSize=400,seen=new Set();
+      let offset=0,added=0,vertices=0,requests=0;
+      coastlineLayer.clearLayers();
+      for(let page=0;page<30;page++){
+        const params=new URLSearchParams({
+          where:'level_ = 1',
+          geometry:JSON.stringify(envelope),geometryType:'esriGeometryEnvelope',
+          inSR:'4326',spatialRel:'esriSpatialRelIntersects',
+          outFields:'OBJECTID,id,level_,area',returnGeometry:'true',outSR:'4326',f:'json',
+          resultRecordCount:String(pageSize),resultOffset:String(offset),
+          maxAllowableOffset:'0.00018',geometryPrecision:'6'
+        });
+        let data=null,lastError=null;
+        for(let attempt=0;attempt<3;attempt++){
+          try{
+            const response=await fetch(`${GSHHG_COASTLINE_QUERY}?${params.toString()}`,{mode:'cors',cache:'force-cache'});
+            if(!response.ok)throw new Error(`HTTP ${response.status}`);
+            data=await response.json();
+            if(data?.error){
+              const detail=data.error.details?.filter(Boolean).join('; ');
+              throw new Error(`${data.error.message||'GSHHG query error'}${detail?`: ${detail}`:''} (code ${data.error.code??'unknown'})`);
+            }
+            if(!Array.isArray(data?.features))throw new Error('GSHHG応答にfeatures配列がありません');
+            break;
+          }catch(error){lastError=error;data=null;if(attempt<2)await new Promise(resolve=>setTimeout(resolve,700*(attempt+1)));}
+        }
+        if(!data)throw lastError||new Error('GSHHG海岸線を取得できませんでした');
+        const features=data.features;
+        for(const feature of features){
+          const attrs=feature?.attributes||{},geometry=feature?.geometry;
+          if(Number(attrs.level_)!==1||!Array.isArray(geometry?.rings))continue;
+          const id=String(attrs.OBJECTID??attrs.objectid??feature?.id??'');
+          if(id&&seen.has(id))continue;
+          if(id)seen.add(id);
+          const rings=geometry.rings.map(ring=>ring
+            .filter(point=>Array.isArray(point)&&Number.isFinite(Number(point[0]))&&Number.isFinite(Number(point[1])))
+            .map(point=>[Number(point[1]),Number(point[0])]))
+            .filter(ring=>ring.length>=4);
+          if(!rings.length)continue;
+          vertices+=rings.reduce((sum,ring)=>sum+ring.length,0);
+          L.polygon(rings,{
+            pane:'coastlinePane',renderer:nationalMapPaneRenderers.coastlinePane,
+            color:'#9eaaad',weight:0.65,opacity:0.82,
+            fillColor:'#f7f8f2',fillOpacity:1,fillRule:'evenodd',
+            lineCap:'round',lineJoin:'round',smoothFactor:0.12,interactive:false
+          }).addTo(coastlineLayer);
+          added++;
+        }
+        requests++;
+        offset+=features.length;
+        if(!features.length||(!data.exceededTransferLimit&&features.length<pageSize))break;
+        if(page===29)console.warn('GSHHG海岸線はページ上限に達しました。一部の小島が省略された可能性があります。');
+      }
+      if(!added)throw new Error('GSHHG高解像度海岸線の対象地物がありません');
+      smoothCoastlineReady=true;
+      map?.attributionControl?.addAttribution('Coastline: GSHHG high resolution / Wessel & Smith, NOAA & University of Hawaii · <a href="https://www.hydrosheds.org/" target="_blank" rel="noopener">HydroSHEDS land mask</a>');
+      console.info(`滑らかな海岸線を描画しました: GSHHG high resolution ${added.toLocaleString()}地物、${vertices.toLocaleString()}頂点、${requests} requests`);
+      return added;
+    })().catch(error=>{
+      smoothCoastlinePromise=null;smoothCoastlineReady=false;
+      coastlineLayer?.clearLayers();
+      console.error('高解像度ベクター海岸線を読み込めませんでした。',error);
+      return 0;
+    });
+    return smoothCoastlinePromise;
+  }
+  let hydroSeaMaskTiles=[];
   function loadHydroSHEDSSeaLandMask(){
     if(hydroSeaLandMaskPromise)return hydroSeaLandMaskPromise;
     hydroSeaLandMaskPromise=loadHydroSHEDSLandMask().catch(error=>{
@@ -15761,21 +15783,16 @@ initRegionNavigation();
     });
     return hydroSeaLandMaskPromise;
   }
-  // 海は先に作成した同一マスクタイルを追加するだけ。再走査・再PNG化を行わない。
-  // Paneのz-indexは変更せず、既存の表示順を維持する。
+  // HydroSHEDS MSKの値2は海そのものではなく海洋シンクの指標セル。
+  // 海域は地図コンテナの水色背景で表し、誤った格子状の海ポリゴンを重ねない。
+  // 追加画像の生成・追加を省くため、海の描画処理は空レイヤーの確認だけにする。
   function drawHydroSHEDSSeaMask(){
     if(hydroSeaMaskRenderPromise)return hydroSeaMaskRenderPromise;
-    if(!hydroSeaLandMaskReady||!seaLayer)return Promise.resolve(0);
     hydroSeaMaskRenderPromise=Promise.resolve().then(()=>{
-      seaLayer.clearLayers();
-      for(const tile of hydroSeaMaskTiles){
-        L.imageOverlay(tile.url,tile.bounds,{
-          pane:'landPane',opacity:1,interactive:false,className:'hydrosheds-sea-mask-tile'
-        }).addTo(seaLayer);
-      }
-      console.info(`海データを描画しました: ${hydroSeaMaskTiles.length}タイル（陸地マスクと同じMercator補正）`);
-      return hydroSeaMaskTiles.length;
-    }).catch(error=>{hydroSeaMaskRenderPromise=null;console.warn('HydroSHEDS海データを描画できませんでした',error);return 0;});
+      seaLayer?.clearLayers();
+      console.info('海データはHydroSHEDS Land Maskの非陸域を地図背景色で表示します（海洋シンクセルの別塗りなし）');
+      return 0;
+    }).catch(error=>{hydroSeaMaskRenderPromise=null;console.warn('海レイヤーを初期化できませんでした',error);return 0;});
     return hydroSeaMaskRenderPromise;
   }
 
@@ -16707,14 +16724,24 @@ initRegionNavigation();
     console.info(`国道線形 ${Object.keys(NATIONAL_ROAD_DATA||{}).length}路線・${count}線分・${pointCount}点を描画しました`);
     return count;
   }
+  const TSURUMI_BRANCH_KML_PATHS=[
+    // 浅野―新芝浦―海芝浦（海芝浦支線）
+    's`twE{assYYkELoAr@aClAgAxToMjEiCnKoGnIyEvAg@|A?lA\\`Ap@v@tAnA|D',
+    // 安善付近―大川（大川支線）
+    'kytwEoausYgA}EAaC^oBv@oAvAsAr]wR'
+  ];
   function drawAllKmlBackgroundLines(){
     // KML背景線は全線を1つのCanvas MultiPolylineにまとめ、Leafletレイヤー数を大幅に削減。
+    // 鶴見線の支線はKML本体の線形配列に含まれず、ROUTE_REGISTRYにも常設されないため、
+    // 背景線の段階で必ず追加する（運用JSONや路線の閲覧可否に左右されない）。
     // 端点座標は別途保持し、非公開路線の終着駅名判定に使用する。
     let count=0;kmlLineTerminalPoints=[];
     const allLatLngs=[];
     for(const [lineName,encodedPaths] of Object.entries(KML_DATA.lines||{})){
       if(isExcludedMapLineName(lineName))continue;
-      for(const encoded of (Array.isArray(encodedPaths)?encodedPaths:[])){
+      const pathsForLine=[...(Array.isArray(encodedPaths)?encodedPaths:[])];
+      if(normalizeLineName(lineName)===normalizeLineName('鶴見線'))pathsForLine.push(...TSURUMI_BRANCH_KML_PATHS);
+      for(const encoded of pathsForLine){
         if(typeof encoded!=='string'||!encoded)continue;
         const coords=decodeKmlPolyline(encoded);
         if(coords.length<2)continue;
@@ -16958,12 +16985,7 @@ initRegionNavigation();
       ||entries[0];
     const lineName=String(entry?.line?.name||'鶴見線');
     const color=entry?.line?.color||routeInfo?.meta?.color||'#E4B51E';
-    const branchPaths=[
-      // 浅野―新芝浦―海芝浦（海芝浦支線）
-      's`twE{assYYkELoAr@aClAgAxToMjEiCnKoGnIyEvAg@|A?lA\\`Ap@v@tAnA|D',
-      // 安善付近―大川（大川支線）
-      'kytwEoausYgA}EAaC^oBv@oAvAsAr]wR'
-    ];
+    const branchPaths=TSURUMI_BRANCH_KML_PATHS;
     let count=0;
     for(const encoded of branchPaths){
       const coords=decodeKmlPolyline(encoded);
@@ -17053,6 +17075,9 @@ initRegionNavigation();
     originalBodyOverflow=document.body.style.overflow;
     document.body.style.overflow='hidden';
     overlay.classList.add('active');overlay.setAttribute('aria-hidden','false');
+    // 路線図を開いた直後は、海色ではなく陸地色を先に表示する。
+    // HydroSHEDS陸地タイルの準備が終わった後でのみ背景を海色へ切り替える。
+    mapElement.style.backgroundColor='#f7f8f2';
     const requestId=++activeOpenRequest;
     try{
       await ensureLeaflet();
@@ -17066,9 +17091,13 @@ initRegionNavigation();
       setStatus('陸地・路線を並行して読み込み中…');
       await Promise.all([
         loadHydroSHEDSSeaLandMask(),
+        loadSmoothGSHHGCoastline(),
         renderNationalRouteMap(requestId,mapSelection)
       ]);
       if(requestId!==activeOpenRequest)return;
+      // 高解像度ベクター陸地が描画できた場合に海色へ切り替える。
+      // 読み込み完了前は最初に指定した陸地色を維持する。
+      if(hydroSeaLandMaskReady&&smoothCoastlineReady)mapElement.style.backgroundColor='#83cce9';
 
       // 国道・高速道路・都道府県境界は相互依存しないため並列取得。
       // 海・湖沼・河川も陸海マスク準備後に並列化し、全体の待ち時間を短縮する。
