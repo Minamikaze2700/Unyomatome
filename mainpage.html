@@ -1131,9 +1131,9 @@ body{padding-bottom:42px !important;}
     </div>
     <div id="userProfileForm" class="user-profile-form" hidden>
       <div class="user-profile-account" id="userProfileAccount"></div>
-      <label class="user-profile-field"><span>登録名</span><input id="profileNameInput" type="text" maxlength="30" autocomplete="nickname" placeholder="登録名を入力"></label>
+      <label class="user-profile-field"><span>登録名</span><input id="profileNameInput" type="text" maxlength="30" autocomplete="nickname" placeholder="登録名を入力" oninput="saveUserProfileDraft()"></label>
       <div class="user-profile-help">他のユーザーと同じ登録名は使用できません。</div>
-      <label class="user-profile-field"><span>ID</span><input id="profileIdInput" type="text" maxlength="30" autocomplete="off" placeholder="IDを入力"></label>
+      <label class="user-profile-field"><span>ID</span><input id="profileIdInput" type="text" maxlength="30" autocomplete="off" placeholder="IDを入力" oninput="saveUserProfileDraft()"></label>
       <div class="user-profile-help">IDも他のユーザーと重複できません。</div>
       <div id="profileSaveError" class="auth-error"></div>
       <button class="profile-save-btn" type="button" onclick="saveUserProfile()">保存</button>
@@ -10354,8 +10354,10 @@ initRegionNavigation();
       if(login) login.hidden=true;
       if(form){
         form.hidden=false;
-        const name=String(currentUserProfile?.name||currentAuthUser.displayName||'');
-        const id=String(currentUserProfile?.id||'');
+        const draft=profileRegistered?null:loadUserProfileDraft(currentAuthUser);
+        if(profileRegistered) clearUserProfileDraft(currentAuthUser);
+        const name=String(draft?.name ?? currentUserProfile?.name ?? currentAuthUser.displayName ?? '');
+        const id=String(draft?.id ?? currentUserProfile?.id ?? '');
         const ni=document.getElementById('profileNameInput'),ii=document.getElementById('profileIdInput');
         if(ni && document.activeElement!==ni) ni.value=name;
         if(ii && document.activeElement!==ii) ii.value=id;
@@ -10368,6 +10370,33 @@ initRegionNavigation();
       if(form) form.hidden=true;
     }
   }
+  // 未保存のプロフィール入力をアカウント単位でブラウザーに保持する。
+  // Firebaseへの正式保存が完了した場合はこの下書きを削除する。
+  const USER_PROFILE_DRAFT_PREFIX='user-profile-draft-v1:';
+  function userProfileDraftKey(user){
+    const uid=String(user?.uid||'');
+    return uid?USER_PROFILE_DRAFT_PREFIX+encodeURIComponent(uid):'';
+  }
+  function loadUserProfileDraft(user){
+    const key=userProfileDraftKey(user); if(!key)return null;
+    try{
+      const raw=localStorage.getItem(key); if(!raw)return null;
+      const value=JSON.parse(raw);
+      if(!value||typeof value!=='object')return null;
+      return {name:String(value.name??''),id:String(value.id??'')};
+    }catch(e){return null;}
+  }
+  function saveUserProfileDraft(){
+    const key=userProfileDraftKey(currentAuthUser); if(!key)return;
+    const name=String(document.getElementById('profileNameInput')?.value??'');
+    const id=String(document.getElementById('profileIdInput')?.value??'');
+    try{localStorage.setItem(key,JSON.stringify({name,id,updatedAt:Date.now()}));}catch(e){}
+  }
+  function clearUserProfileDraft(user){
+    const key=userProfileDraftKey(user); if(!key)return;
+    try{localStorage.removeItem(key);}catch(e){}
+  }
+
   async function loadUserProfile(user){
     if(!user || !firebaseAuth) return {ok:false,profile:null,error:new Error('Firebase Authentication is not ready')};
     try{
@@ -10462,6 +10491,7 @@ initRegionNavigation();
       await db.ref().update(updates);
       currentUserProfile=profile;
       profileRegistered=true;
+      clearUserProfileDraft(user);
       updateSiteAccountButton();
       renderAuthPanel();
       if(currentTrainNo&&!isEditMode) updateSheetContent();
@@ -10589,10 +10619,8 @@ initRegionNavigation();
         updateSiteAccountButton();
         renderOperationInfoAuthState();
         if(document.getElementById('operationInfoPanel')?.classList.contains('active')) renderOperationInfoList();
-        // Firebase読み込みエラー時は新規登録扱いにせず、IDを再生成せず、プロフィール画面も自動表示しない。
-        if(user && !profileRegistered && !profileReadFailed){
-          setTimeout(()=>openAuthPanel(),0);
-        }
+        // プロフィール未登録でもページ起動時にユーザー情報パネルを自動表示しない。
+        // 必要な場合はメニューの「ユーザー情報」から開く。入力途中の内容はブラウザーに保持する。
         if(document.getElementById('authPanel')?.classList.contains('active')) renderAuthPanel();
         if(currentTrainNo&&!isEditMode) updateSheetContent();
       });
@@ -10608,6 +10636,7 @@ initRegionNavigation();
   window.createEmailAccount=createEmailAccount;
   window.sendPasswordReset=sendPasswordReset;
   window.saveUserProfile=saveUserProfile;
+  window.saveUserProfileDraft=saveUserProfileDraft;
   window.logoutUser=logoutUser;
 
   // ページ起動時のinitFirebase()がこのIIFEより前に実行されても、
