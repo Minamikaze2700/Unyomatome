@@ -16269,7 +16269,7 @@ initRegionNavigation();
       if(zoom<threshold||!bounds.contains([candidate.lat,candidate.lon]))continue;
       L.circleMarker([candidate.lat,candidate.lon],{
         pane:'backgroundStationPane',radius:2.8,color:'#f7f8f2',weight:1.35,
-        opacity:1,fillColor:'#929292',fillOpacity:1,interactive:false,
+        opacity:1,fillColor:candidate.routeColorMatched?candidate.color:'#929292',fillOpacity:1,interactive:false,
         nationalMapSubwayStation:!!candidate.subway,
         nationalMapTramStation:!!candidate.tram,
         nationalMapStationMinZoom:threshold
@@ -16302,8 +16302,17 @@ initRegionNavigation();
       lat=canonicalPoint[0];lon=canonicalPoint[1];
       const key=normalizeStationName(name);
       const matchingPublicStations=publicByName.get(key)||[];
+      // KML駅座標と公開路線JSONから作った駅座標に数十mの差がある場合、
+      // 同名かつ100m以内の公開駅から駅丸の色を引き継ぐ。
+      // これにより、色付き路線の近くに灰色のKML駅丸が重複して残るのを防ぐ。
+      const nearestPublicStation=matchingPublicStations
+        .filter(station=>!station.hiddenSegmentStation)
+        .map(station=>({station,distance:stationDistanceMeters(station,{lat,lon})}))
+        .filter(item=>item.distance<=100)
+        .sort((a,b)=>a.distance-b.distance)[0]?.station||null;
       const candidate={
-        name,lat,lon,color:'#929292',public:false,terminal:false,
+        name,lat,lon,color:nearestPublicStation?.color||'#929292',
+        routeColorMatched:!!nearestPublicStation,public:false,terminal:false,
         subway:isSubwayStationTarget(name,lat,lon)||matchingPublicStations.some(station=>station.subway&&stationDistanceMeters(station,{lat,lon})<=SUBWAY_STATION_COORDINATE_MATCH_METERS),
         tram:isTramStationTarget(name,lat,lon)||matchingPublicStations.some(station=>station.tram&&stationDistanceMeters(station,{lat,lon})<=70)
       };
@@ -16576,7 +16585,10 @@ initRegionNavigation();
         const next=stationIndex<stations.length-1?ruleColorForPair(routeInfo,name,stations[stationIndex+1]):null;
         const previous=stationIndex>0?ruleColorForPair(routeInfo,stations[stationIndex-1],name):null;
         // 非公開路線の駅は、閲覧権限の有無にかかわらず路線色ではなく背景駅と同じ灰色で表示する。
-        const stationColor=routeIsPublic?cssColor(next||previous||baseColor,baseColor):'#929292';
+        // 路線の駅順は上り側の終点から下り側の終点へ並ぶため、
+        // 色境界の駅は上り方向（ひとつ前の駅との区間）の色を優先する。
+        // 始点だけは前区間がないため、次の駅との区間色を使う。
+        const stationColor=routeIsPublic?cssColor(previous||next||baseColor,baseColor):'#929292';
         const customColor=routeIsPublic&&String(stationColor).toLowerCase()!==String(baseColor).toLowerCase();
         const candidate={
           name,lat,lon,color:stationColor,
