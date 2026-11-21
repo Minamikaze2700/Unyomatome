@@ -16267,13 +16267,16 @@ initRegionNavigation();
     for(const candidate of kmlBackgroundStationCandidates){
       const threshold=stationMarkerMinZoom(candidate);
       if(zoom<threshold||!bounds.contains([candidate.lat,candidate.lon]))continue;
+      // 公開路線と照合できた駅は、色付き路線より上の駅マーカーレイヤーへ描画する。
+      // それ以外の背景駅だけを従来どおり路線より下のレイヤーに置く。
+      const matchedPublicRoute=!!candidate.routeColorMatched;
       L.circleMarker([candidate.lat,candidate.lon],{
-        pane:'backgroundStationPane',radius:2.8,color:'#f7f8f2',weight:1.35,
-        opacity:1,fillColor:candidate.routeColorMatched?candidate.color:'#929292',fillOpacity:1,interactive:false,
+        pane:matchedPublicRoute?'stationPane':'backgroundStationPane',radius:2.8,color:'#f7f8f2',weight:1.35,
+        opacity:1,fillColor:matchedPublicRoute?candidate.color:'#929292',fillOpacity:1,interactive:false,
         nationalMapSubwayStation:!!candidate.subway,
         nationalMapTramStation:!!candidate.tram,
         nationalMapStationMinZoom:threshold
-      }).addTo(kmlBackgroundStationLayer);
+      }).addTo(matchedPublicRoute?stationLayer:kmlBackgroundStationLayer);
       count++;
     }
     return count;
@@ -17141,16 +17144,15 @@ initRegionNavigation();
       if(hydroSeaLandMaskReady&&smoothCoastlineReady)mapElement.style.backgroundColor='#83cce9';
 
       // 国道・高速道路・都道府県境界は相互依存しないため並列取得。
-      // 海・湖沼・河川も陸海マスク準備後に並列化し、全体の待ち時間を短縮する。
+      // 河川・水路データは取得しない。海岸・湖沼など既存の背景表示は維持する。
       setStatus('道路・境界・水域データを並行して読み込み中…');
-      waterwaysEnabled=true;
+      waterwaysEnabled=false;
       const backgroundTasks=await Promise.allSettled([
         loadNationalRoadGeometry(),
         loadExpresswayGeometry(),
         loadPrefectureBoundaries(),
         drawHydroSHEDSSeaMask(),
-        loadInlandWaterPolygons(),
-        loadVisibleWaterways()
+        loadInlandWaterPolygons()
       ]);
       if(requestId!==activeOpenRequest)return;
       const failedTasks=backgroundTasks.filter(item=>item.status==='rejected').length;
