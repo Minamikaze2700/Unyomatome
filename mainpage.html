@@ -1441,6 +1441,7 @@ const ROUTE_REGISTRY={
   '東武鉄道アーバンパークライン':{
     id:'tobu-noda',
     blockedFormationIds:['8158'],
+    json:'https://minamikaze2700.github.io/Unyomatome/data/TobuNoda_2024.json',
     jsonLines:['東武野田線'],
     range:'大宮～船橋',
     area:'東武鉄道',
@@ -19638,12 +19639,21 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
 
   function stationStopTypeItems(stationName){
     const name=String(stationName||'').trim();
-    if(!name || typeof getVisibleTrains!=='function') return [];
+    if(!name || typeof trainsForScheduleDay!=='function') return [];
+    // 選択日付に対応するJSONの読込が完了していない間は、前日・前期間の種別を残さない。
+    // activeScheduleSignature は loadLineTrainData がJSONを反映した時点で更新される。
+    try{
+      const expected=typeof routeScheduleSignature==='function'
+        ? routeScheduleSignature(activeRouteName,selectedDateKey)
+        : '';
+      if(expected==='__NO_SCHEDULE__' || (expected && activeScheduleSignature!==expected)) return [];
+    }catch(e){ return []; }
     const position=typeof stationIndex==='function'?stationIndex(name):-1;
     const items=[];
     const seen=new Set();
     let trains=[];
-    try{ trains=getVisibleTrains()||[]; }catch(e){ trains=[]; }
+    // 表示時刻や編成登録状態に左右されず、選択日付のJSONに含まれる全列車から停車種別を再集計。
+    try{ trains=trainsForScheduleDay(currentDay,selectedDateKey)||[]; }catch(e){ trains=[]; }
     for(const train of trains){
       const stops=Array.isArray(train?.stops)?train.stops:[];
       if(!stops.some(stop=>String(stop?.station||'').trim()===name)) continue;
@@ -19704,9 +19714,24 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     layer.style.maxWidth=`${availableWidth}px`;
   }
 
+  let stationStopTypeLabelsDateKey='';
+  let stationStopTypeLabelsScheduleSignature='';
   function refreshStationStopTypeLabels(){
     const rows=Array.from(document.querySelectorAll('#lineContainer .station-row'));
     if(!rows.length) return;
+    const dateKey=String(selectedDateKey||'');
+    let scheduleSignature='';
+    try{ scheduleSignature=String(routeScheduleSignature(activeRouteName,dateKey)||''); }catch(e){}
+    // 日付または参照JSONが変わった場合は、前回の種別一覧を必ず破棄して再生成する。
+    const sourceChanged=dateKey!==stationStopTypeLabelsDateKey || scheduleSignature!==stationStopTypeLabelsScheduleSignature;
+    if(sourceChanged){
+      rows.forEach(row=>{
+        row.querySelector(':scope > .station-stop-types')?.remove();
+        row.classList.remove('has-stop-types');
+      });
+      stationStopTypeLabelsDateKey=dateKey;
+      stationStopTypeLabelsScheduleSignature=scheduleSignature;
+    }
     for(let i=0;i<rows.length;i++){
       const row=rows[i];
       const badge=row.querySelector(':scope > .station-badge');
