@@ -13155,7 +13155,7 @@ initRegionNavigation();
     '鳥居前','宝山寺','梅屋敷','霞ヶ丘','生駒山上','高野山','高安山','ケーブル八幡宮口','ケーブル八幡宮山上',
     '新下田','寝姿山','JR貝塚','奈良・郡山間新駅(仮)','島本・高槻間新駅(仮)',
     '松生町','瓜生堂',
-    '仁山','二股','村岡新駅','村岡(仮)',
+    '仁山','二股','村岡新駅',
     '西黒崎','石狩沼田','北一已','北秩父別','秩父別','猿猴橋町','雄信内','東根室','抜海','東滝川','南幌延',
     'みどり中街','室堂','大観峰','滝ノ上','初野','恩根内','愛山','中ノ沢','浜田浦','歌内','糸魚沢','本石倉',
     '石谷','銚子口','流山温泉','池田園','徳満','上幌延','安牛','豊清水','紋穂内','南美深','北星','下士別',
@@ -14709,11 +14709,9 @@ initRegionNavigation();
     // 京浜東北・根岸線と横浜線は共有JSONを参照することがあるため、
     // 地図ではそれぞれの実線区のKMLだけを使用し、相手路線の線形を混ぜない。
     if(route==='京浜東北・根岸線'){
-      // JSON上の線区名は「京浜東北・根岸線」だが、KMLは「京浜東北線」「根岸線」に分割されている。
-      // 複合線区名からも両方のKML線形を許可し、駅座標による直線補完へ誤って落ちないようにする。
-      const allowedKmlNames=['京浜東北線','根岸線'].map(normalizeLineName);
-      const allowedJsonLineNames=['京浜東北・根岸線','京浜東北線','根岸線'].map(normalizeLineName);
-      return allowedJsonLineNames.includes(line)&&allowedKmlNames.includes(kml);
+      // 京浜東北線と根岸線は別のKML線形として照合する。
+      // 品川付近で近接する東海道線・山手線などの線形を候補に混ぜない。
+      return line===kml&&['京浜東北線','根岸線'].map(normalizeLineName).includes(kml);
     }
     if(route==='横浜線')return line===normalizeLineName('横浜線')&&kml===normalizeLineName('横浜線');
     if(route==='東武鉄道スカイツリーライン'){
@@ -14735,9 +14733,6 @@ initRegionNavigation();
       const terminal=result.indexOf('門真市');
       if(terminal>=0)result=result.slice(0,terminal+1);
     }
-    // 除外対象駅は公開路線JSONの駅列からも除く。
-    // 駅を削除した後に前後の駅を直線で結ぶ補完が発生しないよう、線形処理の前段で除外する。
-    result=result.filter(name=>!isExcludedMapStationName(stationNameOf(name)));
     if(route==='京浜東北・根岸線'){
       // 武蔵浦和は埼京線・武蔵野線の駅であり、京浜東北線の駅列に混入させない。
       result=result.filter(name=>String(name)!=='武蔵浦和');
@@ -16225,9 +16220,6 @@ initRegionNavigation();
     const groups=new Map();
     for(const item of stationLabelCandidates){
       if(!item.public||!item.routeName||!item.lineName)continue;
-      // 京浜東北線は駅座標を結ぶ概要用の直線を重ねず、埋め込みKMLの実線形だけを表示する。
-      if(item.routeName==='京浜東北・根岸線'
-        &&normalizeLineName(item.lineName)===normalizeLineName('京浜東北線'))continue;
       const key=`${item.routeName}\u0000${item.lineName}`;
       if(!groups.has(key))groups.set(key,[]);
       const list=groups.get(key);
@@ -17120,6 +17112,8 @@ initRegionNavigation();
   }
   async function openMap(){
     if(overlay.classList.contains('active'))return;
+    // スマートフォンでは国道・高速道路・湖沼を表示せず、関連データも取得しない。
+    const smartphoneView=window.matchMedia('(max-width: 600px)').matches;
     const mapSelection={
       dateKey:nationalMapCurrentDateKey(),
       time:String(document.getElementById('timeInput')?.value||'')
@@ -17142,7 +17136,7 @@ initRegionNavigation();
       // 実際の前後関係は各Paneの既存z-indexで固定し、表示レイヤーの重なり順は変えない。
       setStatus('陸地・路線を並行して読み込み中…');
       await Promise.all([
-        loadHydroSHEDSSeaLandMask(),
+        smartphoneView?Promise.resolve(0):loadHydroSHEDSSeaLandMask(),
         loadSmoothGSHHGCoastline(),
         renderNationalRouteMap(requestId,mapSelection)
       ]);
@@ -17151,16 +17145,24 @@ initRegionNavigation();
       // 読み込み完了前は最初に指定した陸地色を維持する。
       if(hydroSeaLandMaskReady&&smoothCoastlineReady)mapElement.style.backgroundColor='#83cce9';
 
-      // 国道・高速道路・都道府県境界は相互依存しないため並列取得。
-      // 河川・水路データは取得しない。海岸・湖沼など既存の背景表示は維持する。
-      setStatus('道路・境界・水域データを並行して読み込み中…');
+      // 国道・高速道路・湖沼はスマートフォンでは取得・描画しない。
+      // PCでは従来どおり表示し、都道府県境界と海岸線は端末によらず維持する。
+      setStatus('背景データを読み込み中…');
       waterwaysEnabled=false;
+      if(smartphoneView){
+        nationalRoadLayer?.clearLayers();
+        highwayLayer?.clearLayers();
+        inlandWaterPolygonLayer?.clearLayers();
+        // PC表示からスマートフォン表示へ切り替えた後、再びPCで開いた際に再取得できるようにする。
+        expresswayGeometryPromise=null;
+        inlandWaterPolygonPromise=null;
+      }
       const backgroundTasks=await Promise.allSettled([
-        loadNationalRoadGeometry(),
-        loadExpresswayGeometry(),
+        smartphoneView?Promise.resolve(0):loadNationalRoadGeometry(),
+        smartphoneView?Promise.resolve(0):loadExpresswayGeometry(),
         loadPrefectureBoundaries(),
         drawHydroSHEDSSeaMask(),
-        loadInlandWaterPolygons()
+        smartphoneView?Promise.resolve(0):loadInlandWaterPolygons()
       ]);
       if(requestId!==activeOpenRequest)return;
       const failedTasks=backgroundTasks.filter(item=>item.status==='rejected').length;
