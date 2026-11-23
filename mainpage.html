@@ -1715,7 +1715,8 @@ const ROUTE_SCHEDULE_CONFIG={
     {from:'2026-03-14',to:'2027-03-13',file:'FukuokaCity_KukoHakozaki_2026.json'}
   ],
   '福岡市地下鉄七隈線':[
-    {from:'2026-04-01',to:'2027-03-13',file:'FukuokaCity_Nanakuma_2026.json'}
+    {from:'2026-04-01',to:'2026-11-23',file:'FukuokaCity_Nanakuma_2026.json'},
+    {from:'2026-11-24',to:'2027-03-13',file:'FukuokaCity_Nanakuma_2026_2.json'}
   ],
   '東武鉄道アーバンパークライン':[
     {from:'2024-03-16',to:'2026-11-20',file:'TobuNoda_2024.json'},
@@ -17112,8 +17113,6 @@ initRegionNavigation();
   }
   async function openMap(){
     if(overlay.classList.contains('active'))return;
-    // スマートフォンでは国道・高速道路・湖沼を表示せず、関連データも取得しない。
-    const smartphoneView=window.matchMedia('(max-width: 600px)').matches;
     const mapSelection={
       dateKey:nationalMapCurrentDateKey(),
       time:String(document.getElementById('timeInput')?.value||'')
@@ -17136,7 +17135,7 @@ initRegionNavigation();
       // 実際の前後関係は各Paneの既存z-indexで固定し、表示レイヤーの重なり順は変えない。
       setStatus('陸地・路線を並行して読み込み中…');
       await Promise.all([
-        smartphoneView?Promise.resolve(0):loadHydroSHEDSSeaLandMask(),
+        loadHydroSHEDSSeaLandMask(),
         loadSmoothGSHHGCoastline(),
         renderNationalRouteMap(requestId,mapSelection)
       ]);
@@ -17145,24 +17144,16 @@ initRegionNavigation();
       // 読み込み完了前は最初に指定した陸地色を維持する。
       if(hydroSeaLandMaskReady&&smoothCoastlineReady)mapElement.style.backgroundColor='#83cce9';
 
-      // 国道・高速道路・湖沼はスマートフォンでは取得・描画しない。
-      // PCでは従来どおり表示し、都道府県境界と海岸線は端末によらず維持する。
-      setStatus('背景データを読み込み中…');
+      // 国道・高速道路・都道府県境界は相互依存しないため並列取得。
+      // 河川・水路データは取得しない。海岸・湖沼など既存の背景表示は維持する。
+      setStatus('道路・境界・水域データを並行して読み込み中…');
       waterwaysEnabled=false;
-      if(smartphoneView){
-        nationalRoadLayer?.clearLayers();
-        highwayLayer?.clearLayers();
-        inlandWaterPolygonLayer?.clearLayers();
-        // PC表示からスマートフォン表示へ切り替えた後、再びPCで開いた際に再取得できるようにする。
-        expresswayGeometryPromise=null;
-        inlandWaterPolygonPromise=null;
-      }
       const backgroundTasks=await Promise.allSettled([
-        smartphoneView?Promise.resolve(0):loadNationalRoadGeometry(),
-        smartphoneView?Promise.resolve(0):loadExpresswayGeometry(),
+        loadNationalRoadGeometry(),
+        loadExpresswayGeometry(),
         loadPrefectureBoundaries(),
         drawHydroSHEDSSeaMask(),
-        smartphoneView?Promise.resolve(0):loadInlandWaterPolygons()
+        loadInlandWaterPolygons()
       ]);
       if(requestId!==activeOpenRequest)return;
       const failedTasks=backgroundTasks.filter(item=>item.status==='rejected').length;
