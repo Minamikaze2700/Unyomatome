@@ -1715,8 +1715,7 @@ const ROUTE_SCHEDULE_CONFIG={
     {from:'2026-03-14',to:'2027-03-13',file:'FukuokaCity_KukoHakozaki_2026.json'}
   ],
   '福岡市地下鉄七隈線':[
-    {from:'2026-04-01',to:'2026-11-23',file:'FukuokaCity_Nanakuma_2026.json'},
-    {from:'2026-11-24',to:'2027-03-13',file:'FukuokaCity_Nanakuma_2026_2.json'}
+    {from:'2026-04-01',to:'2027-03-13',file:'FukuokaCity_Nanakuma_2026.json'}
   ],
   '東武鉄道アーバンパークライン':[
     {from:'2024-03-16',to:'2026-11-20',file:'TobuNoda_2024.json'},
@@ -14326,6 +14325,10 @@ initRegionNavigation();
   let stationLabelRefreshBound=false;
   let landLayer=null;
   let coastlineLayer=null;
+  let terrainReliefLayer=null;
+  let terrainHillshadeLayer=null;
+  let terrainReliefTileCache=new Map();
+  let terrainReliefLoadErrorShown=false;
   let seaLayer=null;
   let inlandWaterPolygonLayer=null;
   let waterwayLayer=null;
@@ -15495,7 +15498,7 @@ initRegionNavigation();
     }).setView([36.2,138.2],5);
     // 海・陸の塗り分けと河川線形はHydroSHEDSのデータを使用。
     L.control.attribution({prefix:false,position:'bottomright'}).addTo(map)
-      .addAttribution('Coastline: <a href="https://services7.arcgis.com/WSiUmUhlFx4CtMBB/ArcGIS/rest/services/GSHHS_GlobalCoastlines_HighResolution/FeatureServer" target="_blank" rel="noopener">GSHHG high resolution / Wessel &amp; Smith</a> · Road mask: <a href="https://www.hydrosheds.org/" target="_blank" rel="noopener">HydroSHEDS / WWF</a>');
+      .addAttribution('Coastline: <a href="https://services7.arcgis.com/WSiUmUhlFx4CtMBB/ArcGIS/rest/services/GSHHS_GlobalCoastlines_HighResolution/FeatureServer" target="_blank" rel="noopener">GSHHG high resolution / Wessel &amp; Smith</a> · Road mask: <a href="https://www.hydrosheds.org/" target="_blank" rel="noopener">HydroSHEDS / WWF</a> · Elevation: <a href="https://tiles.gsj.jp/tiles/elev2/index.html" target="_blank" rel="noopener">GSJ seamless elevation tiles / mixed DEM</a>');
     // HydroSHEDSの海・陸面は独立した低いPaneへ配置し、路線より下に固定する。
     map.createPane('landPane');
     map.getPane('landPane').style.zIndex='350';
@@ -15504,6 +15507,16 @@ initRegionNavigation();
     map.createPane('coastlinePane');
     map.getPane('coastlinePane').style.zIndex='355';
     map.getPane('coastlinePane').style.pointerEvents='none';
+    // 地形陰影と淡緑の山地表現を別Paneに分離する。
+    map.createPane('terrainHillshadePane');
+    map.getPane('terrainHillshadePane').style.zIndex='357';
+    map.getPane('terrainHillshadePane').style.pointerEvents='none';
+    map.createPane('terrainReliefPane');
+    map.getPane('terrainReliefPane').style.zIndex='358';
+    map.getPane('terrainReliefPane').style.pointerEvents='none';
+    map.getPane('terrainReliefPane').style.opacity='0.86';
+    // DEMで抽出した山地の境界を、タイル全体を合成した後に自然にぼかす。
+    map.getPane('terrainReliefPane').style.filter='blur(7px)';
     // 陸地の上に内陸水域、都道府県境界・鉄道路線の下に配置する。
     map.createPane('waterPane');
     map.getPane('waterPane').style.zIndex='360';
@@ -15728,6 +15741,165 @@ initRegionNavigation();
     // 高解像度GSHHGベクターポリゴンで滑らかな輪郭と陸地塗りを描画する。
     return 1;
   }
+  // GSJシームレス標高タイル（統合DEM mixed）から山地を自動判定する。
+  // 標高タイルは表示範囲・ズームに応じて取得し、画面解像度に合わせて軽量な256px画像へ変換する。
+  function loadProcessedTerrainTile(z,x,y){
+    const cacheKey=`${z}/${x}/${y}`;
+    if(terrainReliefTileCache.has(cacheKey)){
+      const cached=terrainReliefTileCache.get(cacheKey);
+      terrainReliefTileCache.delete(cacheKey);
+      terrainReliefTileCache.set(cacheKey,cached);
+      return cached;
+    }
+    const task=new Promise((resolve,reject)=>{
+      const image=new Image();
+      image.crossOrigin='anonymous';
+      image.decoding='async';
+      image.onload=()=>{
+        try{
+          const sourceCanvas=document.createElement('canvas');
+          sourceCanvas.width=512;sourceCanvas.height=512;
+          const sourceContext=sourceCanvas.getContext('2d',{willReadFrequently:true});
+          sourceContext.drawImage(image,0,0,512,512);
+          const pixels=sourceContext.getImageData(0,0,512,512).data;
+          const size=256,total=size*size;
+          const heights=new Float32Array(total);
+          const valid=new Uint8Array(total);
+          // 512px標高タイルを表示解像度に合わせて2×2間隔でサンプリング。
+          for(let py=0;py<size;py++){
+            const sourceRow=(py*2+1)*512*4;
+            const targetRow=py*size;
+            for(let px=0;px<size;px++){
+              const si=sourceRow+(px*2+1)*4;
+              const r=pixels[si],g=pixels[si+1],b=pixels[si+2],a=pixels[si+3];
+              if(a<128||(r===128&&g===0&&b===0))continue;
+              const signedValue=(r<<16)|(g<<8)|b;
+              const index=targetRow+px;
+              heights[index]=signedValue*0.01;
+              valid[index]=1;
+            }
+          }
+          // 256px表示タイル1画素あたりの地上距離（Webメルカトル）。
+          const worldY=(y+0.5)/Math.pow(2,z);
+          const centerLat=Math.atan(Math.sinh(Math.PI*(1-2*worldY)))*180/Math.PI;
+          const metresPerPixel=156543.03392804097*Math.cos(centerLat*Math.PI/180)/Math.pow(2,z);
+          const outputCanvas=document.createElement('canvas');
+          outputCanvas.width=size;outputCanvas.height=size;
+          const outputContext=outputCanvas.getContext('2d');
+          const output=outputContext.createImageData(size,size);
+          const out=output.data;
+          const clamp=(v)=>Math.max(0,Math.min(1,v));
+          for(let py=1;py<size-1;py++){
+            const row=py*size;
+            for(let px=1;px<size-1;px++){
+              const index=row+px;
+              if(!valid[index])continue;
+              const h=heights[index];
+              const left=valid[index-1]?heights[index-1]:h;
+              const right=valid[index+1]?heights[index+1]:h;
+              const up=valid[index-size]?heights[index-size]:h;
+              const down=valid[index+size]?heights[index+size]:h;
+              const dx=(right-left)/(2*metresPerPixel);
+              const dy=(down-up)/(2*metresPerPixel);
+              const slope=Math.atan(Math.hypot(dx,dy))*180/Math.PI;
+              let localMin=h,localMax=h;
+              for(let oy=-1;oy<=1;oy++){
+                const neighborRow=(py+oy)*size;
+                for(let ox=-1;ox<=1;ox++){
+                  const ni=neighborRow+px+ox;
+                  if(!valid[ni])continue;
+                  const nh=heights[ni];
+                  if(nh<localMin)localMin=nh;
+                  if(nh>localMax)localMax=nh;
+                }
+              }
+              const relief=localMax-localMin;
+              // 高度・局所起伏・傾斜のいずれかで山地らしさを評価する。
+              const elevationScore=clamp((h-180)/760);
+              const reliefScore=clamp((relief-70)/340);
+              const slopeScore=clamp((slope-4)/18);
+              const score=Math.max(elevationScore*0.82,reliefScore*0.90,slopeScore*0.64);
+              const alpha=Math.round(clamp((score-0.13)/0.87)*138);
+              if(alpha<5)continue;
+              const oi=index*4;
+              out[oi]=207;out[oi+1]=231;out[oi+2]=198;out[oi+3]=alpha;
+            }
+          }
+          outputContext.putImageData(output,0,0);
+          resolve(outputCanvas);
+        }catch(error){reject(error);}
+      };
+      image.onerror=()=>reject(new Error(`標高タイルを取得できません: ${cacheKey}`));
+      image.src=`https://gbank.gsj.jp/seamless/elev2/mixed/${z}/${x}/${y}.webp`;
+    });
+    terrainReliefTileCache.set(cacheKey,task);
+    // 処理済みタイルは直近18枚だけ保持し、メモリの増加を抑える。
+    while(terrainReliefTileCache.size>18){
+      const oldestKey=terrainReliefTileCache.keys().next().value;
+      terrainReliefTileCache.delete(oldestKey);
+    }
+    task.catch(()=>{
+      if(terrainReliefTileCache.get(cacheKey)===task)terrainReliefTileCache.delete(cacheKey);
+    });
+    return task;
+  }
+
+  // PC版の地形表現。GSJの実標高DEMで山地を自動抽出し、Esri陰影起伏を重ねる。
+  function setTerrainReliefEnabled(enabled){
+    if(!map)return 0;
+    if(!enabled){
+      if(terrainReliefLayer&&map.hasLayer(terrainReliefLayer))map.removeLayer(terrainReliefLayer);
+      if(terrainHillshadeLayer&&map.hasLayer(terrainHillshadeLayer))map.removeLayer(terrainHillshadeLayer);
+      return 0;
+    }
+    if(!terrainHillshadeLayer){
+      terrainHillshadeLayer=L.tileLayer(
+        'https://services.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}',
+        {pane:'terrainHillshadePane',opacity:0.20,minZoom:7,maxZoom:12,maxNativeZoom:10,
+         updateWhenIdle:true,updateWhenZooming:false,updateInterval:500,keepBuffer:0,
+         detectRetina:false,
+         attribution:'Terrain: <a href="https://www.arcgis.com/home/item.html?id=1b243539f4514b6ba35e7d995890db1d" target="_blank" rel="noopener">Esri World Hillshade</a>'}
+      );
+    }
+    if(!terrainReliefLayer){
+      const TerrainReliefGrid=L.GridLayer.extend({
+        createTile:function(coords,done){
+          const tile=document.createElement('canvas');
+          tile.width=256;tile.height=256;
+          tile.style.width='256px';tile.style.height='256px';
+          const sourceZ=Math.min(coords.z,9);
+          const scale=Math.pow(2,coords.z-sourceZ);
+          const sourceX=Math.floor(coords.x/scale);
+          const sourceY=Math.floor(coords.y/scale);
+          const offsetX=(coords.x-sourceX*scale)*(256/scale);
+          const offsetY=(coords.y-sourceY*scale)*(256/scale);
+          const cropSize=256/scale;
+          loadProcessedTerrainTile(sourceZ,sourceX,sourceY).then(sourceCanvas=>{
+            const context=tile.getContext('2d');
+            context.drawImage(sourceCanvas,offsetX,offsetY,cropSize,cropSize,0,0,256,256);
+            done(null,tile);
+          }).catch(error=>{
+            if(!terrainReliefLoadErrorShown){
+              terrainReliefLoadErrorShown=true;
+              console.warn('DEM山地レイヤーを読み込めません。タイル配信またはCORS設定を確認してください。',error);
+            }
+            done(null,tile);
+          });
+          return tile;
+        }
+      });
+      terrainReliefLayer=new TerrainReliefGrid({
+        pane:'terrainReliefPane',tileSize:256,minZoom:4,maxZoom:18,
+        updateWhenIdle:true,updateWhenZooming:false,updateInterval:500,
+        keepBuffer:0,noWrap:true,
+        attribution:'Elevation: <a href="https://tiles.gsj.jp/tiles/elev2/index.html" target="_blank" rel="noopener">産総研シームレス標高タイル（統合DEM mixed）</a>'
+      });
+    }
+    if(!map.hasLayer(terrainHillshadeLayer))terrainHillshadeLayer.addTo(map);
+    if(!map.hasLayer(terrainReliefLayer))terrainReliefLayer.addTo(map);
+    return 1;
+  }
+
   function loadSmoothGSHHGCoastline(){
     if(smoothCoastlinePromise)return smoothCoastlinePromise;
     smoothCoastlinePromise=(async()=>{
@@ -17113,6 +17285,8 @@ initRegionNavigation();
   }
   async function openMap(){
     if(overlay.classList.contains('active'))return;
+    // スマートフォンでは国道・高速道路・湖沼を表示せず、関連データも取得しない。
+    const smartphoneView=window.matchMedia('(max-width: 600px)').matches;
     const mapSelection={
       dateKey:nationalMapCurrentDateKey(),
       time:String(document.getElementById('timeInput')?.value||'')
@@ -17128,6 +17302,8 @@ initRegionNavigation();
       await ensureLeaflet();
       if(requestId!==activeOpenRequest)return;
       initializeMap();
+      // 起動時の端末幅に応じて地形陰影を切り替える。PCでは表示、スマートフォンでは非表示。
+      setTerrainReliefEnabled(!smartphoneView);
       attachNationalMapOperationInfoListener(nationalMapCurrentDateKey());
       waterwaysEnabled=false;
       routeLayer.clearLayers();stationLabelLayer?.clearLayers();
@@ -17135,7 +17311,7 @@ initRegionNavigation();
       // 実際の前後関係は各Paneの既存z-indexで固定し、表示レイヤーの重なり順は変えない。
       setStatus('陸地・路線を並行して読み込み中…');
       await Promise.all([
-        loadHydroSHEDSSeaLandMask(),
+        smartphoneView?Promise.resolve(0):loadHydroSHEDSSeaLandMask(),
         loadSmoothGSHHGCoastline(),
         renderNationalRouteMap(requestId,mapSelection)
       ]);
@@ -17144,16 +17320,24 @@ initRegionNavigation();
       // 読み込み完了前は最初に指定した陸地色を維持する。
       if(hydroSeaLandMaskReady&&smoothCoastlineReady)mapElement.style.backgroundColor='#83cce9';
 
-      // 国道・高速道路・都道府県境界は相互依存しないため並列取得。
-      // 河川・水路データは取得しない。海岸・湖沼など既存の背景表示は維持する。
-      setStatus('道路・境界・水域データを並行して読み込み中…');
+      // 国道・高速道路・湖沼はスマートフォンでは取得・描画しない。
+      // PCでは従来どおり表示し、都道府県境界と海岸線は端末によらず維持する。
+      setStatus('背景データを読み込み中…');
       waterwaysEnabled=false;
+      if(smartphoneView){
+        nationalRoadLayer?.clearLayers();
+        highwayLayer?.clearLayers();
+        inlandWaterPolygonLayer?.clearLayers();
+        // PC表示からスマートフォン表示へ切り替えた後、再びPCで開いた際に再取得できるようにする。
+        expresswayGeometryPromise=null;
+        inlandWaterPolygonPromise=null;
+      }
       const backgroundTasks=await Promise.allSettled([
-        loadNationalRoadGeometry(),
-        loadExpresswayGeometry(),
+        smartphoneView?Promise.resolve(0):loadNationalRoadGeometry(),
+        smartphoneView?Promise.resolve(0):loadExpresswayGeometry(),
         loadPrefectureBoundaries(),
         drawHydroSHEDSSeaMask(),
-        loadInlandWaterPolygons()
+        smartphoneView?Promise.resolve(0):loadInlandWaterPolygons()
       ]);
       if(requestId!==activeOpenRequest)return;
       const failedTasks=backgroundTasks.filter(item=>item.status==='rejected').length;
