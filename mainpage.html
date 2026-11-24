@@ -14328,6 +14328,7 @@ initRegionNavigation();
   let terrainReliefLayer=null;
   let terrainHillshadeLayer=null;
   let terrainReliefTileCache=new Map();
+  let terrainRawTileCache=new Map();
   let terrainReliefLoadErrorShown=false;
   let seaLayer=null;
   let inlandWaterPolygonLayer=null;
@@ -15514,9 +15515,10 @@ initRegionNavigation();
     map.createPane('terrainReliefPane');
     map.getPane('terrainReliefPane').style.zIndex='358';
     map.getPane('terrainReliefPane').style.pointerEvents='none';
-    map.getPane('terrainReliefPane').style.opacity='0.86';
-    // DEMで抽出した山地の境界を、タイル全体を合成した後に自然にぼかす。
-    map.getPane('terrainReliefPane').style.filter='blur(7px)';
+    map.getPane('terrainReliefPane').style.opacity='0.90';
+    // CSSフィルターは海側へ色をにじませるため使わず、DEMタイル内で
+    // ぼかした後に陸海マスクで再クリップする。
+    map.getPane('terrainReliefPane').style.filter='none';
     // 陸地の上に内陸水域、都道府県境界・鉄道路線の下に配置する。
     map.createPane('waterPane');
     map.getPane('waterPane').style.zIndex='360';
@@ -15743,6 +15745,38 @@ initRegionNavigation();
   }
   // GSJシームレス標高タイル（統合DEM mixed）から山地を自動判定する。
   // 標高タイルは表示範囲・ズームに応じて取得し、画面解像度に合わせて軽量な256px画像へ変換する。
+  // DEM原画像を共有キャッシュする。山地判定では隣接タイルも参照し、
+  // タイルの端で計算が途切れて格子状の継ぎ目が出るのを防ぐ。
+  function loadTerrainRawImage(z,x,y){
+    const worldSize=Math.pow(2,z);
+    const normalizedX=((x%worldSize)+worldSize)%worldSize;
+    if(y<0||y>=worldSize)return Promise.resolve(null);
+    const key=`${z}/${normalizedX}/${y}`;
+    if(terrainRawTileCache.has(key)){
+      const cached=terrainRawTileCache.get(key);
+      terrainRawTileCache.delete(key);
+      terrainRawTileCache.set(key,cached);
+      return cached;
+    }
+    const task=new Promise((resolve,reject)=>{
+      const image=new Image();
+      image.crossOrigin='anonymous';
+      image.decoding='async';
+      image.onload=()=>resolve(image);
+      image.onerror=()=>reject(new Error(`標高タイルを取得できません: ${key}`));
+      image.src=`https://gbank.gsj.jp/seamless/elev2/mixed/${z}/${normalizedX}/${y}.webp`;
+    });
+    terrainRawTileCache.set(key,task);
+    while(terrainRawTileCache.size>72){
+      const oldestKey=terrainRawTileCache.keys().next().value;
+      terrainRawTileCache.delete(oldestKey);
+    }
+    task.catch(()=>{
+      if(terrainRawTileCache.get(key)===task)terrainRawTileCache.delete(key);
+    });
+    return task;
+  }
+
   function loadProcessedTerrainTile(z,x,y){
     const cacheKey=`${z}/${x}/${y}`;
     if(terrainReliefTileCache.has(cacheKey)){
@@ -15751,89 +15785,132 @@ initRegionNavigation();
       terrainReliefTileCache.set(cacheKey,cached);
       return cached;
     }
-    const task=new Promise((resolve,reject)=>{
-      const image=new Image();
-      image.crossOrigin='anonymous';
-      image.decoding='async';
-      image.onload=()=>{
-        try{
-          const sourceCanvas=document.createElement('canvas');
-          sourceCanvas.width=512;sourceCanvas.height=512;
-          const sourceContext=sourceCanvas.getContext('2d',{willReadFrequently:true});
-          sourceContext.drawImage(image,0,0,512,512);
-          const pixels=sourceContext.getImageData(0,0,512,512).data;
-          const size=256,total=size*size;
-          const heights=new Float32Array(total);
-          const valid=new Uint8Array(total);
-          // 512px標高タイルを表示解像度に合わせて2×2間隔でサンプリング。
-          for(let py=0;py<size;py++){
-            const sourceRow=(py*2+1)*512*4;
-            const targetRow=py*size;
-            for(let px=0;px<size;px++){
-              const si=sourceRow+(px*2+1)*4;
-              const r=pixels[si],g=pixels[si+1],b=pixels[si+2],a=pixels[si+3];
-              if(a<128||(r===128&&g===0&&b===0))continue;
-              const signedValue=(r<<16)|(g<<8)|b;
-              const index=targetRow+px;
-              heights[index]=signedValue*0.01;
-              valid[index]=1;
+    const task=(async()=>{
+      // 山地色の描画前に陸海マスクを必ず準備する。
+      // マスク取得に失敗した場合は、海への誤描画を避けるため山地色を出さない。
+      if(!hydroSeaLandMaskReady)await loadHydroSHEDSSeaLandMask();
+      if(!hydroSeaLandMaskReady||!hydroSHEDSLandMaskRaster){
+        throw new Error('陸海マスクが準備できないため、DEM山地色の描画を中止しました');
+      }
+
+      // 中央タイルと周囲8タイルを一緒に読み込む。
+      // ぼかしと傾斜計算をタイル外まで連続させて、四角い継ぎ目をなくす。
+      const neighbors=[];
+      for(let dy=-1;dy<=1;dy++){
+        for(let dx=-1;dx<=1;dx++)neighbors.push({dx,dy,promise:loadTerrainRawImage(z,x+dx,y+dy)});
+      }
+      const loaded=await Promise.all(neighbors.map(item=>item.promise));
+      const elevationCanvas=document.createElement('canvas');
+      elevationCanvas.width=1536;elevationCanvas.height=1536;
+      const elevationContext=elevationCanvas.getContext('2d',{willReadFrequently:true});
+      neighbors.forEach((item,index)=>{
+        const image=loaded[index];
+        if(image)elevationContext.drawImage(image,0,0,image.width,image.height,(item.dx+1)*512,(item.dy+1)*512,512,512);
+      });
+      const pixels=elevationContext.getImageData(0,0,1536,1536).data;
+
+      const tileSize=256;
+      const padding=8;
+      const size=tileSize+padding*2;
+      const total=size*size;
+      const heights=new Float32Array(total);
+      const valid=new Uint8Array(total);
+      const landMask=new Uint8Array(total);
+      const worldScale=Math.pow(2,z);
+      // 周囲8pxを含めて計算。隣接タイルとの境界でも同じDEM画素を参照する。
+      for(let py=0;py<size;py++){
+        const sourceY=512+(py-padding)*2+1;
+        const sourceRow=sourceY*1536*4;
+        const targetRow=py*size;
+        const worldY=(y+(py-padding+0.5)/tileSize)/worldScale;
+        const lat=Math.atan(Math.sinh(Math.PI*(1-2*worldY)))*180/Math.PI;
+        for(let px=0;px<size;px++){
+          const index=targetRow+px;
+          const worldX=(x+(px-padding+0.5)/tileSize)/worldScale;
+          const lon=worldX*360-180;
+          if(!isCoordinateOnLand(lat,lon))continue;
+          landMask[index]=1;
+          const sourceX=512+(px-padding)*2+1;
+          const si=sourceRow+sourceX*4;
+          const r=pixels[si],g=pixels[si+1],b=pixels[si+2],a=pixels[si+3];
+          if(a<128||(r===128&&g===0&&b===0))continue;
+          const signedValue=(r<<16)|(g<<8)|b;
+          heights[index]=signedValue*0.01;
+          valid[index]=1;
+        }
+      }
+
+      const centerWorldY=(y+0.5)/worldScale;
+      const centerLat=Math.atan(Math.sinh(Math.PI*(1-2*centerWorldY)))*180/Math.PI;
+      const metresPerPixel=156543.03392804097*Math.cos(centerLat*Math.PI/180)/worldScale;
+      const outputCanvas=document.createElement('canvas');
+      outputCanvas.width=size;outputCanvas.height=size;
+      const outputContext=outputCanvas.getContext('2d');
+      const output=outputContext.createImageData(size,size);
+      const out=output.data;
+      const clamp=(v)=>Math.max(0,Math.min(1,v));
+      for(let py=1;py<size-1;py++){
+        const row=py*size;
+        for(let px=1;px<size-1;px++){
+          const index=row+px;
+          if(!valid[index]||!landMask[index])continue;
+          const h=heights[index];
+          const left=valid[index-1]?heights[index-1]:h;
+          const right=valid[index+1]?heights[index+1]:h;
+          const up=valid[index-size]?heights[index-size]:h;
+          const down=valid[index+size]?heights[index+size]:h;
+          const dx=(right-left)/(2*metresPerPixel);
+          const dy=(down-up)/(2*metresPerPixel);
+          const slope=Math.atan(Math.hypot(dx,dy))*180/Math.PI;
+          let localMin=h,localMax=h;
+          for(let oy=-1;oy<=1;oy++){
+            const neighborRow=(py+oy)*size;
+            for(let ox=-1;ox<=1;ox++){
+              const ni=neighborRow+px+ox;
+              if(!valid[ni])continue;
+              const nh=heights[ni];
+              if(nh<localMin)localMin=nh;
+              if(nh>localMax)localMax=nh;
             }
           }
-          // 256px表示タイル1画素あたりの地上距離（Webメルカトル）。
-          const worldY=(y+0.5)/Math.pow(2,z);
-          const centerLat=Math.atan(Math.sinh(Math.PI*(1-2*worldY)))*180/Math.PI;
-          const metresPerPixel=156543.03392804097*Math.cos(centerLat*Math.PI/180)/Math.pow(2,z);
-          const outputCanvas=document.createElement('canvas');
-          outputCanvas.width=size;outputCanvas.height=size;
-          const outputContext=outputCanvas.getContext('2d');
-          const output=outputContext.createImageData(size,size);
-          const out=output.data;
-          const clamp=(v)=>Math.max(0,Math.min(1,v));
-          for(let py=1;py<size-1;py++){
-            const row=py*size;
-            for(let px=1;px<size-1;px++){
-              const index=row+px;
-              if(!valid[index])continue;
-              const h=heights[index];
-              const left=valid[index-1]?heights[index-1]:h;
-              const right=valid[index+1]?heights[index+1]:h;
-              const up=valid[index-size]?heights[index-size]:h;
-              const down=valid[index+size]?heights[index+size]:h;
-              const dx=(right-left)/(2*metresPerPixel);
-              const dy=(down-up)/(2*metresPerPixel);
-              const slope=Math.atan(Math.hypot(dx,dy))*180/Math.PI;
-              let localMin=h,localMax=h;
-              for(let oy=-1;oy<=1;oy++){
-                const neighborRow=(py+oy)*size;
-                for(let ox=-1;ox<=1;ox++){
-                  const ni=neighborRow+px+ox;
-                  if(!valid[ni])continue;
-                  const nh=heights[ni];
-                  if(nh<localMin)localMin=nh;
-                  if(nh>localMax)localMax=nh;
-                }
-              }
-              const relief=localMax-localMin;
-              // 高度・局所起伏・傾斜のいずれかで山地らしさを評価する。
-              const elevationScore=clamp((h-180)/760);
-              const reliefScore=clamp((relief-70)/340);
-              const slopeScore=clamp((slope-4)/18);
-              const score=Math.max(elevationScore*0.82,reliefScore*0.90,slopeScore*0.64);
-              const alpha=Math.round(clamp((score-0.13)/0.87)*138);
-              if(alpha<5)continue;
-              const oi=index*4;
-              out[oi]=207;out[oi+1]=231;out[oi+2]=198;out[oi+3]=alpha;
-            }
-          }
-          outputContext.putImageData(output,0,0);
-          resolve(outputCanvas);
-        }catch(error){reject(error);}
-      };
-      image.onerror=()=>reject(new Error(`標高タイルを取得できません: ${cacheKey}`));
-      image.src=`https://gbank.gsj.jp/seamless/elev2/mixed/${z}/${x}/${y}.webp`;
-    });
+          const relief=localMax-localMin;
+          const elevationScore=clamp((h-180)/760);
+          const reliefScore=clamp((relief-70)/340);
+          const slopeScore=clamp((slope-4)/18);
+          const score=Math.max(elevationScore*0.82,reliefScore*0.90,slopeScore*0.64);
+          const alpha=Math.round(clamp((score-0.13)/0.87)*148);
+          if(alpha<5)continue;
+          const oi=index*4;
+          out[oi]=194;out[oi+1]=223;out[oi+2]=181;out[oi+3]=alpha;
+        }
+      }
+      outputContext.putImageData(output,0,0);
+
+      // タイル外の余白を含めてぼかし、最後に同じ陸海マスクで海側を除去する。
+      const softenedCanvas=document.createElement('canvas');
+      softenedCanvas.width=size;softenedCanvas.height=size;
+      const softenedContext=softenedCanvas.getContext('2d');
+      softenedContext.filter='blur(2px)';
+      softenedContext.drawImage(outputCanvas,0,0);
+      softenedContext.filter='none';
+      const landMaskCanvas=document.createElement('canvas');
+      landMaskCanvas.width=size;landMaskCanvas.height=size;
+      const maskContext=landMaskCanvas.getContext('2d');
+      const maskImage=maskContext.createImageData(size,size);
+      const maskPixels=maskImage.data;
+      for(let i=0;i<total;i++)if(landMask[i])maskPixels[i*4+3]=255;
+      maskContext.putImageData(maskImage,0,0);
+      softenedContext.globalCompositeOperation='destination-in';
+      softenedContext.drawImage(landMaskCanvas,0,0);
+      softenedContext.globalCompositeOperation='source-over';
+
+      // 余白を除いた中央256pxだけを返す。隣接タイルも同じ計算になるため格子状の線が出にくい。
+      const finalCanvas=document.createElement('canvas');
+      finalCanvas.width=tileSize;finalCanvas.height=tileSize;
+      finalCanvas.getContext('2d').drawImage(softenedCanvas,padding,padding,tileSize,tileSize,0,0,tileSize,tileSize);
+      return finalCanvas;
+    })();
     terrainReliefTileCache.set(cacheKey,task);
-    // 処理済みタイルは直近18枚だけ保持し、メモリの増加を抑える。
     while(terrainReliefTileCache.size>18){
       const oldestKey=terrainReliefTileCache.keys().next().value;
       terrainReliefTileCache.delete(oldestKey);
