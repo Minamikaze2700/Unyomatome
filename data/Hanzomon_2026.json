@@ -1,6 +1,6 @@
 [
   {
-    "no": "81S",
+    "no": "B581S",
     "operationNo": "81S",
     "trainNumbers": {
       "tobu": "",
@@ -11,7 +11,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -235,10 +236,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B581S"
   },
   {
-    "no": "89S",
+    "no": "B589S",
     "operationNo": "89S",
     "trainNumbers": {
       "tobu": "",
@@ -249,7 +251,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -497,10 +500,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B589S"
   },
   {
-    "no": "91S",
+    "no": "B591S",
     "operationNo": "91S",
     "trainNumbers": {
       "tobu": "",
@@ -511,7 +515,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -759,10 +764,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B591S"
   },
   {
-    "no": "79S",
+    "no": "B579S",
     "operationNo": "79S",
     "trainNumbers": {
       "tobu": "",
@@ -773,7 +779,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -1021,21 +1028,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B579S"
   },
   {
-    "no": "50T",
+    "no": "B550T",
     "operationNo": "50T",
     "trainNumbers": {
       "tobu": "4550T",
       "hanzomon": "B550T",
       "denentoshi": "050-061"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -1325,10 +1334,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B550T"
   },
   {
-    "no": "85S",
+    "no": "B585S",
     "operationNo": "85S",
     "trainNumbers": {
       "tobu": "",
@@ -1339,7 +1349,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -1575,21 +1586,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B585S"
   },
   {
-    "no": "52T",
+    "no": "B452T",
     "operationNo": "52T",
     "trainNumbers": {
       "tobu": "4452T",
       "hanzomon": "B452T",
       "denentoshi": "052-061"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "長津田",
@@ -1837,10 +1850,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B452T"
   },
   {
-    "no": "93S",
+    "no": "B693S",
     "operationNo": "93S",
     "trainNumbers": {
       "tobu": "",
@@ -1851,7 +1865,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -2099,21 +2114,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B693S"
   },
   {
-    "no": "54T",
+    "no": "B554T",
     "operationNo": "54T",
     "trainNumbers": {
       "tobu": "4554T",
       "hanzomon": "B554T",
       "denentoshi": "054-061"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -2469,10 +2486,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B554T"
   },
   {
-    "no": "87S",
+    "no": "B687S",
     "operationNo": "87S",
     "trainNumbers": {
       "tobu": "",
@@ -2483,7 +2501,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -2731,10 +2750,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B687S"
   },
   {
-    "no": "31K",
+    "no": "B631K",
     "operationNo": "31K",
     "trainNumbers": {
       "tobu": "",
@@ -2745,7 +2765,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -2897,21 +2918,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B631K"
   },
   {
-    "no": "56T",
+    "no": "B556T",
     "operationNo": "56T",
     "trainNumbers": {
       "tobu": "4556T",
       "hanzomon": "B556T",
       "denentoshi": "056-071"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -3267,10 +3290,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B556T"
   },
   {
-    "no": "28K",
+    "no": "B628K",
     "operationNo": "28K",
     "trainNumbers": {
       "tobu": "",
@@ -3281,7 +3305,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -3529,10 +3554,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B628K"
   },
   {
-    "no": "01K",
+    "no": "B601K",
     "operationNo": "01K",
     "trainNumbers": {
       "tobu": "",
@@ -3543,7 +3569,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -3761,21 +3788,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B601K"
   },
   {
-    "no": "58T",
+    "no": "B558T",
     "operationNo": "58T",
     "trainNumbers": {
       "tobu": "558T",
       "hanzomon": "B558T",
       "denentoshi": "058-071"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "長津田",
@@ -4011,10 +4040,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B558T"
   },
   {
-    "no": "33K",
+    "no": "B633K",
     "operationNo": "33K",
     "trainNumbers": {
       "tobu": "",
@@ -4025,7 +4055,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -4273,10 +4304,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B633K"
   },
   {
-    "no": "59S",
+    "no": "B759S",
     "operationNo": "59S",
     "trainNumbers": {
       "tobu": "",
@@ -4287,7 +4319,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -4517,21 +4550,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B759S"
   },
   {
-    "no": "60T",
+    "no": "B560T",
     "operationNo": "60T",
     "trainNumbers": {
       "tobu": "4560T",
       "hanzomon": "B560T",
       "denentoshi": "060-071"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -4833,10 +4868,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B560T"
   },
   {
-    "no": "55S",
+    "no": "B755S",
     "operationNo": "55S",
     "trainNumbers": {
       "tobu": "",
@@ -4847,7 +4883,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -5065,21 +5102,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B755S"
   },
   {
-    "no": "64T",
+    "no": "B564T",
     "operationNo": "64T",
     "trainNumbers": {
       "tobu": "564T",
       "hanzomon": "B564T",
       "denentoshi": "064-071"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -5399,10 +5438,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B564T"
   },
   {
-    "no": "09K",
+    "no": "B709K",
     "operationNo": "09K",
     "trainNumbers": {
       "tobu": "",
@@ -5413,7 +5453,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -5607,10 +5648,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B709K"
   },
   {
-    "no": "11K",
+    "no": "B711K",
     "operationNo": "11K",
     "trainNumbers": {
       "tobu": "",
@@ -5621,7 +5663,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -5815,21 +5858,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B711K"
   },
   {
-    "no": "62T",
+    "no": "B562T",
     "operationNo": "62T",
     "trainNumbers": {
       "tobu": "4562T",
       "hanzomon": "B562T",
       "denentoshi": "062-071"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "長津田",
@@ -6155,10 +6200,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B562T"
   },
   {
-    "no": "08K",
+    "no": "B708K",
     "operationNo": "08K",
     "trainNumbers": {
       "tobu": "",
@@ -6169,7 +6215,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -6345,10 +6392,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B708K"
   },
   {
-    "no": "32K",
+    "no": "B732K",
     "operationNo": "32K",
     "trainNumbers": {
       "tobu": "",
@@ -6359,7 +6407,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "鷺沼",
@@ -6529,21 +6578,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B732K"
   },
   {
-    "no": "66T",
+    "no": "B666T",
     "operationNo": "66T",
     "trainNumbers": {
       "tobu": "4666T",
       "hanzomon": "B666T",
       "denentoshi": "066-081"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -6899,10 +6950,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B666T"
   },
   {
-    "no": "10K",
+    "no": "B710K",
     "operationNo": "10K",
     "trainNumbers": {
       "tobu": "",
@@ -6913,7 +6965,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -7089,21 +7142,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B710K"
   },
   {
-    "no": "26K",
+    "no": "B626K",
     "operationNo": "26K",
     "trainNumbers": {
       "tobu": "4626K",
       "hanzomon": "B626K",
       "denentoshi": "026-081"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -7459,10 +7514,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B626K"
   },
   {
-    "no": "77S",
+    "no": "B777S",
     "operationNo": "77S",
     "trainNumbers": {
       "tobu": "",
@@ -7473,7 +7529,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -7703,10 +7760,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B777S"
   },
   {
-    "no": "65S",
+    "no": "B765S",
     "operationNo": "65S",
     "trainNumbers": {
       "tobu": "",
@@ -7717,7 +7775,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -7935,21 +7994,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B765S"
   },
   {
-    "no": "83S",
+    "no": "B683S",
     "operationNo": "83S",
     "trainNumbers": {
       "tobu": "4683S",
       "hanzomon": "B683S",
       "denentoshi": "083-081"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "長津田",
@@ -8221,10 +8282,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B683S"
   },
   {
-    "no": "07K",
+    "no": "B707K",
     "operationNo": "07K",
     "trainNumbers": {
       "tobu": "",
@@ -8235,7 +8297,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -8483,10 +8546,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B707K"
   },
   {
-    "no": "36K",
+    "no": "B736K",
     "operationNo": "36K",
     "trainNumbers": {
       "tobu": "",
@@ -8497,7 +8561,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -8727,21 +8792,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B736K"
   },
   {
-    "no": "68T",
+    "no": "B668T",
     "operationNo": "68T",
     "trainNumbers": {
       "tobu": "668T",
       "hanzomon": "B668T",
       "denentoshi": "068-081"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -9061,21 +9128,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B668T"
   },
   {
-    "no": "70T",
+    "no": "B670T",
     "operationNo": "70T",
     "trainNumbers": {
       "tobu": "670T",
       "hanzomon": "B670T",
       "denentoshi": "070-081"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "長津田",
@@ -9305,10 +9374,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B670T"
   },
   {
-    "no": "81S",
+    "no": "B881S",
     "operationNo": "81S",
     "trainNumbers": {
       "tobu": "",
@@ -9319,7 +9389,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "鷺沼",
@@ -9471,21 +9542,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B881S"
   },
   {
-    "no": "72T",
+    "no": "B672T",
     "operationNo": "72T",
     "trainNumbers": {
       "tobu": "672T",
       "hanzomon": "B672T",
       "denentoshi": "072-081"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -9805,10 +9878,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B672T"
   },
   {
-    "no": "12K",
+    "no": "B812K",
     "operationNo": "12K",
     "trainNumbers": {
       "tobu": "",
@@ -9819,7 +9893,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -10013,21 +10088,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B812K"
   },
   {
-    "no": "74T",
+    "no": "B674T",
     "operationNo": "74T",
     "trainNumbers": {
       "tobu": "674T",
       "hanzomon": "B674T",
       "denentoshi": "074-081"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -10347,10 +10424,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B674T"
   },
   {
-    "no": "57S",
+    "no": "B857S",
     "operationNo": "57S",
     "trainNumbers": {
       "tobu": "",
@@ -10361,7 +10439,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "鷺沼",
@@ -10513,10 +10592,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B857S"
   },
   {
-    "no": "16K",
+    "no": "B816K",
     "operationNo": "16K",
     "trainNumbers": {
       "tobu": "",
@@ -10527,7 +10607,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -10691,21 +10772,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B816K"
   },
   {
-    "no": "76T",
+    "no": "B776T",
     "operationNo": "76T",
     "trainNumbers": {
       "tobu": "776T",
       "hanzomon": "B776T",
       "denentoshi": "076-081"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -11025,21 +11108,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B776T"
   },
   {
-    "no": "29K",
+    "no": "B729K",
     "operationNo": "29K",
     "trainNumbers": {
       "tobu": "4729K",
       "hanzomon": "B729K",
       "denentoshi": "029-081"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "長津田",
@@ -11359,10 +11444,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B729K"
   },
   {
-    "no": "17K",
+    "no": "B817K",
     "operationNo": "17K",
     "trainNumbers": {
       "tobu": "",
@@ -11373,7 +11459,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -11549,10 +11636,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B817K"
   },
   {
-    "no": "53S",
+    "no": "B853S",
     "operationNo": "53S",
     "trainNumbers": {
       "tobu": "",
@@ -11563,7 +11651,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "鷺沼",
@@ -11733,21 +11822,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B853S"
   },
   {
-    "no": "27K",
+    "no": "B727K",
     "operationNo": "27K",
     "trainNumbers": {
       "tobu": "727K",
       "hanzomon": "B727K",
       "denentoshi": "027-081"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -12067,10 +12158,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B727K"
   },
   {
-    "no": "40K",
+    "no": "B840K",
     "operationNo": "40K",
     "trainNumbers": {
       "tobu": "",
@@ -12081,7 +12173,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -12245,10 +12338,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B840K"
   },
   {
-    "no": "43K",
+    "no": "B843K",
     "operationNo": "43K",
     "trainNumbers": {
       "tobu": "",
@@ -12259,7 +12353,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -12459,21 +12554,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B843K"
   },
   {
-    "no": "02K",
+    "no": "B702K",
     "operationNo": "02K",
     "trainNumbers": {
       "tobu": "4702K",
       "hanzomon": "B702K",
       "denentoshi": "002-091"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -12811,10 +12908,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B702K"
   },
   {
-    "no": "13K",
+    "no": "B813K",
     "operationNo": "13K",
     "trainNumbers": {
       "tobu": "",
@@ -12825,7 +12923,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -13019,21 +13118,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B813K"
   },
   {
-    "no": "04K",
+    "no": "B704K",
     "operationNo": "04K",
     "trainNumbers": {
       "tobu": "704K",
       "hanzomon": "B704K",
       "denentoshi": "004-091"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -13353,10 +13454,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B704K"
   },
   {
-    "no": "79S",
+    "no": "B879S",
     "operationNo": "79S",
     "trainNumbers": {
       "tobu": "",
@@ -13367,7 +13469,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -13519,10 +13622,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B879S"
   },
   {
-    "no": "30K",
+    "no": "B830K",
     "operationNo": "30K",
     "trainNumbers": {
       "tobu": "",
@@ -13533,7 +13637,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -13751,21 +13856,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B830K"
   },
   {
-    "no": "78T",
+    "no": "B778T",
     "operationNo": "78T",
     "trainNumbers": {
       "tobu": "778T",
       "hanzomon": "B778T",
       "denentoshi": "078-091"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -14085,10 +14192,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B778T"
   },
   {
-    "no": "18K",
+    "no": "B818K",
     "operationNo": "18K",
     "trainNumbers": {
       "tobu": "",
@@ -14099,7 +14207,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -14251,10 +14360,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B818K"
   },
   {
-    "no": "67S",
+    "no": "B867S",
     "operationNo": "67S",
     "trainNumbers": {
       "tobu": "",
@@ -14265,7 +14375,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -14483,21 +14594,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B867S"
   },
   {
-    "no": "82T",
+    "no": "B782T",
     "operationNo": "82T",
     "trainNumbers": {
       "tobu": "4782T",
       "hanzomon": "B782T",
       "denentoshi": "082-091"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -14835,10 +14948,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B782T"
   },
   {
-    "no": "21K",
+    "no": "B821K",
     "operationNo": "21K",
     "trainNumbers": {
       "tobu": "",
@@ -14849,7 +14963,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -15001,10 +15116,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B821K"
   },
   {
-    "no": "50T",
+    "no": "B950T",
     "operationNo": "50T",
     "trainNumbers": {
       "tobu": "",
@@ -15015,7 +15131,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -15263,21 +15380,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B950T"
   },
   {
-    "no": "35K",
+    "no": "B835K",
     "operationNo": "35K",
     "trainNumbers": {
       "tobu": "4835K",
       "hanzomon": "B835K",
       "denentoshi": "035-091"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -15567,10 +15686,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B835K"
   },
   {
-    "no": "19K",
+    "no": "B919K",
     "operationNo": "19K",
     "trainNumbers": {
       "tobu": "",
@@ -15581,7 +15701,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -15733,10 +15854,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B919K"
   },
   {
-    "no": "69S",
+    "no": "B969S",
     "operationNo": "69S",
     "trainNumbers": {
       "tobu": "",
@@ -15747,7 +15869,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "鷺沼",
@@ -15917,21 +16040,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B969S"
   },
   {
-    "no": "51S",
+    "no": "B851S",
     "operationNo": "51S",
     "trainNumbers": {
       "tobu": "4851S",
       "hanzomon": "B851S",
       "denentoshi": "051-091"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "長津田",
@@ -16239,10 +16364,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B851S"
   },
   {
-    "no": "85S",
+    "no": "B985S",
     "operationNo": "85S",
     "trainNumbers": {
       "tobu": "",
@@ -16253,7 +16379,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -16393,10 +16520,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B985S"
   },
   {
-    "no": "22K",
+    "no": "B922K",
     "operationNo": "22K",
     "trainNumbers": {
       "tobu": "",
@@ -16407,7 +16535,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -16655,21 +16784,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B922K"
   },
   {
-    "no": "39K",
+    "no": "B839K",
     "operationNo": "39K",
     "trainNumbers": {
       "tobu": "4839K",
       "hanzomon": "B839K",
       "denentoshi": "039-091"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "長津田",
@@ -16929,10 +17060,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B839K"
   },
   {
-    "no": "93S",
+    "no": "B993K",
     "operationNo": "93S",
     "trainNumbers": {
       "tobu": "",
@@ -16943,7 +17075,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -17095,10 +17228,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B993K"
   },
   {
-    "no": "73S",
+    "no": "B973S",
     "operationNo": "73S",
     "trainNumbers": {
       "tobu": "",
@@ -17109,7 +17243,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -17357,10 +17492,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B973S"
   },
   {
-    "no": "32K",
+    "no": "B932K",
     "operationNo": "32K",
     "trainNumbers": {
       "tobu": "",
@@ -17371,7 +17507,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -17589,21 +17726,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B932K"
   },
   {
-    "no": "34K",
+    "no": "B834K",
     "operationNo": "34K",
     "trainNumbers": {
       "tobu": "4834K",
       "hanzomon": "B834K",
       "denentoshi": "034-101"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "長津田",
@@ -17851,10 +17990,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B834K"
   },
   {
-    "no": "01K",
+    "no": "B901K",
     "operationNo": "01K",
     "trainNumbers": {
       "tobu": "",
@@ -17865,7 +18005,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -18113,10 +18254,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B901K"
   },
   {
-    "no": "54T",
+    "no": "B954T",
     "operationNo": "54T",
     "trainNumbers": {
       "tobu": "",
@@ -18127,7 +18269,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -18375,10 +18518,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B954T"
   },
   {
-    "no": "87S",
+    "no": "B987S",
     "operationNo": "87S",
     "trainNumbers": {
       "tobu": "",
@@ -18389,7 +18533,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -18541,21 +18686,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B987S"
   },
   {
-    "no": "37K",
+    "no": "B837K",
     "operationNo": "37K",
     "trainNumbers": {
       "tobu": "4837K",
       "hanzomon": "B837K",
       "denentoshi": "037-101"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "長津田",
@@ -18863,10 +19010,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B837K"
   },
   {
-    "no": "59S",
+    "no": "B959S",
     "operationNo": "59S",
     "trainNumbers": {
       "tobu": "",
@@ -18877,7 +19025,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -19125,10 +19274,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B959S"
   },
   {
-    "no": "62T",
+    "no": "B962T",
     "operationNo": "62T",
     "trainNumbers": {
       "tobu": "",
@@ -19139,7 +19289,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -19387,21 +19538,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B962T"
   },
   {
-    "no": "61S",
+    "no": "B861S",
     "operationNo": "61S",
     "trainNumbers": {
       "tobu": "4861S",
       "hanzomon": "B861S",
       "denentoshi": "061-101"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -19661,10 +19814,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B861S"
   },
   {
-    "no": "28K",
+    "no": "B1028K",
     "operationNo": "28K",
     "trainNumbers": {
       "tobu": "",
@@ -19675,7 +19829,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "鷺沼",
@@ -19845,10 +20000,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1028K"
   },
   {
-    "no": "08K",
+    "no": "B1008K",
     "operationNo": "08K",
     "trainNumbers": {
       "tobu": "",
@@ -19859,7 +20015,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -20107,21 +20264,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1008K"
   },
   {
-    "no": "80T",
+    "no": "B980T",
     "operationNo": "80T",
     "trainNumbers": {
       "tobu": "980T",
       "hanzomon": "B980T",
       "denentoshi": "080-101"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -20339,10 +20498,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B980T"
   },
   {
-    "no": "83S",
+    "no": "B1083S",
     "operationNo": "83S",
     "trainNumbers": {
       "tobu": "",
@@ -20353,7 +20513,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "鷺沼",
@@ -20523,21 +20684,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1083S"
   },
   {
-    "no": "06K",
+    "no": "B906K",
     "operationNo": "06K",
     "trainNumbers": {
       "tobu": "4906K",
       "hanzomon": "B906K",
       "denentoshi": "006-101"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -20893,10 +21056,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B906K"
   },
   {
-    "no": "66T",
+    "no": "B1066T",
     "operationNo": "66T",
     "trainNumbers": {
       "tobu": "",
@@ -20907,7 +21071,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -21155,10 +21320,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1066T"
   },
   {
-    "no": "64T",
+    "no": "B1064T",
     "operationNo": "64T",
     "trainNumbers": {
       "tobu": "",
@@ -21169,7 +21335,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -21321,21 +21488,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1064T"
   },
   {
-    "no": "89S",
+    "no": "B989S",
     "operationNo": "89S",
     "trainNumbers": {
       "tobu": "989S",
       "hanzomon": "B989S",
       "denentoshi": "089-111"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -21637,10 +21806,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B989S"
   },
   {
-    "no": "77S",
+    "no": "B1077S",
     "operationNo": "77S",
     "trainNumbers": {
       "tobu": "",
@@ -21651,7 +21821,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -21899,10 +22070,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1077S"
   },
   {
-    "no": "10K",
+    "no": "B1010K",
     "operationNo": "10K",
     "trainNumbers": {
       "tobu": "",
@@ -21913,7 +22085,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -22161,21 +22334,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1010K"
   },
   {
-    "no": "41K",
+    "no": "B941K",
     "operationNo": "41K",
     "trainNumbers": {
       "tobu": "941K",
       "hanzomon": "B941K",
       "denentoshi": "041-111"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "長津田",
@@ -22381,10 +22556,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B941K"
   },
   {
-    "no": "36K",
+    "no": "B1036K",
     "operationNo": "36K",
     "trainNumbers": {
       "tobu": "",
@@ -22395,7 +22571,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -22613,21 +22790,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1036K"
   },
   {
-    "no": "63S",
+    "no": "B963S",
     "operationNo": "63S",
     "trainNumbers": {
       "tobu": "963S",
       "hanzomon": "B963S",
       "denentoshi": "063-111"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -22947,10 +23126,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B963S"
   },
   {
-    "no": "70T",
+    "no": "B1070T",
     "operationNo": "70T",
     "trainNumbers": {
       "tobu": "",
@@ -22961,7 +23141,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -23209,21 +23390,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1070T"
   },
   {
-    "no": "20K",
+    "no": "B1020K",
     "operationNo": "20K",
     "trainNumbers": {
       "tobu": "4020K",
       "hanzomon": "B1020K",
       "denentoshi": "020-111"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -23507,10 +23690,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1020K"
   },
   {
-    "no": "07K",
+    "no": "B1107K",
     "operationNo": "07K",
     "trainNumbers": {
       "tobu": "",
@@ -23521,7 +23705,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -23769,10 +23954,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1107K"
   },
   {
-    "no": "17K",
+    "no": "B1117K",
     "operationNo": "17K",
     "trainNumbers": {
       "tobu": "",
@@ -23783,7 +23969,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -23935,21 +24122,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1117K"
   },
   {
-    "no": "05K",
+    "no": "B1005K",
     "operationNo": "05K",
     "trainNumbers": {
       "tobu": "1005K",
       "hanzomon": "B1005K",
       "denentoshi": "005-111"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -24269,10 +24458,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1005K"
   },
   {
-    "no": "72T",
+    "no": "B1172T",
     "operationNo": "72T",
     "trainNumbers": {
       "tobu": "",
@@ -24283,7 +24473,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -24477,21 +24668,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1172T"
   },
   {
-    "no": "91S",
+    "no": "B1091S",
     "operationNo": "91S",
     "trainNumbers": {
       "tobu": "4091S",
       "hanzomon": "B1091S",
       "denentoshi": "091-111"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -24841,10 +25034,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1091S"
   },
   {
-    "no": "74T",
+    "no": "B1174T",
     "operationNo": "74T",
     "trainNumbers": {
       "tobu": "",
@@ -24855,7 +25049,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -25007,21 +25202,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1174T"
   },
   {
-    "no": "03K",
+    "no": "B1003K",
     "operationNo": "03K",
     "trainNumbers": {
       "tobu": "4003K",
       "hanzomon": "B1003K",
       "denentoshi": "003-121"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -25371,10 +25568,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1003K"
   },
   {
-    "no": "04K",
+    "no": "B1104K",
     "operationNo": "04K",
     "trainNumbers": {
       "tobu": "",
@@ -25385,7 +25583,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -25579,21 +25778,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1104K"
   },
   {
-    "no": "23K",
+    "no": "B1023K",
     "operationNo": "23K",
     "trainNumbers": {
       "tobu": "1023K",
       "hanzomon": "B1023K",
       "denentoshi": "023-121"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -25913,10 +26114,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1023K"
   },
   {
-    "no": "02K",
+    "no": "B1102K",
     "operationNo": "02K",
     "trainNumbers": {
       "tobu": "",
@@ -25927,7 +26129,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -26079,21 +26282,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1102K"
   },
   {
-    "no": "55S",
+    "no": "B1055S",
     "operationNo": "55S",
     "trainNumbers": {
       "tobu": "1055S",
       "hanzomon": "B1055S",
       "denentoshi": "055-121"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -26407,10 +26612,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1055S"
   },
   {
-    "no": "18K",
+    "no": "B1118K",
     "operationNo": "18K",
     "trainNumbers": {
       "tobu": "",
@@ -26421,7 +26627,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -26615,21 +26822,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1118K"
   },
   {
-    "no": "71S",
+    "no": "B1071S",
     "operationNo": "71S",
     "trainNumbers": {
       "tobu": "1071S",
       "hanzomon": "B1071S",
       "denentoshi": "071-121"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -26949,10 +27158,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1071S"
   },
   {
-    "no": "21K",
+    "no": "B1221K",
     "operationNo": "21K",
     "trainNumbers": {
       "tobu": "",
@@ -26963,7 +27173,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -27115,21 +27326,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1221K"
   },
   {
-    "no": "60T",
+    "no": "B1160T",
     "operationNo": "60T",
     "trainNumbers": {
       "tobu": "1160T",
       "hanzomon": "B1160T",
       "denentoshi": "060-121"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -27443,10 +27656,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1160T"
   },
   {
-    "no": "93S",
+    "no": "B1293S",
     "operationNo": "93S",
     "trainNumbers": {
       "tobu": "",
@@ -27457,7 +27671,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -27651,21 +27866,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1293S"
   },
   {
-    "no": "15K",
+    "no": "B1115K",
     "operationNo": "15K",
     "trainNumbers": {
       "tobu": "1115K",
       "hanzomon": "B1115K",
       "denentoshi": "015-121"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -27985,10 +28202,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1115K"
   },
   {
-    "no": "82T",
+    "no": "B1282T",
     "operationNo": "82T",
     "trainNumbers": {
       "tobu": "",
@@ -27999,7 +28217,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -28151,21 +28370,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1282T"
   },
   {
-    "no": "11K",
+    "no": "B1111K",
     "operationNo": "11K",
     "trainNumbers": {
       "tobu": "1111K",
       "hanzomon": "B1111K",
       "denentoshi": "011-131"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -28479,10 +28700,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1111K"
   },
   {
-    "no": "87S",
+    "no": "B1287S",
     "operationNo": "87S",
     "trainNumbers": {
       "tobu": "",
@@ -28493,7 +28715,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -28687,21 +28910,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1287S"
   },
   {
-    "no": "09K",
+    "no": "B1109K",
     "operationNo": "09K",
     "trainNumbers": {
       "tobu": "1109K",
       "hanzomon": "B1109K",
       "denentoshi": "009-131"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -29021,10 +29246,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1109K"
   },
   {
-    "no": "22K",
+    "no": "B1222K",
     "operationNo": "22K",
     "trainNumbers": {
       "tobu": "",
@@ -29035,7 +29261,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -29187,21 +29414,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1222K"
   },
   {
-    "no": "68T",
+    "no": "B1168T",
     "operationNo": "68T",
     "trainNumbers": {
       "tobu": "1168T",
       "hanzomon": "B1168T",
       "denentoshi": "068-131"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -29515,10 +29744,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1168T"
   },
   {
-    "no": "80T",
+    "no": "B1280T",
     "operationNo": "80T",
     "trainNumbers": {
       "tobu": "",
@@ -29529,7 +29759,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -29723,21 +29954,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1280T"
   },
   {
-    "no": "52T",
+    "no": "B1152T",
     "operationNo": "52T",
     "trainNumbers": {
       "tobu": "1152T",
       "hanzomon": "B1152T",
       "denentoshi": "052-131"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -30057,10 +30290,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1152T"
   },
   {
-    "no": "01K",
+    "no": "B1301K",
     "operationNo": "01K",
     "trainNumbers": {
       "tobu": "",
@@ -30071,7 +30305,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -30223,21 +30458,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1301K"
   },
   {
-    "no": "12K",
+    "no": "B1212K",
     "operationNo": "12K",
     "trainNumbers": {
       "tobu": "1212K",
       "hanzomon": "B1212K",
       "denentoshi": "012-131"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -30551,10 +30788,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1212K"
   },
   {
-    "no": "08K",
+    "no": "B1308K",
     "operationNo": "08K",
     "trainNumbers": {
       "tobu": "",
@@ -30565,7 +30803,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -30759,21 +30998,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1308K"
   },
   {
-    "no": "65S",
+    "no": "B1265S",
     "operationNo": "65S",
     "trainNumbers": {
       "tobu": "1265S",
       "hanzomon": "B1265S",
       "denentoshi": "065-131"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -31093,10 +31334,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1265S"
   },
   {
-    "no": "59S",
+    "no": "B1359S",
     "operationNo": "59S",
     "trainNumbers": {
       "tobu": "",
@@ -31107,7 +31349,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -31259,21 +31502,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1359S"
   },
   {
-    "no": "76T",
+    "no": "B1276T",
     "operationNo": "76T",
     "trainNumbers": {
       "tobu": "1276T",
       "hanzomon": "B1276T",
       "denentoshi": "076-141"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -31587,10 +31832,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1276T"
   },
   {
-    "no": "77S",
+    "no": "B1377S",
     "operationNo": "77S",
     "trainNumbers": {
       "tobu": "",
@@ -31601,7 +31847,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -31795,21 +32042,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1377S"
   },
   {
-    "no": "24K",
+    "no": "B1224K",
     "operationNo": "24K",
     "trainNumbers": {
       "tobu": "1224K",
       "hanzomon": "B1224K",
       "denentoshi": "024-141"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -32129,10 +32378,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1224K"
   },
   {
-    "no": "66T",
+    "no": "B1366T",
     "operationNo": "66T",
     "trainNumbers": {
       "tobu": "",
@@ -32143,7 +32393,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -32295,21 +32546,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1366T"
   },
   {
-    "no": "19K",
+    "no": "B1219K",
     "operationNo": "19K",
     "trainNumbers": {
       "tobu": "1219K",
       "hanzomon": "B1219K",
       "denentoshi": "019-141"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -32623,10 +32876,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1219K"
   },
   {
-    "no": "63S",
+    "no": "B1363S",
     "operationNo": "63S",
     "trainNumbers": {
       "tobu": "",
@@ -32637,7 +32891,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -32831,21 +33086,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1363S"
   },
   {
-    "no": "79S",
+    "no": "B1279S",
     "operationNo": "79S",
     "trainNumbers": {
       "tobu": "1279S",
       "hanzomon": "B1279S",
       "denentoshi": "079-141"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -33165,10 +33422,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1279S"
   },
   {
-    "no": "10K",
+    "no": "B1410K",
     "operationNo": "10K",
     "trainNumbers": {
       "tobu": "",
@@ -33179,7 +33437,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -33331,21 +33590,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1410K"
   },
   {
-    "no": "78T",
+    "no": "B1378T",
     "operationNo": "78T",
     "trainNumbers": {
       "tobu": "1378T",
       "hanzomon": "B1378T",
       "denentoshi": "078-141"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -33659,10 +33920,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1378T"
   },
   {
-    "no": "07K",
+    "no": "B1407K",
     "operationNo": "07K",
     "trainNumbers": {
       "tobu": "",
@@ -33673,7 +33935,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -33867,21 +34130,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1407K"
   },
   {
-    "no": "56T",
+    "no": "B1356T",
     "operationNo": "56T",
     "trainNumbers": {
       "tobu": "1356T",
       "hanzomon": "B1356T",
       "denentoshi": "056-141"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -34201,10 +34466,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1356T"
   },
   {
-    "no": "70T",
+    "no": "B1470T",
     "operationNo": "70T",
     "trainNumbers": {
       "tobu": "",
@@ -34215,7 +34481,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -34367,21 +34634,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1470T"
   },
   {
-    "no": "58T",
+    "no": "B1358T",
     "operationNo": "58T",
     "trainNumbers": {
       "tobu": "1358T",
       "hanzomon": "B1358T",
       "denentoshi": "058-151"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -34695,10 +34964,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1358T"
   },
   {
-    "no": "91S",
+    "no": "B1491S",
     "operationNo": "91S",
     "trainNumbers": {
       "tobu": "",
@@ -34709,7 +34979,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -34903,21 +35174,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1491S"
   },
   {
-    "no": "25K",
+    "no": "B1325K",
     "operationNo": "25K",
     "trainNumbers": {
       "tobu": "1325K",
       "hanzomon": "B1325K",
       "denentoshi": "025-151"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -35237,10 +35510,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1325K"
   },
   {
-    "no": "05K",
+    "no": "B1405K",
     "operationNo": "05K",
     "trainNumbers": {
       "tobu": "",
@@ -35251,7 +35525,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -35403,21 +35678,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1405K"
   },
   {
-    "no": "73S",
+    "no": "B1373S",
     "operationNo": "73S",
     "trainNumbers": {
       "tobu": "1373S",
       "hanzomon": "B1373S",
       "denentoshi": "073-151"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -35731,10 +36008,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1373S"
   },
   {
-    "no": "23K",
+    "no": "B1423K",
     "operationNo": "23K",
     "trainNumbers": {
       "tobu": "",
@@ -35745,7 +36023,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -35939,21 +36218,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1423K"
   },
   {
-    "no": "61S",
+    "no": "B1361S",
     "operationNo": "61S",
     "trainNumbers": {
       "tobu": "1361S",
       "hanzomon": "B1361S",
       "denentoshi": "061-151"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -36273,10 +36554,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1361S"
   },
   {
-    "no": "03K",
+    "no": "B1503K",
     "operationNo": "03K",
     "trainNumbers": {
       "tobu": "",
@@ -36287,7 +36569,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -36439,21 +36722,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1503K"
   },
   {
-    "no": "54T",
+    "no": "B1454T",
     "operationNo": "54T",
     "trainNumbers": {
       "tobu": "1454T",
       "hanzomon": "B1454T",
       "denentoshi": "054-151"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -36767,10 +37052,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1454T"
   },
   {
-    "no": "71S",
+    "no": "B1571S",
     "operationNo": "71S",
     "trainNumbers": {
       "tobu": "",
@@ -36781,7 +37067,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -36975,21 +37262,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1571S"
   },
   {
-    "no": "62T",
+    "no": "B1462T",
     "operationNo": "62T",
     "trainNumbers": {
       "tobu": "1462T",
       "hanzomon": "B1462T",
       "denentoshi": "062-151"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "長津田",
@@ -37279,10 +37568,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1462T"
   },
   {
-    "no": "55S",
+    "no": "B1555S",
     "operationNo": "55S",
     "trainNumbers": {
       "tobu": "",
@@ -37293,7 +37583,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -37445,21 +37736,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1555S"
   },
   {
-    "no": "64T",
+    "no": "B1464T",
     "operationNo": "64T",
     "trainNumbers": {
       "tobu": "1464T",
       "hanzomon": "B1464T",
       "denentoshi": "064-161"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -37773,10 +38066,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1464T"
   },
   {
-    "no": "15K",
+    "no": "B1515K",
     "operationNo": "15K",
     "trainNumbers": {
       "tobu": "",
@@ -37787,7 +38081,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -37981,21 +38276,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1515K"
   },
   {
-    "no": "16K",
+    "no": "B1416K",
     "operationNo": "16K",
     "trainNumbers": {
       "tobu": "1416K",
       "hanzomon": "B1416K",
       "denentoshi": "016-161"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -38315,10 +38612,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1416K"
   },
   {
-    "no": "60T",
+    "no": "B1560T",
     "operationNo": "60T",
     "trainNumbers": {
       "tobu": "",
@@ -38329,7 +38627,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -38481,21 +38780,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1560T"
   },
   {
-    "no": "06K",
+    "no": "B1406K",
     "operationNo": "06K",
     "trainNumbers": {
       "tobu": "1406K",
       "hanzomon": "B1406K",
       "denentoshi": "006-161"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -38809,10 +39110,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1406K"
   },
   {
-    "no": "09K",
+    "no": "B1509K",
     "operationNo": "09K",
     "trainNumbers": {
       "tobu": "",
@@ -38823,7 +39125,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -39071,21 +39374,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1509K"
   },
   {
-    "no": "20K",
+    "no": "B1420K",
     "operationNo": "20K",
     "trainNumbers": {
       "tobu": "1420K",
       "hanzomon": "B1420K",
       "denentoshi": "020-161"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -39309,10 +39614,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1420K"
   },
   {
-    "no": "11K",
+    "no": "B1611K",
     "operationNo": "11K",
     "trainNumbers": {
       "tobu": "",
@@ -39323,7 +39629,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -39571,21 +39878,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1611K"
   },
   {
-    "no": "17K",
+    "no": "B1517K",
     "operationNo": "17K",
     "trainNumbers": {
       "tobu": "1517K",
       "hanzomon": "B1517K",
       "denentoshi": "017-161"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -39899,10 +40208,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1517K"
   },
   {
-    "no": "52T",
+    "no": "B1652T",
     "operationNo": "52T",
     "trainNumbers": {
       "tobu": "",
@@ -39913,7 +40223,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -40065,21 +40376,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1652T"
   },
   {
-    "no": "50T",
+    "no": "B1550T",
     "operationNo": "50T",
     "trainNumbers": {
       "tobu": "1550T",
       "hanzomon": "B1550T",
       "denentoshi": "050-161"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -40399,10 +40712,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1550T"
   },
   {
-    "no": "26K",
+    "no": "B1626K",
     "operationNo": "26K",
     "trainNumbers": {
       "tobu": "",
@@ -40413,7 +40727,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -40661,10 +40976,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1626K"
   },
   {
-    "no": "08K",
+    "no": "B1608K",
     "operationNo": "08K",
     "trainNumbers": {
       "tobu": "",
@@ -40675,7 +40991,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -40827,21 +41144,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1608K"
   },
   {
-    "no": "74T",
+    "no": "B1574T",
     "operationNo": "74T",
     "trainNumbers": {
       "tobu": "1574T",
       "hanzomon": "B1574T",
       "denentoshi": "074-171"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -41155,10 +41474,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1574T"
   },
   {
-    "no": "29K",
+    "no": "B1629K",
     "operationNo": "29K",
     "trainNumbers": {
       "tobu": "",
@@ -41169,7 +41489,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -41417,21 +41738,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1629K"
   },
   {
-    "no": "04K",
+    "no": "B1504K",
     "operationNo": "04K",
     "trainNumbers": {
       "tobu": "1504K",
       "hanzomon": "B1504K",
       "denentoshi": "004-171"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -41655,10 +41978,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1504K"
   },
   {
-    "no": "63S",
+    "no": "B1663S",
     "operationNo": "63S",
     "trainNumbers": {
       "tobu": "",
@@ -41669,7 +41993,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -41917,10 +42242,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1663S"
   },
   {
-    "no": "77S",
+    "no": "B1677S",
     "operationNo": "77S",
     "trainNumbers": {
       "tobu": "",
@@ -41931,7 +42257,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -42179,21 +42506,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1677S"
   },
   {
-    "no": "02K",
+    "no": "B1502K",
     "operationNo": "02K",
     "trainNumbers": {
       "tobu": "1502K",
       "hanzomon": "B1502K",
       "denentoshi": "002-171"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -42411,10 +42740,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1502K"
   },
   {
-    "no": "30K",
+    "no": "B1630K",
     "operationNo": "30K",
     "trainNumbers": {
       "tobu": "",
@@ -42425,7 +42755,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -42673,10 +43004,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1630K"
   },
   {
-    "no": "24K",
+    "no": "B1624K",
     "operationNo": "24K",
     "trainNumbers": {
       "tobu": "",
@@ -42687,7 +43019,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -42905,21 +43238,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1624K"
   },
   {
-    "no": "72T",
+    "no": "B1572T",
     "operationNo": "72T",
     "trainNumbers": {
       "tobu": "1572T",
       "hanzomon": "B1572T",
       "denentoshi": "072-171"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -43143,10 +43478,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1572T"
   },
   {
-    "no": "76T",
+    "no": "B1776T",
     "operationNo": "76T",
     "trainNumbers": {
       "tobu": "",
@@ -43157,7 +43493,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -43405,10 +43742,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1776T"
   },
   {
-    "no": "10K",
+    "no": "B1710K",
     "operationNo": "10K",
     "trainNumbers": {
       "tobu": "",
@@ -43419,7 +43757,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -43637,21 +43976,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1710K"
   },
   {
-    "no": "93S",
+    "no": "B1693S",
     "operationNo": "93S",
     "trainNumbers": {
       "tobu": "1693S",
       "hanzomon": "B1693S",
       "denentoshi": "093-171"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -43869,10 +44210,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1693S"
   },
   {
-    "no": "79S",
+    "no": "B1779S",
     "operationNo": "79S",
     "trainNumbers": {
       "tobu": "",
@@ -43883,7 +44225,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -44131,10 +44474,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1779S"
   },
   {
-    "no": "19K",
+    "no": "B1719K",
     "operationNo": "19K",
     "trainNumbers": {
       "tobu": "",
@@ -44145,7 +44489,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -44393,21 +44738,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1719K"
   },
   {
-    "no": "21K",
+    "no": "B1621K",
     "operationNo": "21K",
     "trainNumbers": {
       "tobu": "1621K",
       "hanzomon": "B1621K",
       "denentoshi": "021-171"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -44631,10 +44978,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1621K"
   },
   {
-    "no": "70T",
+    "no": "B1770T",
     "operationNo": "70T",
     "trainNumbers": {
       "tobu": "",
@@ -44645,7 +44993,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -44887,10 +45236,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1770T"
   },
   {
-    "no": "32K",
+    "no": "B1732K",
     "operationNo": "32K",
     "trainNumbers": {
       "tobu": "",
@@ -44901,7 +45251,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -45149,21 +45500,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1732K"
   },
   {
-    "no": "22K",
+    "no": "B1622K",
     "operationNo": "22K",
     "trainNumbers": {
       "tobu": "1622K",
       "hanzomon": "B1622K",
       "denentoshi": "022-181"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -45381,10 +45734,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1622K"
   },
   {
-    "no": "51S",
+    "no": "B1751S",
     "operationNo": "51S",
     "trainNumbers": {
       "tobu": "",
@@ -45395,7 +45749,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -45613,10 +45968,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1751S"
   },
   {
-    "no": "91S",
+    "no": "B1791S",
     "operationNo": "91S",
     "trainNumbers": {
       "tobu": "",
@@ -45627,7 +45983,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -45875,21 +46232,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1791S"
   },
   {
-    "no": "89S",
+    "no": "B1689S",
     "operationNo": "89S",
     "trainNumbers": {
       "tobu": "1689S",
       "hanzomon": "B1689S",
       "denentoshi": "089-181"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -46113,10 +46472,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1689S"
   },
   {
-    "no": "05K",
+    "no": "B1705K",
     "operationNo": "05K",
     "trainNumbers": {
       "tobu": "",
@@ -46127,7 +46487,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -46375,10 +46736,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1705K"
   },
   {
-    "no": "23K",
+    "no": "B1723K",
     "operationNo": "23K",
     "trainNumbers": {
       "tobu": "",
@@ -46389,7 +46751,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -46583,10 +46946,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1723K"
   },
   {
-    "no": "27K",
+    "no": "B1727K",
     "operationNo": "27K",
     "trainNumbers": {
       "tobu": "",
@@ -46597,7 +46961,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -46803,21 +47168,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1727K"
   },
   {
-    "no": "80T",
+    "no": "B1680T",
     "operationNo": "80T",
     "trainNumbers": {
       "tobu": "1680T",
       "hanzomon": "B1680T",
       "denentoshi": "080-181"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -47131,10 +47498,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1680T"
   },
   {
-    "no": "25K",
+    "no": "B1725K",
     "operationNo": "25K",
     "trainNumbers": {
       "tobu": "",
@@ -47145,7 +47513,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -47339,10 +47708,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1725K"
   },
   {
-    "no": "34K",
+    "no": "B1734K",
     "operationNo": "34K",
     "trainNumbers": {
       "tobu": "",
@@ -47353,7 +47723,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -47601,10 +47972,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1734K"
   },
   {
-    "no": "03K",
+    "no": "B1703K",
     "operationNo": "03K",
     "trainNumbers": {
       "tobu": "",
@@ -47615,7 +47987,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -47863,21 +48236,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1703K"
   },
   {
-    "no": "68T",
+    "no": "B1768T",
     "operationNo": "68T",
     "trainNumbers": {
       "tobu": "1768T",
       "hanzomon": "B1768T",
       "denentoshi": "068-181"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -48137,10 +48512,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1768T"
   },
   {
-    "no": "73S",
+    "no": "B1873S",
     "operationNo": "73S",
     "trainNumbers": {
       "tobu": "",
@@ -48151,7 +48527,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -48399,10 +48776,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1873S"
   },
   {
-    "no": "53S",
+    "no": "B1853S",
     "operationNo": "53S",
     "trainNumbers": {
       "tobu": "",
@@ -48413,7 +48791,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -48631,21 +49010,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1853S"
   },
   {
-    "no": "82T",
+    "no": "B1782T",
     "operationNo": "82T",
     "trainNumbers": {
       "tobu": "1782T",
       "hanzomon": "B1782T",
       "denentoshi": "082-181"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -48911,10 +49292,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1782T"
   },
   {
-    "no": "36K",
+    "no": "B1836K",
     "operationNo": "36K",
     "trainNumbers": {
       "tobu": "",
@@ -48925,7 +49307,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -49173,10 +49556,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1836K"
   },
   {
-    "no": "71S",
+    "no": "B1871S",
     "operationNo": "71S",
     "trainNumbers": {
       "tobu": "",
@@ -49187,7 +49571,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -49405,21 +49790,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1871S"
   },
   {
-    "no": "66T",
+    "no": "B1766T",
     "operationNo": "66T",
     "trainNumbers": {
       "tobu": "1766T",
       "hanzomon": "B1766T",
       "denentoshi": "066-181"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -49679,10 +50066,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1766T"
   },
   {
-    "no": "55S",
+    "no": "B1855S",
     "operationNo": "55S",
     "trainNumbers": {
       "tobu": "",
@@ -49693,7 +50081,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -49941,10 +50330,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1855S"
   },
   {
-    "no": "37K",
+    "no": "B1837K",
     "operationNo": "37K",
     "trainNumbers": {
       "tobu": "",
@@ -49955,7 +50345,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -50203,21 +50594,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1837K"
   },
   {
-    "no": "59S",
+    "no": "B1759S",
     "operationNo": "59S",
     "trainNumbers": {
       "tobu": "1759S",
       "hanzomon": "B1759S",
       "denentoshi": "059-191"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -50483,10 +50876,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1759S"
   },
   {
-    "no": "54T",
+    "no": "B1854T",
     "operationNo": "54T",
     "trainNumbers": {
       "tobu": "",
@@ -50497,7 +50891,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -50745,10 +51140,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1854T"
   },
   {
-    "no": "15K",
+    "no": "B1815K",
     "operationNo": "15K",
     "trainNumbers": {
       "tobu": "",
@@ -50759,7 +51155,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -50977,10 +51374,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1815K"
   },
   {
-    "no": "57S",
+    "no": "B1857S",
     "operationNo": "57S",
     "trainNumbers": {
       "tobu": "",
@@ -50991,7 +51389,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -51185,21 +51584,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1857S"
   },
   {
-    "no": "65S",
+    "no": "B1765S",
     "operationNo": "65S",
     "trainNumbers": {
       "tobu": "1765S",
       "hanzomon": "B1765S",
       "denentoshi": "065-191"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -51513,10 +51914,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1765S"
   },
   {
-    "no": "28K",
+    "no": "B1828K",
     "operationNo": "28K",
     "trainNumbers": {
       "tobu": "",
@@ -51527,7 +51929,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -51775,10 +52178,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1828K"
   },
   {
-    "no": "38K",
+    "no": "B1838K",
     "operationNo": "38K",
     "trainNumbers": {
       "tobu": "",
@@ -51789,7 +52193,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -51983,21 +52388,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1838K"
   },
   {
-    "no": "12K",
+    "no": "B1712K",
     "operationNo": "12K",
     "trainNumbers": {
       "tobu": "1712K",
       "hanzomon": "B1712K",
       "denentoshi": "012-191"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -52317,10 +52724,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1712K"
   },
   {
-    "no": "20K",
+    "no": "B1820K",
     "operationNo": "20K",
     "trainNumbers": {
       "tobu": "",
@@ -52331,7 +52739,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -52549,10 +52958,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1820K"
   },
   {
-    "no": "39K",
+    "no": "B1839K",
     "operationNo": "39K",
     "trainNumbers": {
       "tobu": "",
@@ -52563,7 +52973,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -52811,21 +53222,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1839K"
   },
   {
-    "no": "07K",
+    "no": "B1807K",
     "operationNo": "07K",
     "trainNumbers": {
       "tobu": "1807K",
       "hanzomon": "B1807K",
       "denentoshi": "007-191"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "長津田",
@@ -53031,10 +53444,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1807K"
   },
   {
-    "no": "16K",
+    "no": "B1916K",
     "operationNo": "16K",
     "trainNumbers": {
       "tobu": "",
@@ -53045,7 +53459,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -53293,10 +53708,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1916K"
   },
   {
-    "no": "40K",
+    "no": "B1940K",
     "operationNo": "40K",
     "trainNumbers": {
       "tobu": "",
@@ -53307,7 +53723,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -53525,21 +53942,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1940K"
   },
   {
-    "no": "18K",
+    "no": "B1818K",
     "operationNo": "18K",
     "trainNumbers": {
       "tobu": "1818K",
       "hanzomon": "B1818K",
       "denentoshi": "018-191"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -53763,10 +54182,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1818K"
   },
   {
-    "no": "09K",
+    "no": "B1909K",
     "operationNo": "09K",
     "trainNumbers": {
       "tobu": "",
@@ -53777,7 +54197,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -54025,10 +54446,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1909K"
   },
   {
-    "no": "11K",
+    "no": "B1911K",
     "operationNo": "11K",
     "trainNumbers": {
       "tobu": "",
@@ -54039,7 +54461,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -54287,21 +54710,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1911K"
   },
   {
-    "no": "78T",
+    "no": "B1878T",
     "operationNo": "78T",
     "trainNumbers": {
       "tobu": "1878T",
       "hanzomon": "B1878T",
       "denentoshi": "078-191"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -54519,10 +54944,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1878T"
   },
   {
-    "no": "04K",
+    "no": "B1904K",
     "operationNo": "04K",
     "trainNumbers": {
       "tobu": "",
@@ -54533,7 +54959,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -54781,10 +55208,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1904K"
   },
   {
-    "no": "41K",
+    "no": "B1941K",
     "operationNo": "41K",
     "trainNumbers": {
       "tobu": "",
@@ -54795,7 +55223,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -55013,21 +55442,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1941K"
   },
   {
-    "no": "31K",
+    "no": "B1831K",
     "operationNo": "31K",
     "trainNumbers": {
       "tobu": "1831K",
       "hanzomon": "B1831K",
       "denentoshi": "031-201"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -55251,10 +55682,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1831K"
   },
   {
-    "no": "50T",
+    "no": "B1950T",
     "operationNo": "50T",
     "trainNumbers": {
       "tobu": "",
@@ -55265,7 +55697,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -55513,10 +55946,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1950T"
   },
   {
-    "no": "26K",
+    "no": "B1926K",
     "operationNo": "26K",
     "trainNumbers": {
       "tobu": "",
@@ -55527,7 +55961,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -55745,21 +56180,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1926K"
   },
   {
-    "no": "33K",
+    "no": "B1833K",
     "operationNo": "33K",
     "trainNumbers": {
       "tobu": "1833K",
       "hanzomon": "B1833K",
       "denentoshi": "033-201"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -55977,10 +56414,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1833K"
   },
   {
-    "no": "63S",
+    "no": "B1963S",
     "operationNo": "63S",
     "trainNumbers": {
       "tobu": "",
@@ -55991,7 +56429,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -56239,10 +56678,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1963S"
   },
   {
-    "no": "29K",
+    "no": "B1929K",
     "operationNo": "29K",
     "trainNumbers": {
       "tobu": "",
@@ -56253,7 +56693,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -56501,21 +56942,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1929K"
   },
   {
-    "no": "58T",
+    "no": "B1858T",
     "operationNo": "58T",
     "trainNumbers": {
       "tobu": "1858T",
       "hanzomon": "B1858T",
       "denentoshi": "058-201"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -56739,10 +57182,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1858T"
   },
   {
-    "no": "42K",
+    "no": "B1942K",
     "operationNo": "42K",
     "trainNumbers": {
       "tobu": "",
@@ -56753,7 +57197,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -56971,10 +57416,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1942K"
   },
   {
-    "no": "72T",
+    "no": "B1972T",
     "operationNo": "72T",
     "trainNumbers": {
       "tobu": "",
@@ -56985,7 +57431,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -57233,21 +57680,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1972T"
   },
   {
-    "no": "35K",
+    "no": "B1935K",
     "operationNo": "35K",
     "trainNumbers": {
       "tobu": "1935K",
       "hanzomon": "B1935K",
       "denentoshi": "035-201"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -57465,10 +57914,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1935K"
   },
   {
-    "no": "30K",
+    "no": "B2030K",
     "operationNo": "30K",
     "trainNumbers": {
       "tobu": "",
@@ -57479,7 +57929,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -57697,10 +58148,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2030K"
   },
   {
-    "no": "10K",
+    "no": "B2010K",
     "operationNo": "10K",
     "trainNumbers": {
       "tobu": "",
@@ -57711,7 +58163,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -57959,21 +58412,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2010K"
   },
   {
-    "no": "56T",
+    "no": "B1956T",
     "operationNo": "56T",
     "trainNumbers": {
       "tobu": "1956T",
       "hanzomon": "B1956T",
       "denentoshi": "056-201"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -58197,10 +58652,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1956T"
   },
   {
-    "no": "93S",
+    "no": "B2093S",
     "operationNo": "93S",
     "trainNumbers": {
       "tobu": "",
@@ -58211,7 +58667,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -58459,10 +58916,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2093S"
   },
   {
-    "no": "21K",
+    "no": "B2021K",
     "operationNo": "21K",
     "trainNumbers": {
       "tobu": "",
@@ -58473,7 +58931,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -58721,21 +59180,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2021K"
   },
   {
-    "no": "62T",
+    "no": "B1962T",
     "operationNo": "62T",
     "trainNumbers": {
       "tobu": "1962T",
       "hanzomon": "B1962T",
       "denentoshi": "062-201"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -58953,10 +59414,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1962T"
   },
   {
-    "no": "19K",
+    "no": "B2019K",
     "operationNo": "19K",
     "trainNumbers": {
       "tobu": "",
@@ -58967,7 +59429,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -59215,10 +59678,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2019K"
   },
   {
-    "no": "79S",
+    "no": "B2079S",
     "operationNo": "79S",
     "trainNumbers": {
       "tobu": "",
@@ -59229,7 +59693,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -59447,21 +59912,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2079S"
   },
   {
-    "no": "13K",
+    "no": "B1913K",
     "operationNo": "13K",
     "trainNumbers": {
       "tobu": "1913K",
       "hanzomon": "B1913K",
       "denentoshi": "013-211"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -59685,10 +60152,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1913K"
   },
   {
-    "no": "51S",
+    "no": "B2051S",
     "operationNo": "51S",
     "trainNumbers": {
       "tobu": "",
@@ -59699,7 +60167,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -59947,10 +60416,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2051S"
   },
   {
-    "no": "89S",
+    "no": "B2089S",
     "operationNo": "89S",
     "trainNumbers": {
       "tobu": "",
@@ -59961,7 +60431,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -60209,21 +60680,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2089S"
   },
   {
-    "no": "60T",
+    "no": "B1960T",
     "operationNo": "60T",
     "trainNumbers": {
       "tobu": "1960T",
       "hanzomon": "B1960T",
       "denentoshi": "060-211"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -60441,10 +60914,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1960T"
   },
   {
-    "no": "91S",
+    "no": "B2091S",
     "operationNo": "91S",
     "trainNumbers": {
       "tobu": "",
@@ -60455,7 +60929,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -60703,21 +61178,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2091S"
   },
   {
-    "no": "87S",
+    "no": "B1987S",
     "operationNo": "87S",
     "trainNumbers": {
       "tobu": "1987S",
       "hanzomon": "B1987S",
       "denentoshi": "087-211"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -61037,10 +61514,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B1987S"
   },
   {
-    "no": "23K",
+    "no": "B2023K",
     "operationNo": "23K",
     "trainNumbers": {
       "tobu": "",
@@ -61051,7 +61529,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -61203,10 +61682,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2023K"
   },
   {
-    "no": "05K",
+    "no": "B2005K",
     "operationNo": "05K",
     "trainNumbers": {
       "tobu": "",
@@ -61217,7 +61697,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -61435,21 +61916,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2005K"
   },
   {
-    "no": "52T",
+    "no": "B2052T",
     "operationNo": "52T",
     "trainNumbers": {
       "tobu": "2052T",
       "hanzomon": "B2052T",
       "denentoshi": "052-211"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -61763,10 +62246,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2052T"
   },
   {
-    "no": "80T",
+    "no": "B2180T",
     "operationNo": "80T",
     "trainNumbers": {
       "tobu": "",
@@ -61777,7 +62261,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -61929,10 +62414,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2180T"
   },
   {
-    "no": "03K",
+    "no": "B2103K",
     "operationNo": "03K",
     "trainNumbers": {
       "tobu": "",
@@ -61943,7 +62429,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -62161,21 +62648,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2103K"
   },
   {
-    "no": "14K",
+    "no": "B2014K",
     "operationNo": "14K",
     "trainNumbers": {
       "tobu": "2014K",
       "hanzomon": "B2014K",
       "denentoshi": "014-211"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -62495,10 +62984,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2014K"
   },
   {
-    "no": "36K",
+    "no": "B2136K",
     "operationNo": "36K",
     "trainNumbers": {
       "tobu": "",
@@ -62509,7 +62999,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -62661,10 +63152,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2136K"
   },
   {
-    "no": "71S",
+    "no": "B2171S",
     "operationNo": "71S",
     "trainNumbers": {
       "tobu": "",
@@ -62675,7 +63167,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -62893,21 +63386,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2171S"
   },
   {
-    "no": "06K",
+    "no": "B2006K",
     "operationNo": "06K",
     "trainNumbers": {
       "tobu": "2006K",
       "hanzomon": "B2006K",
       "denentoshi": "006-211"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -63227,10 +63722,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2006K"
   },
   {
-    "no": "73S",
+    "no": "B2173S",
     "operationNo": "73S",
     "trainNumbers": {
       "tobu": "",
@@ -63241,7 +63737,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -63393,10 +63890,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2173S"
   },
   {
-    "no": "55S",
+    "no": "B2155S",
     "operationNo": "55S",
     "trainNumbers": {
       "tobu": "",
@@ -63407,7 +63905,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -63655,21 +64154,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2155S"
   },
   {
-    "no": "08K",
+    "no": "B2008K",
     "operationNo": "08K",
     "trainNumbers": {
       "tobu": "4008K",
       "hanzomon": "B2008K",
       "denentoshi": "008-221"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -64019,10 +64520,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2008K"
   },
   {
-    "no": "59S",
+    "no": "B2159S",
     "operationNo": "59S",
     "trainNumbers": {
       "tobu": "",
@@ -64033,7 +64535,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -64185,21 +64688,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2159S"
   },
   {
-    "no": "02K",
+    "no": "B2002K",
     "operationNo": "02K",
     "trainNumbers": {
       "tobu": "2002K",
       "hanzomon": "B2002K",
       "denentoshi": "002-221"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -64513,10 +65018,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2002K"
   },
   {
-    "no": "65S",
+    "no": "B2165S",
     "operationNo": "65S",
     "trainNumbers": {
       "tobu": "",
@@ -64527,7 +65033,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -64775,21 +65282,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2165S"
   },
   {
-    "no": "61S",
+    "no": "B2061S",
     "operationNo": "61S",
     "trainNumbers": {
       "tobu": "4061S",
       "hanzomon": "B2061S",
       "denentoshi": "061-221"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "長津田",
@@ -65037,10 +65546,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2061S"
   },
   {
-    "no": "57S",
+    "no": "B2157S",
     "operationNo": "57S",
     "trainNumbers": {
       "tobu": "",
@@ -65051,7 +65561,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -65299,10 +65810,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2157S"
   },
   {
-    "no": "38K",
+    "no": "B2138K",
     "operationNo": "38K",
     "trainNumbers": {
       "tobu": "",
@@ -65313,7 +65825,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -65561,21 +66074,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2138K"
   },
   {
-    "no": "77S",
+    "no": "B2177S",
     "operationNo": "77S",
     "trainNumbers": {
       "tobu": "2177S",
       "hanzomon": "B2177S",
       "denentoshi": "077-221"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -65793,10 +66308,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2177S"
   },
   {
-    "no": "28K",
+    "no": "B2228K",
     "operationNo": "28K",
     "trainNumbers": {
       "tobu": "",
@@ -65807,7 +66323,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -66055,21 +66572,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2228K"
   },
   {
-    "no": "01K",
+    "no": "B2101K",
     "operationNo": "01K",
     "trainNumbers": {
       "tobu": "4101K",
       "hanzomon": "B2101K",
       "denentoshi": "001-221"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -66425,10 +66944,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2101K"
   },
   {
-    "no": "12K",
+    "no": "B2212K",
     "operationNo": "12K",
     "trainNumbers": {
       "tobu": "",
@@ -66439,7 +66959,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -66591,10 +67112,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2212K"
   },
   {
-    "no": "09K",
+    "no": "B2209K",
     "operationNo": "09K",
     "trainNumbers": {
       "tobu": "",
@@ -66605,7 +67127,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -66853,21 +67376,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2209K"
   },
   {
-    "no": "32K",
+    "no": "B2132K",
     "operationNo": "32K",
     "trainNumbers": {
       "tobu": "4132K",
       "hanzomon": "B2132K",
       "denentoshi": "032-221"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "長津田",
@@ -67127,10 +67652,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2132K"
   },
   {
-    "no": "16K",
+    "no": "B2216K",
     "operationNo": "16K",
     "trainNumbers": {
       "tobu": "",
@@ -67141,7 +67667,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -67281,21 +67808,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2216K"
   },
   {
-    "no": "17K",
+    "no": "B2117K",
     "operationNo": "17K",
     "trainNumbers": {
       "tobu": "2117K",
       "hanzomon": "B2117K",
       "denentoshi": "017-231"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "中央林間",
@@ -67615,10 +68144,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2117K"
   },
   {
-    "no": "31K",
+    "no": "B2231K",
     "operationNo": "31K",
     "trainNumbers": {
       "tobu": "",
@@ -67629,7 +68159,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -67877,10 +68408,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2231K"
   },
   {
-    "no": "11K",
+    "no": "B2211K",
     "operationNo": "11K",
     "trainNumbers": {
       "tobu": "",
@@ -67891,7 +68423,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -68043,21 +68576,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2211K"
   },
   {
-    "no": "22K",
+    "no": "B2122K",
     "operationNo": "22K",
     "trainNumbers": {
       "tobu": "2122K",
       "hanzomon": "B2122K",
       "denentoshi": "022-231"
     },
-    "type": "急行",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "急行",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "急行"
     },
     "direction": "up",
     "dest": "長津田",
@@ -68341,10 +68876,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2122K"
   },
   {
-    "no": "04K",
+    "no": "B2204K",
     "operationNo": "04K",
     "trainNumbers": {
       "tobu": "",
@@ -68355,7 +68891,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -68603,21 +69140,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2204K"
   },
   {
-    "no": "76T",
+    "no": "B2176T",
     "operationNo": "76T",
     "trainNumbers": {
       "tobu": "4176T",
       "hanzomon": "B2176T",
       "denentoshi": "073-231"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "長津田",
@@ -68943,10 +69482,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2176T"
   },
   {
-    "no": "35K",
+    "no": "B2235K",
     "operationNo": "35K",
     "trainNumbers": {
       "tobu": "",
@@ -68957,7 +69497,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "急行"
+      "denentoshi": "急行",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -69109,21 +69650,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2235K"
   },
   {
-    "no": "25K",
+    "no": "B2225K",
     "operationNo": "25K",
     "trainNumbers": {
       "tobu": "4225K",
       "hanzomon": "B2225K",
       "denentoshi": "025-231"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "長津田",
@@ -69443,10 +69986,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2225K"
   },
   {
-    "no": "29K",
+    "no": "B2329K",
     "operationNo": "29K",
     "trainNumbers": {
       "tobu": "",
@@ -69457,7 +70001,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -69705,10 +70250,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2329K"
   },
   {
-    "no": "13K",
+    "no": "B2313K",
     "operationNo": "13K",
     "trainNumbers": {
       "tobu": "",
@@ -69719,7 +70265,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -69913,21 +70460,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2313K"
   },
   {
-    "no": "70T",
+    "no": "B2270T",
     "operationNo": "70T",
     "trainNumbers": {
       "tobu": "4270T",
       "hanzomon": "B2270T",
       "denentoshi": "070-231"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "長津田",
@@ -70253,10 +70802,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2270T"
   },
   {
-    "no": "10K",
+    "no": "B2310K",
     "operationNo": "10K",
     "trainNumbers": {
       "tobu": "",
@@ -70267,7 +70817,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "中央林間",
@@ -70515,21 +71066,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2310K"
   },
   {
-    "no": "34K",
+    "no": "B2234K",
     "operationNo": "34K",
     "trainNumbers": {
       "tobu": "4234K",
       "hanzomon": "B2234K",
       "denentoshi": "034-231"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "長津田",
@@ -70855,10 +71408,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2234K"
   },
   {
-    "no": "19K",
+    "no": "B2319K",
     "operationNo": "19K",
     "trainNumbers": {
       "tobu": "",
@@ -70869,7 +71423,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "準急"
+      "denentoshi": "準急",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "長津田",
@@ -71033,21 +71588,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2319K"
   },
   {
-    "no": "18K",
+    "no": "B2318K",
     "operationNo": "18K",
     "trainNumbers": {
       "tobu": "4318K",
       "hanzomon": "B2318K",
       "denentoshi": "018-241"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "長津田",
@@ -71307,10 +71864,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2318K"
   },
   {
-    "no": "23K",
+    "no": "B2323K",
     "operationNo": "23K",
     "trainNumbers": {
       "tobu": "",
@@ -71321,7 +71879,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "鷺沼",
@@ -71491,21 +72050,23 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2323K"
   },
   {
-    "no": "33K",
+    "no": "B2333K",
     "operationNo": "33K",
     "trainNumbers": {
       "tobu": "4333K",
       "hanzomon": "B2333K",
       "denentoshi": "033-241"
     },
-    "type": "準急",
+    "type": "各停",
     "typeByRoute": {
       "chijou": "準急",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": "準急"
     },
     "direction": "up",
     "dest": "鷺沼",
@@ -71717,10 +72278,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2333K"
   },
   {
-    "no": "91S",
+    "no": "B2491S",
     "operationNo": "91S",
     "trainNumbers": {
       "tobu": "",
@@ -71731,7 +72293,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "渋谷",
@@ -71823,10 +72386,11 @@
     ],
     "days": [
       "平日"
-    ]
+    ],
+    "id": "hanzomon-B2491S"
   },
   {
-    "no": "71S",
+    "no": "B2471S",
     "operationNo": "71S",
     "trainNumbers": {
       "tobu": "",
@@ -71837,7 +72401,8 @@
     "typeByRoute": {
       "chijou": "",
       "hanzomon": "各停",
-      "denentoshi": "各停"
+      "denentoshi": "各停",
+      "tobu": ""
     },
     "direction": "up",
     "dest": "水天宮前",
@@ -71871,6 +72436,157 @@
         "arrival": null,
         "departure": "00:28",
         "time": "00:28"
+      }
+    ],
+    "days": [
+      "平日"
+    ],
+    "id": "hanzomon-B2471S"
+  },
+  {
+    "id": "hanzomon-A529K",
+    "no": "A529K",
+    "operationNo": "29K",
+    "trainNumbers": {
+      "tobu": "",
+      "hanzomon": "A529K",
+      "denentoshi": "029-052"
+    },
+    "type": "各停",
+    "typeByRoute": {
+      "chijou": "",
+      "tobu": "",
+      "hanzomon": "各停",
+      "denentoshi": ""
+    },
+    "direction": "down",
+    "dest": "久喜",
+    "stops": [
+      {
+        "station": "二子玉川",
+        "arrival": null,
+        "departure": "05:00",
+        "time": "05:00"
+      },
+      {
+        "station": "用賀",
+        "arrival": null,
+        "departure": "05:02",
+        "time": "05:02"
+      },
+      {
+        "station": "桜新町",
+        "arrival": null,
+        "departure": "05:04",
+        "time": "05:04"
+      },
+      {
+        "station": "駒沢大学",
+        "arrival": null,
+        "departure": "05:07",
+        "time": "05:07"
+      },
+      {
+        "station": "三軒茶屋",
+        "arrival": null,
+        "departure": "05:09",
+        "time": "05:09"
+      },
+      {
+        "station": "池尻大橋",
+        "arrival": null,
+        "departure": "05:11",
+        "time": "05:11"
+      },
+      {
+        "station": "渋谷",
+        "arrival": "05:14",
+        "departure": "05:15",
+        "time": "05:15"
+      },
+      {
+        "station": "表参道",
+        "arrival": null,
+        "departure": "05:17",
+        "time": "05:17"
+      },
+      {
+        "station": "青山一丁目",
+        "arrival": null,
+        "departure": "05:20",
+        "time": "05:20"
+      },
+      {
+        "station": "永田町",
+        "arrival": null,
+        "departure": "05:22",
+        "time": "05:22"
+      },
+      {
+        "station": "半蔵門",
+        "arrival": null,
+        "departure": "05:24",
+        "time": "05:24"
+      },
+      {
+        "station": "九段下",
+        "arrival": null,
+        "departure": "05:27",
+        "time": "05:27"
+      },
+      {
+        "station": "神保町",
+        "arrival": null,
+        "departure": "05:28",
+        "time": "05:28"
+      },
+      {
+        "station": "大手町",
+        "arrival": null,
+        "departure": "05:31",
+        "time": "05:31"
+      },
+      {
+        "station": "三越前",
+        "arrival": null,
+        "departure": "05:33",
+        "time": "05:33"
+      },
+      {
+        "station": "水天宮前",
+        "arrival": null,
+        "departure": "05:36",
+        "time": "05:36"
+      },
+      {
+        "station": "清澄白河",
+        "arrival": null,
+        "departure": "05:39",
+        "time": "05:39"
+      },
+      {
+        "station": "住吉",
+        "arrival": null,
+        "departure": "05:42",
+        "time": "05:42"
+      },
+      {
+        "station": "錦糸町",
+        "arrival": null,
+        "departure": "05:44",
+        "time": "05:44"
+      },
+      {
+        "station": "押上",
+        "arrival": "05:46",
+        "departure": null,
+        "time": "05:46"
+      },
+      {
+        "station": "久喜",
+        "arrival": "06:40",
+        "departure": null,
+        "time": "06:40"
       }
     ],
     "days": [
