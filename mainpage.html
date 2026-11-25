@@ -3314,7 +3314,7 @@ async function loadExternalRouteJsons(routeMeta){
   // 元データの上り列車（押上→中央林間）のみを採用し、駅順に合わせて画面上は下りとして扱う。
   function adaptHanzomonArrayJson(rawJson,url){
     const file=String(url||'').split(/[?#]/,1)[0].split('/').pop();
-    if(!Array.isArray(rawJson)||!/^Hanzomon_2026(?:_修正版)?(?:\(\d+\))?\.json$/i.test(file)) return rawJson;
+    if(!Array.isArray(rawJson)||!/^Hanzomon_2026(?:_修正版)?\s*(?:\(\d+\))?\.json$/i.test(file)) return rawJson;
     // 元時刻表と路線定義で全角・半角カタカナが混在する駅名を同一視する。
     // 例：「南町田グランベリーパーク」と「南町田ｸﾞﾗﾝﾍﾞﾘｰﾊﾟｰｸ」。
     const stationKey=value=>String(value||'').trim().replace(/駅$/,'').normalize('NFKC').replace(/[\s　]/g,'');
@@ -5218,8 +5218,13 @@ function routeColorForStopIndex(rows,index,trainContext=null){
   // 線区境界駅のドットは、到着側の線区色を使用する。
   // 渋谷では表参道～渋谷の半蔵門線色を維持し、渋谷～池尻大橋は
   // 次の駅間線として田園都市線色を使用する。
-  const incoming=String(serviceRow?.routeColorBefore||'').trim();
-  const outgoing=String(serviceRow?.routeColorAfter||'').trim();
+  const serviceIndex=serviceRow?serviceRows.indexOf(serviceRow):-1;
+  const resolvedIncoming=serviceIndex>0
+    ? hanzomonAdapterLineColorBetweenStations(serviceRows[serviceIndex-1]?.station,serviceRow?.station) : '';
+  const resolvedOutgoing=serviceIndex>=0&&serviceIndex<serviceRows.length-1
+    ? hanzomonAdapterLineColorBetweenStations(serviceRow?.station,serviceRows[serviceIndex+1]?.station) : '';
+  const incoming=String(resolvedIncoming||serviceRow?.routeColorBefore||'').trim();
+  const outgoing=String(resolvedOutgoing||serviceRow?.routeColorAfter||'').trim();
   const explicit=String((incoming&&outgoing&&incoming!==outgoing?incoming:'')
     || incoming || outgoing || rows?.[index]?.routeColor || '').trim();
   const color=explicit||trainServiceColorAtStation(trainContext,station);
@@ -5242,8 +5247,9 @@ function routeColorsForStopSegment(aName,bName,trainContext=null){
       const from=String(source[i]?.station||'').trim();
       const to=String(source[next]?.station||'').trim();
       if(!from||!to) continue;
+      const adapterColor=hanzomonAdapterLineColorBetweenStations(from,to);
       const explicit=String(source[i]?.routeColorAfter||source[next]?.routeColorBefore||'').trim();
-      const color=explicit||trainServiceColorBetweenStations(from,to,trainContext);
+      const color=adapterColor||explicit||trainServiceColorBetweenStations(from,to,trainContext);
       if(color&&colors[colors.length-1]!==color) colors.push(color);
     }
     if(colors.length) return colors;
@@ -8015,9 +8021,42 @@ function jsonSegmentColorForStations(a,b,lineNames=getActiveRouteLineNames()){
   }
   return null;
 }
+// 半蔵門線直通列車の駅間色は、駅名が複数線区に存在する場合でも
+// 路線定義上で隣接する線区を優先して固定する。
+// 例：和戸～東武動物公園＝伊勢崎線、杉戸高野台～東武動物公園＝日光線、
+// 表参道～渋谷＝半蔵門線（渋谷～池尻大橋は田園都市線）。
+function hanzomonAdapterLineColorBetweenStations(a,b){
+  const key=value=>String(value||'').trim().replace(/駅$/,'').normalize('NFKC').replace(/[\s　]/g,'');
+  const aa=key(a),bb=key(b);
+  if(!aa||!bb||aa===bb||!Array.isArray(HANZOMON_ADAPTER_DATA?.lines)) return '';
+  const candidates=[];
+  for(const line of HANZOMON_ADAPTER_DATA.lines){
+    const stations=Array.isArray(line?.stations)?line.stations:[];
+    const names=stations.map(st=>key(typeof st==='string'?st:(st?.name||st?.nameJa||st?.station||'')));
+    for(let i=0;i<names.length-1;i++){
+      if((names[i]===aa&&names[i+1]===bb)||(names[i]===bb&&names[i+1]===aa)){
+        const color=String(line?.color||'').trim();
+        if(color) candidates.push({name:String(line?.name||''),color});
+        break;
+      }
+    }
+  }
+  if(!candidates.length) return '';
+  const choose=name=>candidates.find(item=>item.name===name)?.color||'';
+  const hanzomon=HANZOMON_ADAPTER_DATA.lines.find(line=>line.name==='半蔵門線');
+  const denentoshi=HANZOMON_ADAPTER_DATA.lines.find(line=>line.name==='田園都市線');
+  const contains=(line,value)=>Array.isArray(line?.stations)&&line.stations.some(st=>key(typeof st==='string'?st:(st?.name||st?.nameJa||st?.station||''))===value);
+  if(contains(hanzomon,aa)&&contains(hanzomon,bb)) return choose('半蔵門線')||candidates[0].color;
+  if(contains(denentoshi,aa)&&contains(denentoshi,bb)) return choose('田園都市線')||candidates[0].color;
+  // 東武線内の支線・本線境界は、該当駅間を定義している線区を返す。
+  return candidates[0].color;
+}
+
 function trainServiceColorBetweenStations(a,b,trainContext=null){
   const aa=String(a||''),bb=String(b||'');
   if(!aa||!bb||aa===bb) return fallbackTrainServiceColor(trainContext);
+  const adapterColor=hanzomonAdapterLineColorBetweenStations(aa,bb);
+  if(adapterColor) return adapterColor;
   const lineNames=allJsonLines().map(line=>String(line?.name||'')).filter(Boolean);
   const jsonColor=jsonSegmentColorForStations(aa,bb,lineNames);
   if(jsonColor) return jsonColor;
@@ -8025,17 +8064,7 @@ function trainServiceColorBetweenStations(a,b,trainContext=null){
   for(let i=0;i<ctxStops.length-1;i++){
     const x=String(ctxStops[i]?.station||''),y=String(ctxStops[i+1]?.station||'');
     if((x===aa&&y===bb)||(x===bb&&y===aa)){
-      // 駅の routeColor は「その駅から先」の色である場合があるため、
-      // 駅間専用の routeColorAfter / routeColorBefore を最優先する。
-      // これを逆にすると、表参道～渋谷が渋谷以西の田園都市線色になり、
-      // 東武線内の末端区間も押上以降の半蔵門線色へ引っ張られる。
-      const endpointColor=String(
-        ctxStops[i]?.routeColorAfter
-        ||ctxStops[i+1]?.routeColorBefore
-        ||ctxStops[i]?.routeColor
-        ||ctxStops[i+1]?.routeColor
-        ||''
-      ).trim();
+      const endpointColor=String(ctxStops[i+1]?.routeColor||ctxStops[i]?.routeColor||'').trim();
       if(endpointColor) return endpointColor;
     }
   }
@@ -8097,6 +8126,8 @@ function activeRouteColors(){
 }
 function activeSegmentColors(a,b){
   const aa=String(a||''),bb=String(b||'');
+  const adapterColor=hanzomonAdapterLineColorBetweenStations(aa,bb);
+  if(adapterColor) return [adapterColor];
   // 明示された区間色ルールは、通常の線区隣接判定より優先する。
   // 路線ごとの例外処理ではなく、読み込んだJSONの宣言データで指定する。
   const segmentRules=[
@@ -12583,11 +12614,12 @@ initRegionNavigation();
   function collectIntervalTimes(stations,trains,indexMap,circularCount=0){
     const intervals=Array.from({length:Math.max(0,stations.length-1)},()=>[]);
     for(const train of trains){
-      if(!isLocalTrain(train))continue;
       const rows=chartStopsForTrain(train,indexMap,circularCount);
       for(let i=0;i<rows.length-1;i++){
         const a=rows[i],b=rows[i+1];
         if(Math.abs(a.index-b.index)!==1)continue;
+        const sectionTrain=chartTrainForStationPair(train,a.station,b.station);
+        if(!isLocalTrain(sectionTrain))continue;
         const gap=b.arrival-a.departure;
         if(!(gap>0&&gap<180))continue;
         const intervalIndex=Math.min(a.index,b.index);
@@ -12898,26 +12930,62 @@ initRegionNavigation();
     timeErrorToggle.textContent=`時刻ミス表示 ${Number(count)||0}件`;
     timeErrorToggle.title='赤い「!」は時刻データの不整合です。クリックで表示／非表示を切り替えます。';
   }
-  // ダイヤグラムの駅インデックスは、分岐路線を選択すると STATIONS の
-  // インデックスと異なる。sectionTypeSegments は列車自身の停車駅順で解決する。
+  // ダイヤグラムの駅インデックスは分岐路線や補間駅によって列車自身の
+  // 停車駅配列と一致しないことがある。駅名正規化と線区所属を併用して
+  // 駅間ごとの種別を解決し、表示端の補間駅でも種別が空欄にならないようにする。
   function chartTrainForStationPair(train,stationA,stationB){
-    if(!train||!Array.isArray(train.sectionTypeSegments))return train;
+    if(!train||!Array.isArray(train.sectionTypeSegments)||!train.sectionTypeSegments.length)return train;
     const stops=Array.isArray(train.stops)?train.stops:[];
-    const indexOf=name=>stops.findIndex(row=>String(row?.station||'').trim()===String(name||'').trim());
+    const key=name=>typeof sectionStationNameKey==='function'
+      ?sectionStationNameKey(name)
+      :String(name||'').trim().replace(/駅$/,'').normalize('NFKC').replace(/[\s　]/g,'');
+    const indexOf=name=>{
+      const target=key(name);
+      return target?stops.findIndex(row=>key(row?.station)===target):-1;
+    };
     const ia=indexOf(stationA),ib=indexOf(stationB);
-    if(ia<0||ib<0)return {...train,type:'',sectionTypeSegments:null};
-    const lo=Math.min(ia,ib),hi=Math.max(ia,ib);
-    let matched=null;
-    for(const segment of train.sectionTypeSegments){
-      const from=indexOf(segment?.fromStation),to=indexOf(segment?.toStation);
+    const known=[ia,ib].filter(index=>index>=0);
+    const displayLines=Array.isArray(activeRouteMeta?.sectionTypeDisplayLines)
+      ?activeRouteMeta.sectionTypeDisplayLines.map(String):[];
+    let matched=null,bestScore=-Infinity;
+    for(let i=0;i<train.sectionTypeSegments.length;i++){
+      const segment=train.sectionTypeSegments[i];
+      if(!segment||segment.showType===false||!String(segment.type||'').trim())continue;
+      const line=String(segment.line||'');
+      if(displayLines.length&&!displayLines.includes(line))continue;
+      const from=indexOf(segment.fromStation),to=indexOf(segment.toStation);
       if(from<0||to<0)continue;
       const segmentLo=Math.min(from,to),segmentHi=Math.max(from,to);
-      if(lo>=segmentLo&&hi<=segmentHi)matched=segment;
+      // 元データにある駅は、選択した区間の列車停車駅範囲内であること。
+      if(known.some(index=>index<segmentLo||index>segmentHi))continue;
+      const aBelongs=typeof stationBelongsToSectionLine==='function'?stationBelongsToSectionLine(stationA,line):null;
+      const bBelongs=typeof stationBelongsToSectionLine==='function'?stationBelongsToSectionLine(stationB,line):null;
+      // 実停車駅どうしなら区間端の接続駅（押上・渋谷など）も含め、
+      // sectionTypeSegments の始終駅範囲を優先する。補間駅側だけ所属線区で絞る。
+      if(ia<0&&aBelongs===false)continue;
+      if(ib<0&&bBelongs===false)continue;
+      let score=0;
+      if(ia>=0&&ib>=0)score+=120;
+      else if(known.length===1)score+=75;
+      if(aBelongs===true&&bBelongs===true)score+=100;
+      else if(aBelongs===true||bBelongs===true)score+=45;
+      if(displayLines.includes(line))score+=20;
+      // 同じ駅に到着・発車するイベントでは、線区境界の次区間を優先する。
+      score+=i*0.001;
+      if(score>bestScore){bestScore=score;matched=segment;}
+    }
+    // 補間駅が線区定義に含まれない特殊ケースでは、実停車駅側の種別を使う。
+    if(!matched&&known.length){
+      const endpointOrder=ia>=0?[stationA,stationB]:[stationB,stationA];
+      for(const name of endpointOrder){
+        if(indexOf(name)<0)continue;
+        const fallback=typeof getTrainTypeAtStation==='function'?String(getTrainTypeAtStation(train,name)||'').trim():'';
+        if(fallback)return {...train,type:fallback,sectionTypeSegments:null};
+      }
     }
     // 駅間ごとの種別を確定した後は sectionTypeSegments を null にする。
-    // 空配列 [] のままだと getTrainTypeAtPosition() が配列形式として扱い、
-    // 確定済みの train.type（快速など）を無視して空文字＝普通扱いにしてしまう。
-    if(!matched)return {...train,type:'',sectionTypeSegments:null};
+    // これにより後段の共通表示処理には、区間ごとの確定種別だけを渡す。
+    if(!matched)return {...train,type:String(train.type||'').trim(),sectionTypeSegments:null};
     return {...train,type:matched.showType===false?'':String(matched.type||'').trim(),sectionTypeSegments:null};
   }
   function trainColor(train,pos,stationA,stationB){
@@ -13053,8 +13121,15 @@ initRegionNavigation();
     // 列車スジ。停車駅では到着・発車時刻の差を横線として描画。
     for(let trainIndex=0;trainIndex<eventMap.length;trainIndex++){
       const item=eventMap[trainIndex];const {train,events}=item;const no=String(train?.no||'列車');
-      const titleTrain=events.length>1?chartTrainForStationPair(train,events[0]?.station,events[1]?.station):train;
-      const type=String(titleTrain?.type||train?.type||'').trim()||'普通';
+      let titleTrain=train;
+      for(let typeIndex=0;typeIndex<events.length-1;typeIndex++){
+        const candidate=chartTrainForStationPair(train,events[typeIndex]?.station,events[typeIndex+1]?.station);
+        if(String(candidate?.type||'').trim()){
+          titleTrain=candidate;
+          break;
+        }
+      }
+      const type=String(titleTrain?.type||train?.type||'').trim()||'種別不明';
       parts.push(`<g class="diagram-train-line" data-train-index="${trainIndex}" stroke-linecap="round" stroke-linejoin="round" opacity="1">`);
       parts.push(`<title>${esc(no)}　${esc(type)}　${esc(train?.start||events[0]?.station||'')} → ${esc(train?.dest||events[events.length-1]?.station||'')}</title>`);
       if(events.length===1){
@@ -13149,16 +13224,72 @@ initRegionNavigation();
     const hour=Math.floor(inDay/60),minute=inDay%60;
     return `${day>0?'翌'.repeat(Math.min(day,2)):''}${hour}:${String(minute).padStart(2,'0')}`;
   }
-  function miniTrainTitle(train,segment){
-    // 通常の train-card と同じ条件で列車番号の表示可否を判定する。
-    if(!train || train.hideTrainNumber) return '';
-    let no='';
-    try{
-      if(typeof trainDisplayNoAtTime==='function'){
-        no=String(trainDisplayNoAtTime(train,segment?.minute)||'').trim();
+  function miniTrainNumberAtPair(train,segment){
+    // ダイヤグラムの列車詳細では、ページ全体の現在位置ではなく、
+    // クリックされた駅間そのものから線区別列車番号を解決する。
+    if(!train||train.hideTrainNumber)return '';
+    const stops=Array.isArray(train.stops)?train.stops:[];
+    const key=name=>typeof sectionStationNameKey==='function'
+      ?sectionStationNameKey(name)
+      :String(name||'').trim().replace(/駅$/,'').normalize('NFKC').replace(/[\s　]/g,'');
+    const stationIndex=name=>{
+      const target=key(name);
+      return target?stops.findIndex(stop=>key(stop?.station)===target):-1;
+    };
+    const aName=String(segment?.a?.station||'').trim();
+    const bName=String(segment?.b?.station||'').trim();
+    const ia=stationIndex(aName),ib=stationIndex(bName);
+    const known=[ia,ib].filter(index=>index>=0);
+
+    // 半蔵門線直通列車など、線区ごとの番号区間を持つ列車。
+    // クリックされた2駅が同じ番号区間に含まれる場合だけ、その番号を採用する。
+    if(Array.isArray(train.sectionNumberSegments)&&train.sectionNumberSegments.length){
+      const displayLines=Array.isArray(activeRouteMeta?.sectionNumberDisplayLines)
+        ?activeRouteMeta.sectionNumberDisplayLines.map(String):[];
+      let best=null,bestScore=-Infinity;
+      for(let i=0;i<train.sectionNumberSegments.length;i++){
+        const item=train.sectionNumberSegments[i];
+        const from=stationIndex(item?.fromStation),to=stationIndex(item?.toStation);
+        if(from<0||to<0||!known.length)continue;
+        const lo=Math.min(from,to),hi=Math.max(from,to);
+        if(known.some(index=>index<lo||index>hi))continue;
+        const line=String(item?.line||'');
+        const aBelongs=aName&&typeof stationBelongsToSectionLine==='function'?stationBelongsToSectionLine(aName,line):null;
+        const bBelongs=bName&&typeof stationBelongsToSectionLine==='function'?stationBelongsToSectionLine(bName,line):null;
+        if(aBelongs===false||bBelongs===false)continue;
+        let score=known.length===2?100:60;
+        if(aBelongs===true)score+=20;
+        if(bBelongs===true)score+=20;
+        if(displayLines.includes(line))score+=10;
+        // 同一境界駅を含む候補が並んだ場合は、より後ろに定義された次区間を優先。
+        score+=i*0.001;
+        if(score>bestScore){bestScore=score;best=item;}
       }
+      if(best)return String(best.number||best.no||'').trim();
+    }
+
+    // 一般形式の numberSegments も、列車自身の停車駅インデックスで判定する。
+    if(known.length&&train.numberSegments&&typeof train.numberSegments==='object'){
+      const pairIndex=Math.min(...known);
+      const lineName=Array.isArray(train.segmentLineNames)?String(train.segmentLineNames[pairIndex]||''):'';
+      const lineOrder=[lineName,...(Array.isArray(train.servedLineNames)?train.servedLineNames:[])].filter((v,i,a)=>v&&a.indexOf(v)===i);
+      for(const line of lineOrder){
+        const candidates=Array.isArray(train.numberSegments[line])?train.numberSegments[line]:[];
+        for(let i=candidates.length-1;i>=0;i--){
+          const item=candidates[i],lo=Number(item?.from||0),hi=Number(item?.to||0);
+          if(known.every(index=>index>=Math.min(lo,hi)&&index<=Math.max(lo,hi)))return String(item?.no||'').trim();
+        }
+      }
+    }
+
+    // 線区別番号がない通常列車だけ、クリック時刻を使った従来判定へ戻す。
+    try{
+      if(typeof trainDisplayNoAtTime==='function')return String(trainDisplayNoAtTime(train,segment?.minute)||'').trim();
     }catch(e){}
-    return no;
+    return '';
+  }
+  function miniTrainTitle(train,segment){
+    return miniTrainNumberAtPair(train,segment);
   }
   function miniTypeAt(train,segment){
     const a=segment?.a?.station,b=segment?.b?.station;
@@ -18634,13 +18765,8 @@ initRegionNavigation();
         const from=stops.findIndex(st=>key(st?.station)===key(seg?.fromStation));
         const to=stops.findIndex(st=>key(st?.station)===key(seg?.toStation));
         if(from<0||to<0) return null;
-        let lo=Math.min(from,to),hi=Math.max(from,to);
+        const lo=Math.min(from,to),hi=Math.max(from,to);
         const line=String(seg?.line||'');
-        // 半蔵門線と田園都市線の番号変更駅は渋谷。路線別駅配列の
-        // 取りこぼしや停車駅の部分列があっても、直通列車では渋谷を境界に固定する。
-        const shibuyaIndex=stops.findIndex(st=>key(st?.station)==='渋谷');
-        if(shibuyaIndex>=0 && line==='半蔵門線' && shibuyaIndex>=lo) hi=shibuyaIndex;
-        if(shibuyaIndex>=0 && line==='田園都市線' && shibuyaIndex<=hi) lo=shibuyaIndex;
         const typeSegment=(sourceTrain.sectionTypeSegments||[]).find(type=>String(type?.line||'')===line
           && String(type?.type||'').trim());
         const fallbackType=operationTypeAtStation(sourceTrain,String(stops[lo]?.station||''));
@@ -18681,13 +18807,6 @@ initRegionNavigation();
 
   function operationCardNumberForEntry(entry,sourceTrain){
     if(!sourceTrain || sourceTrain.hideTrainNumber) return '';
-    // 区間分割済みの運用行は、区間データの番号をそのまま表示する。
-    // 渋谷は半蔵門線・田園都市線の共有駅なので、駅名から再計算すると
-    // 田園都市線側の行まで半蔵門線番号に戻ってしまう。
-    if(entry?._numberSegment){
-      const exact=normalizeTrainNo(entry?.no||'');
-      if(exact) return exact;
-    }
     const start=String(entry?.start||sourceTrain?.stops?.[Number(entry?._fromIndex)||0]?.station||'').trim();
     return start ? trainCardNumberTextAtStation(sourceTrain,start) : '';
   }
@@ -18751,8 +18870,7 @@ initRegionNavigation();
             start,startTime,dest,endTime,
             _sourceTrain:sourceTrain,
             _fromIndex:displayFrom,
-            _toIndex:displayTo,
-            _numberSegment:true
+            _toIndex:displayTo
           });
         }
         continue;
@@ -18893,7 +19011,7 @@ initRegionNavigation();
             no:seg.no,type:String(seg.type||entry?.type||sourceTrain.type||''),start,
             startTime:String(first.departure||first.time||first.arrival||''),dest,
             endTime:String(last.arrival||last.time||last.departure||''),
-            _sourceTrain:sourceTrain,_fromIndex:displayFrom,_toIndex:displayTo,_numberSegment:true
+            _sourceTrain:sourceTrain,_fromIndex:displayFrom,_toIndex:displayTo
           });
         }
       }else{
