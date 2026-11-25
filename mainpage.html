@@ -1418,7 +1418,7 @@ const ROUTE_REGISTRY={
     company:'東京メトロ',
     lineKind:'hanzomon',
     formationFamily:'tobu-skytree',
-    sectionNumberDisplayLines:['半蔵門線'],
+    sectionNumberDisplayLines:['半蔵門線','田園都市線'],
     sectionTypeDisplayLines:['半蔵門線'],
     // 全国路線図は時刻表配列JSONから線区定義を取得できないため、駅列を別途渡す。
     mapLines:HANZOMON_ADAPTER_DATA.lines.filter(line=>line.name==='半蔵門線'),
@@ -2826,6 +2826,13 @@ function normalizeExternalTrain(raw,day,direction,meta){
 
   const firstTimed=stops.find(st=>st.isStop) || {};
   const lastTimed=[...stops].reverse().find(st=>st.isStop) || firstTimed;
+  // 半蔵門線JSONの方向は「押上→田園都市線」を下りとしている。
+  // 東武スカイツリーライン側では同じ列車が「浅草方面」へ向かう上りになるため、
+  // 東武ページで半蔵門線由来の直通列車を表示するときだけ方向を反転する。
+  const sourceRouteId=String(meta?.id||raw?.__sourceMeta?.id||'');
+  const routeRelativeDirection=(activeRouteMeta?.id==='tobu-skytree' && sourceRouteId==='tokyo-metro-hanzomon')
+    ? (direction==='上り'?'下り':'上り')
+    : direction;
   // 区間別番号を持つ直通列車では、列車番号は表示用の属性であり、
   // Firebase・運用履歴の内部キーは従来のJSON idを維持する。
   const internalNo=hasSectionTrainNumber
@@ -2857,7 +2864,7 @@ function normalizeExternalTrain(raw,day,direction,meta){
     lineName:String(meta?.routeName||activeRouteName),
     routeName:String(meta?.routeName||activeRouteName),
     formationFamily,
-    direction:direction==='上り'?'up':'down',
+    direction:routeRelativeDirection==='上り'?'up':'down',
     cars:Number.isFinite(parsedDefaultCars)&&parsedDefaultCars>0 ? parsedDefaultCars : fallbackCars,
     days:[day],
     start:String(raw?.start||firstTimed.station||''),
@@ -3324,8 +3331,8 @@ async function loadExternalRouteJsons(routeMeta){
     for(const source of rawJson){
       if(!source) continue;
       const sourceDirection=String(source.direction||'').toLowerCase();
-      // 元データで down とされていた逆方向列車はJSONから除外済み。
-      // 残った列車は押上→中央林間の駅順なので、画面上は down として格納する。
+      // 元データの上り列車は押上→中央林間の順。
+      // 駅時刻表・路線図の方向も上りとして扱い、方向タブや列車位置を逆転させない。
       if(sourceDirection!=='up') continue;
       const days=Array.isArray(source.days)&&source.days.length?source.days:['平日'];
       if(!days.includes('平日')) continue;
@@ -3413,9 +3420,9 @@ async function loadExternalRouteJsons(routeMeta){
       addType('田園都市線',dType,denentoshiStops);
 
       const uniqueNo=hNumber||String(source.id||source.no||source.operationNo||'');
-      normalized['下り'].push({
+      normalized['上り'].push({
         ...source,
-        direction:'down',
+        direction:'up',
         // 代表種別を列車全体へ設定すると、種別未設定の東武線区間にも漏れるため空欄にする。
         // 表示種別は下の sectionTypeSegments から駅・時刻ごとに解決する。
         type:'',
@@ -6374,7 +6381,8 @@ function openStationSheet(stationId){
   currentTrainSnapshot=null;
   currentStationId=String(station.id);
   previousSheetContext=null;
-  stationTimetableDirection='up';
+  // スカイツリーラインは左右反転後の左側（下り）を初期選択にする。
+  stationTimetableDirection=activeRouteMeta?.id==='tobu-skytree'?'down':'up';
   isEditMode=false;
   const sheet=document.getElementById('bottomSheet');
   const overlay=document.getElementById('overlay');
@@ -6396,6 +6404,23 @@ function autoStationDirectionEndpoints(stationName,json=activeJson){
     const v=String(value||'').trim();
     if(v && v!==target && !list.includes(v)) list.push(v);
   };
+  // 路線定義に directions がある場合は駅配列の順番よりこちらを優先する。
+  // 「館林・南栗橋方面」のような複数終端は分解して同じ方面欄へ集約する。
+  const addDirectionText=(list,value)=>{
+    const text=String(value||'').trim().replace(/方面$/,'').replace(/行き$/,'').replace(/行$/,'');
+    if(!text) return;
+    for(const part of text.split(/[・、]/)){
+      const name=String(part||'').trim();
+      if(name) add(list,name);
+    }
+  };
+  const addExplicitLineDirections=line=>{
+    const directions=line?.directions;
+    if(!directions || typeof directions!=='object') return false;
+    addDirectionText(up,directions.up);
+    addDirectionText(down,directions.down);
+    return true;
+  };
   const diagram=json?.diagram||{};
   const main=(Array.isArray(diagram.mainOrder)?diagram.mainOrder:[]).map(x=>String(x||'').trim()).filter(Boolean);
   const junctions=diagram.junctions&&typeof diagram.junctions==='object'?Object.entries(diagram.junctions):[];
@@ -6403,25 +6428,41 @@ function autoStationDirectionEndpoints(stationName,json=activeJson){
   if(main.length>=2 && junctions.length){
     const mi=main.indexOf(target);
     if(mi>=0){
-      if(mi>0) add(up,main[0]);
-      if(mi<main.length-1) add(down,main[main.length-1]);
-      // At a junction, the branch terminal belongs on the side where that branch leaves the main route.
+      // 東武スカイツリーラインは mainOrder が館林側→浅草側。
+      // 路線定義の directions がある場合はその明示設定を優先する。
+      if(activeRouteMeta?.id==='tobu-skytree'){
+        if(mi>0) add(down,main[0]);
+        if(mi<main.length-1) add(up,main[main.length-1]);
+      }else{
+        if(mi>0) add(up,main[0]);
+        if(mi<main.length-1) add(down,main[main.length-1]);
+      }
+      // 分岐線の方面は各路線の directions を優先し、なければ従来の分岐位置で判定する。
       for(const [key,j] of junctions){
         if(String(j?.anchor||'')!==target) continue;
-        const button=buttons.find(x=>String(x?.anchor||'')===target);
-        const configured=Array.isArray(j?.stations)?j.stations.map(x=>String(x||'').trim()).filter(Boolean):[];
+        const button=buttons.find(x=>String(x?.anchor||'')===target && (!x?.line || String(key).split('・').map(v=>v.trim()).includes(String(x.line))));
         const lineNames=String(key).split('・').map(x=>x.trim()).filter(Boolean);
+        const branchLines=(json?.lines||[]).filter(x=>lineNames.includes(String(x?.name||'')));
+        const line=branchLines[0];
+        const hasExplicitBranchDirections=branchLines.reduce((found,branchLine)=>{
+          const explicit=addExplicitLineDirections(branchLine);
+          return found||explicit;
+        },false);
+        if(hasExplicitBranchDirections) continue;
+        const configured=Array.isArray(j?.stations)?j.stations.map(x=>String(x||'').trim()).filter(Boolean):[];
         let stations=configured;
         if(!stations.length){
-          const line=(json?.lines||[]).find(x=>lineNames.includes(String(x?.name||'')));
           stations=(line?.stations||[]).map(x=>String(typeof x==='string'?x:(x?.name||''))).filter(Boolean);
           const ai=stations.indexOf(target); if(ai>=0) stations=stations.slice(ai+1);
         }
         const terminal=stations[stations.length-1];
-        const insert=String(j?.insert||'after');
-        if(insert==='before') add(up,terminal); else add(down,terminal);
+        const buttonDirection=String(button?.direction||'').toLowerCase();
+        const junctionDirection=String(j?.direction||buttonDirection||'').toLowerCase();
+        const insert=String(j?.insert||'after').toLowerCase();
+        if(junctionDirection==='up'||junctionDirection==='上'||insert==='before') add(up,terminal);
+        else add(down,terminal);
       }
-      // Shared routes in the same operator are additional branches even when they have their own page (e.g. 京急大師線 at 京急川崎).
+      // Shared routes in the same operator are additional branches even when they have their own page.
       const sharedRoutes=json?._sharedRoutes&&typeof json._sharedRoutes==='object'?json._sharedRoutes:{};
       const operator=String(json?.operator||'').trim();
       for(const [sharedRouteName,sharedRoute] of Object.entries(sharedRoutes)){
@@ -6430,24 +6471,27 @@ function autoStationDirectionEndpoints(stationName,json=activeJson){
         for(const line of (Array.isArray(sharedRoute.lines)?sharedRoute.lines:[])){
           const stations=(Array.isArray(line?.stations)?line.stations:[]).map(st=>String(typeof st==='string'?st:(st?.name??st?.nameJa??'')).trim()).filter(Boolean);
           const i=stations.indexOf(target);
+          if(i<0) continue;
+          if(addExplicitLineDirections(line)) continue;
           if(i===0) add(down,stations[stations.length-1]);
           else if(i===stations.length-1) add(up,stations[0]);
-          else if(i>0){ add(up,stations[0]); add(down,stations[stations.length-1]); }
+          else { add(up,stations[0]); add(down,stations[stations.length-1]); }
         }
       }
     }else{
-      // Stations on a branch use the branch's own section endpoints (junction and terminal).
+      // 分岐線上の駅は、線区 directions の明示設定を優先する。
       for(const [key,j] of junctions){
         const configured=Array.isArray(j?.stations)?j.stations.map(x=>String(x||'').trim()).filter(Boolean):[];
         const lineNames=String(key).split('・').map(x=>x.trim()).filter(Boolean);
+        const line=(json?.lines||[]).find(x=>lineNames.includes(String(x?.name||'')));
         let stations=configured;
         if(!stations.length){
-          const line=(json?.lines||[]).find(x=>lineNames.includes(String(x?.name||'')));
           const all=(line?.stations||[]).map(x=>String(typeof x==='string'?x:(x?.name||''))).filter(Boolean);
           const ai=all.indexOf(String(j?.anchor||''));
           stations=ai>=0?all.slice(ai+1):all;
         }
         if(!stations.includes(target)) continue;
+        if(addExplicitLineDirections(line)) break;
         const sequence=String(j?.insert||'after')==='before'
           ? [...stations,String(j?.anchor||'')]
           : [String(j?.anchor||''),...stations];
@@ -6457,15 +6501,24 @@ function autoStationDirectionEndpoints(stationName,json=activeJson){
       }
     }
   }
-  // Fallback for ordinary single-line routes and shared-station routes (e.g. 京急大師線 / 京急川崎).
+  // 通常路線・分岐駅も、jsonLines に限定せず同じJSON内で駅を共有する路線を照合する。
+  // これにより東武動物公園では浅草／館林／南栗橋を路線ごとの方向定義から統合できる。
   if(!up.length && !down.length){
     const requestedNames=Array.isArray(activeRouteMeta?.jsonLines)?activeRouteMeta.jsonLines.map(String):[];
     const requestedSet=new Set(requestedNames.filter(Boolean));
-    const ownLineDefs=(Array.isArray(json?.lines)?json.lines:[])
-      .filter(line=>!requestedSet.size||requestedSet.has(String(line?.name||'')));
+    const allLineDefs=(Array.isArray(json?.lines)?json.lines:[]);
+    const ownLineDefs=allLineDefs.filter(line=>!requestedSet.size||requestedSet.has(String(line?.name||'')));
     const ownStationNames=new Set(ownLineDefs.flatMap(line=>(Array.isArray(line?.stations)?line.stations:[])
       .map(st=>String(typeof st==='string'?st:(st?.name??st?.nameJa??'')).trim()).filter(Boolean)));
     const lineDefs=[...ownLineDefs];
+    // 同じJSON内の路線で、現在の路線と駅を共有する線区も分岐方向の候補に含める。
+    for(const line of allLineDefs){
+      if(lineDefs.includes(line)) continue;
+      const stations=Array.isArray(line?.stations)?line.stations:[];
+      if(stations.some(st=>ownStationNames.has(String(typeof st==='string'?st:(st?.name??st?.nameJa??'')).trim()))){
+        lineDefs.push(line);
+      }
+    }
     const sharedRoutes=json?._sharedRoutes&&typeof json._sharedRoutes==='object'?json._sharedRoutes:{};
     const operator=String(json?.operator||'').trim();
     for(const [sharedRouteName,sharedRoute] of Object.entries(sharedRoutes)){
@@ -6476,14 +6529,15 @@ function autoStationDirectionEndpoints(stationName,json=activeJson){
         if(stations.some(st=>ownStationNames.has(String(typeof st==='string'?st:(st?.name??st?.nameJa??'')).trim()))) lineDefs.push(line);
       }
     }
-    const lines=lineDefs.map(line=>({stations:(Array.isArray(line?.stations)?line.stations:[])
-      .map(st=>String(typeof st==='string'?st:(st?.name??st?.nameJa??'')).trim()).filter(Boolean)})).filter(x=>x.stations.length>=2);
-    const matches=lines.filter(line=>line.stations.includes(target));
-    for(const line of matches){
-      const i=line.stations.indexOf(target);
-      if(i===0) add(down,line.stations[line.stations.length-1]);
-      else if(i===line.stations.length-1) add(up,line.stations[0]);
-      else { add(up,line.stations[0]); add(down,line.stations[line.stations.length-1]); }
+    for(const line of lineDefs){
+      const stations=(Array.isArray(line?.stations)?line.stations:[])
+        .map(st=>String(typeof st==='string'?st:(st?.name??st?.nameJa??'')).trim()).filter(Boolean);
+      const i=stations.indexOf(target);
+      if(i<0) continue;
+      if(addExplicitLineDirections(line)) continue;
+      if(i===0) add(down,stations[stations.length-1]);
+      else if(i===stations.length-1) add(up,stations[0]);
+      else { add(up,stations[0]); add(down,stations[stations.length-1]); }
     }
   }
   const format=list=>list.length?`${list.join('・')}方面`:'';
@@ -6572,8 +6626,9 @@ function updateStationSheetContent(){
     <div class="timetable-list station-placeholder">
       <div class="station-timetable-title">時刻表</div>
       <div class="station-timetable-direction-tabs ${availableDirections.length===1?'single-direction':''}">
-        ${directionLabels.up?`<button class="station-timetable-direction-tab ${effectiveTimetableDirection==='up'?'active':''}" style="${directionTabStyle}" type="button" onclick="setStationTimetableDirection('up')">${directionLabels.up}</button>`:''}
-        ${directionLabels.down?`<button class="station-timetable-direction-tab ${effectiveTimetableDirection==='down'?'active':''}" style="${directionTabStyle}" type="button" onclick="setStationTimetableDirection('down')">${directionLabels.down}</button>`:''}
+        ${activeRouteMeta?.id==='tobu-skytree'
+          ? `${directionLabels.down?`<button class="station-timetable-direction-tab ${effectiveTimetableDirection==='down'?'active':''}" style="${directionTabStyle}" type="button" onclick="setStationTimetableDirection('down')">${directionLabels.down}</button>`:''}${directionLabels.up?`<button class="station-timetable-direction-tab ${effectiveTimetableDirection==='up'?'active':''}" style="${directionTabStyle}" type="button" onclick="setStationTimetableDirection('up')">${directionLabels.up}</button>`:''}`
+          : `${directionLabels.up?`<button class="station-timetable-direction-tab ${effectiveTimetableDirection==='up'?'active':''}" style="${directionTabStyle}" type="button" onclick="setStationTimetableDirection('up')">${directionLabels.up}</button>`:''}${directionLabels.down?`<button class="station-timetable-direction-tab ${effectiveTimetableDirection==='down'?'active':''}" style="${directionTabStyle}" type="button" onclick="setStationTimetableDirection('down')">${directionLabels.down}</button>`:''}`}
       </div>
       ${stationTimetableHTML(station, effectiveTimetableDirection)}
     </div>
@@ -6667,6 +6722,9 @@ function stationTimetableHTML(station, selectedDirection='up'){
     if(!m) return;
     const hour=Number(m[1]), minute=Number(m[2]);
     if(!Number.isFinite(hour)||!Number.isFinite(minute)) return;
+    // 列車の実際の進行方向は元データの up/down を維持する。
+    // 画面上の左右は方面タブの並び順（down → up）で反転するため、
+    // ここで bucket まで反転すると浅草行きが館林方面に混入してしまう。
     const bucket=String(train?.direction||'up')==='down'?'down':'up';
     byTrain.set(`${bucket}:${String(train.no)}`,{train,hour,minute,time,bucket});
   });
@@ -13224,72 +13282,16 @@ initRegionNavigation();
     const hour=Math.floor(inDay/60),minute=inDay%60;
     return `${day>0?'翌'.repeat(Math.min(day,2)):''}${hour}:${String(minute).padStart(2,'0')}`;
   }
-  function miniTrainNumberAtPair(train,segment){
-    // ダイヤグラムの列車詳細では、ページ全体の現在位置ではなく、
-    // クリックされた駅間そのものから線区別列車番号を解決する。
-    if(!train||train.hideTrainNumber)return '';
-    const stops=Array.isArray(train.stops)?train.stops:[];
-    const key=name=>typeof sectionStationNameKey==='function'
-      ?sectionStationNameKey(name)
-      :String(name||'').trim().replace(/駅$/,'').normalize('NFKC').replace(/[\s　]/g,'');
-    const stationIndex=name=>{
-      const target=key(name);
-      return target?stops.findIndex(stop=>key(stop?.station)===target):-1;
-    };
-    const aName=String(segment?.a?.station||'').trim();
-    const bName=String(segment?.b?.station||'').trim();
-    const ia=stationIndex(aName),ib=stationIndex(bName);
-    const known=[ia,ib].filter(index=>index>=0);
-
-    // 半蔵門線直通列車など、線区ごとの番号区間を持つ列車。
-    // クリックされた2駅が同じ番号区間に含まれる場合だけ、その番号を採用する。
-    if(Array.isArray(train.sectionNumberSegments)&&train.sectionNumberSegments.length){
-      const displayLines=Array.isArray(activeRouteMeta?.sectionNumberDisplayLines)
-        ?activeRouteMeta.sectionNumberDisplayLines.map(String):[];
-      let best=null,bestScore=-Infinity;
-      for(let i=0;i<train.sectionNumberSegments.length;i++){
-        const item=train.sectionNumberSegments[i];
-        const from=stationIndex(item?.fromStation),to=stationIndex(item?.toStation);
-        if(from<0||to<0||!known.length)continue;
-        const lo=Math.min(from,to),hi=Math.max(from,to);
-        if(known.some(index=>index<lo||index>hi))continue;
-        const line=String(item?.line||'');
-        const aBelongs=aName&&typeof stationBelongsToSectionLine==='function'?stationBelongsToSectionLine(aName,line):null;
-        const bBelongs=bName&&typeof stationBelongsToSectionLine==='function'?stationBelongsToSectionLine(bName,line):null;
-        if(aBelongs===false||bBelongs===false)continue;
-        let score=known.length===2?100:60;
-        if(aBelongs===true)score+=20;
-        if(bBelongs===true)score+=20;
-        if(displayLines.includes(line))score+=10;
-        // 同一境界駅を含む候補が並んだ場合は、より後ろに定義された次区間を優先。
-        score+=i*0.001;
-        if(score>bestScore){bestScore=score;best=item;}
-      }
-      if(best)return String(best.number||best.no||'').trim();
-    }
-
-    // 一般形式の numberSegments も、列車自身の停車駅インデックスで判定する。
-    if(known.length&&train.numberSegments&&typeof train.numberSegments==='object'){
-      const pairIndex=Math.min(...known);
-      const lineName=Array.isArray(train.segmentLineNames)?String(train.segmentLineNames[pairIndex]||''):'';
-      const lineOrder=[lineName,...(Array.isArray(train.servedLineNames)?train.servedLineNames:[])].filter((v,i,a)=>v&&a.indexOf(v)===i);
-      for(const line of lineOrder){
-        const candidates=Array.isArray(train.numberSegments[line])?train.numberSegments[line]:[];
-        for(let i=candidates.length-1;i>=0;i--){
-          const item=candidates[i],lo=Number(item?.from||0),hi=Number(item?.to||0);
-          if(known.every(index=>index>=Math.min(lo,hi)&&index<=Math.max(lo,hi)))return String(item?.no||'').trim();
-        }
-      }
-    }
-
-    // 線区別番号がない通常列車だけ、クリック時刻を使った従来判定へ戻す。
-    try{
-      if(typeof trainDisplayNoAtTime==='function')return String(trainDisplayNoAtTime(train,segment?.minute)||'').trim();
-    }catch(e){}
-    return '';
-  }
   function miniTrainTitle(train,segment){
-    return miniTrainNumberAtPair(train,segment);
+    // 通常の train-card と同じ条件で列車番号の表示可否を判定する。
+    if(!train || train.hideTrainNumber) return '';
+    let no='';
+    try{
+      if(typeof trainDisplayNoAtTime==='function'){
+        no=String(trainDisplayNoAtTime(train,segment?.minute)||'').trim();
+      }
+    }catch(e){}
+    return no;
   }
   function miniTypeAt(train,segment){
     const a=segment?.a?.station,b=segment?.b?.station;
