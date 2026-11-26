@@ -421,7 +421,6 @@ button,input,select,textarea{font-family:inherit}
 }
 .station-badge:focus{outline:3px solid rgba(0,0,0,.35);outline-offset:4px;}
 
-/* 駅情報：最初の項目 */
 .station-overview-card{
   position:relative;background:#fff;border-radius:10px;overflow:hidden;
   margin-bottom:16px;border:2px solid transparent;box-shadow:0 1px 2px rgba(0,0,0,.05);
@@ -442,15 +441,18 @@ button,input,select,textarea{font-family:inherit}
 .station-direction-bar{
   width:100%;height:18px;
   background:linear-gradient(90deg,var(--station-prev-route-color,var(--primary)) 0 50%,var(--station-next-route-color,var(--primary)) 50% 100%);
-  clip-path:polygon(3% 0,97% 0,100% 100%,0 100%);
+  /* カード端との余白を分岐駅・通常駅の両方で統一する。 */
+  clip-path:polygon(3% 0,97% 0,99.3% 100%,.7% 100%);
 }
 .station-direction-bar.no-prev{
-  clip-path:polygon(0 0,97% 0,100% 100%,0 100%);
+  /* 前駅側は尖らせず、カード端まで余白0で接続する。 */
+  clip-path:polygon(0 0,97% 0,99.3% 100%,0 100%);
   /* 前駅がない場合は、次駅側の路線カラーをバー全体に表示する。 */
   background:var(--station-next-route-color,var(--primary));
 }
 .station-direction-bar.no-next{
-  clip-path:polygon(3% 0,100% 0,100% 100%,0 100%);
+  /* 次駅側は尖らせず、カード端まで余白0で接続する。 */
+  clip-path:polygon(3% 0,100% 0,100% 100%,.7% 100%);
   /* 次駅がない分岐線末端では、直前区間の路線カラーをバー全体に表示する。 */
   background:var(--station-prev-route-color,var(--primary));
 }
@@ -458,23 +460,111 @@ button,input,select,textarea{font-family:inherit}
   clip-path:polygon(0 0,100% 0,100% 100%,0 100%);
   background:var(--station-prev-route-color,var(--primary));
 }
-.station-neighbor-row{display:flex;width:100%;min-height:54px;background:#fff;}
+.station-neighbor-row{
+  display:flex;width:100%;min-height:54px;background:#fff;
+  box-sizing:border-box;overflow:hidden;
+}
 .station-neighbor{
-  width:50%;display:flex;flex-direction:column;justify-content:flex-start;
-  padding:2px 8px 8px;min-width:0;
+  box-sizing:border-box;
+  flex:0 0 50%;width:50%;max-width:50%;min-width:0;
+  display:flex;flex-direction:column;justify-content:flex-start;
+  padding:2px 8px 8px;overflow:hidden;
 }
 .station-neighbor.left{text-align:left;align-items:flex-start;}
+.station-neighbor.left.has-branch-neighbor{gap:2px;}
+.station-neighbor-entry{
+  display:flex;flex-direction:column;justify-content:flex-start;
+  width:100%;max-width:100%;min-width:0;box-sizing:border-box;overflow:hidden;
+}
+.station-neighbor-entry.empty{visibility:hidden;}
 .station-neighbor.right{text-align:right;align-items:flex-end;}
 .station-neighbor-name-ja{
+  display:block;width:100%;min-width:0;box-sizing:border-box;
   font-family:inherit;font-size:27px;line-height:1.05;font-weight:400;color:#000;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
 }
 .station-neighbor-name-en{
+  display:block;width:100%;min-width:0;box-sizing:border-box;
   font-family:inherit;font-size:14px;line-height:1.1;font-weight:500;color:#000;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;margin-top:1px;
 }
+
+/* 分岐駅情報カードは既存の駅情報デザインを維持する。 */
 .station-neighbor.empty{visibility:hidden;}
 
+/* 分岐駅は通常駅カードをそのまま使い、分岐線と分岐先の隣駅だけを追加する。 */
+.station-overview-card.branch-junction-station{
+  position:relative;
+}
+/* 通常駅の余白・高さ・文字組みは継承。背景だけ透明にして線を背面に通す。 */
+.station-overview-card.branch-junction-station .station-overview-main{
+  position:relative;
+  z-index:2;
+  background:transparent;
+}
+.station-overview-card.branch-junction-station .station-direction-bar-wrap,
+.station-overview-card.branch-junction-station .station-neighbor-row{
+  position:relative;
+  z-index:2;
+}
+/* 上分岐は左、下分岐は右。線幅・角度・長さはカード寸法に対する比率で統一。 */
+.station-overview-card.branch-junction-station.branch-position-top::before,
+.station-overview-card.branch-junction-station.branch-position-bottom::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  z-index:1;
+  transform:translateY(-4px);
+  background:var(--station-branch-color,#ff9900);
+  pointer-events:none;
+  clip-path:polygon(
+    0.7% 29%,
+    3.7% 18.9%,
+    19.7% 18.9%,
+    29.8% 64%,
+    26.7% 64%,
+    18.6% 29%,
+    1.35% 29%
+  );
+}
+.station-overview-card.branch-junction-station.branch-position-bottom::after{
+  /* 下分岐も左右反転のみ追加し、上方向への移動量は上分岐と共通。 */
+  transform:translateY(-4px) scaleX(-1);
+}
+/* 分岐先の隣駅名だけを通常の隣駅ラベルと同じ文字スタイルで重ね、線との距離も本線側に合わせる。 */
+.station-overview-card.branch-junction-station .station-neighbor-branch-layer{
+  position:absolute;
+  inset:0;
+  z-index:3;
+  pointer-events:none;
+}
+.station-overview-card.branch-junction-station .branch-neighbor-top,
+.station-overview-card.branch-junction-station .branch-neighbor-bottom{
+  position:absolute;
+  top:30%;
+  width:30%;
+  max-width:30%;
+  min-width:0;
+  box-sizing:border-box;
+  overflow:hidden;
+  min-height:0;
+  padding:0;
+}
+.station-overview-card.branch-junction-station .branch-neighbor-top{
+  left:8px;
+  text-align:left;
+  align-items:flex-start;
+}
+.station-overview-card.branch-junction-station .branch-neighbor-bottom{
+  right:8px;
+  text-align:right;
+  align-items:flex-end;
+}
+.station-overview-card.branch-junction-station .branch-neighbor-top,
+.station-overview-card.branch-junction-station .branch-neighbor-bottom{
+  /* 分岐線と同じだけ分岐先ラベルも上へ移動する。 */
+  transform:translateY(-4px);
+}
 /* 駅情報の前後駅表示：パソコン時の820px幅を基準に、スマホでも全要素を同じ比率で縮小 */
 @container (max-width:819px){
   .station-overview-card{
@@ -494,6 +584,17 @@ button,input,select,textarea{font-family:inherit}
   }
   .station-direction-bar{
     height:2.195122cqw;
+  }
+  .station-overview-card.branch-junction-station.branch-position-top::before,
+  .station-overview-card.branch-junction-station.branch-position-bottom::after{
+    transform:translateY(-.4878049cqw);
+  }
+  .station-overview-card.branch-junction-station.branch-position-bottom::after{
+    transform:translateY(-.4878049cqw) scaleX(-1);
+  }
+  .station-overview-card.branch-junction-station .branch-neighbor-top,
+  .station-overview-card.branch-junction-station .branch-neighbor-bottom{
+    transform:translateY(-.4878049cqw);
   }
   .station-neighbor-row{
     min-height:6.5853659cqw;
@@ -2251,12 +2352,15 @@ function multiJunctionBranchDefinitions(json=activeJson,meta=activeRouteMeta){
       ||buttons.find(x=>String(x?.anchor||'').trim()===anchor)||{};
     const derived=orderedBranchStationsFromLines(json,lineNames,anchor,insert);
     const configured=Array.isArray(junction?.stations)?junction.stations.map(x=>String(x||'').trim()).filter(Boolean):[];
-    // diagram.junctions の駅順を優先する。元線区の駅順と路線図上の上下が
-    // 異なる場合（東武日光線など）も、路線ごとの例外処理を設けない。
-    const stations=(configured.length?configured:derived).filter(name=>name&&name!==anchor);
+    // 分岐駅の前後関係は、分岐路線の実際の駅配列から求める。
+    // diagram.junctions.stations は補助情報としてのみ使い、駅順を固定しない。
+    const orderedStations=(derived.length?derived:configured).filter(name=>name&&name!==anchor);
+    // before 側に挿入される分岐を上側、after 側を下側として扱う。
+    // ボタンの position 指定に依存すると、駅順と表示方向が食い違うため使用しない。
+    const position=insert==='before'?'top':'bottom';
     return {
-      key:String(key),id:String(button?.id||key),anchor,insert,stations,
-      position:String(button?.position||'bottom'),
+      key:String(key),id:String(button?.id||key),anchor,insert,stations:orderedStations,
+      position,
       label:String(button?.label||key),
       line:String(button?.line||lineNames[0]||'')
     };
@@ -2374,36 +2478,71 @@ function displayedStationNeighborSectionColor(a,b,station,json=activeJson,meta=a
   }
   return activeSegmentColors(a,b)[0]||activeRouteColors()[0]||'#666';
 }
+function isActiveBranchJunctionStation(name,json=activeJson,meta=activeRouteMeta){
+  const stationName=String(name||'').trim();
+  if(!stationName) return false;
+  if(hasMultiJunctionDiagram(meta,json)){
+    return multiJunctionBranchDefinitions(json,meta).some(def=>
+      def.anchor===stationName && multiJunctionBranchesOpen.has(def.id)
+    );
+  }
+  if(hasBranchToggleDiagram(meta,json)&&branchDiagramOpen){
+    const config=branchDiagramConfig(json,meta);
+    return String(config?.junctionStation||'').trim()===stationName;
+  }
+  return false;
+}
 function stationNeighborOrderForDisplayedStation(name,json=activeJson,meta=activeRouteMeta){
   const stationName=String(name||'').trim();
   const displayed=(Array.isArray(STATIONS)?STATIONS:[])
     .map(st=>String(st?.nameJa||st?.name||'').trim()).filter(Boolean);
   if(!stationName||!displayed.length) return displayed;
 
-  // 駅情報カードの隣駅は「同じ線区の駅列」だけから求める。
-  // 路線図の STATIONS は接続フェードを描くため、分岐終点の先に
-  // 本線側の隣駅まで連結している場合があるが、その接続区間は
-  // 別線区の隣駅関係として駅情報カードには表示しない。
+  // 分岐表示中は、駅情報カード用の隣駅列を路線図の連結順とは別に作る。
+  // 分岐線の駅列には接続駅(anchor)を必ず含め、分岐終端から本線駅へ
+  // 誤って飛び越えたり、接続駅自体が隣駅から抜けたりしないようにする。
   if(hasMultiJunctionDiagram(meta,json)){
     const diagram=json?.diagram||{};
     const mainOrder=(Array.isArray(diagram.mainOrder)?diagram.mainOrder:[])
       .map(value=>String(value||'').trim()).filter(Boolean);
-    const definitions=multiJunctionBranchDefinitions(json,meta);
-    const activeDefinitions=definitions.filter(def=>multiJunctionBranchesOpen.has(def.id));
+    const activeDefinitions=multiJunctionBranchDefinitions(json,meta)
+      .filter(def=>multiJunctionBranchesOpen.has(def.id));
     if(activeDefinitions.length){
-      // 本線所属駅は本線の元の駅順だけを参照する。
-      if(mainOrder.includes(stationName)) return mainOrder;
-      // 分岐線所属駅は、その駅が属する分岐線の駅列だけを参照する。
-      // flattenしたSTATIONSを使うと、分岐終点に本線の隣駅が混入する。
       const branch=activeDefinitions.find(def=>def.stations.includes(stationName));
-      if(branch) return branch.stations.slice();
+      if(branch){
+        return branch.insert==='before'
+          ? [...branch.stations,branch.anchor]
+          : [branch.anchor,...branch.stations];
+      }
+      if(mainOrder.includes(stationName)){
+        const anchored=activeDefinitions.filter(def=>def.anchor===stationName);
+        if(!anchored.length) return mainOrder;
+        const index=mainOrder.indexOf(stationName);
+        const prev=index>0?mainOrder[index-1]:null;
+        const next=index<mainOrder.length-1?mainOrder[index+1]:null;
+        const before=anchored.filter(def=>def.insert==='before').flatMap(def=>def.stations);
+        const after=anchored.filter(def=>def.insert!=='before').flatMap(def=>def.stations);
+        return [...(prev?[prev]:[]),...before,stationName,...after,...(next?[next]:[])];
+      }
+      return mainOrder.length?mainOrder:displayed;
     }
   }else if(hasBranchToggleDiagram(meta,json)&&branchDiagramOpen){
     const mainOrder=branchDiagramMainStations(json,meta);
     const branchStations=branchDiagramBranchStations(json,meta);
-    // 単一分岐でも、本線駅と分岐線駅をそれぞれ独立した駅列として扱う。
-    if(mainOrder.includes(stationName)) return mainOrder;
-    if(branchStations.includes(stationName)) return branchStations.slice();
+    const anchor=String(json?.diagram?.anchor||json?.diagram?.junction||'').trim();
+    const insert=String(json?.diagram?.insert||'after').toLowerCase()==='before'?'before':'after';
+    if(branchStations.includes(stationName)){
+      return insert==='before'?[...branchStations,anchor]:[anchor,...branchStations];
+    }
+    if(mainOrder.includes(stationName)){
+      if(stationName===anchor){
+        const index=mainOrder.indexOf(anchor);
+        return insert==='before'
+          ? [...(index>0?[mainOrder[index-1]]:[]),...branchStations,anchor,...(index<mainOrder.length-1?[mainOrder[index+1]]:[])]
+          : [...(index>0?[mainOrder[index-1]]:[]),anchor,...branchStations,...(index<mainOrder.length-1?[mainOrder[index+1]]:[])];
+      }
+      return mainOrder;
+    }
   }
   return displayed;
 }
@@ -2826,13 +2965,9 @@ function normalizeExternalTrain(raw,day,direction,meta){
 
   const firstTimed=stops.find(st=>st.isStop) || {};
   const lastTimed=[...stops].reverse().find(st=>st.isStop) || firstTimed;
-  // 半蔵門線JSONの方向は「押上→田園都市線」を下りとしている。
-  // 東武スカイツリーライン側では同じ列車が「浅草方面」へ向かう上りになるため、
-  // 東武ページで半蔵門線由来の直通列車を表示するときだけ方向を反転する。
-  const sourceRouteId=String(meta?.id||raw?.__sourceMeta?.id||'');
-  const routeRelativeDirection=(activeRouteMeta?.id==='tobu-skytree' && sourceRouteId==='tokyo-metro-hanzomon')
-    ? (direction==='上り'?'下り':'上り')
-    : direction;
+  // 方向は元データの線区方向を維持する。
+  // 路線図上の左右位置は、実際に走行する線区・区間の向きに応じて描画側で処理する。
+  const routeRelativeDirection=direction;
   // 区間別番号を持つ直通列車では、列車番号は表示用の属性であり、
   // Firebase・運用履歴の内部キーは従来のJSON idを維持する。
   const internalNo=hasSectionTrainNumber
@@ -5751,7 +5886,7 @@ function multiJunctionBranchTransitPositionForTrain(train,stops,minutes,rawDirec
           pos=lerp(baseCross+offset,baseTo+offset,ratio);
         }
         return {
-          pos,side:trainSideForStationPair(fromName,toName,rawDirection),
+          pos,side:trainSideForTrainPair(train,fromName,toName,rawDirection),
           visualTrain:train,
           mode:minutes<crossingMinute?'branch-mainline-before':'branch-mainline-after',
           projectedMainline:true,branchSkippedStops:true,
@@ -5761,6 +5896,11 @@ function multiJunctionBranchTransitPositionForTrain(train,stops,minutes,rawDirec
       }
       continue;
     }
+
+    // 分岐線に実際に停車する列車は、表示中の分岐駅列を通常の駅間補間で走らせる。
+    // ここで hidden にすると、特に上方向（insert=before）の分岐線上から列車アイコンが消える。
+    // 本線を通過して分岐線に停車しない列車だけを、下の本線投影処理で扱う。
+    if(branchIndexes.length) continue;
 
     // 分岐線の停車駅が一部だけの場合も、連続した分岐停車ブロックごとに扱う。
     const blocks=[];
@@ -5811,7 +5951,7 @@ function multiJunctionBranchTransitPositionForTrain(train,stops,minutes,rawDirec
           const ratio=(minutes-fromMinute)/(entryMinute-fromMinute||1);
           return {
             pos:lerp(prevPos,entryPos,ratio),
-            side:trainSideForStationPair(prevName,entryEndpoint,rawDirection),
+            side:trainSideForTrainPair(train,prevName,entryEndpoint,rawDirection),
             visualTrain:train,mode:'branch-mainline-before',
             projectedMainline:true,mainlineFrom:prevName,mainlineTo:entryEndpoint
           };
@@ -5832,7 +5972,7 @@ function multiJunctionBranchTransitPositionForTrain(train,stops,minutes,rawDirec
           const ratio=(minutes-fromMinute)/(toMinute-fromMinute||1);
           return {
             pos:lerp(exitPos,nextPos,ratio),
-            side:trainSideForStationPair(exitEndpoint,nextName,rawDirection),
+            side:trainSideForTrainPair(train,exitEndpoint,nextName,rawDirection),
             visualTrain:train,mode:'branch-mainline-after',
             projectedMainline:true,mainlineFrom:exitEndpoint,mainlineTo:nextName
           };
@@ -5909,7 +6049,7 @@ function positionForTrain(t,minutes){
         // 分岐を開いても、分岐がなかった場合の本線直通区間を非表示にしない。
         // 分岐停車を含む運転は上の mainOrder 投影で処理し、直通列車は通常の本線駅間で補間する。
         const ratio=b===a?0:(minutes-a)/(b-a);
-        return {pos:currentIndex+(nextIndex-currentIndex)*ratio,side:trainSideForStationPair(st.station,next.station,rawDirection),visualTrain:t,mode:'run'};
+        return {pos:currentIndex+(nextIndex-currentIndex)*ratio,side:trainSideForTrainPair(t,st.station,next.station,rawDirection),visualTrain:t,mode:'run'};
       }
     }
   }
@@ -5925,7 +6065,7 @@ function positionForTrain(t,minutes){
       const nextNo=trainEntryNo(next);
       const nextDirection=(next&&next.start&&next.dest)?(stationIndex(next.start)>stationIndex(next.dest)?'up':'down'):null;
       const nextTrain=liveTrain(nextNo,nextDirection)||baseTrainForDay(nextNo,nextDirection,currentDay)||(currentDay==='休日'?HOLIDAY_TRAIN_INDEX[nextNo]:TRAIN_INDEX[nextNo])||null;
-      const nextSide=trainSideForStationPair(next.start,next.dest,nextTrain?.direction||inferDirectionFromStations(next.start,next.dest));
+      const nextSide=trainSideForTrainPair(nextTrain||t,next.start,next.dest,nextTrain?.direction||inferDirectionFromStations(next.start,next.dest));
       return {pos:lastIndex,side:nextSide,visualTrain:nextTrain||t,mode:'turn-wait'};
     }
   }
@@ -6038,19 +6178,22 @@ function stationVisualYForTrainSide(stationName){
   return idx>=0?idx:NaN;
 }
 function trainSideForStationPair(fromStation,toStation,fallbackDirection=null){
-  const from=String(fromStation||'').trim(),to=String(toStation||'').trim();
-  const direction=String(fallbackDirection||'').toLowerCase();
-  // 半蔵門線ページでは左側が押上方面、右側が田園都市線方面。
-  // 駅配列の終端・直通先が画面外でも、駅時刻表の左右選択肢と同じ側に固定する。
-  if(activeRouteMeta?.id==='tokyo-metro-hanzomon') return direction==='up'?'left':'right';
-  const denentoshiNames=new Set((HANZOMON_ADAPTER_DATA?.lines?.[1]?.stations||[]).map(st=>String(st?.name||'')));
-  if(from==='渋谷'&&denentoshiNames.has(to)&&to!=='渋谷') return 'right';
-  if(to==='渋谷'&&denentoshiNames.has(from)&&from!=='渋谷') return 'left';
-  const yFrom=stationVisualYForTrainSide(from);
-  const yTo=stationVisualYForTrainSide(to);
+  // 列車アイコンの左右は、まず画面上の駅配列順で判定する。
+  // 直通列車も運行元路線の上り/下りではなく、現在表示中の路線上の順序に従う。
+  const fromIndex=stationIndex(String(fromStation||'').trim());
+  const toIndex=stationIndex(String(toStation||'').trim());
+  if(fromIndex>=0&&toIndex>=0&&fromIndex!==toIndex){
+    return toIndex<fromIndex?'left':'right';
+  }
+  // 通常の駅配列にない駅だけ、表示行の位置を補助判定に使う。
+  const yFrom=stationVisualYForTrainSide(fromStation);
+  const yTo=stationVisualYForTrainSide(toStation);
   return Number.isFinite(yFrom)&&Number.isFinite(yTo)&&Math.abs(yTo-yFrom)>0.5
     ? (yTo<yFrom?'left':'right')
-    : (direction==='up'?'left':'right');
+    : (String(fallbackDirection||'').toLowerCase()==='up'?'left':'right');
+}
+function trainSideForTrainPair(train,fromStation,toStation,fallbackDirection=null){
+  return trainSideForStationPair(fromStation,toStation,fallbackDirection);
 }
 function trainSideForDirection(direction, fallbackDirection=null){
   const dir=String(direction||fallbackDirection||'').toLowerCase();
@@ -6060,8 +6203,8 @@ function trainSideForTrainAtStation(train,stationIndexValue){
   const stops=normalizeLineStopTimes(train?.stops||[]);
   const i=Math.max(0,Math.min(stops.length-1,Number(stationIndexValue)||0));
   if(stops.length>1){
-    if(i<stops.length-1) return trainSideForStationPair(stops[i].station,stops[i+1].station,train?.direction);
-    return trainSideForStationPair(stops[i-1].station,stops[i].station,train?.direction);
+    if(i<stops.length-1) return trainSideForTrainPair(train,stops[i].station,stops[i+1].station,train?.direction);
+    return trainSideForTrainPair(train,stops[i-1].station,stops[i].station,train?.direction);
   }
   return trainSideForDirection(train?.direction,train?.direction);
 }
@@ -6075,7 +6218,7 @@ function getTrainRuntimeMeta(t){
   const firstIndex=stationIndex(first.station);
   const lastIndex=stationIndex(last.station);
   const rawDirection=String(t?.direction||'').toLowerCase();
-  const side=stops.length>1?trainSideForStationPair(stops[0].station,stops[1].station,rawDirection):trainSideForDirection(rawDirection, firstIndex>lastIndex?'up':'down');
+  const side=stops.length>1?trainSideForTrainPair(t,stops[0].station,stops[1].station,rawDirection):trainSideForDirection(rawDirection, firstIndex>lastIndex?'up':'down');
   const meta={stops,first,last,firstIndex,lastIndex,side,firstDep:Number(first._departure),lastArr:Number(last._arrival)};
   TRAIN_RUNTIME_CACHE.set(key,meta);
   return meta;
@@ -6560,6 +6703,34 @@ function getStationDirectionLabels(stationName){
   return generated;
 }
 
+function branchJunctionNeighborInfo(stationName,json=activeJson,meta=activeRouteMeta){
+  const target=String(stationName||'').trim();
+  if(!target) return null;
+  let defs=[];
+  let mainOrder=[];
+  if(hasMultiJunctionDiagram(meta,json)){
+    defs=multiJunctionBranchDefinitions(json,meta).filter(def=>def.anchor===target);
+    mainOrder=(Array.isArray(json?.diagram?.mainOrder)?json.diagram.mainOrder:[]).map(x=>String(x||'').trim()).filter(Boolean);
+  }else if(hasBranchToggleDiagram(meta,json)){
+    const config=branchDiagramConfig(json,meta);
+    if(String(config?.junctionStation||'').trim()!==target) return null;
+    const branch=branchDiagramBranchStations(json,meta);
+    defs=[{stations:branch,insert:'before',position:'top',id:'single-branch'}];
+    mainOrder=branchDiagramMainStations(json,meta);
+  }else return null;
+  if(!defs.length) return null;
+  const index=mainOrder.indexOf(target);
+  const prev=index>0?mainOrder[index-1]:null;
+  const next=index>=0&&index<mainOrder.length-1?mainOrder[index+1]:null;
+  const branches=defs.map(def=>{
+    const stations=Array.isArray(def.stations)?def.stations:[];
+    // insert=before は接続駅に最も近い駅が配列末尾、after は先頭。
+    const nearest=def.insert==='before'?stations[stations.length-1]:stations[0];
+    return nearest?{name:nearest,position:String(def.position||'top').toLowerCase()}:null;
+  }).filter(Boolean);
+  return {prev,next,branches};
+}
+
 function updateStationSheetContent(){
   const stationIndexValue=STATIONS.findIndex(st=>String(st.id)===String(currentStationId));
   const station=stationIndexValue>=0 ? STATIONS[stationIndexValue] : null;
@@ -6567,11 +6738,12 @@ function updateStationSheetContent(){
   if(!station || !content) return;
 
   const circularContext=circularStationContext(station.nameJa);
+  const branchJunction=branchJunctionNeighborInfo(station.nameJa);
   const branchNeighbors=branchDiagramStationNeighbors(station.nameJa);
   const multiJunctionNeighbors=multiJunctionStationNeighbors(station.nameJa);
-  const specialNeighbors=circularContext||branchNeighbors||multiJunctionNeighbors;
-  const prevName=circularContext?.prev ?? branchNeighbors?.prev ?? multiJunctionNeighbors?.prev ?? null;
-  const nextName=circularContext?.next ?? branchNeighbors?.next ?? multiJunctionNeighbors?.next ?? null;
+  const specialNeighbors=circularContext||branchNeighbors||multiJunctionNeighbors||branchJunction;
+  const prevName=circularContext?.prev ?? branchJunction?.prev ?? branchNeighbors?.prev ?? multiJunctionNeighbors?.prev ?? null;
+  const nextName=circularContext?.next ?? branchJunction?.next ?? branchNeighbors?.next ?? multiJunctionNeighbors?.next ?? null;
   const prevStation=specialNeighbors
     ? (prevName ? (STATIONS.find(st=>st.nameJa===prevName)||null) : null)
     : (stationIndexValue>0 ? STATIONS[stationIndexValue-1] : null);
@@ -6587,6 +6759,28 @@ function updateStationSheetContent(){
   const prevEn=prevStation?.nameEn||'';
   const nextJa=nextStation?.nameJa||'';
   const nextEn=nextStation?.nameEn||'';
+  const branchNeighborItems=(branchJunction?.branches||[]).map(item=>({
+    station:STATIONS.find(st=>String(st.nameJa)===String(item.name))||diagramStationEntry(activeJson,item.name),
+    position:item.position
+  })).filter(item=>item.station?.nameJa);
+  const topBranchItems=branchNeighborItems.filter(item=>item.position==='top');
+  const bottomBranchItems=branchNeighborItems.filter(item=>item.position!=='top');
+  // 分岐側の駅名はカード上部の独立レイヤーへ。本線の隣駅は下部の左右位置を維持する。
+  const leftNeighborItems=prevStation?[{station:prevStation,position:'main'}]:[];
+  const rightNeighborItems=nextStation?[{station:nextStation,position:'main'}]:[];
+  const renderNeighborItems=(items,emptyPosition='main')=>items.length
+    ? items.map(item=>`<div class="station-neighbor-entry main-neighbor"><div class="station-neighbor-name-ja">${item.station.nameJa||''}</div><div class="station-neighbor-name-en">${item.station.nameEn||''}</div></div>`).join('')
+    : `<div class="station-neighbor-entry empty ${emptyPosition}"><div class="station-neighbor-name-ja"></div><div class="station-neighbor-name-en"></div></div>`;
+  const renderBranchNeighborItems=(items,position)=>items.map(item=>
+    `<div class="station-neighbor-entry branch-neighbor-${position}"><div class="station-neighbor-name-ja">${item.station.nameJa||''}</div><div class="station-neighbor-name-en">${item.station.nameEn||''}</div></div>`
+  ).join('');
+  const branchNeighborHTML=renderBranchNeighborItems(topBranchItems,'top')+renderBranchNeighborItems(bottomBranchItems,'bottom');
+  const leftNeighborsHTML=renderNeighborItems(leftNeighborItems);
+  const rightNeighborsHTML=renderNeighborItems(rightNeighborItems);
+  const branchPositionClass=[topBranchItems.length?'branch-position-top':'',bottomBranchItems.length?'branch-position-bottom':''].filter(Boolean).join(' ');
+  const branchRouteColor=branchNeighborItems.length
+    ? (activeSegmentColors(branchNeighborItems[0].station.nameJa,station.nameJa)[0]||activeRouteColors()[0]||'#ff9900')
+    : '#ff9900';
   const directionLabels=getStationDirectionLabels(station.nameJa);
   // 始発・終着駅など、方面が成立しない側のタブは表示しない。
   // 片側だけの場合は、その方向を時刻表の初期表示にも使用する。
@@ -6596,15 +6790,25 @@ function updateStationSheetContent(){
     ? {prevColor:circularContext.prevColor,nextColor:circularContext.nextColor}
     : (branchNeighbors
         ? {prevColor:branchNeighbors.prevColor,nextColor:branchNeighbors.nextColor}
-        : stationNeighborRouteColors(stationIndexValue));
+        : (branchJunction
+            ? {
+                prevColor:branchJunction.prev
+                  ? (activeSegmentColors(branchJunction.prev,station.nameJa)[0]||activeRouteColors()[0]||'#666')
+                  : (activeSegmentColors(station.nameJa,branchJunction.next||'')[0]||activeRouteColors()[0]||'#666'),
+                nextColor:branchJunction.next
+                  ? (activeSegmentColors(station.nameJa,branchJunction.next)[0]||activeRouteColors()[0]||'#666')
+                  : (activeSegmentColors(branchJunction.prev||'',station.nameJa)[0]||activeRouteColors()[0]||'#666')
+              }
+            : stationNeighborRouteColors(stationIndexValue)));
   const stationInfoColor=circularContext ? circularContext.prevColor : (neighborColors.prevColor||activeRouteColors()[0]||'#666');
   // 「上り」「下り」の方面タブは、路線ではなく駅ラベルそのものの色に合わせる。
   // 駅ラベルの色判定をそのまま共有することで、路線切替や色境界でも一致させる。
   const stationDirectionTabColor=stationLabelColor(stationIndexValue) || activeRouteColors()[0] || '#808080';
   const directionTabStyle=`--station-direction-color:${stationDirectionTabColor};`;
+  const branchStationInfoClass=branchJunction ? ` branch-junction-station ${branchPositionClass}` : '';
 
   content.innerHTML=`
-    <div class="station-overview-card station-info-card" style="--station-info-color:${stationInfoColor};">
+    <div class="station-overview-card station-info-card${branchStationInfoClass}" style="--station-info-color:${stationInfoColor};--station-branch-color:${branchRouteColor};">
       <div class="station-overview-main">
         <div class="station-overview-name-ja">${station.nameJa}</div>
         <div class="station-overview-name-en">${station.nameEn}</div>
@@ -6612,14 +6816,13 @@ function updateStationSheetContent(){
       <div class="station-direction-bar-wrap">
         <div class="station-direction-bar ${barClasses}" style="--station-prev-route-color:${neighborColors.prevColor};--station-next-route-color:${neighborColors.nextColor};"></div>
       </div>
+      <div class="station-neighbor-branch-layer">${branchNeighborHTML}</div>
       <div class="station-neighbor-row">
-        <div class="station-neighbor left${prevStation?'':' empty'}">
-          <div class="station-neighbor-name-ja">${prevJa}</div>
-          <div class="station-neighbor-name-en">${prevEn}</div>
+        <div class="station-neighbor left${leftNeighborItems.length?'':' empty'}">
+          ${leftNeighborsHTML}
         </div>
-        <div class="station-neighbor right${nextStation?'':' empty'}">
-          <div class="station-neighbor-name-ja">${nextJa}</div>
-          <div class="station-neighbor-name-en">${nextEn}</div>
+        <div class="station-neighbor right${rightNeighborItems.length?'':' empty'}">
+          ${rightNeighborsHTML}
         </div>
       </div>
     </div>
@@ -20555,6 +20758,7 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     #sheetContent .station-transfer-target-station{font-size:.68em;padding:0;}
     .station-stop-type{font-size:10px !important;padding:1px 3px !important;font-weight:600 !important;}
   }
+
 </style>
 <script id="station-stop-transfer-direction-script">
 (function(){
