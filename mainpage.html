@@ -6193,9 +6193,14 @@ function trainSideForStationPair(fromStation,toStation,fallbackDirection=null){
     : (String(fallbackDirection||'').toLowerCase()==='up'?'left':'right');
 }
 function trainSideForTrainPair(train,fromStation,toStation,fallbackDirection=null){
+  // 全列車共通。列車データの出所路線の up/down は使わず、
+  // 現在表示中の路線における駅配列順（必要なら画面上の駅位置）で左右を決める。
+  // これにより半蔵門線など、接続先と方向定義が逆になる直通列車も正しい側に置く。
   return trainSideForStationPair(fromStation,toStation,fallbackDirection);
 }
 function trainSideForDirection(direction, fallbackDirection=null){
+  // 隣駅を特定できない場合のみ使う最終フォールバック。
+  // 特定路線の方面選択肢の並びを固定で仮定しない。
   const dir=String(direction||fallbackDirection||'').toLowerCase();
   return dir==='up'?'left':dir==='down'?'right':(String(fallbackDirection||'').toLowerCase()==='up'?'left':'right');
 }
@@ -6207,6 +6212,34 @@ function trainSideForTrainAtStation(train,stationIndexValue){
     return trainSideForTrainPair(train,stops[i-1].station,stops[i].station,train?.direction);
   }
   return trainSideForDirection(train?.direction,train?.direction);
+}
+function stationTimetableBucketForTrain(train,stationName,stationStops=[]){
+  // 時刻表の方面は元データの up/down ではなく、アイコンと同じ現在路線上の左右判定から決める。
+  // 表示中の駅に停車する区間の次駅を優先し、終着側だけ前駅との区間を使う。
+  const stops=normalizeLineStopTimes(
+    Array.isArray(stationStops)&&stationStops.length ? stationStops :
+    (Array.isArray(train?.stationGuideStops)&&train.stationGuideStops.length ? train.stationGuideStops : train?.stops||[])
+  );
+  const indices=[];
+  stops.forEach((stop,i)=>{if(String(stop?.station||'').trim()===String(stationName||'').trim()) indices.push(i);});
+  let side=null;
+  for(const i of indices){
+    if(i<stops.length-1){
+      side=trainSideForTrainPair(train,stops[i].station,stops[i+1].station,train?.direction);
+      break;
+    }
+  }
+  if(!side){
+    for(let n=indices.length-1;n>=0;n--){
+      const i=indices[n];
+      if(i>0){side=trainSideForTrainPair(train,stops[i-1].station,stops[i].station,train?.direction);break;}
+    }
+  }
+  if(!side) side=trainSideForDirection(train?.direction,train?.direction);
+  // 時刻表タブの並び順と左右を対応させる。
+  // 東武スカイツリーラインだけは左が下り・右が上り、その他は左が上り・右が下り。
+  if(activeRouteMeta?.id==='tobu-skytree') return side==='left'?'down':'up';
+  return side==='left'?'up':'down';
 }
 function getTrainRuntimeMeta(t){
   const key=trainRuntimeKey(t);
@@ -6688,21 +6721,104 @@ function autoStationDirectionEndpoints(stationName,json=activeJson){
 }
 function getStationDirectionLabels(stationName){
   const generated=autoStationDirectionEndpoints(stationName,activeJson);
+  let result=generated;
+  if(activeRouteMeta?.id==='tobu-skytree' && Array.isArray(activeJson?.lines)){
+    const target=String(stationName||'').trim();
+    const stationKey=value=>String(value||'').trim().replace(/駅$/,'').normalize('NFKC').replace(/[\s　]/g,'');
+    const targetKey=stationKey(target);
+    const up=[],down=[];
+    const add=(list,value)=>{
+      const name=String(value||'').trim();
+      const key=stationKey(name);
+      if(name&&key&&key!==targetKey&&!list.some(item=>stationKey(item)===key)) list.push(name);
+    };
+    const addText=(list,value)=>{
+      const text=String(value||'').trim().replace(/方面$/,'').replace(/行き$/,'').replace(/行$/,'');
+      for(const part of text.split(/[・、]/)) add(list,part);
+    };
+    addText(up,generated.up);
+    addText(down,generated.down);
+
+    const diagram=activeJson?.diagram||{};
+    const mainOrder=(Array.isArray(diagram.mainOrder)?diagram.mainOrder:[]).map(x=>String(x||'').trim()).filter(Boolean);
+    const mainSet=new Set(mainOrder.map(stationKey));
+    const branchDefs=multiJunctionBranchDefinitions(activeJson,activeRouteMeta);
+    // 分岐駅・分岐線上の駅は、駅配列から復元した分岐順を優先する。
+    // before は上側、after は下側。接続駅の両側を分岐先端まで正しくたどる。
+    for(const def of branchDefs){
+      const branchStations=Array.isArray(def.stations)?def.stations.map(x=>String(x||'').trim()).filter(Boolean):[];
+      if(stationKey(def.anchor)===targetKey){
+        const terminal=def.insert==='before'?branchStations[0]:branchStations[branchStations.length-1];
+        add(def.insert==='before'?up:down,terminal);
+      }else if(branchStations.some(name=>stationKey(name)===targetKey)){
+        const sequence=def.insert==='before'?[...branchStations,String(def.anchor||'')]:[String(def.anchor||''),...branchStations];
+        add(up,sequence[0]);
+        add(down,sequence[sequence.length-1]);
+      }
+    }
+
+    // 現在の路線と駅を共有する線区を、同じ運行会社の共有データも含めて収集。
+    // 境界駅では一方の線区が方向定義を片側しか持たない場合があるため、
+    // 明示方向に加えて、欠けている側をその線区の駅配列から補完する。
+    const allLines=Array.isArray(activeJson.lines)?activeJson.lines:[];
+    const requestedNames=Array.isArray(activeRouteMeta?.jsonLines)?activeRouteMeta.jsonLines.map(String):[];
+    const requestedSet=new Set(requestedNames.filter(Boolean));
+    const ownLineDefs=allLines.filter(line=>!requestedSet.size||requestedSet.has(String(line?.name||'')));
+    const ownStationNames=new Set(ownLineDefs.flatMap(line=>(Array.isArray(line?.stations)?line.stations:[])
+      .map(st=>stationKey(typeof st==='string'?st:(st?.name??st?.nameJa??st?.station))).filter(Boolean)));
+    const lineDefs=[...ownLineDefs];
+    for(const line of allLines){
+      if(lineDefs.includes(line)) continue;
+      const names=(Array.isArray(line?.stations)?line.stations:[])
+        .map(st=>stationKey(typeof st==='string'?st:(st?.name??st?.nameJa??st?.station))).filter(Boolean);
+      if(names.some(name=>ownStationNames.has(name))) lineDefs.push(line);
+    }
+    const sharedRoutes=activeJson?._sharedRoutes&&typeof activeJson._sharedRoutes==='object'?activeJson._sharedRoutes:{};
+    for(const sharedRoute of Object.values(sharedRoutes)){
+      if(!sharedRoute||typeof sharedRoute!=='object') continue;
+      for(const line of (Array.isArray(sharedRoute.lines)?sharedRoute.lines:[])){
+        const names=(Array.isArray(line?.stations)?line.stations:[])
+          .map(st=>stationKey(typeof st==='string'?st:(st?.name??st?.nameJa??st?.station))).filter(Boolean);
+        if(names.some(name=>ownStationNames.has(name))) lineDefs.push(line);
+      }
+    }
+
+    const branchLineNames=new Set(branchDefs.flatMap(def=>String(def.key||'').split('・').map(x=>x.trim()).filter(Boolean)));
+    for(const line of lineDefs){
+      const stations=(Array.isArray(line?.stations)?line.stations:[])
+        .map(st=>String(typeof st==='string'?st:(st?.name??st?.nameJa??st?.station)||'').trim()).filter(Boolean);
+      const normalized=stations.map(stationKey);
+      const index=normalized.indexOf(targetKey);
+      if(index<0) continue;
+      const directions=line?.directions&&typeof line.directions==='object'?line.directions:{};
+      const hasUp=!!String(directions.up||'').trim();
+      const hasDown=!!String(directions.down||'').trim();
+      if(hasUp) addText(up,directions.up);
+      if(hasDown) addText(down,directions.down);
+      // 本線の駅順は diagram.mainOrder が基準。分岐線も branchDefs で処理済み。
+      if(branchLineNames.has(String(line?.name||''))) continue;
+      const mainOverlap=normalized.filter(name=>mainSet.has(name)).length;
+      const isMainLineAtTarget=mainSet.has(targetKey)&&mainOverlap>=2;
+      if(isMainLineAtTarget) continue;
+      if(!hasUp && index>0) add(up,stations[0]);
+      if(!hasDown && index<stations.length-1) add(down,stations[stations.length-1]);
+    }
+    result={up:up.length?`${up.join('・')}方面`:'',down:down.length?`${down.join('・')}方面`:''};
+  }
   // 半蔵門線ページの渋谷は路線図上の終端だが、列車はそのまま田園都市線へ直通する。
   // 画面の左側（up）は押上方面、右側（down）は田園都市線方面として両方を表示する。
   if(activeRouteMeta?.id==='tokyo-metro-hanzomon' && String(stationName||'').trim()==='渋谷'){
-    return {up:generated.up||'押上方面',down:'田園都市線方面'};
+    return {up:result.up||'押上方面',down:'田園都市線方面'};
   }
   // 環状線は端点を持たないため、方向名だけを自動付与する。
   if(activeRouteMeta?.diagramLayout==='circular' && activeJson?.circular===true){
     return {
-      up:`内回り${generated.up?` ${generated.up}`:''}`,
-      down:`外回り${generated.down?` ${generated.down}`:''}`
+      up:`内回り${result.up?` ${result.up}`:''}`,
+      down:`外回り${result.down?` ${result.down}`:''}`
     };
   }
-  return generated;
+  return result;
 }
-
 function branchJunctionNeighborInfo(stationName,json=activeJson,meta=activeRouteMeta){
   const target=String(stationName||'').trim();
   if(!target) return null;
@@ -6925,10 +7041,9 @@ function stationTimetableHTML(station, selectedDirection='up'){
     if(!m) return;
     const hour=Number(m[1]), minute=Number(m[2]);
     if(!Number.isFinite(hour)||!Number.isFinite(minute)) return;
-    // 列車の実際の進行方向は元データの up/down を維持する。
-    // 画面上の左右は方面タブの並び順（down → up）で反転するため、
-    // ここで bucket まで反転すると浅草行きが館林方面に混入してしまう。
-    const bucket=String(train?.direction||'up')==='down'?'down':'up';
+    // アイコンと同じ駅順・左右判定を使って時刻表の方面を決める。
+    // 直通列車の元路線での up/down は、現在表示中の路線の方面と一致するとは限らない。
+    const bucket=stationTimetableBucketForTrain(train,stationName,allStops);
     byTrain.set(`${bucket}:${String(train.no)}`,{train,hour,minute,time,bucket});
   });
 
