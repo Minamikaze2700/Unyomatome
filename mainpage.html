@@ -2674,7 +2674,7 @@ function buildStationsForRoute(json,meta){
         id:`st${list.length+1}`,nameJa:name,nameEn:String(st?.nameEn||''),labelSmallPrefix:String(st?.labelSmallPrefix||''),
         stationNumbering:((numbering.number??numbering.stationNumber??st?.stationNumber??st?.number)!=null && String(numbering.number??numbering.stationNumber??st?.stationNumber??st?.number)!=='')?{
           type:String(numbering.type||numbering.design||lineNumbering.type||'rounded-square'),
-          color:String(numbering.color||lineNumbering.color||'#005BAC'),
+          color:String(numbering.color||lineNumbering.color||sourceLine?.color||''),
           symbol:String(numbering.symbol||numbering.lineCode||lineNumbering.symbol||lineNumbering.lineCode||''),
           number:String(numbering.number??numbering.stationNumber??st?.stationNumber??st?.number)
         }:null
@@ -9444,12 +9444,17 @@ function initRegionNavigation(){
     .numbering_tokyu .station-numbering-symbol{font-size:17px;font-weight:700;line-height:1.02;}
     .numbering_tokyu .station-numbering-number{font-size:22px;font-weight:700;line-height:.98;}
     .numbering_jr_central,.numbering_jr_west,.numbering_jr_kyushu,.numbering_jr_hokkaido,.numbering_jr_shikoku{background:#fff;border:3px solid var(--numbering-color, currentColor);border-radius:0;padding:0;color:#080808;}
+    /* JR東海：CJ標の色帯＋白地の番号欄。路線カラーはJSONから取得 */
+    .station-numbering.numbering_jr_central{width:56px;height:58px;min-width:56px;border:3px solid var(--numbering-color);border-radius:0;padding:0;gap:0;background:#fff;overflow:hidden;}
+    .station-numbering.numbering_jr_central .station-numbering-symbol{display:flex;flex:0 0 36%;width:100%;align-self:stretch;align-items:center;justify-content:center;background:var(--numbering-color);color:#fff;font-family:Georgia,'Times New Roman',serif;font-size:19px;font-weight:700;line-height:1;}
+    .station-numbering.numbering_jr_central .station-numbering-number{display:flex;flex:1;width:100%;align-items:center;justify-content:center;background:#fff;color:#080808;font-family:Arial,Helvetica,sans-serif;font-size:29px;font-weight:700;line-height:1;}
+
     .numbering_jr_central .station-numbering-symbol,.numbering_jr_west .station-numbering-symbol,.numbering_jr_kyushu .station-numbering-symbol,.numbering_jr_hokkaido .station-numbering-symbol,.numbering_jr_shikoku .station-numbering-symbol{align-self:stretch;display:flex;align-items:center;justify-content:center;background:var(--numbering-color);color:#fff;font-family:Georgia,'Times New Roman',serif;font-size:17px;font-weight:700;line-height:1;}
     .numbering_jr_central .station-numbering-number,.numbering_jr_west .station-numbering-number,.numbering_jr_kyushu .station-numbering-number,.numbering_jr_hokkaido .station-numbering-number,.numbering_jr_shikoku .station-numbering-number{font-size:22px;font-weight:700;line-height:1.02;}
     .numbering_tokyo_metro,.numbering_toei{background:#fff;border:4.5px solid var(--numbering-color, currentColor);border-radius:15px;box-shadow:none;color:#080808;padding:1px;font-weight:700;}
     .numbering_tokyo_metro .station-numbering-symbol,.numbering_toei .station-numbering-symbol{font-size:16px;font-weight:700;}
     .numbering_tokyo_metro .station-numbering-number,.numbering_toei .station-numbering-number{font-size:21px;font-weight:700;}
-    @media(max-width:600px){.station-name-ja-inner{gap:7px}.station-numbering{width:40px;height:40px;border-width:2.5px;border-radius:8px}.station-numbering-symbol{font-size:14px}.station-numbering-number{font-size:18px}.station-numbering-pill{width:auto;min-width:46px;height:40px;padding:2px 6px}.station-numbering-circle{border-radius:50%}.station-numbering-square{border-radius:2px}}
+    @media(max-width:600px){.station-name-ja-inner{gap:7px}.station-numbering{width:40px;height:40px;border-width:2.5px;border-radius:8px}.station-numbering-symbol{font-size:14px}.station-numbering-number{font-size:18px}.station-numbering-pill{width:auto;min-width:46px;height:40px;padding:2px 6px}.station-numbering-circle{border-radius:50%}.station-numbering-square{border-radius:2px}.station-numbering.numbering_jr_central{width:46px;height:48px;min-width:46px;border-width:2.5px}.station-numbering.numbering_jr_central .station-numbering-symbol{font-size:16px}.station-numbering.numbering_jr_central .station-numbering-number{font-size:24px}}
     .station-name-en{height:24px;min-height:24px;flex:0 0 24px;background:var(--station-label-bg,#666);color:#fff;font-size:15.2px;font-weight:400;line-height:1;}
     .rail-line{width:12px;background:transparent;overflow:visible;}
     .rail-segment{position:absolute;left:0;width:100%;}
