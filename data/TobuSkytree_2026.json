@@ -41857,5 +41857,16 @@
     "区間準急": "区準",
     "区間急行": "区急"
   },
-  "formationDefaultName": "地上運用"
+  "formationDefaultName": "地上運用",
+  "stationNumberingOverrides": {
+    "押上": [
+      {
+        "symbol": "TS",
+        "number": "03",
+        "type": "rounded-square",
+        "color": "#0F6CC3",
+        "company": "東武鉄道"
+      }
+    ]
+  }
 }
