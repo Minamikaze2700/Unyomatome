@@ -123,7 +123,7 @@ button,input,select,textarea{font-family:inherit}
   font-size:45px;line-height:1;font-weight:500;
   letter-spacing:0;padding-left:0;
 }
-.station-name-ja-text{display:inline;white-space:nowrap;line-height:1;}
+.station-name-ja-text{display:inline-block;white-space:nowrap;line-height:1;}
 .station-name-ja-reduced{display:inline-block;font-size:80%;line-height:1;vertical-align:bottom;}
 .station-name-en{
   font-family:inherit;
@@ -432,6 +432,29 @@ button,input,select,textarea{font-family:inherit}
   font-family:inherit;
   font-size:52px;line-height:.95;font-weight:500;letter-spacing:.08em;padding-left:.08em;color:#000;
 }
+
+/* 駅情報カード内ナンバリング：参考画像の縦横比・枠・文字比率に合わせる */
+.station-overview-name-ja-inner{display:inline-flex;align-items:center;justify-content:center;gap:.16em;max-width:100%;white-space:nowrap;vertical-align:middle;letter-spacing:inherit;padding-left:0;}
+.station-overview-name-ja-text{display:inline-block;flex:0 0 auto;white-space:nowrap;line-height:.95;letter-spacing:inherit;}
+.station-info-card .station-numbering{width:1.04em;min-width:1.04em;height:1.04em;padding:.035em;border-width:.075em;border-radius:.14em;gap:0;line-height:1;}
+.station-info-card .station-numbering-symbol{font-size:.31em;line-height:1;font-weight:800;}
+.station-info-card .station-numbering-number{font-size:.39em;line-height:1;font-weight:800;}
+.station-info-card .station-numbering-circle{border-radius:50%;}
+.station-info-card .station-numbering-square{border-radius:0;}
+.station-info-card .station-numbering-rounded-square{border-radius:.14em;}
+.station-info-card .station-numbering-pill{width:auto;min-width:1.12em;height:1.04em;padding:.035em .10em;border-radius:.13em;}
+.station-info-card .station-numbering-pill .station-numbering-symbol{font-size:.29em;}
+.station-info-card .station-numbering-pill .station-numbering-number{font-size:.37em;}
+.station-info-card .numbering_tobu{background:#fff;border-width:.094em;border-radius:.31em;padding:.01em;box-shadow:none;}
+.station-info-card .numbering_tobu .station-numbering-symbol{font-size:.33em;font-weight:700;}
+.station-info-card .numbering_tobu .station-numbering-number{font-size:.44em;font-weight:700;}
+.station-info-card .numbering_tokyu{border:0;border-radius:.36em;padding:.035em;}
+.station-info-card .numbering_tokyu .station-numbering-symbol{font-size:.35em;}
+.station-info-card .numbering_tokyu .station-numbering-number{font-size:.46em;}
+.station-info-card .numbering_jr_central .station-numbering-symbol,.station-info-card .numbering_jr_west .station-numbering-symbol,.station-info-card .numbering_jr_kyushu .station-numbering-symbol,.station-info-card .numbering_jr_hokkaido .station-numbering-symbol,.station-info-card .numbering_jr_shikoku .station-numbering-symbol{font-size:.35em;}
+.station-info-card .numbering_jr_central .station-numbering-number,.station-info-card .numbering_jr_west .station-numbering-number,.station-info-card .numbering_jr_kyushu .station-numbering-number,.station-info-card .numbering_jr_hokkaido .station-numbering-number,.station-info-card .numbering_jr_shikoku .station-numbering-number{font-size:.46em;}
+@media(max-width:600px){.station-overview-name-ja-inner{gap:.13em;}}
+
 .station-overview-name-en{
   font-family:inherit;
   font-size:29px;line-height:1.02;font-weight:500;letter-spacing:.015em;color:#000;
@@ -1333,7 +1356,6 @@ const KOBE_SEISHIN_YAMATE_DATA_URL='https://minamikaze2700.github.io/Unyomatome/
 const NANKAI_KOYA_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/NankaiKoya_2026.json';
 const TOBU_SKYTREE_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/TobuSkytree_2026.json';
 // 半蔵門線直通データ（配列形式JSON）を共通路線データへ変換するための駅・編成定義。
-const HANZOMON_ADAPTER_DATA={"lines":[{"name":"半蔵門線","color":"#8F76D6","stations":[{"name":"押上","nameEn":"Oshiage"},{"name":"錦糸町","nameEn":"Kinshicho"},{"name":"住吉","nameEn":"Sumiyoshi"},{"name":"清澄白河","nameEn":"Kiyosumi-shirakawa"},{"name":"水天宮前","nameEn":"Suitengumae"},{"name":"三越前","nameEn":"Mitsukoshimae"},{"name":"大手町","nameEn":"Otemachi"},{"name":"神保町","nameEn":"Jimbocho"},{"name":"九段下","nameEn":"Kudanshita"},{"name":"半蔵門","nameEn":"Hanzomon"},{"name":"永田町","nameEn":"Nagatacho"},{"name":"青山一丁目","nameEn":"Aoyama-itchome"},{"name":"表参道","nameEn":"Omote-sando"},{"name":"渋谷","nameEn":"Shibuya"}]},{"name":"田園都市線","color":"#00B395","stations":[{"name":"渋谷","nameEn":"Shibuya"},{"name":"池尻大橋","nameEn":"Ikejiri-ohashi"},{"name":"三軒茶屋","nameEn":"Sangen-jaya"},{"name":"駒沢大学","nameEn":"Komazawa-daigaku"},{"name":"桜新町","nameEn":"Sakura-shinmachi"},{"name":"用賀","nameEn":"Yoga"},{"name":"二子玉川","nameEn":"Futako-tamagawa"},{"name":"二子新地","nameEn":"Futako-shinchi"},{"name":"高津","nameEn":"Takatsu"},{"name":"溝の口","nameEn":"Mizonokuchi"},{"name":"梶が谷","nameEn":"Kajigaya"},{"name":"宮崎台","nameEn":"Miyazakidai"},{"name":"宮前平","nameEn":"Miyamaedaira"},{"name":"鷺沼","nameEn":"Saginuma"},{"name":"たまプラーザ","nameEn":"Tama-plaza"},{"name":"あざみ野","nameEn":"Azamino"},{"name":"江田","nameEn":"Eda"},{"name":"市が尾","nameEn":"Ichigao"},{"name":"藤が丘","nameEn":"Fujigaoka"},{"name":"青葉台","nameEn":"Aobadai"},{"name":"田奈","nameEn":"Tana"},{"name":"長津田","nameEn":"Nagatsuta"},{"name":"つくし野","nameEn":"Tsukushino"},{"name":"すずかけ台","nameEn":"Suzukakedai"},{"name":"南町田ｸﾞﾗﾝﾍﾞﾘｰﾊﾟｰｸ","nameEn":"Minami-machida Grandberry Park"},{"name":"つきみ野","nameEn":"Tsukimino"},{"name":"中央林間","nameEn":"Chuo-rinkan"}]},{"name":"スカイツリーライン","nameEn":"Tobu Skytree Line","color":"#0F6CC3","directions":{"up":"浅草方面","down":"館林・南栗橋方面"},"stations":[{"name":"東武動物公園","nameEn":"Tobu-dobutsu-koen"},{"name":"姫宮","nameEn":"Himemiya"},{"name":"北春日部","nameEn":"Kita-kasukabe"},{"name":"春日部","nameEn":"Kasukabe"},{"name":"一ノ割","nameEn":"Ichinowari"},{"name":"武里","nameEn":"Takesato"},{"name":"せんげん台","nameEn":"Sengendai"},{"name":"大袋","nameEn":"Obukuro"},{"name":"北越谷","nameEn":"Kita-koshigaya"},{"name":"越谷","nameEn":"Koshigaya"},{"name":"新越谷","nameEn":"Shin-koshigaya"},{"name":"蒲生","nameEn":"Gamo"},{"name":"新田","nameEn":"Shinden"},{"name":"獨協大学前","nameEn":"Dokkyodaigaku-mae"},{"name":"草加","nameEn":"Soka"},{"name":"谷塚","nameEn":"Yatsuka"},{"name":"竹ノ塚","nameEn":"Takenotsuka"},{"name":"西新井","nameEn":"Nishiarai"},{"name":"梅島","nameEn":"Umejima"},{"name":"五反野","nameEn":"Gotanno"},{"name":"小菅","nameEn":"Kosuge"},{"name":"北千住","nameEn":"Kita-senju"},{"name":"牛田","nameEn":"Ushida"},{"name":"堀切","nameEn":"Horikiri"},{"name":"鐘ヶ淵","nameEn":"Kanegafuchi"},{"name":"東向島","nameEn":"Higashi-mukojima"},{"name":"曳舟","nameEn":"Hikifune"},{"name":"とうきょうスカイツリー","nameEn":"Tokyo Skytree"},{"name":"浅草","nameEn":"Asakusa"}]},{"name":"伊勢崎線","nameEn":"Tobu Isesaki Line","color":"#E4002B","directions":{"up":"浅草方面","down":"館林方面"},"stations":[{"name":"館林","nameEn":"Tatebayashi"},{"name":"茂林寺前","nameEn":"Morinji-mae"},{"name":"川俣","nameEn":"Kawamata"},{"name":"羽生","nameEn":"Hanyu"},{"name":"南羽生","nameEn":"Minami-hanyu"},{"name":"加須","nameEn":"Kazo"},{"name":"花崎","nameEn":"Hanasaki"},{"name":"鷲宮","nameEn":"Washinomiya"},{"name":"久喜","nameEn":"Kuki"},{"name":"和戸","nameEn":"Wado"},{"name":"東武動物公園","nameEn":"Tobu-dobutsu-koen"}]},{"name":"日光線","nameEn":"Tobu Nikko Line","color":"#FFA600","directions":{"up":"東武動物公園方面","down":"南栗橋方面"},"stations":[{"name":"南栗橋","nameEn":"Minami-kurihashi"},{"name":"幸手","nameEn":"Satte"},{"name":"杉戸高野台","nameEn":"Sugitotakanodai"},{"name":"東武動物公園","nameEn":"Tobu-dobutsu-koen"}]},{"name":"日比谷線","nameEn":"Tokyo Metro Hibiya Line","color":"#B5B5AC","directions":{"up":"中目黒方面","down":"北千住方面"},"stations":[{"name":"北千住","nameEn":"Kita-senju"},{"name":"南千住","nameEn":"Minami-senju"},{"name":"三ノ輪","nameEn":"Minowa"},{"name":"入谷","nameEn":"Iriya"},{"name":"上野","nameEn":"Ueno"},{"name":"仲御徒町","nameEn":"Naka-okachimachi"},{"name":"秋葉原","nameEn":"Akihabara"},{"name":"小伝馬町","nameEn":"Kodemmacho"},{"name":"人形町","nameEn":"Ningyocho"},{"name":"茅場町","nameEn":"Kayabacho"},{"name":"八丁堀","nameEn":"Hatchobori"},{"name":"築地","nameEn":"Tsukiji"},{"name":"東銀座","nameEn":"Higashi-ginza"},{"name":"銀座","nameEn":"Ginza"},{"name":"日比谷","nameEn":"Hibiya"},{"name":"霞ケ関","nameEn":"Kasumigaseki"},{"name":"虎ノ門ヒルズ","nameEn":"Toranomon Hills"},{"name":"神谷町","nameEn":"Kamiyacho"},{"name":"六本木","nameEn":"Roppongi"},{"name":"広尾","nameEn":"Hiro-o"},{"name":"恵比寿","nameEn":"Ebisu"},{"name":"中目黒","nameEn":"Naka-meguro"}]}],"formations":[{"type":"50000系","typeImg":"https://minamikaze2700.github.io/Unyomatome/images/TB50000.png","family":"tobu-skytree","routeNames":["東京メトロ半蔵門線"],"serviceGroups":["hanzomon"],"items":[{"id":"51008F","name":"51008F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51008.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51009F","name":"51009F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51009.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51051F","name":"51051F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51051.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51052F","name":"51052F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51052.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51053F","name":"51053F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51053.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51054F","name":"51054F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51054.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51055F","name":"51055F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51055.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51056F","name":"51056F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51056.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51057F","name":"51057F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51057.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51058F","name":"51058F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51058.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51059F","name":"51059F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51059.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51060F","name":"51060F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51060.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51061F","name":"51061F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51061.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51062F","name":"51062F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51062.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51063F","name":"51063F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51063.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51064F","name":"51064F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51064.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51065F","name":"51065F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51065.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51066F","name":"51066F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51066.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51067F","name":"51067F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51067.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"51068F","name":"51068F","img":"https://minamikaze2700.github.io/Unyomatome/images/TB51068.png","cars":10,"routeNames":["東京メトロ半蔵門線"]}]},{"type":"東京メトロ8000系","typeImg":"https://minamikaze2700.github.io/Unyomatome/images/TRTA8000.png","family":"tobu-skytree","routeNames":["東京メトロ半蔵門線"],"serviceGroups":["hanzomon"],"items":[{"id":"8109F","name":"8109F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA8109.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"8116F","name":"8116F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA8116.png","cars":10,"routeNames":["東京メトロ半蔵門線"]}]},{"type":"東京メトロ08系","typeImg":"https://minamikaze2700.github.io/Unyomatome/images/TRTA08.png","family":"tobu-skytree","routeNames":["東京メトロ半蔵門線"],"serviceGroups":["hanzomon"],"items":[{"id":"08-101F","name":"08-101F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA08101.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"08-102F","name":"08-102F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA08102.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"08-103F","name":"08-103F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA08103.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"08-104F","name":"08-104F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA08104.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"08-105F","name":"08-105F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA08105.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"08-106F","name":"08-106F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA08106.png","cars":10,"routeNames":["東京メトロ半蔵門線"]}]},{"type":"東京メトロ18000系","typeImg":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18000.png","family":"tobu-skytree","routeNames":["東京メトロ半蔵門線"],"serviceGroups":["hanzomon"],"items":[{"id":"18101F","name":"18101F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18101.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"18102F","name":"18102F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18102.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"18103F","name":"18103F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18103.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"18104F","name":"18104F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18104.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"18105F","name":"18105F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18105.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"18106F","name":"18106F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18106.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"18107F","name":"18107F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18107.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"18108F","name":"18108F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18108.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"18109F","name":"18109F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18109.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"18110F","name":"18110F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18110.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"18111F","name":"18111F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18111.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"18112F","name":"18112F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18112.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"18113F","name":"18113F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18113.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"18114F","name":"18114F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18114.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"18115F","name":"18115F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18115.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"18116F","name":"18116F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18116.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"18117F","name":"18117F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18117.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"18118F","name":"18118F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18118.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"18119F","name":"18119F","img":"https://minamikaze2700.github.io/Unyomatome/images/TRTA18119.png","cars":10,"routeNames":["東京メトロ半蔵門線"]}]},{"type":"東急5000系","typeImg":"https://minamikaze2700.github.io/Unyomatome/images/TKK5000.png","family":"tobu-skytree","routeNames":["東京メトロ半蔵門線"],"serviceGroups":["hanzomon"],"items":[{"id":"5101F","name":"5101F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK5101.png","cars":10,"disabled":true,"routeNames":["東京メトロ半蔵門線"]},{"id":"5102F","name":"5102F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK5102.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"5103F","name":"5103F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK5103.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"5104F","name":"5104F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK5104.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"5105F","name":"5105F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK5105.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"5106F","name":"5106F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK5106.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"5107F","name":"5107F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK5107.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"5108F","name":"5108F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK5108.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"5109F","name":"5109F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK5109.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"5110F","name":"5110F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK5110.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"5111F","name":"5111F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK5111.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"5112F","name":"5112F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK5112.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"5113F","name":"5113F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK5113.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"5114F","name":"5114F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK5114.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"5115F","name":"5115F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK5115.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"5116F","name":"5116F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK5116.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"5117F","name":"5117F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK5117.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"5120F","name":"5120F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK5120.png","cars":10,"routeNames":["東京メトロ半蔵門線"]}]},{"type":"東急2020系","typeImg":"https://minamikaze2700.github.io/Unyomatome/images/TKK2020.png","family":"tobu-skytree","routeNames":["東京メトロ半蔵門線"],"serviceGroups":["hanzomon"],"items":[{"id":"2121F","name":"2121F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2121.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2122F","name":"2122F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2122.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2123F","name":"2123F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2123.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2124F","name":"2124F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2124.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2125F","name":"2125F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2125.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2126F","name":"2126F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2126.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2127F","name":"2127F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2127.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2128F","name":"2128F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2128.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2129F","name":"2129F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2129.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2130F","name":"2130F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2130.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2131F","name":"2131F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2131.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2132F","name":"2132F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2132.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2133F","name":"2133F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2133.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2134F","name":"2134F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2134.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2135F","name":"2135F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2135.png","cars":10,"disabled":true,"routeNames":["東京メトロ半蔵門線"]},{"id":"2136F","name":"2136F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2136.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2137F","name":"2137F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2137.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2138F","name":"2138F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2138.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2139F","name":"2139F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2139.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2140F","name":"2140F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2140.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2141F","name":"2141F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2141.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2142F","name":"2142F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2142.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2143F","name":"2143F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2143.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2144F","name":"2144F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2144.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2145F","name":"2145F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2145.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2146F","name":"2146F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2146.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2147F","name":"2147F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2147.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2148F","name":"2148F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2148.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2149F","name":"2149F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2149.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2150F","name":"2150F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2150.png","cars":10,"routeNames":["東京メトロ半蔵門線"]},{"id":"2151F","name":"2151F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2151.png","cars":10,"disabled":true,"routeNames":["東京メトロ半蔵門線"]},{"id":"2152F","name":"2152F","img":"https://minamikaze2700.github.io/Unyomatome/images/TKK2152.png","cars":10,"disabled":true,"routeNames":["東京メトロ半蔵門線"]}]}]};
 const IYOTETSU_DATA_URL='https://minamikaze2700.github.io/Unyomatome/data/Iyotetsu_2026.json';
 const DEFAULT_ROUTE_TITLE='運用まとめ - メインページ';
 const LAST_ROUTE_STORAGE_KEY='routeLastRoute_v1';
@@ -1521,8 +1543,6 @@ const ROUTE_REGISTRY={
     formationFamily:'tobu-skytree',
     sectionNumberDisplayLines:['半蔵門線','田園都市線'],
     sectionTypeDisplayLines:['半蔵門線'],
-    // 全国路線図は時刻表配列JSONから線区定義を取得できないため、駅列を別途渡す。
-    mapLines:HANZOMON_ADAPTER_DATA.lines.filter(line=>line.name==='半蔵門線'),
     prescribedFormationRule:'common',
     access:{public:true,routeAdmins:[]}
   },
@@ -2641,7 +2661,24 @@ function buildStationsForRoute(json,meta){
     for(const st of stations){
       const name=String(st?.name||'').trim();
       if(!name||seen.has(name)) continue;
-      seen.add(name); list.push({id:`st${list.length+1}`,nameJa:name,nameEn:String(st?.nameEn||''),labelSmallPrefix:String(st?.labelSmallPrefix||'')});
+      seen.add(name);
+      const sourceLine=(json?.lines||[]).find(line=>Array.isArray(line?.stations)&&line.stations.includes(st));
+      const lineNumbering=sourceLine?.stationNumbering||sourceLine?.numbering||{};
+      const stationNumbering=st?.stationNumbering||st?.numbering||{};
+      const numbering={...lineNumbering,...stationNumbering,
+        type:stationNumbering.type||stationNumbering.design||st?.stationNumberingType||st?.numberingType,
+        color:stationNumbering.color||st?.stationNumberingColor||st?.numberingColor,
+        symbol:stationNumbering.symbol||stationNumbering.lineCode||st?.stationNumberingSymbol||st?.numberingSymbol||st?.lineCode
+      };
+      list.push({
+        id:`st${list.length+1}`,nameJa:name,nameEn:String(st?.nameEn||''),labelSmallPrefix:String(st?.labelSmallPrefix||''),
+        stationNumbering:((numbering.number??numbering.stationNumber??st?.stationNumber??st?.number)!=null && String(numbering.number??numbering.stationNumber??st?.stationNumber??st?.number)!=='')?{
+          type:String(numbering.type||numbering.design||lineNumbering.type||'rounded-square'),
+          color:String(numbering.color||lineNumbering.color||'#005BAC'),
+          symbol:String(numbering.symbol||numbering.lineCode||lineNumbering.symbol||lineNumbering.lineCode||''),
+          number:String(numbering.number??numbering.stationNumber??st?.stationNumber??st?.number)
+        }:null
+      });
     }
   }
   const prepend=Array.isArray(meta?.prependStations)?meta.prependStations:[];
@@ -3214,27 +3251,15 @@ function getTrainTypeAtPosition(train,pos=null){
   const baseType=String(train?.type||train?.rawTrain?.type||'').trim();
   if(!Array.isArray(train?.sectionTypeSegments)||!train.sectionTypeSegments.length) return baseType;
   let stopIndex=-1,segment=null;
-  // スカイツリーラインでは分岐を閉じると、半蔵門線・田園都市線の列車を
-  // 東武本線上へ投影して描画する。画面上のposは実際の停車駅ではないため、
-  // 選択中の運転時刻から列車自身の全停車駅上の区間を求める。
-  if(activeRouteMeta?.id==='tobu-skytree'){
-    stopIndex=trainStopIndexForType(train,null);
-    segment=sectionTypeSegmentAtTrainStop(train,stopIndex);
-  }else{
-    if(pos!==null&&pos!==undefined&&Number.isFinite(Number(pos))) segment=sectionTypeSegmentAtPosition(train,pos);
-    if(!segment){
-      stopIndex=trainStopIndexForType(train,pos);
-      segment=sectionTypeSegmentAtTrainStop(train,stopIndex);
-    }
-  }
+  // 区間別種別は列車自身の停車駅順を基準に解決する。
+  // 他路線の駅配列へ投影された表示位置でも、列車固有の区間情報を維持する。
+  stopIndex=trainStopIndexForType(train,null);
+  segment=sectionTypeSegmentAtTrainStop(train,stopIndex);
   if(!segment || segment.showType===false) return '';
   return String(segment.type||'').trim();
 }
 function getTrainTypeSegmentAtPosition(train,pos=null){
   if(!Array.isArray(train?.sectionTypeSegments)||!train.sectionTypeSegments.length) return null;
-  if(activeRouteMeta?.id==='tobu-skytree'){
-    return sectionTypeSegmentAtTrainStop(train,trainStopIndexForType(train,null));
-  }
   if(pos!==null&&pos!==undefined&&Number.isFinite(Number(pos))){
     const segment=sectionTypeSegmentAtPosition(train,pos);
     if(segment) return segment;
@@ -3304,13 +3329,10 @@ function trainDisplayNoAtPosition(train,pos){
       const numeric=Number(pos);
       if(!Number.isFinite(numeric)||numeric<0) return '';
     }
-    if(activeRouteMeta?.id==='tobu-skytree'){
-      return sectionNumberAtTrainStop(train,trainStopIndexForType(train,null));
-    }
-    const routePositionNumber=sectionNumberAtPosition(train,pos);
-    if(routePositionNumber) return routePositionNumber;
-    const stopIndex=trainStopIndexForType(train,pos);
-    return sectionNumberAtTrainStop(train,stopIndex);
+    const stopIndex=trainStopIndexForType(train,null);
+    const stopNumber=sectionNumberAtTrainStop(train,stopIndex);
+    if(stopNumber) return stopNumber;
+    return sectionNumberAtPosition(train,pos);
   }
   const segments=train?.numberSegments||{};
   const stationPos=Math.max(0,Number(pos)||0);
@@ -3452,163 +3474,10 @@ async function loadExternalRouteJsons(routeMeta){
     return rawJson;
   }
 
-  // 半蔵門線の時刻表は配列形式のため、共通アプリが扱う路線JSON形式へ変換する。
-  // 元データの上り列車（押上→中央林間）のみを採用し、駅順に合わせて画面上は下りとして扱う。
-  function adaptHanzomonArrayJson(rawJson,url){
-    const file=String(url||'').split(/[?#]/,1)[0].split('/').pop();
-    if(!Array.isArray(rawJson)||!/^Hanzomon_2026(?:_修正版)?\s*(?:\(\d+\))?\.json$/i.test(file)) return rawJson;
-    // 元時刻表と路線定義で全角・半角カタカナが混在する駅名を同一視する。
-    // 例：「南町田グランベリーパーク」と「南町田ｸﾞﾗﾝﾍﾞﾘｰﾊﾟｰｸ」。
-    const stationKey=value=>String(value||'').trim().replace(/駅$/,'').normalize('NFKC').replace(/[\s　]/g,'');
-    const hanzomonNames=new Set(HANZOMON_ADAPTER_DATA.lines[0].stations.map(s=>stationKey(s.name)));
-    const denentoshiNames=new Set(HANZOMON_ADAPTER_DATA.lines[1].stations.map(s=>stationKey(s.name)));
-    const normalized={上り:[],下り:[]};
-    for(const source of rawJson){
-      if(!source) continue;
-      const sourceDirection=String(source.direction||'').toLowerCase();
-      // 元データの上り列車は押上→中央林間の順。
-      // 駅時刻表・路線図の方向も上りとして扱い、方向タブや列車位置を逆転させない。
-      if(sourceDirection!=='up') continue;
-      const days=Array.isArray(source.days)&&source.days.length?source.days:['平日'];
-      if(!days.includes('平日')) continue;
-      const stops=Array.isArray(source.stops)?source.stops.filter(s=>s&&String(s.station||'').trim()).map(s=>({...s,station:String(s.station||'').trim()})):[];
-      if(!stops.length) continue;
-
-      const hIndices=[];
-      stops.forEach((stop,index)=>{if(hanzomonNames.has(stationKey(stop.station)))hIndices.push(index);});
-      const hFirst=hIndices.length?hIndices[0]:-1;
-      const hLast=hIndices.length?hIndices[hIndices.length-1]:-1;
-      const hanzomonStops=hIndices.map(index=>({...stops[index]}));
-      const denentoshiStops=stops.filter(s=>denentoshiNames.has(stationKey(s.station))).map(stop=>({...stop}));
-      // 全区間案内の駅間色は、実際の線区定義にある駅の並びから決める。
-      // 表参道～渋谷は半蔵門線色、渋谷～池尻大橋は田園都市線色、
-      // 東武区間はスカイツリーライン等の定義色を優先する。
-      const routeLineForPair=(a,b)=>{
-        const ka=stationKey(a),kb=stationKey(b);
-        if(!ka||!kb) return null;
-        const candidates=(HANZOMON_ADAPTER_DATA.lines||[]).filter(line=>{
-          const names=(line.stations||[]).map(st=>stationKey(st.name));
-          return names.includes(ka)&&names.includes(kb);
-        });
-        if(!candidates.length) return null;
-        const adjacent=candidates.filter(line=>{
-          const names=(line.stations||[]).map(st=>stationKey(st.name));
-          return Math.abs(names.indexOf(ka)-names.indexOf(kb))===1;
-        });
-        const pool=adjacent.length?adjacent:candidates;
-        // 半蔵門線・田園都市線は接続駅を共有するため、該当する駅間を明示優先。
-        const preferred=pool.find(line=>line.name==='半蔵門線'&&hanzomonNames.has(ka)&&hanzomonNames.has(kb))
-          ||pool.find(line=>line.name==='田園都市線'&&denentoshiNames.has(ka)&&denentoshiNames.has(kb))
-          ||pool[0];
-        return preferred||null;
-      };
-      const colorForPair=(a,b,index)=>{
-        const ka=stationKey(a),kb=stationKey(b);
-        if(hanzomonNames.has(ka)&&hanzomonNames.has(kb)) return '#8F76D6';
-        if(denentoshiNames.has(ka)&&denentoshiNames.has(kb)) return '#00B395';
-        const line=routeLineForPair(a,b);
-        const color=String(line?.color||'').trim();
-        if(color) return color;
-        // 押上に入る直前など、線区定義間の接続駅間は東武側の色を維持する。
-        if(index>=0&&index<hFirst) return '#0F6CC3';
-        return '';
-      };
-      const fullGuideStops=stops.map((stop,index)=>{
-        const previous=stops[index-1]?.station||'';
-        const next=stops[index+1]?.station||'';
-        const before=index>0?colorForPair(previous,stop.station,index-1):'';
-        const after=index<stops.length-1?colorForPair(stop.station,next,index):'';
-        return {...stop,...(before?{routeColorBefore:before}:{}),...(after?{routeColorAfter:after}:{}),...(after?{routeColor:after}:before?{routeColor:before}:{})};
-      });
-      // 元データの上り列車は東武線→半蔵門線→田園都市線の順に収録される。
-      // この並びを使って東武線区間を切り出し、画面上の方向変換とは分離する。
-      let tobuStops=[];
-      if(sourceDirection==='up' && hFirst>0) tobuStops=stops.slice(0,hFirst+1);
-
-      const numbers={},numberSegments=[],typeSegments=[];
-      const addNumber=(line,number,matched)=>{
-        const value=String(number||'').trim();
-        if(!value||matched.length<2) return;
-        numbers[line]=[value];
-        numberSegments.push({line,number:value,fromStation:matched[0].station,toStation:matched[matched.length-1].station});
-      };
-      const addType=(line,type,matched)=>{
-        const value=String(type||'').trim();
-        if(!value||matched.length<2) return;
-        typeSegments.push({line,fromStation:matched[0].station,toStation:matched[matched.length-1].station,type:value});
-      };
-
-      const tobuNumber=String(source.trainNumbers?.tobu||'').trim();
-      const tobuType=String(source.typeByRoute?.tobu||source.typeByRoute?.chijou||'').trim();
-      addNumber('東武線内',tobuNumber,tobuStops);
-      addType('東武線内',tobuType,tobuStops);
-
-      const hNumber=String(source.trainNumbers?.hanzomon||'').trim();
-      const hTypeRaw=String(source.typeByRoute?.hanzomon||'').trim();
-      const hType=!hTypeRaw||hTypeRaw==='各停'?'各駅停車':hTypeRaw;
-      addNumber('半蔵門線',hNumber,hanzomonStops);
-      addType('半蔵門線',hType,hanzomonStops);
-
-      const dNumber=String(source.trainNumbers?.denentoshi||'').trim();
-      const dType=String(source.typeByRoute?.denentoshi||'').trim();
-      addNumber('田園都市線',dNumber,denentoshiStops);
-      addType('田園都市線',dType,denentoshiStops);
-
-      const uniqueNo=hNumber||String(source.id||source.no||source.operationNo||'');
-      normalized['上り'].push({
-        ...source,
-        direction:'up',
-        // 代表種別を列車全体へ設定すると、種別未設定の東武線区間にも漏れるため空欄にする。
-        // 表示種別は下の sectionTypeSegments から駅・時刻ごとに解決する。
-        type:'',
-        id:String(source.id||`hanzomon-${uniqueNo}`),
-        no:uniqueNo,
-        operationNo:String(source.operationNo||source.no||''),
-        prescribedFormation:(/[T]$/i.test(String(source.operationNo||source.no||''))?'東武車':/[S]$/i.test(String(source.operationNo||source.no||''))?'メトロ車':/[K]$/i.test(String(source.operationNo||source.no||''))?'東急車':''),
-        lineKind:'hanzomon',
-        trainNumbers:numbers,
-        servedLineNames:[
-          ...(hFirst>0?['スカイツリーライン']:[]),
-          ...(hanzomonStops.length?['半蔵門線']:[]),
-          ...(denentoshiStops.length?['田園都市線']:[])
-        ],
-        sectionNumberSegments:numberSegments,
-        sectionTypeSegments:typeSegments,
-        // 停車駅案内は路線ページに関係なく列車の全走行区間を表示する。
-        // 半蔵門線ページでも渋谷以降の田園都市線区間を省略しない。
-        stationGuideStops:fullGuideStops,
-        stops
-      });
-    }
-    return {
-      schemaVersion:1,id:'tokyo-metro-hanzomon',routeName:'東京メトロ半蔵門線',company:'東京メトロ',
-      formationFamily:'tobu-skytree',formationDefaultImage:'TSZ',noImage:'TSZ',
-      lines:HANZOMON_ADAPTER_DATA.lines,
-      routeColors:{
-        'スカイツリーライン':'#0F6CC3','伊勢崎線':'#E4002B','日光線':'#FFA600',
-        '日比谷線':'#B5B5AC','半蔵門線':'#8F76D6','田園都市線':'#00B395'
-      },
-      destinationAliases:{
-        '東武動物公園':'動物','南栗橋':'南栗','北越谷':'北越','北千住':'北千',
-        '会津田島':'田島','東武日光':'日光','鬼怒川温泉':'鬼怒','北春日部':'北春',
-        '竹ノ塚':'竹塚','中目黒':'中目','中央林間':'中央','長津田':'長津',
-        '恵比寿':'恵比','六本木':'六本','南千住':'南千','水天宮前':'水天'
-      },
-      formations:HANZOMON_ADAPTER_DATA.formations,
-      typeShortMap:{'各駅停車':'各停','各停':'各停','区間準急':'区準','区間急行':'区急'},
-      typeColors:{
-        '各駅停車':'#2D78C4','各停':'#2D78C4','急行':'#E53935','準急':'#2E7D32',
-        '普通':'#9fa0a0','区間準急':'#c1ca1f','区間急行':'#e99ebf'
-      },
-      trains:{平日:normalized},
-      operationChains:{平日:[],休日:[]}
-    };
-  }
   // fetchJson() は共有JSONなら路線単位へ切り出して返す。
   const sharedFetchJson=async(url)=>{
     const result=await fetchJson(url);
-    const adapted=adaptHanzomonArrayJson(result.json,url);
-    return {...result,json:selectSharedRouteJson(adapted)};
+    return {...result,json:selectSharedRouteJson(result.json)};
   };
   const payloads=await Promise.all(unique.map(sharedFetchJson));
   const primary=payloads[0]?.json||{};
@@ -5616,13 +5485,46 @@ function mainStationLabelName(name,json=activeJson){
   const aliases=json?.mainStationLabelAliases&&typeof json.mainStationLabelAliases==='object'?json.mainStationLabelAliases:{};
   return Object.prototype.hasOwnProperty.call(aliases,full)?String(aliases[full]):full;
 }
+function stationNumberingMarkup(station,json=activeJson){
+  const key=value=>String(value??'').trim().replace(/駅$/,'').normalize('NFKC').replace(/[\s　]/g,'');
+  const stationName=key(station?.nameJa||station?.name||'');
+  const lines=Array.isArray(json?.lines)?json.lines:[];
+  const line=lines.find(item=>(item?.stations||[]).some(entry=>{
+    const name=typeof entry==='string'?entry:(entry?.name||entry?.nameJa||'');
+    return key(name)===stationName;
+  }));
+  const routeConfig=json?.stationNumbering||json?.numbering||line?.stationNumbering||line?.numbering||{};
+  const own=station?.stationNumbering??station?.stationNumber??{};
+  const ownConfig=(own&&typeof own==='object')?own:{number:own};
+  const symbol=ownConfig.symbol??station?.numberingSymbol??routeConfig.symbol??routeConfig.lineCode;
+  const number=ownConfig.number??station?.numberingNumber??station?.stationNumberText;
+  if(!String(symbol??'').trim()||!String(number??'').trim()) return '';
+  const type=String(ownConfig.type??ownConfig.design??routeConfig.type??routeConfig.design??'rounded-square').toLowerCase().replace(/[^a-z0-9_-]/g,'');
+  const color=String(ownConfig.color??routeConfig.color??line?.color??'').replace(/[^#(),.%\w -]/g,'');
+  const companyRaw=ownConfig.company??ownConfig.operator??ownConfig.companyName??ownConfig.railway??routeConfig.company??routeConfig.operator??routeConfig.companyName??routeConfig.railway??line?.company??line?.operator??line?.companyName??line?.railway??line?.name??'';
+  const companyText=String(companyRaw).toLowerCase();
+  const companyAliases=[
+    [/東武|tobu/,'tobu'],[/東急|tokyu/,'tokyu'],[/東京地下鉄|東京メトロ|tokyo.?metro/,'tokyo_metro'],
+    [/都営|東京都交通局|toei/,'toei'],[/jr東日本|東日本旅客鉄道|jr.?east/,'jr_east'],
+    [/jr東海|東海旅客鉄道|jr.?central/,'jr_central'],[/jr西日本|西日本旅客鉄道|jr.?west/,'jr_west'],
+    [/jr九州|九州旅客鉄道|jr.?kyushu/,'jr_kyushu'],[/jr北海道|北海道旅客鉄道|jr.?hokkaido/,'jr_hokkaido'],
+    [/jr四国|四国旅客鉄道|jr.?shikoku/,'jr_shikoku'],[/小田急|odakyu/,'odakyu'],[/京王|keio/,'keio'],
+    [/京急|京浜急行|keikyu/,'keikyu'],[/京成|keisei/,'keisei'],[/西武|seibu/,'seibu'],
+    [/相鉄|相模鉄道|sotetsu/,'sotetsu'],[/横浜高速|みなとみらい|mm21/,'yokohama_minatomirai'],
+    [/名古屋市交通局|名古屋市営地下鉄/,'nagoya_subway'],[/大阪メトロ|大阪市高速電気軌道|osaka.?metro/,'osaka_metro'],
+    [/阪急|hankyu/,'hankyu'],[/阪神|hanshin/,'hanshin'],[/近鉄|近畿日本鉄道|kintetsu/,'kintetsu'],
+    [/南海|nankai/,'nankai'],[/京阪|keihan/,'keihan'],[/福岡市地下鉄|福岡市交通局/,'fukuoka_subway']
+  ];
+  const companyClass=(companyAliases.find(([re])=>re.test(companyText))||[])[1]||String(companyRaw).toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+  return `<span class="station-numbering station-numbering-${esc(type)}${companyClass?` numbering_${esc(companyClass)}`:''}" style="--numbering-color:${esc(color)}"><span class="station-numbering-symbol">${esc(symbol)}</span><span class="station-numbering-number">${esc(number)}</span></span>`;
+}
 function mainStationLabelMarkup(station,json=activeJson){
   const full=mainStationLabelName(station?.nameJa,json);
   const reduced=String(station?.labelSmallPrefix||'').trim();
-  if(reduced && full.startsWith(reduced)){
-    return `<span class="station-name-ja-text"><span class="station-name-ja-reduced">${esc(reduced)}</span><span>${esc(full.slice(reduced.length))}</span></span>`;
-  }
-  return `<span class="station-name-ja-text">${esc(full)}</span>`;
+  const nameMarkup=(reduced && full.startsWith(reduced))
+    ? `<span class="station-name-ja-text"><span class="station-name-ja-reduced">${esc(reduced)}</span><span>${esc(full.slice(reduced.length))}</span></span>`
+    : `<span class="station-name-ja-text">${esc(full)}</span>`;
+  return `<span class="station-name-ja-inner">${nameMarkup}</span>`;
 }
 function renderLine(){
   const diagram=branchDiagramConfig(activeJson,activeRouteMeta)||{};
@@ -5672,6 +5574,8 @@ function renderLine(){
       else if(len===6){ls='.0em';}
       else if(len===7){ls='.0em';}
       else {ls='0';}
+      // 駅名ラベル自体にはナンバリングを含めないため、
+      // ナンバリングの有無で駅名の文字間隔を変えず、全駅で同じ規則を適用する。
       ja.style.letterSpacing=ls;
       ja.style.paddingLeft=ls;
     }
@@ -6236,10 +6140,9 @@ function stationTimetableBucketForTrain(train,stationName,stationStops=[]){
     }
   }
   if(!side) side=trainSideForDirection(train?.direction,train?.direction);
-  // 時刻表タブの並び順と左右を対応させる。
-  // 東武スカイツリーラインだけは左が下り・右が上り、その他は左が上り・右が下り。
-  if(activeRouteMeta?.id==='tobu-skytree') return side==='left'?'down':'up';
-  return side==='left'?'up':'down';
+  // 左右と上り・下りの対応は路線データで指定可能。未指定時は従来の標準順。
+  const leftDirection=String(activeJson?.timetableLeftDirection||activeRouteMeta?.timetableLeftDirection||'up').toLowerCase();
+  return side==='left'?leftDirection:(leftDirection==='up'?'down':'up');
 }
 function getTrainRuntimeMeta(t){
   const key=trainRuntimeKey(t);
@@ -6557,8 +6460,7 @@ function openStationSheet(stationId){
   currentTrainSnapshot=null;
   currentStationId=String(station.id);
   previousSheetContext=null;
-  // スカイツリーラインは左右反転後の左側（下り）を初期選択にする。
-  stationTimetableDirection=activeRouteMeta?.id==='tobu-skytree'?'down':'up';
+  stationTimetableDirection=String(activeJson?.defaultTimetableDirection||activeRouteMeta?.defaultTimetableDirection||'up').toLowerCase();
   isEditMode=false;
   const sheet=document.getElementById('bottomSheet');
   const overlay=document.getElementById('overlay');
@@ -6604,15 +6506,11 @@ function autoStationDirectionEndpoints(stationName,json=activeJson){
   if(main.length>=2 && junctions.length){
     const mi=main.indexOf(target);
     if(mi>=0){
-      // 東武スカイツリーラインは mainOrder が館林側→浅草側。
-      // 路線定義の directions がある場合はその明示設定を優先する。
-      if(activeRouteMeta?.id==='tobu-skytree'){
-        if(mi>0) add(down,main[0]);
-        if(mi<main.length-1) add(up,main[main.length-1]);
-      }else{
-        if(mi>0) add(up,main[0]);
-        if(mi<main.length-1) add(down,main[main.length-1]);
-      }
+      const mainOrderDirection=String(diagram.mainOrderDirection||json?.mainOrderDirection||'up').toLowerCase();
+      const towardFirst=mainOrderDirection==='down'?'down':'up';
+      const towardLast=towardFirst==='up'?'down':'up';
+      if(mi>0) add(towardFirst==='up'?up:down,main[0]);
+      if(mi<main.length-1) add(towardLast==='up'?up:down,main[main.length-1]);
       // 分岐線の方面は各路線の directions を優先し、なければ従来の分岐位置で判定する。
       for(const [key,j] of junctions){
         if(String(j?.anchor||'')!==target) continue;
@@ -6620,11 +6518,8 @@ function autoStationDirectionEndpoints(stationName,json=activeJson){
         const lineNames=String(key).split('・').map(x=>x.trim()).filter(Boolean);
         const branchLines=(json?.lines||[]).filter(x=>lineNames.includes(String(x?.name||'')));
         const line=branchLines[0];
-        const hasExplicitBranchDirections=branchLines.reduce((found,branchLine)=>{
-          const explicit=addExplicitLineDirections(branchLine);
-          return found||explicit;
-        },false);
-        if(hasExplicitBranchDirections) continue;
+        // 分岐駅では路線単体の directions より、diagram の mainOrder と
+        // junction.insert の位置関係を優先する。分岐端駅は本線の同じ側へ集約する。
         const configured=Array.isArray(j?.stations)?j.stations.map(x=>String(x||'').trim()).filter(Boolean):[];
         let stations=configured;
         if(!stations.length){
@@ -6635,8 +6530,12 @@ function autoStationDirectionEndpoints(stationName,json=activeJson){
         const buttonDirection=String(button?.direction||'').toLowerCase();
         const junctionDirection=String(j?.direction||buttonDirection||'').toLowerCase();
         const insert=String(j?.insert||'after').toLowerCase();
-        if(junctionDirection==='up'||junctionDirection==='上'||insert==='before') add(up,terminal);
-        else add(down,terminal);
+        const branchTowardFirst = insert==='before';
+        const firstSide = towardFirst;
+        const branchSide = junctionDirection==='up'||junctionDirection==='上' ? 'up'
+          : junctionDirection==='down'||junctionDirection==='下' ? 'down'
+          : (branchTowardFirst ? firstSide : towardLast);
+        add(branchSide==='up'?up:down,terminal);
       }
       // Shared routes in the same operator are additional branches even when they have their own page.
       const sharedRoutes=json?._sharedRoutes&&typeof json._sharedRoutes==='object'?json._sharedRoutes:{};
@@ -6720,96 +6619,34 @@ function autoStationDirectionEndpoints(stationName,json=activeJson){
   return {up:format(up),down:format(down)};
 }
 function getStationDirectionLabels(stationName){
-  const generated=autoStationDirectionEndpoints(stationName,activeJson);
-  let result=generated;
-  if(activeRouteMeta?.id==='tobu-skytree' && Array.isArray(activeJson?.lines)){
-    const target=String(stationName||'').trim();
+  const target=String(stationName||'').trim();
+  const diagram=activeJson?.diagram||{};
+  const mainOrder=(Array.isArray(diagram.mainOrder)?diagram.mainOrder:[]).map(x=>String(x||'').trim()).filter(Boolean);
+  let result=autoStationDirectionEndpoints(stationName,activeJson);
+  if(mainOrder.length>=2){
     const stationKey=value=>String(value||'').trim().replace(/駅$/,'').normalize('NFKC').replace(/[\s　]/g,'');
     const targetKey=stationKey(target);
-    const up=[],down=[];
+    const first=mainOrder[0],last=mainOrder[mainOrder.length-1];
+    const left=[],right=[];
     const add=(list,value)=>{
       const name=String(value||'').trim();
-      const key=stationKey(name);
-      if(name&&key&&key!==targetKey&&!list.some(item=>stationKey(item)===key)) list.push(name);
+      if(name&&stationKey(name)!==targetKey&&!list.some(x=>stationKey(x)===stationKey(name))) list.push(name);
     };
-    const addText=(list,value)=>{
-      const text=String(value||'').trim().replace(/方面$/,'').replace(/行き$/,'').replace(/行$/,'');
-      for(const part of text.split(/[・、]/)) add(list,part);
-    };
-    addText(up,generated.up);
-    addText(down,generated.down);
+    // 駅が本線上か分岐線上かを問わず、基本の左右表示は本線両端で統一する。
+    if(stationKey(first)!==targetKey) add(left,first);
+    if(stationKey(last)!==targetKey) add(right,last);
 
-    const diagram=activeJson?.diagram||{};
-    const mainOrder=(Array.isArray(diagram.mainOrder)?diagram.mainOrder:[]).map(x=>String(x||'').trim()).filter(Boolean);
-    const mainSet=new Set(mainOrder.map(stationKey));
+    // 分岐駅に限り、分岐線の端駅を追加する。before（上方向）は左、after（下方向）は右。
     const branchDefs=multiJunctionBranchDefinitions(activeJson,activeRouteMeta);
-    // 分岐駅・分岐線上の駅は、駅配列から復元した分岐順を優先する。
-    // before は上側、after は下側。接続駅の両側を分岐先端まで正しくたどる。
     for(const def of branchDefs){
-      const branchStations=Array.isArray(def.stations)?def.stations.map(x=>String(x||'').trim()).filter(Boolean):[];
-      if(stationKey(def.anchor)===targetKey){
-        const terminal=def.insert==='before'?branchStations[0]:branchStations[branchStations.length-1];
-        add(def.insert==='before'?up:down,terminal);
-      }else if(branchStations.some(name=>stationKey(name)===targetKey)){
-        const sequence=def.insert==='before'?[...branchStations,String(def.anchor||'')]:[String(def.anchor||''),...branchStations];
-        add(up,sequence[0]);
-        add(down,sequence[sequence.length-1]);
-      }
+      if(stationKey(def.anchor)!==targetKey) continue;
+      const stations=Array.isArray(def.stations)?def.stations.map(x=>String(x||'').trim()).filter(Boolean):[];
+      const terminal=def.insert==='before'?stations[0]:stations[stations.length-1];
+      add(def.insert==='before'?left:right,terminal);
     }
-
-    // 現在の路線と駅を共有する線区を、同じ運行会社の共有データも含めて収集。
-    // 境界駅では一方の線区が方向定義を片側しか持たない場合があるため、
-    // 明示方向に加えて、欠けている側をその線区の駅配列から補完する。
-    const allLines=Array.isArray(activeJson.lines)?activeJson.lines:[];
-    const requestedNames=Array.isArray(activeRouteMeta?.jsonLines)?activeRouteMeta.jsonLines.map(String):[];
-    const requestedSet=new Set(requestedNames.filter(Boolean));
-    const ownLineDefs=allLines.filter(line=>!requestedSet.size||requestedSet.has(String(line?.name||'')));
-    const ownStationNames=new Set(ownLineDefs.flatMap(line=>(Array.isArray(line?.stations)?line.stations:[])
-      .map(st=>stationKey(typeof st==='string'?st:(st?.name??st?.nameJa??st?.station))).filter(Boolean)));
-    const lineDefs=[...ownLineDefs];
-    for(const line of allLines){
-      if(lineDefs.includes(line)) continue;
-      const names=(Array.isArray(line?.stations)?line.stations:[])
-        .map(st=>stationKey(typeof st==='string'?st:(st?.name??st?.nameJa??st?.station))).filter(Boolean);
-      if(names.some(name=>ownStationNames.has(name))) lineDefs.push(line);
-    }
-    const sharedRoutes=activeJson?._sharedRoutes&&typeof activeJson._sharedRoutes==='object'?activeJson._sharedRoutes:{};
-    for(const sharedRoute of Object.values(sharedRoutes)){
-      if(!sharedRoute||typeof sharedRoute!=='object') continue;
-      for(const line of (Array.isArray(sharedRoute.lines)?sharedRoute.lines:[])){
-        const names=(Array.isArray(line?.stations)?line.stations:[])
-          .map(st=>stationKey(typeof st==='string'?st:(st?.name??st?.nameJa??st?.station))).filter(Boolean);
-        if(names.some(name=>ownStationNames.has(name))) lineDefs.push(line);
-      }
-    }
-
-    const branchLineNames=new Set(branchDefs.flatMap(def=>String(def.key||'').split('・').map(x=>x.trim()).filter(Boolean)));
-    for(const line of lineDefs){
-      const stations=(Array.isArray(line?.stations)?line.stations:[])
-        .map(st=>String(typeof st==='string'?st:(st?.name??st?.nameJa??st?.station)||'').trim()).filter(Boolean);
-      const normalized=stations.map(stationKey);
-      const index=normalized.indexOf(targetKey);
-      if(index<0) continue;
-      const directions=line?.directions&&typeof line.directions==='object'?line.directions:{};
-      const hasUp=!!String(directions.up||'').trim();
-      const hasDown=!!String(directions.down||'').trim();
-      if(hasUp) addText(up,directions.up);
-      if(hasDown) addText(down,directions.down);
-      // 本線の駅順は diagram.mainOrder が基準。分岐線も branchDefs で処理済み。
-      if(branchLineNames.has(String(line?.name||''))) continue;
-      const mainOverlap=normalized.filter(name=>mainSet.has(name)).length;
-      const isMainLineAtTarget=mainSet.has(targetKey)&&mainOverlap>=2;
-      if(isMainLineAtTarget) continue;
-      if(!hasUp && index>0) add(up,stations[0]);
-      if(!hasDown && index<stations.length-1) add(down,stations[stations.length-1]);
-    }
-    result={up:up.length?`${up.join('・')}方面`:'',down:down.length?`${down.join('・')}方面`:''};
+    result={up:left.length?`${left.join('・')}方面`:'',down:right.length?`${right.join('・')}方面`:''};
   }
-  // 半蔵門線ページの渋谷は路線図上の終端だが、列車はそのまま田園都市線へ直通する。
-  // 画面の左側（up）は押上方面、右側（down）は田園都市線方面として両方を表示する。
-  if(activeRouteMeta?.id==='tokyo-metro-hanzomon' && String(stationName||'').trim()==='渋谷'){
-    return {up:result.up||'押上方面',down:'田園都市線方面'};
-  }
+  // mainOrder がない通常路線では、従来の路線方向定義を使用する。
   // 環状線は端点を持たないため、方向名だけを自動付与する。
   if(activeRouteMeta?.diagramLayout==='circular' && activeJson?.circular===true){
     return {
@@ -6819,6 +6656,7 @@ function getStationDirectionLabels(stationName){
   }
   return result;
 }
+
 function branchJunctionNeighborInfo(stationName,json=activeJson,meta=activeRouteMeta){
   const target=String(stationName||'').trim();
   if(!target) return null;
@@ -6926,7 +6764,7 @@ function updateStationSheetContent(){
   content.innerHTML=`
     <div class="station-overview-card station-info-card${branchStationInfoClass}" style="--station-info-color:${stationInfoColor};--station-branch-color:${branchRouteColor};">
       <div class="station-overview-main">
-        <div class="station-overview-name-ja">${station.nameJa}</div>
+        <div class="station-overview-name-ja"><span class="station-overview-name-ja-inner">${stationNumberingMarkup(station)}<span class="station-overview-name-ja-text">${station.nameJa}</span></span></div>
         <div class="station-overview-name-en">${station.nameEn}</div>
       </div>
       <div class="station-direction-bar-wrap">
@@ -6945,9 +6783,7 @@ function updateStationSheetContent(){
     <div class="timetable-list station-placeholder">
       <div class="station-timetable-title">時刻表</div>
       <div class="station-timetable-direction-tabs ${availableDirections.length===1?'single-direction':''}">
-        ${activeRouteMeta?.id==='tobu-skytree'
-          ? `${directionLabels.down?`<button class="station-timetable-direction-tab ${effectiveTimetableDirection==='down'?'active':''}" style="${directionTabStyle}" type="button" onclick="setStationTimetableDirection('down')">${directionLabels.down}</button>`:''}${directionLabels.up?`<button class="station-timetable-direction-tab ${effectiveTimetableDirection==='up'?'active':''}" style="${directionTabStyle}" type="button" onclick="setStationTimetableDirection('up')">${directionLabels.up}</button>`:''}`
-          : `${directionLabels.up?`<button class="station-timetable-direction-tab ${effectiveTimetableDirection==='up'?'active':''}" style="${directionTabStyle}" type="button" onclick="setStationTimetableDirection('up')">${directionLabels.up}</button>`:''}${directionLabels.down?`<button class="station-timetable-direction-tab ${effectiveTimetableDirection==='down'?'active':''}" style="${directionTabStyle}" type="button" onclick="setStationTimetableDirection('down')">${directionLabels.down}</button>`:''}`}
+        ${((activeJson?.timetableDirectionOrder||activeRouteMeta?.timetableDirectionOrder||['up','down']).includes('down')?[...(activeJson?.timetableDirectionOrder||activeRouteMeta?.timetableDirectionOrder||['up','down'])]:['up','down']).map(direction=>directionLabels[direction]?`<button class="station-timetable-direction-tab ${effectiveTimetableDirection===direction?'active':''}" style="${directionTabStyle}" type="button" onclick="setStationTimetableDirection('${direction}')">${directionLabels[direction]}</button>`:'').join('')}
       </div>
       ${stationTimetableHTML(station, effectiveTimetableDirection)}
     </div>
@@ -8404,9 +8240,10 @@ function jsonSegmentColorForStations(a,b,lineNames=getActiveRouteLineNames()){
 function hanzomonAdapterLineColorBetweenStations(a,b){
   const key=value=>String(value||'').trim().replace(/駅$/,'').normalize('NFKC').replace(/[\s　]/g,'');
   const aa=key(a),bb=key(b);
-  if(!aa||!bb||aa===bb||!Array.isArray(HANZOMON_ADAPTER_DATA?.lines)) return '';
+  if(!aa||!bb||aa===bb) return '';
+  const lines=allJsonLines();
   const candidates=[];
-  for(const line of HANZOMON_ADAPTER_DATA.lines){
+  for(const line of lines){
     const stations=Array.isArray(line?.stations)?line.stations:[];
     const names=stations.map(st=>key(typeof st==='string'?st:(st?.name||st?.nameJa||st?.station||'')));
     for(let i=0;i<names.length-1;i++){
@@ -8419,12 +8256,12 @@ function hanzomonAdapterLineColorBetweenStations(a,b){
   }
   if(!candidates.length) return '';
   const choose=name=>candidates.find(item=>item.name===name)?.color||'';
-  const hanzomon=HANZOMON_ADAPTER_DATA.lines.find(line=>line.name==='半蔵門線');
-  const denentoshi=HANZOMON_ADAPTER_DATA.lines.find(line=>line.name==='田園都市線');
+  const lineByName=name=>lines.find(line=>String(line?.name||'')===name);
   const contains=(line,value)=>Array.isArray(line?.stations)&&line.stations.some(st=>key(typeof st==='string'?st:(st?.name||st?.nameJa||st?.station||''))===value);
+  const hanzomon=lineByName('半蔵門線');
+  const denentoshi=lineByName('田園都市線');
   if(contains(hanzomon,aa)&&contains(hanzomon,bb)) return choose('半蔵門線')||candidates[0].color;
   if(contains(denentoshi,aa)&&contains(denentoshi,bb)) return choose('田園都市線')||candidates[0].color;
-  // 東武線内の支線・本線境界は、該当駅間を定義している線区を返す。
   return candidates[0].color;
 }
 
@@ -9588,6 +9425,31 @@ function initRegionNavigation(){
     .station-badge::before{display:none;}
     .station-name-ja,.station-name-en{position:relative;z-index:1;font-family:inherit;display:flex;align-items:center;justify-content:center;}
     .station-name-ja{height:calc(100% - 24px);min-height:0;flex:1 1 auto;background:#fff;color:#000;font-size:36px;font-weight:400;line-height:1;}
+    .station-name-ja-inner{display:inline-flex;align-items:center;justify-content:center;gap:10px;max-width:100%;white-space:nowrap;}
+    .station-name-ja-text{display:inline-block;white-space:nowrap;}
+    .station-numbering{display:inline-flex;flex:0 0 auto;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box;width:48px;height:48px;border:3px solid var(--numbering-color, currentColor);border-radius:10px;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif;font-weight:800;line-height:.9;letter-spacing:0;padding:2px;}
+    .station-numbering-symbol{font-size:17px;line-height:1;}
+    .station-numbering-number{font-size:21px;line-height:1.02;}
+    .station-numbering-circle{border-radius:50%;}
+    .station-numbering-square{border-radius:2px;}
+    .station-numbering-rounded-square{border-radius:10px;}
+    .station-numbering-pill{width:auto;min-width:54px;height:48px;border-radius:13px;padding:3px 7px;}
+    .station-numbering-pill .station-numbering-symbol{font-size:15px;}
+    .station-numbering-pill .station-numbering-number{font-size:20px;}
+    /* 会社別ナンバリング意匠。文字比率・枠線・角丸を会社単位で独立管理 */
+    .numbering_tobu{background:#fff;border:4.5px solid #173b91;border-radius:15px;box-shadow:none;color:#080808;font-weight:700;padding:1px;}
+    .numbering_tobu .station-numbering-symbol{font-size:16px;font-weight:700;line-height:1.02;}
+    .numbering_tobu .station-numbering-number{font-size:21px;font-weight:700;line-height:.98;}
+    .numbering_tokyu{background:#d5004f;border:0;border-radius:18px;color:#fff;padding:2px;font-weight:700;}
+    .numbering_tokyu .station-numbering-symbol{font-size:17px;font-weight:700;line-height:1.02;}
+    .numbering_tokyu .station-numbering-number{font-size:22px;font-weight:700;line-height:.98;}
+    .numbering_jr_central,.numbering_jr_west,.numbering_jr_kyushu,.numbering_jr_hokkaido,.numbering_jr_shikoku{background:#fff;border:3px solid var(--numbering-color, currentColor);border-radius:0;padding:0;color:#080808;}
+    .numbering_jr_central .station-numbering-symbol,.numbering_jr_west .station-numbering-symbol,.numbering_jr_kyushu .station-numbering-symbol,.numbering_jr_hokkaido .station-numbering-symbol,.numbering_jr_shikoku .station-numbering-symbol{align-self:stretch;display:flex;align-items:center;justify-content:center;background:var(--numbering-color);color:#fff;font-family:Georgia,'Times New Roman',serif;font-size:17px;font-weight:700;line-height:1;}
+    .numbering_jr_central .station-numbering-number,.numbering_jr_west .station-numbering-number,.numbering_jr_kyushu .station-numbering-number,.numbering_jr_hokkaido .station-numbering-number,.numbering_jr_shikoku .station-numbering-number{font-size:22px;font-weight:700;line-height:1.02;}
+    .numbering_tokyo_metro,.numbering_toei{background:#fff;border:4.5px solid var(--numbering-color, currentColor);border-radius:15px;box-shadow:none;color:#080808;padding:1px;font-weight:700;}
+    .numbering_tokyo_metro .station-numbering-symbol,.numbering_toei .station-numbering-symbol{font-size:16px;font-weight:700;}
+    .numbering_tokyo_metro .station-numbering-number,.numbering_toei .station-numbering-number{font-size:21px;font-weight:700;}
+    @media(max-width:600px){.station-name-ja-inner{gap:7px}.station-numbering{width:40px;height:40px;border-width:2.5px;border-radius:8px}.station-numbering-symbol{font-size:14px}.station-numbering-number{font-size:18px}.station-numbering-pill{width:auto;min-width:46px;height:40px;padding:2px 6px}.station-numbering-circle{border-radius:50%}.station-numbering-square{border-radius:2px}}
     .station-name-en{height:24px;min-height:24px;flex:0 0 24px;background:var(--station-label-bg,#666);color:#fff;font-size:15.2px;font-weight:400;line-height:1;}
     .rail-line{width:12px;background:transparent;overflow:visible;}
     .rail-segment{position:absolute;left:0;width:100%;}
@@ -11931,7 +11793,7 @@ initRegionNavigation();
     row.style.top=`${circularCenterY(side,index,metrics)}px`;
     const badge=document.createElement('div');
     badge.className='station-badge';
-    badge.innerHTML=`<div class="station-name-ja">${esc(st.nameJa)}</div><div class="station-name-en">${esc(st.nameEn)}</div>`;
+    badge.innerHTML=`<div class="station-name-ja">${mainStationLabelMarkup(st)}</div><div class="station-name-en">${esc(st.nameEn)}</div>`;
     badge.setAttribute('role','button'); badge.tabIndex=0;
     badge.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();openStationSheet(st.id);});
     badge.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();ev.stopPropagation();openStationSheet(st.id);}});
@@ -11939,7 +11801,8 @@ initRegionNavigation();
     if(ja){
       const len=[...ja.textContent.trim()].length; let ls='0';
       if(len<=2)ls='.9em'; else if(len===3)ls='.3em'; else ls='.0em';
-      ja.style.letterSpacing=ls; ja.style.paddingLeft=ls;
+      if(st.stationNumbering){ja.style.letterSpacing='0';ja.style.paddingLeft='0';}
+      else{ja.style.letterSpacing=ls;ja.style.paddingLeft=ls;}
     }
     applyCircularStationColors(badge,side,index);
     row.appendChild(badge);
