@@ -429,30 +429,30 @@ button,input,select,textarea{font-family:inherit}
   text-align:center;padding:8px 10px 9px;background:#fff;
 }
 .station-overview-name-ja{
-  font-family:inherit;
+  --station-overview-font-size:52; font-family:inherit;
   font-size:52px;line-height:.95;font-weight:500;letter-spacing:.08em;padding-left:.08em;color:#000;
 }
 
 /* 駅情報カード内ナンバリング：参考画像の縦横比・枠・文字比率に合わせる */
 .station-overview-name-ja-inner{display:inline-flex;align-items:center;justify-content:center;gap:.16em;max-width:100%;white-space:nowrap;vertical-align:middle;letter-spacing:inherit;padding-left:0;}
 .station-overview-name-ja-text{display:inline-block;flex:0 0 auto;white-space:nowrap;line-height:.95;letter-spacing:inherit;}
-.station-info-card .station-numbering{width:1.04em;min-width:1.04em;height:1.04em;padding:.035em;border-width:.075em;border-radius:.14em;gap:0;line-height:1;}
-.station-info-card .station-numbering-symbol{font-size:.31em;line-height:1;font-weight:800;}
-.station-info-card .station-numbering-number{font-size:.39em;line-height:1;font-weight:800;}
-.station-info-card .station-numbering-circle{border-radius:50%;}
-.station-info-card .station-numbering-square{border-radius:0;}
-.station-info-card .station-numbering-rounded-square{border-radius:.14em;}
-.station-info-card .station-numbering-pill{width:auto;min-width:1.12em;height:1.04em;padding:.035em .10em;border-radius:.13em;}
-.station-info-card .station-numbering-pill .station-numbering-symbol{font-size:.29em;}
-.station-info-card .station-numbering-pill .station-numbering-number{font-size:.37em;}
-.station-info-card .numbering_tobu{background:#fff;border-width:.094em;border-radius:.31em;padding:.01em;box-shadow:none;}
-.station-info-card .numbering_tobu .station-numbering-symbol{font-size:.33em;font-weight:700;}
-.station-info-card .numbering_tobu .station-numbering-number{font-size:.44em;font-weight:700;}
-.station-info-card .numbering_tokyu{border:0;border-radius:.36em;padding:.035em;}
-.station-info-card .numbering_tokyu .station-numbering-symbol{font-size:.35em;}
-.station-info-card .numbering_tokyu .station-numbering-number{font-size:.46em;}
-.station-info-card .numbering_jr_central .station-numbering-symbol,.station-info-card .numbering_jr_west .station-numbering-symbol,.station-info-card .numbering_jr_kyushu .station-numbering-symbol,.station-info-card .numbering_jr_hokkaido .station-numbering-symbol,.station-info-card .numbering_jr_shikoku .station-numbering-symbol{font-size:.35em;}
-.station-info-card .numbering_jr_central .station-numbering-number,.station-info-card .numbering_jr_west .station-numbering-number,.station-info-card .numbering_jr_kyushu .station-numbering-number,.station-info-card .numbering_jr_hokkaido .station-numbering-number,.station-info-card .numbering_jr_shikoku .station-numbering-number{font-size:.46em;}
+.station-info-card .station-overview-main .station-numbering{width:1.04em;min-width:1.04em;height:1.04em;padding:.035em;border-width:.075em;border-radius:.14em;gap:0;line-height:1;}
+.station-info-card .station-overview-main .station-numbering-symbol{font-size:.31em;line-height:1;font-weight:800;}
+.station-info-card .station-overview-main .station-numbering-number{font-size:.39em;line-height:1;font-weight:800;}
+.station-info-card .station-overview-main .station-numbering-circle{border-radius:50%;}
+.station-info-card .station-overview-main .station-numbering-square{border-radius:0;}
+.station-info-card .station-overview-main .station-numbering-rounded-square{border-radius:.14em;}
+.station-info-card .station-overview-main .station-numbering-pill{width:auto;min-width:1.12em;height:1.04em;padding:.035em .10em;border-radius:.13em;}
+.station-info-card .station-overview-main .station-numbering-pill .station-numbering-symbol{font-size:.29em;}
+.station-info-card .station-overview-main .station-numbering-pill .station-numbering-number{font-size:.37em;}
+.station-info-card .station-overview-main .numbering_tobu{background:#fff;border-width:.094em;border-radius:.31em;padding:.01em;box-shadow:none;}
+.station-info-card .station-overview-main .numbering_tobu .station-numbering-symbol{font-size:.33em;font-weight:700;}
+.station-info-card .station-overview-main .numbering_tobu .station-numbering-number{font-size:.44em;font-weight:700;}
+.station-info-card .station-overview-main .numbering_tokyu{border:0;border-radius:.36em;padding:.035em;}
+.station-info-card .station-overview-main .numbering_tokyu .station-numbering-symbol{font-size:.35em;}
+.station-info-card .station-overview-main .numbering_tokyu .station-numbering-number{font-size:.46em;}
+.station-info-card .station-overview-main .numbering_jr_central .station-numbering-symbol,.station-info-card .station-overview-main .numbering_jr_west .station-numbering-symbol,.station-info-card .station-overview-main .numbering_jr_kyushu .station-numbering-symbol,.station-info-card .station-overview-main .numbering_jr_hokkaido .station-numbering-symbol,.station-info-card .station-overview-main .numbering_jr_shikoku .station-numbering-symbol{font-size:.35em;}
+.station-info-card .station-overview-main .numbering_jr_central .station-numbering-number,.station-info-card .station-overview-main .numbering_jr_west .station-numbering-number,.station-info-card .station-overview-main .numbering_jr_kyushu .station-numbering-number,.station-info-card .station-overview-main .numbering_jr_hokkaido .station-numbering-number,.station-info-card .station-overview-main .numbering_jr_shikoku .station-numbering-number{font-size:.46em;}
 @media(max-width:600px){.station-overview-name-ja-inner{gap:.13em;}}
 
 .station-overview-name-en{
@@ -502,10 +502,12 @@ button,input,select,textarea{font-family:inherit}
 .station-neighbor-entry.empty{visibility:hidden;}
 .station-neighbor.right{text-align:right;align-items:flex-end;}
 .station-neighbor-name-ja{
-  display:block;width:100%;min-width:0;box-sizing:border-box;
+  --station-neighbor-font-size:27;display:block;width:100%;min-width:0;box-sizing:border-box;
   font-family:inherit;font-size:27px;line-height:1.05;font-weight:400;color:#000;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
 }
+/* 隣駅ナンバリングは中央駅用の縮小を受けず、全体を75%で表示する。 */
+.station-neighbor-numbering-wrap{display:inline-flex;align-items:center;vertical-align:middle;flex:0 0 auto;margin-right:.12em;line-height:0;zoom:1 !important;}
 .station-neighbor-name-en{
   display:block;width:100%;min-width:0;box-sizing:border-box;
   font-family:inherit;font-size:14px;line-height:1.1;font-weight:500;color:#000;
@@ -2123,7 +2125,12 @@ function diagramStationMaster(json=activeJson){
     for(const st of (Array.isArray(line?.stations)?line.stations:[])){
       const name=String(st?.name||'').trim();
       if(!name || map.has(name)) continue;
-      map.set(name,{nameJa:name,nameEn:String(st?.nameEn||''),labelSmallPrefix:String(st?.labelSmallPrefix||'')});
+      map.set(name,{
+        nameJa:name,
+        nameEn:String(st?.nameEn||''),
+        labelSmallPrefix:String(st?.labelSmallPrefix||''),
+        stationNumbering:st?.stationNumbering??st?.numbering??null
+      });
     }
   }
   return map;
@@ -2352,7 +2359,13 @@ function diagramStationEntry(json,name,branchKey=null){
   const target=String(name||'').trim();
   for(const line of (Array.isArray(json?.lines)?json.lines:[])){
     const st=(Array.isArray(line?.stations)?line.stations:[]).find(x=>String(x?.name||'').trim()===target);
-    if(st) return {nameJa:target,nameEn:String(st?.nameEn||''),labelSmallPrefix:String(st?.labelSmallPrefix||''),branchKey};
+    if(st) return {
+      nameJa:target,
+      nameEn:String(st?.nameEn||''),
+      labelSmallPrefix:String(st?.labelSmallPrefix||''),
+      stationNumbering:st?.stationNumbering??st?.numbering??null,
+      branchKey
+    };
   }
   return {nameJa:target,nameEn:'',branchKey};
 }
@@ -2394,7 +2407,12 @@ function buildMultiJunctionDiagramStations(json=activeJson,meta=activeRouteMeta)
   const master=new Map();
   for(const line of (Array.isArray(json?.lines)?json.lines:[])) for(const st of (Array.isArray(line?.stations)?line.stations:[])){
     const name=String(st?.name||'').trim();
-    if(name&&!master.has(name)) master.set(name,{nameJa:name,nameEn:String(st?.nameEn||''),labelSmallPrefix:String(st?.labelSmallPrefix||'')});
+    if(name&&!master.has(name)) master.set(name,{
+      nameJa:name,
+      nameEn:String(st?.nameEn||''),
+      labelSmallPrefix:String(st?.labelSmallPrefix||''),
+      stationNumbering:st?.stationNumbering??st?.numbering??null
+    });
   }
   const defs=multiJunctionBranchDefinitions(json,meta);
   const before=new Map(),after=new Map();
@@ -5489,34 +5507,53 @@ function stationNumberingMarkup(station,json=activeJson){
   const key=value=>String(value??'').trim().replace(/駅$/,'').normalize('NFKC').replace(/[\s　]/g,'');
   const stationName=key(station?.nameJa||station?.name||'');
   const lines=Array.isArray(json?.lines)?json.lines:[];
-  const line=lines.find(item=>(item?.stations||[]).some(entry=>{
-    const name=typeof entry==='string'?entry:(entry?.name||entry?.nameJa||'');
-    return key(name)===stationName;
-  }));
-  const routeConfig=json?.stationNumbering||json?.numbering||line?.stationNumbering||line?.numbering||{};
-  const own=station?.stationNumbering??station?.stationNumber??{};
-  const ownConfig=(own&&typeof own==='object')?own:{number:own};
-  const symbol=ownConfig.symbol??station?.numberingSymbol??routeConfig.symbol??routeConfig.lineCode;
-  const number=ownConfig.number??station?.numberingNumber??station?.stationNumberText;
-  if(!String(symbol??'').trim()||!String(number??'').trim()) return '';
-  const type=String(ownConfig.type??ownConfig.design??routeConfig.type??routeConfig.design??'rounded-square').toLowerCase().replace(/[^a-z0-9_-]/g,'');
-  const color=String(ownConfig.color??routeConfig.color??line?.color??'').replace(/[^#(),.%\w -]/g,'');
-  const companyRaw=ownConfig.company??ownConfig.operator??ownConfig.companyName??ownConfig.railway??routeConfig.company??routeConfig.operator??routeConfig.companyName??routeConfig.railway??line?.company??line?.operator??line?.companyName??line?.railway??line?.name??'';
-  const companyText=String(companyRaw).toLowerCase();
-  const companyAliases=[
-    [/東武|tobu/,'tobu'],[/東急|tokyu/,'tokyu'],[/東京地下鉄|東京メトロ|tokyo.?metro/,'tokyo_metro'],
-    [/都営|東京都交通局|toei/,'toei'],[/jr東日本|東日本旅客鉄道|jr.?east/,'jr_east'],
-    [/jr東海|東海旅客鉄道|jr.?central/,'jr_central'],[/jr西日本|西日本旅客鉄道|jr.?west/,'jr_west'],
-    [/jr九州|九州旅客鉄道|jr.?kyushu/,'jr_kyushu'],[/jr北海道|北海道旅客鉄道|jr.?hokkaido/,'jr_hokkaido'],
-    [/jr四国|四国旅客鉄道|jr.?shikoku/,'jr_shikoku'],[/小田急|odakyu/,'odakyu'],[/京王|keio/,'keio'],
-    [/京急|京浜急行|keikyu/,'keikyu'],[/京成|keisei/,'keisei'],[/西武|seibu/,'seibu'],
-    [/相鉄|相模鉄道|sotetsu/,'sotetsu'],[/横浜高速|みなとみらい|mm21/,'yokohama_minatomirai'],
-    [/名古屋市交通局|名古屋市営地下鉄/,'nagoya_subway'],[/大阪メトロ|大阪市高速電気軌道|osaka.?metro/,'osaka_metro'],
-    [/阪急|hankyu/,'hankyu'],[/阪神|hanshin/,'hanshin'],[/近鉄|近畿日本鉄道|kintetsu/,'kintetsu'],
-    [/南海|nankai/,'nankai'],[/京阪|keihan/,'keihan'],[/福岡市地下鉄|福岡市交通局/,'fukuoka_subway']
-  ];
-  const companyClass=(companyAliases.find(([re])=>re.test(companyText))||[])[1]||String(companyRaw).toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
-  return `<span class="station-numbering station-numbering-${esc(type)}${companyClass?` numbering_${esc(companyClass)}`:''}" style="--numbering-color:${esc(color)}"><span class="station-numbering-symbol">${esc(symbol)}</span><span class="station-numbering-number">${esc(number)}</span></span>`;
+  const entries=[];
+  const addNumbering=(own,entry={},line={})=>{
+    if(own==null || own==='') return;
+    const ownConfig=(own&&typeof own==='object'&&!Array.isArray(own))?own:{number:own};
+    const routeConfig=line?.stationNumbering||line?.numbering||json?.stationNumbering||json?.numbering||{};
+    const symbol=ownConfig.symbol??entry?.numberingSymbol??routeConfig.symbol??routeConfig.lineCode;
+    const number=ownConfig.number??entry?.numberingNumber??entry?.stationNumberText;
+    if(!String(symbol??'').trim()||!String(number??'').trim()) return;
+    const type=String(ownConfig.type??ownConfig.design??routeConfig.type??routeConfig.design??'rounded-square').toLowerCase().replace(/[^a-z0-9_-]/g,'');
+    const color=String(ownConfig.color??entry?.stationNumberingColor??routeConfig.color??line?.color??'').replace(/[^#(),.%\w -]/g,'');
+    const companyRaw=ownConfig.company??ownConfig.operator??ownConfig.companyName??ownConfig.railway??routeConfig.company??routeConfig.operator??routeConfig.companyName??routeConfig.railway??line?.company??line?.operator??line?.companyName??line?.railway??line?.name??'';
+    const companyText=String(companyRaw).toLowerCase();
+    const companyAliases=[
+      [/東武|tobu/,'tobu'],[/東急|tokyu/,'tokyu'],[/東京地下鉄|東京メトロ|tokyo.?metro/,'tokyo_metro'],
+      [/都営|東京都交通局|toei/,'toei'],[/jr東日本|東日本旅客鉄道|jr.?east/,'jr_east'],
+      [/jr東海|東海旅客鉄道|jr.?central/,'jr_central'],[/jr西日本|西日本旅客鉄道|jr.?west/,'jr_west'],
+      [/jr九州|九州旅客鉄道|jr.?kyushu/,'jr_kyushu'],[/jr北海道|北海道旅客鉄道|jr.?hokkaido/,'jr_hokkaido'],
+      [/jr四国|四国旅客鉄道|jr.?shikoku/,'jr_shikoku'],[/小田急|odakyu/,'odakyu'],[/京王|keio/,'keio'],
+      [/京急|京浜急行|keikyu/,'keikyu'],[/京成|keisei/,'keisei'],[/西武|seibu/,'seibu'],
+      [/相鉄|相模鉄道|sotetsu/,'sotetsu'],[/横浜高速|みなとみらい|mm21/,'yokohama_minatomirai'],
+      [/名古屋市交通局|名古屋市営地下鉄/,'nagoya_subway'],[/大阪メトロ|大阪市高速電気軌道|osaka.?metro/,'osaka_metro'],
+      [/阪急|hankyu/,'hankyu'],[/阪神|hanshin/,'hanshin'],[/近鉄|近畿日本鉄道|kintetsu/,'kintetsu'],
+      [/南海|nankai/,'nankai'],[/京阪|keihan/,'keihan'],[/福岡市地下鉄|福岡市交通局/,'fukuoka_subway']
+    ];
+    const companyClass=(companyAliases.find(([re])=>re.test(companyText))||[])[1]||String(companyRaw).toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+    const markup=`<span class="station-numbering station-numbering-${esc(type)}${companyClass?` numbering_${esc(companyClass)}`:''}" style="--numbering-color:${esc(color)}"><span class="station-numbering-symbol">${esc(symbol)}</span><span class="station-numbering-number">${esc(number)}</span></span>`;
+    const dedupeKey=`${symbol}-${number}-${companyClass}-${color}`;
+    if(!entries.some(x=>x.key===dedupeKey)) entries.push({key:dedupeKey,markup});
+  };
+  // 別路線の番号を上書きしないよう、駅名単位の追加番号を明示的に先に追加する。
+  const overrideMap=json?.stationNumberingOverrides&&typeof json.stationNumberingOverrides==='object'?json.stationNumberingOverrides:{};
+  const overrideEntry=Object.entries(overrideMap).find(([name])=>key(name)===stationName)?.[1];
+  for(const numbering of (Array.isArray(overrideEntry)?overrideEntry:(overrideEntry?[overrideEntry]:[]))) addNumbering(numbering,{},{});
+  for(const line of lines){
+    const entry=(line?.stations||[]).find(st=>{
+      const name=typeof st==='string'?st:(st?.name||st?.nameJa||'');
+      return key(name)===stationName;
+    });
+    if(!entry || typeof entry==='string') continue;
+    const own=entry.stationNumbering??entry.numbering??{};
+    if(Array.isArray(own)) own.forEach(numbering=>addNumbering(numbering,entry,line));
+    else addNumbering(own,entry,line);
+    const extras=entry.additionalStationNumberings??entry.stationNumberings??[];
+    if(Array.isArray(extras)) extras.forEach(numbering=>addNumbering(numbering,entry,line));
+  }
+  // JSON上で明示的に番号を持つ路線を全て並べる。乗換駅で1路線だけに絞らない。
+  return entries.length?`<span class="station-numbering-group">${entries.map(x=>x.markup).join('')}</span>`:'';
 }
 function mainStationLabelMarkup(station,json=activeJson){
   const full=mainStationLabelName(station?.nameJa,json);
@@ -5565,7 +5602,8 @@ function renderLine(){
     });
     const ja=badge.querySelector('.station-name-ja');
     if(ja){
-      const len=[...ja.textContent.trim()].length;
+      const stationNameText=ja.querySelector('.station-name-ja-text')?.textContent||ja.textContent;
+      const len=[...stationNameText.trim()].length;
       let ls='0';
       if(len<=2){ls='.9em';}
       else if(len===3){ls='.3em';}
@@ -6722,11 +6760,15 @@ function updateStationSheetContent(){
   // 分岐側の駅名はカード上部の独立レイヤーへ。本線の隣駅は下部の左右位置を維持する。
   const leftNeighborItems=prevStation?[{station:prevStation,position:'main'}]:[];
   const rightNeighborItems=nextStation?[{station:nextStation,position:'main'}]:[];
+  const neighborNumberingMarkup=item=>{
+    const numbering=stationNumberingMarkup(item?.station);
+    return numbering?`<span class="station-neighbor-numbering-wrap">${numbering}</span>`:'';
+  };
   const renderNeighborItems=(items,emptyPosition='main')=>items.length
-    ? items.map(item=>`<div class="station-neighbor-entry main-neighbor"><div class="station-neighbor-name-ja">${item.station.nameJa||''}</div><div class="station-neighbor-name-en">${item.station.nameEn||''}</div></div>`).join('')
+    ? items.map(item=>`<div class="station-neighbor-entry main-neighbor"><div class="station-neighbor-name-ja">${neighborNumberingMarkup(item)}<span class="station-neighbor-name-ja-text">${item.station.nameJa||''}</span></div><div class="station-neighbor-name-en">${item.station.nameEn||''}</div></div>`).join('')
     : `<div class="station-neighbor-entry empty ${emptyPosition}"><div class="station-neighbor-name-ja"></div><div class="station-neighbor-name-en"></div></div>`;
   const renderBranchNeighborItems=(items,position)=>items.map(item=>
-    `<div class="station-neighbor-entry branch-neighbor-${position}"><div class="station-neighbor-name-ja">${item.station.nameJa||''}</div><div class="station-neighbor-name-en">${item.station.nameEn||''}</div></div>`
+    `<div class="station-neighbor-entry branch-neighbor-${position}"><div class="station-neighbor-name-ja">${neighborNumberingMarkup(item)}<span class="station-neighbor-name-ja-text">${item.station.nameJa||''}</span></div><div class="station-neighbor-name-en">${item.station.nameEn||''}</div></div>`
   ).join('');
   const branchNeighborHTML=renderBranchNeighborItems(topBranchItems,'top')+renderBranchNeighborItems(bottomBranchItems,'bottom');
   const leftNeighborsHTML=renderNeighborItems(leftNeighborItems);
@@ -9437,10 +9479,10 @@ function initRegionNavigation(){
     .station-numbering-pill .station-numbering-symbol{font-size:15px;}
     .station-numbering-pill .station-numbering-number{font-size:20px;}
     /* 会社別ナンバリング意匠。文字比率・枠線・角丸を会社単位で独立管理 */
-    .numbering_tobu{background:#fff;border:4.5px solid #173b91;border-radius:15px;box-shadow:none;color:#080808;font-weight:700;padding:1px;}
+    .numbering_tobu{background:#fff;border:4.5px solid var(--numbering-color,#173b91);border-radius:15px;box-shadow:none;color:#080808;font-weight:700;padding:1px;}
     .numbering_tobu .station-numbering-symbol{font-size:16px;font-weight:700;line-height:1.02;}
     .numbering_tobu .station-numbering-number{font-size:21px;font-weight:700;line-height:.98;}
-    .numbering_tokyu{background:#d5004f;border:0;border-radius:18px;color:#fff;padding:2px;font-weight:700;}
+    .numbering_tokyu{background:var(--numbering-color,#00B395);border:0;border-radius:12px;color:#fff;padding:2px;font-weight:700;}
     .numbering_tokyu .station-numbering-symbol{font-size:17px;font-weight:700;line-height:1.02;}
     .numbering_tokyu .station-numbering-number{font-size:22px;font-weight:700;line-height:.98;}
     .numbering_jr_central,.numbering_jr_west,.numbering_jr_kyushu,.numbering_jr_hokkaido,.numbering_jr_shikoku{background:#fff;border:3px solid var(--numbering-color, currentColor);border-radius:0;padding:0;color:#080808;}
@@ -9451,10 +9493,13 @@ function initRegionNavigation(){
 
     .numbering_jr_central .station-numbering-symbol,.numbering_jr_west .station-numbering-symbol,.numbering_jr_kyushu .station-numbering-symbol,.numbering_jr_hokkaido .station-numbering-symbol,.numbering_jr_shikoku .station-numbering-symbol{align-self:stretch;display:flex;align-items:center;justify-content:center;background:var(--numbering-color);color:#fff;font-family:Georgia,'Times New Roman',serif;font-size:17px;font-weight:700;line-height:1;}
     .numbering_jr_central .station-numbering-number,.numbering_jr_west .station-numbering-number,.numbering_jr_kyushu .station-numbering-number,.numbering_jr_hokkaido .station-numbering-number,.numbering_jr_shikoku .station-numbering-number{font-size:22px;font-weight:700;line-height:1.02;}
-    .numbering_tokyo_metro,.numbering_toei{background:#fff;border:4.5px solid var(--numbering-color, currentColor);border-radius:15px;box-shadow:none;color:#080808;padding:1px;font-weight:700;}
-    .numbering_tokyo_metro .station-numbering-symbol,.numbering_toei .station-numbering-symbol{font-size:16px;font-weight:700;}
-    .numbering_tokyo_metro .station-numbering-number,.numbering_toei .station-numbering-number{font-size:21px;font-weight:700;}
-    @media(max-width:600px){.station-name-ja-inner{gap:7px}.station-numbering{width:40px;height:40px;border-width:2.5px;border-radius:8px}.station-numbering-symbol{font-size:14px}.station-numbering-number{font-size:18px}.station-numbering-pill{width:auto;min-width:46px;height:40px;padding:2px 6px}.station-numbering-circle{border-radius:50%}.station-numbering-square{border-radius:2px}.station-numbering.numbering_jr_central{width:46px;height:48px;min-width:46px;border-width:2.5px}.station-numbering.numbering_jr_central .station-numbering-symbol{font-size:16px}.station-numbering.numbering_jr_central .station-numbering-number{font-size:24px}}
+    .numbering_tokyo_metro{width:48px;height:48px;min-width:48px;background:#fff;border:4px solid var(--numbering-color,#F39800);border-radius:50%;box-shadow:none;color:#080808;padding:0;font-weight:800;gap:0;}
+    .numbering_tokyo_metro .station-numbering-symbol{font-size:17px;font-weight:800;line-height:1;}
+    .numbering_tokyo_metro .station-numbering-number{font-size:21px;font-weight:800;line-height:1;}
+    .numbering_toei{background:#fff;border:4.5px solid var(--numbering-color,currentColor);border-radius:15px;box-shadow:none;color:#080808;padding:1px;font-weight:700;}
+    .numbering_toei .station-numbering-symbol{font-size:16px;font-weight:700;}
+    .numbering_toei .station-numbering-number{font-size:21px;font-weight:700;}
+    @media(max-width:600px){.numbering_tokyo_metro{width:40px;height:40px;min-width:40px;border-width:3.5px;border-radius:50%;}.numbering_tokyo_metro .station-numbering-symbol{font-size:14px}.numbering_tokyo_metro .station-numbering-number{font-size:18px}.station-name-ja-inner{gap:7px}.station-numbering{width:40px;height:40px;border-width:2.5px;border-radius:8px}.station-numbering-symbol{font-size:14px}.station-numbering-number{font-size:18px}.station-numbering-pill{width:auto;min-width:46px;height:40px;padding:2px 6px}.station-numbering-circle{border-radius:50%}.station-numbering-square{border-radius:2px}.numbering_tokyu{border-radius:10px}.station-numbering.numbering_jr_central{width:46px;height:48px;min-width:46px;border-width:2.5px}.station-numbering.numbering_jr_central .station-numbering-symbol{font-size:16px}.station-numbering.numbering_jr_central .station-numbering-number{font-size:24px}}
     .station-name-en{height:24px;min-height:24px;flex:0 0 24px;background:var(--station-label-bg,#666);color:#fff;font-size:15.2px;font-weight:400;line-height:1;}
     .rail-line{width:12px;background:transparent;overflow:visible;}
     .rail-segment{position:absolute;left:0;width:100%;}
@@ -12491,6 +12536,12 @@ initRegionNavigation();
 @media(max-width:600px){
   #nationalRouteMapTitleGroup{max-width:min(72vw,430px);}
 }
+/* Definitive overrides: Metro ring thickness and Tokyu corner radius; multi-line badges at transfer stations */
+.station-numbering.numbering_tokyo_metro{border-width:4px !important;}
+@media(max-width:600px){.station-numbering.numbering_tokyo_metro{border-width:3.5px !important;}}
+.station-numbering.numbering_tokyu{border-radius:8px !important;}
+.station-overview-name-ja-inner{display:inline-flex;align-items:center;flex-wrap:wrap;gap:.16em;}
+.station-numbering-group{display:inline-flex;align-items:center;gap:.12em;flex-wrap:nowrap;}
 </style>
 
 <button id="nationalRouteMapOpenBtn" type="button" aria-label="全国路線図を表示" title="全国路線図を表示">
@@ -18445,6 +18496,18 @@ initRegionNavigation();
   window.showAnnouncementList=showAnnouncementList;
 })();
 </script>
+
+<style id="all-station-numbering-helvetica-font">
+/* すべての駅ナンバリング（中央駅・隣駅・各事業者）のフォントをHelvetica系に統一 */
+.station-numbering,
+.station-numbering * {
+  font-family: Helvetica, "Helvetica Neue", "Noto Sans JP", Arial, sans-serif !important;
+}
+/* 東武の隣駅ナンバリングの角丸 */
+.station-neighbor-numbering-wrap .station-numbering.numbering_tobu {
+  border-radius: 7px !important;
+}
+</style>
 </body>
 </html>
 
@@ -20742,6 +20805,56 @@ font-size:17px;line-height:1.35;padding:8px 12px 10px;white-space:pre-wrap;word-
     .station-stop-type{font-size:10px !important;padding:1px 3px !important;font-weight:600 !important;}
   }
 
+
+/* 隣駅ナンバリング：駅名文字より少し低い高さに揃える。駅名の文字だけ白フチを付ける。 */
+.station-neighbor-numbering-wrap{zoom:1 !important;line-height:0;}
+.station-neighbor-numbering-wrap .station-numbering:not(.station-numbering-pill){
+  width:.90em !important;min-width:.90em !important;height:.90em !important;
+  padding:0 !important;border-width:.075em !important;gap:0 !important;
+}
+.station-neighbor-numbering-wrap .station-numbering.station-numbering-pill{
+  width:auto !important;min-width:.98em !important;height:.90em !important;
+  padding:0 .08em !important;border-width:.075em !important;gap:0 !important;
+}
+.station-neighbor-numbering-wrap .station-numbering-symbol{font-size:.30em !important;line-height:1 !important;}
+.station-neighbor-numbering-wrap .station-numbering-number{font-size:.39em !important;line-height:1 !important;}
+.station-neighbor-numbering-wrap .station-numbering.numbering_tobu .station-numbering-symbol{font-size:.33em !important;}
+.station-neighbor-numbering-wrap .station-numbering.numbering_tobu .station-numbering-number{font-size:.44em !important;}
+.station-neighbor-numbering-wrap .station-numbering.numbering_tokyo_metro{border-width:.075em !important;}
+.station-neighbor-numbering-wrap .station-numbering.numbering_tokyo_metro .station-numbering-symbol{font-size:.29em !important;}
+.station-neighbor-numbering-wrap .station-numbering.numbering_tokyo_metro .station-numbering-number{font-size:.36em !important;}
+.station-neighbor-numbering-wrap .station-numbering-group{gap:.08em !important;}
+.station-neighbor-name-ja-text,.station-neighbor-name-en{
+  -webkit-text-stroke:.045em #fff;
+  paint-order:stroke fill;
+  text-shadow:0 0 .05em #fff;
+}
+
+
+/* 隣駅ナンバリング：Helvetica統一と事業者別の枠・角丸調整 */
+.station-neighbor-numbering-wrap .station-numbering,
+.station-neighbor-numbering-wrap .station-numbering .station-numbering-symbol,
+.station-neighbor-numbering-wrap .station-numbering .station-numbering-number{
+  font-family:Helvetica,"Helvetica Neue","Noto Sans JP",Arial,sans-serif !important;
+}
+/* 東急の隣駅バッジは角丸を控えめに */
+.station-neighbor-numbering-wrap .station-numbering.numbering_tokyu{
+  border-radius:4px !important;
+}
+/* 東武・東京メトロの隣駅バッジは枠線を少し太く */
+.station-neighbor-numbering-wrap .station-numbering.numbering_tobu,
+.station-neighbor-numbering-wrap .station-numbering.numbering_tokyo_metro{
+  border-width:.10em !important;
+}
+/* 中央の大きい東京メトロナンバリングはさらに太い枠線に */
+.station-info-card .station-overview-main .station-numbering.numbering_tokyo_metro{
+  border-width:5.5px !important;
+}
+@media(max-width:600px){
+  .station-info-card .station-overview-main .station-numbering.numbering_tokyo_metro{
+    border-width:4.5px !important;
+  }
+}
 </style>
 <script id="station-stop-transfer-direction-script">
 (function(){
